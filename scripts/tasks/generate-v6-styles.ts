@@ -5,8 +5,8 @@
 
 import { bundleEngine } from '../build/v6/bundle-engine';
 import { allAntdComponentNames } from '../build/v6/components';
-import { generatedDir } from '../build/v6/generate-engine';
 import { generateStyles } from '../build/v6/generate-styles';
+import { generatedDir } from '../build/v6/paths';
 import { buildConfig } from '../build-config';
 
 /** Generate antd v6 CSS into the publish directory (runs after the library build). */

@@ -49,6 +49,25 @@ export function varsToRoot(vars: CssBlock[]): string {
   return [...new Set(vars.map(b => `:root{${b.body}}`))].join('\n');
 }
 
+/**
+ * Some antd components (e.g. Input, Select) call `useCSSVarCls(prefixCls)` and register their reset
+ * styles under that derived `<prefixCls>-css-var` root class instead of the plain component class. That
+ * class only exists to scope antd's own React render; ng-zorro's markup never applies it. Rewriting the
+ * class straight to `.ant-<x>` is *not* equivalent: antd's reset rules also target descendants via
+ * `.ant-<x>-css-var [class^="ant-<x>"], .ant-<x>-css-var [class*=" ant-<x>"]` (see `genCommonStyle` in
+ * `node_modules/antd/es/style/index.js`), and collapsing the root class alone turns those descendant
+ * rules dead (e.g. `.ant-input [class^="ant-input"]{box-sizing:border-box}` never matches anything under
+ * a bare `<input>`), silently dropping `box-sizing` from affix wrappers, dropdown roots, etc. antd's own
+ * no-rootCls fallback in that same file is `[class^="ant-<x>"], [class*=" ant-<x>"]` (an attribute
+ * selector matching the element carrying the class, with no separate root wrapper needed), so reproduce
+ * that instead, wrapped in `:is(...)` to keep it a single compound selector at the same specificity as
+ * the class it replaces. The negative lookahead keeps `.ant-x-css-var-foo` (a different, unrelated class)
+ * from being mistaken for the scoping class.
+ */
+export function normalizeCssVarRootCls(css: string): string {
+  return css.replace(/\.(ant-[a-z-]+)-css-var(?![\w-])/g, ':is([class^="$1"],[class*=" $1"])');
+}
+
 export function joinTemplate(template: CssBlock[]): string {
   return template.map(b => b.raw).join('\n');
 }

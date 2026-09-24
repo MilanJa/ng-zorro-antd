@@ -8,12 +8,12 @@ import path from 'node:path';
 
 import { bundleEngine, BundleEngineResult } from './bundle-engine';
 import { allAntdComponentNames } from './components';
-import { joinTemplate, partitionBlocks } from './css-postprocess';
+import { joinTemplate, normalizeCssVarRootCls, partitionBlocks } from './css-postprocess';
 import { extractAntdCss } from './extract-styles';
-import { normalizeCssVarRootCls } from './generate-styles';
 import { generateTypes } from './generate-types';
+import { generatedDir } from './paths';
 
-export const generatedDir = path.resolve(__dirname, '../../../components/core/theme/generated');
+export { generatedDir } from './paths';
 
 /** Runs BEFORE the ng-packagr build: the library source imports these bundles. */
 export async function generateEngine(): Promise<BundleEngineResult> {
