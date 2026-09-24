@@ -39,6 +39,10 @@ function sourceFiles(dir: string): string[] {
 export function emittedClasses(dir: string): string[] {
   const names = new Set<string>();
   for (const file of sourceFiles(dir)) {
+    // Class names must be written as complete literals, not template-literal interpolations
+    // (e.g. `` `ant-btn-color-${color}` ``): this regex scans raw source text, so it would
+    // otherwise capture the partial token before `${` (e.g. `ant-btn-color-`) as if it were a
+    // real class.
     for (const m of readFileSync(file, 'utf8').matchAll(/\bant-[a-z][a-z0-9-]*/g)) {
       names.add(m[0]);
     }

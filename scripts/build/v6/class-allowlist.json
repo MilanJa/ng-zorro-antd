@@ -1,5 +1,6 @@
 {
-  "_comment": "ng-zorro-only classes that antd v6 CSS does not style. Remove entries as components are aligned (sub-project 2).",
+  "_comment": "ng-zorro-only classes that antd v6 CSS does not style. `input`/`select`/`space` entries are wave-1 alignment work: remove them as those components are aligned (sub-project 2).",
+  "_button_comment": "button's entries are permanent, not wave-1 work: antd v6's own React Button emits ant-btn-color-link and the legacy ant-btn-{default,dashed,link,text,dangerous,rtl} type/danger/rtl classes for backward compatibility, but its v6 CSS never styles them (verified against node_modules/antd/es/button/style). class-coverage.spec.ts pins this exact set so it can't silently grow.",
   "button": [
     "ant-btn-color-link",
     "ant-btn-dangerous",
