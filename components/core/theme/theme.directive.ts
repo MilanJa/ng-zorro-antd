@@ -12,6 +12,7 @@ import {
   Directive,
   effect,
   inject,
+  InjectionToken,
   input,
   Signal
 } from '@angular/core';
@@ -21,6 +22,17 @@ import { writeStyle } from './theme.service';
 import type { NzThemeConfig } from './theme.types';
 
 let nextId = 0;
+
+/**
+ * @internal Testing seam only: production code always gets the real `renderThemeCss`. Overriding this
+ * token lets a spec control the timing of the directive's render (e.g. to deterministically destroy the
+ * directive while a render is still in flight) without depending on real import/network timing; spying
+ * directly on the `render-theme-css.ts` module's export isn't possible here (its ESM namespace object is
+ * not configurable in this build).
+ */
+export const NZ_THEME_RENDERER = new InjectionToken<typeof renderThemeCss>('NZ_THEME_RENDERER', {
+  factory: () => renderThemeCss
+});
 
 /**
  * Applies a theme to the host element's subtree. CDK overlays rendered outside the host keep the global theme.
@@ -37,6 +49,7 @@ export class NzThemeDirective {
   private readonly doc = inject(DOCUMENT);
   private readonly cspNonce = inject(CSP_NONCE, { optional: true });
   private readonly parent = inject(NzThemeDirective, { optional: true, skipSelf: true });
+  private readonly renderThemeCss = inject(NZ_THEME_RENDERER);
   private readonly id = ++nextId;
 
   readonly nzTheme = input.required<NzThemeConfig>();
@@ -61,15 +74,28 @@ export class NzThemeDirective {
   });
 
   constructor() {
-    let latest = 0;
-    effect(async () => {
+    // Guards against writing a style after this directive is destroyed: `renderThemeCss` awaits a lazy
+    // chunk import on its first call, so a destroy (e.g. an `@if`/route toggle) can easily land while
+    // that first render is still in flight. `stale` (via the effect's `onCleanup`, which Angular also
+    // runs when the effect itself is destroyed) covers both "config changed, a newer render superseded
+    // this one" and "the directive was destroyed"; `destroyed` is a second, explicit belt-and-suspenders
+    // check set from the `DestroyRef` callback itself, so `writeStyle` can never run after cleanup.
+    let destroyed = false;
+    effect(onCleanup => {
       const config = this.effectiveConfig();
-      const call = ++latest;
-      const css = await renderThemeCss(config, `.${this.scopeClass}`);
-      if (call === latest) {
-        writeStyle(this.doc, this.scopeClass, css, this.cspNonce);
-      }
+      let stale = false;
+      onCleanup(() => {
+        stale = true;
+      });
+      void this.renderThemeCss(config, `.${this.scopeClass}`).then(css => {
+        if (!stale && !destroyed) {
+          writeStyle(this.doc, this.scopeClass, css, this.cspNonce);
+        }
+      });
     });
-    inject(DestroyRef).onDestroy(() => this.doc.getElementById(this.scopeClass)?.remove());
+    inject(DestroyRef).onDestroy(() => {
+      destroyed = true;
+      this.doc.getElementById(this.scopeClass)?.remove();
+    });
   }
 }

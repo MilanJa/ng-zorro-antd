@@ -6,9 +6,11 @@
 import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
+import { expect } from 'vitest';
+
 import { V6_TEMPLATE_CSS, V6_TOKENS_DEFAULT_CSS } from './generated/test-css';
 import { renderThemeCss } from './render-theme-css';
-import { NzThemeDirective } from './theme.directive';
+import { NZ_THEME_RENDERER, NzThemeDirective } from './theme.directive';
 import type { NzThemeConfig } from './theme.types';
 
 @Component({
@@ -97,5 +99,57 @@ describe('NzThemeDirective', () => {
     fixture.detectChanges();
     await fixture.whenStable();
     expect(document.querySelectorAll('style[id^="nz-theme-"]').length).toBe(before - 1);
+  });
+});
+
+@Component({
+  imports: [NzThemeDirective],
+  template: `@if (show()) {
+    <div id="target" [nzTheme]="{ token: { colorPrimary: '#000000' } }"></div>
+  }`
+})
+class DestroyBeforeRenderHost {
+  show = signal(true);
+}
+
+describe('NzThemeDirective destroyed before its first render resolves', () => {
+  let fixture: ComponentFixture<DestroyBeforeRenderHost>;
+
+  afterEach(() => {
+    document.querySelectorAll('style[id^="nz-theme-"]').forEach(s => s.remove());
+  });
+
+  it('never writes its style element (no leak) when destroyed while the render is still pending', async () => {
+    // `renderThemeCss` awaits a lazy chunk import on its first call, so a destroy (e.g. an `@if`/route
+    // toggle) can land while that first render is still in flight; stub its timing deterministically
+    // instead of relying on real, variable import timing to reproduce the race. Spying directly on
+    // `render-theme-css.ts`'s own export (`vi.spyOn(rendererModule, 'renderThemeCss')`) does not work in
+    // this build -- its ESM namespace object is not configurable here ("TypeError: Cannot redefine
+    // property: renderThemeCss") -- so the directive obtains the renderer through the overridable
+    // `NZ_THEME_RENDERER` injection token instead.
+    let resolveRender!: (css: string) => void;
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: NZ_THEME_RENDERER, useValue: () => new Promise<string>(resolve => (resolveRender = resolve)) }
+      ]
+    });
+
+    fixture = TestBed.createComponent(DestroyBeforeRenderHost);
+    fixture.detectChanges();
+    // Let the directive's effect run once and call the (still-pending) mocked `renderThemeCss`.
+    await fixture.whenStable();
+    await new Promise(r => setTimeout(r, 0));
+    expect(document.querySelectorAll('style[id^="nz-theme-"]').length).toBe(0);
+
+    // Destroy the directive before its pending render settles.
+    fixture.componentInstance.show.set(false);
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    // Now let the stale render resolve.
+    resolveRender('.nz-theme-x{--ant-color-primary:#000000;}');
+    await new Promise(r => setTimeout(r, 0));
+
+    expect(document.querySelectorAll('style[id^="nz-theme-"]').length).toBe(0);
   });
 });
