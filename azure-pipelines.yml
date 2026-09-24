@@ -88,6 +88,14 @@ stages:
             command: 'ci'
         - script: npm run test:schematics
 
+    - job: test_scripts
+      steps:
+        - task: Npm@1
+          inputs:
+            command: 'ci'
+        - script: npm run test:scripts
+          displayName: 'Run build script tests (antd v6 style pipeline)'
+
   dependsOn: env
 
 - stage: lint
