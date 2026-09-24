@@ -40,7 +40,7 @@ describe('generateTypes', () => {
   });
 
   it('has exactly as many alias keys as the engine', async () => {
-    const core = await import(path.join(dir, 'engine-core.mjs'));
+    const core = await import(path.join(dir, 'engine-core.ts'));
     const alias = core.formatToken({ ...core.defaultAlgorithm(core.seedToken), override: {} });
     const scalarKeys = Object.keys(alias).filter(k => ['string', 'number', 'boolean'].includes(typeof alias[k]));
     // Property names match either a bare identifier or a quoted string literal: some antd token keys

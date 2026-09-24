@@ -88,9 +88,9 @@ export async function generateStyles(options: GenerateStylesOptions): Promise<Ge
   const perComponent: Record<string, string> = {};
   const manifest: V6Manifest = {
     antdVersion,
-    engineCoreBytes: options.engineSizes?.coreBytes ?? statSize(path.join(generatedDir, 'engine-core.mjs')),
+    engineCoreBytes: options.engineSizes?.coreBytes ?? statSize(path.join(generatedDir, 'engine-core.ts')),
     engineComponentsBytes:
-      options.engineSizes?.componentsBytes ?? statSize(path.join(generatedDir, 'engine-components.mjs')),
+      options.engineSizes?.componentsBytes ?? statSize(path.join(generatedDir, 'engine-components.ts')),
     components: {}
   };
 
@@ -113,7 +113,7 @@ export async function generateStyles(options: GenerateStylesOptions): Promise<Ge
 
   // Token files come from the engine so runtime and static paths share one code path (parity test proves equality).
   const renderer = await import('../../../components/core/theme/render-theme-css');
-  const core = await import(pathToFileURL(path.join(generatedDir, 'engine-core.mjs')).href);
+  const core = await import(pathToFileURL(path.join(generatedDir, 'engine-core.ts')).href);
   const tokens = {
     default: await renderer.renderThemeCss({}, ':root'),
     dark: await renderer.renderThemeCss({ algorithm: core.darkAlgorithm }, ':root'),

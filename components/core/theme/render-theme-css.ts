@@ -5,8 +5,13 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import * as core from './generated/engine-core.mjs';
+import type { EngineComponents, EngineCore } from './engine.types';
+import * as coreModule from './generated/engine-core';
 import type { NzMappingAlgorithm, NzThemeConfig } from './theme.types';
+
+// `generated/engine-core.ts` is generated JS carrying `// @ts-nocheck` (see `bundle-engine.ts`), so its
+// own inferred shape isn't relied on; cast once against the hand-maintained `EngineCore` interface.
+const core = coreModule as unknown as EngineCore;
 
 /** Internal selector key; rewritten to the real selector before the CSS leaves this module. */
 export const THEME_KEY_PLACEHOLDER = 'nz-theme-key';
@@ -98,10 +103,10 @@ export function getDesignToken(config: NzThemeConfig = {}): AnyToken {
   return token;
 }
 
-let componentsBundle: Promise<typeof import('./generated/engine-components.mjs')> | null = null;
+let componentsBundle: Promise<EngineComponents> | null = null;
 
-function loadComponents(): Promise<typeof import('./generated/engine-components.mjs')> {
-  componentsBundle ??= import('./generated/engine-components.mjs');
+function loadComponents(): Promise<EngineComponents> {
+  componentsBundle ??= import('./generated/engine-components').then(m => m as unknown as EngineComponents);
   return componentsBundle;
 }
 

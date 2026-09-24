@@ -20,12 +20,12 @@ type Renderer = typeof import('../../../../components/core/theme/render-theme-cs
 
 describe('engine parity with antd extraction', () => {
   let renderer: Renderer;
-  let core: typeof import('../../../../components/core/theme/generated/engine-core.mjs');
+  let core: typeof import('../../../../components/core/theme/generated/engine-core');
 
   beforeAll(async () => {
     await bundleEngine({ outDir: generatedDir, antdNames: allAntdComponentNames() });
     renderer = await import('../../../../components/core/theme/render-theme-css');
-    core = await import(path.join(generatedDir, 'engine-core.mjs'));
+    core = await import(path.join(generatedDir, 'engine-core.ts'));
   });
 
   const cases: Array<{ name: string; nz: () => Record<string, unknown>; antd: Record<string, unknown> }> = [

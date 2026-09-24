@@ -68,38 +68,65 @@ export async function bundleEngine({
   mkdirSync(outDir, { recursive: true });
   const antdVersion = (require('antd/package.json') as { version: string }).version;
   const banner = `/*! Generated from Ant Design ${antdVersion} (MIT) by NG-ZORRO's generate-v6-engine. Do not edit. */`;
+  const workDir = path.resolve(__dirname, '../../..');
 
   const common: esbuild.BuildOptions = {
     bundle: true,
     format: 'esm',
     platform: 'browser',
     target: 'es2022',
-    minify,
     write: false,
     logLevel: 'silent',
     ignoreAnnotations: true,
     define: { 'process.env.NODE_ENV': '"production"' },
     plugins: [shimPlugin],
-    banner: { js: banner },
-    absWorkingDir: path.resolve(__dirname, '../../..')
+    absWorkingDir: workDir
   };
 
+  // Written as `.ts` (not `.mjs`) so ng-packagr's per-entry-point compile treats these bundles like any
+  // other source file in the `core/theme` entry point instead of a raw asset it can't resolve during
+  // bundling (see the commit message for the full story). They are never type-checked (`// @ts-nocheck`)
+  // -- only required to be syntactically valid, which esbuild's output always is -- and kept unminified
+  // for readability/debuggability; the manifest's size budgets are tracked separately below.
   const core = await esbuild.build({
     ...common,
-    stdin: { contents: CORE_ENTRY, resolveDir: path.resolve(__dirname, '../../..'), loader: 'js' }
+    minify: false,
+    stdin: { contents: CORE_ENTRY, resolveDir: workDir, loader: 'js' }
   });
   const components = await esbuild.build({
     ...common,
+    minify: false,
     // Real (non-conservative) tree-shaking: combined with `componentsEntry`'s re-exports, this drops
     // unused component style modules that are only transitively reachable (see `componentsEntry`) while
     // still keeping the requested components, which are genuinely referenced.
     ignoreAnnotations: false,
-    stdin: { contents: componentsEntry(antdNames), resolveDir: path.resolve(__dirname, '../../..'), loader: 'js' }
+    stdin: { contents: componentsEntry(antdNames), resolveDir: workDir, loader: 'js' }
   });
 
-  const coreText = core.outputFiles![0].text;
-  const componentsText = components.outputFiles![0].text;
-  writeFileSync(path.join(outDir, 'engine-core.mjs'), coreText);
-  writeFileSync(path.join(outDir, 'engine-components.mjs'), componentsText);
-  return { coreBytes: Buffer.byteLength(coreText), componentsBytes: Buffer.byteLength(componentsText) };
+  const coreContent = `${banner}\n// @ts-nocheck\n${core.outputFiles![0].text}`;
+  const componentsContent = `${banner}\n// @ts-nocheck\n${components.outputFiles![0].text}`;
+  writeFileSync(path.join(outDir, 'engine-core.ts'), coreContent);
+  writeFileSync(path.join(outDir, 'engine-components.ts'), componentsContent);
+
+  // The manifest tracks *minified* size budgets (see `manifest.ts`'s `ENGINE_CORE_BUDGET` /
+  // `ENGINE_COMPONENTS_BUDGET`), so measure that separately from what actually gets written above -- a
+  // second, `write: false` esbuild pass over the same entries, honouring the `minify` option (default
+  // `true`) the way the combined write+measure pass used to.
+  const minifiedCore = await esbuild.build({
+    ...common,
+    minify,
+    banner: { js: banner },
+    stdin: { contents: CORE_ENTRY, resolveDir: workDir, loader: 'js' }
+  });
+  const minifiedComponents = await esbuild.build({
+    ...common,
+    minify,
+    ignoreAnnotations: false,
+    banner: { js: banner },
+    stdin: { contents: componentsEntry(antdNames), resolveDir: workDir, loader: 'js' }
+  });
+  return {
+    coreBytes: Buffer.byteLength(minifiedCore.outputFiles![0].text),
+    componentsBytes: Buffer.byteLength(minifiedComponents.outputFiles![0].text)
+  };
 }

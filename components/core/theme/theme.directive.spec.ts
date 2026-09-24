@@ -42,7 +42,7 @@ describe('NzThemeDirective', () => {
   beforeAll(async () => {
     // `NzThemeDirective`'s effect fires without being awaited by the test, and the first call to
     // `renderThemeCss` in this spec bundle triggers a real, network-level dynamic import of the lazy
-    // `engine-components.mjs` chunk. That import is slower than a single `setTimeout(0)` tick, which
+    // `engine-components.ts` chunk. That import is slower than a single `setTimeout(0)` tick, which
     // otherwise makes only the very first test in this file (whichever runs first) flaky. Pre-warm the
     // shared module-level cache in `render-theme-css.ts` once, up front, so every test's wait below is
     // waiting on an already-resolved import.

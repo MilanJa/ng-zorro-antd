@@ -43,8 +43,8 @@ function renderInterface(name: string, entries: Array<[string, Scalar]>, extends
  * cache at the expected relative path, so the bundler can find it.
  */
 export async function generateTypes(generatedDir: string): Promise<void> {
-  const core = await import(pathToFileURL(path.join(generatedDir, 'engine-core.mjs')).href);
-  const { registry } = await import(pathToFileURL(path.join(generatedDir, 'engine-components.mjs')).href);
+  const core = await import(pathToFileURL(path.join(generatedDir, 'engine-core.ts')).href);
+  const { registry } = await import(pathToFileURL(path.join(generatedDir, 'engine-components.ts')).href);
   const seed = core.seedToken as Record<string, unknown>;
   const alias = core.formatToken({ ...core.defaultAlgorithm(seed), override: {} }) as Record<string, unknown>;
 

@@ -28,14 +28,14 @@ describe('bundleEngine', () => {
   });
 
   it('writes both bundles and reports their sizes', () => {
-    expect(existsSync(path.join(outDir, 'engine-core.mjs'))).toBe(true);
-    expect(existsSync(path.join(outDir, 'engine-components.mjs'))).toBe(true);
+    expect(existsSync(path.join(outDir, 'engine-core.ts'))).toBe(true);
+    expect(existsSync(path.join(outDir, 'engine-components.ts'))).toBe(true);
     expect(sizes.coreBytes).toBeGreaterThan(10_000);
     expect(sizes.componentsBytes).toBeGreaterThan(1_000);
   });
 
   it('core bundle computes the default alias token without React', async () => {
-    const core = await import(pathToFileURL(path.join(outDir, 'engine-core.mjs')).href);
+    const core = await import(pathToFileURL(path.join(outDir, 'engine-core.ts')).href);
     const map = core.defaultAlgorithm(core.seedToken);
     const alias = core.formatToken({ ...map, override: {} });
     expect(alias.colorPrimary).toBe('#1677ff');
@@ -45,8 +45,8 @@ describe('bundleEngine', () => {
   });
 
   it('components bundle registers every requested component with a default-token factory', async () => {
-    const core = await import(pathToFileURL(path.join(outDir, 'engine-core.mjs')).href);
-    const comps = await import(pathToFileURL(path.join(outDir, 'engine-components.mjs')).href);
+    const core = await import(pathToFileURL(path.join(outDir, 'engine-core.ts')).href);
+    const comps = await import(pathToFileURL(path.join(outDir, 'engine-components.ts')).href);
     const registry: Map<string, { getDefaultToken: unknown; prefixToken: (k: string) => string }> = comps.registry;
     for (const name of ['Button', 'Input', 'Select', 'Space']) {
       expect(registry.has(name), name).toBe(true);
@@ -59,7 +59,7 @@ describe('bundleEngine', () => {
   });
 
   it('registers exactly the requested components, with no extra leaked entries', async () => {
-    const comps = await import(pathToFileURL(path.join(outDir, 'engine-components.mjs')).href);
+    const comps = await import(pathToFileURL(path.join(outDir, 'engine-components.ts')).href);
     const registry: Map<string, unknown> = comps.registry;
     // `Button`'s style module transitively reaches `antd/es/color-picker/components/ColorPresets.js`,
     // which renders an unrelated `<Collapse>`; the bundle must not register `Collapse` (or anything else)
@@ -69,8 +69,8 @@ describe('bundleEngine', () => {
 
   it('bundles contain no reference to the real react packages', async () => {
     const { readFileSync } = await import('node:fs');
-    const core = readFileSync(path.join(outDir, 'engine-core.mjs'), 'utf8');
-    const components = readFileSync(path.join(outDir, 'engine-components.mjs'), 'utf8');
+    const core = readFileSync(path.join(outDir, 'engine-core.ts'), 'utf8');
+    const components = readFileSync(path.join(outDir, 'engine-components.ts'), 'utf8');
     for (const bundle of [core, components]) {
       expect(bundle).not.toMatch(/from\s*["']react["']/);
       expect(bundle).not.toMatch(/require\(["']react["']\)/);
