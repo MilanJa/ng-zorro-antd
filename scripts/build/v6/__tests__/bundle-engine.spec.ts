@@ -58,10 +58,15 @@ describe('bundleEngine', () => {
     expect(button.prefixToken('defaultBg')).toBe('ButtonDefaultBg');
   });
 
-  it('bundles contain no reference to the real react package', async () => {
+  it('bundles contain no reference to the real react packages', async () => {
     const { readFileSync } = await import('node:fs');
     const core = readFileSync(path.join(outDir, 'engine-core.mjs'), 'utf8');
-    expect(core).not.toMatch(/from\s*["']react["']/);
-    expect(core).not.toMatch(/require\(["']react["']\)/);
+    const components = readFileSync(path.join(outDir, 'engine-components.mjs'), 'utf8');
+    for (const bundle of [core, components]) {
+      expect(bundle).not.toMatch(/from\s*["']react["']/);
+      expect(bundle).not.toMatch(/require\(["']react["']\)/);
+      expect(bundle).not.toMatch(/from\s*["']react-dom/);
+      expect(bundle).not.toMatch(/require\(["']react-dom/);
+    }
   });
 });
