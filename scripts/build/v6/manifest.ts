@@ -19,12 +19,12 @@ export interface V6Manifest {
 
 export const manifestPath = path.resolve(__dirname, 'manifest.json');
 
-export function readManifest(): V6Manifest {
-  return JSON.parse(readFileSync(manifestPath, 'utf8')) as V6Manifest;
+export function readManifest(file: string = manifestPath): V6Manifest {
+  return JSON.parse(readFileSync(file, 'utf8')) as V6Manifest;
 }
 
-export function writeManifest(manifest: V6Manifest): void {
-  writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
+export function writeManifest(manifest: V6Manifest, file: string = manifestPath): void {
+  writeFileSync(file, `${JSON.stringify(manifest, null, 2)}\n`);
 }
 
 function setDiff(prefix: string, expected: string[], actual: string[], label: string, out: string[]): void {

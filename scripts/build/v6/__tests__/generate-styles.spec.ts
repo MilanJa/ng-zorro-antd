@@ -5,12 +5,13 @@
 
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
-import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
 import { v6ComponentDirs } from '../components';
-import { buildComponentCss, generateStyles, normalizeCssVarRootCls } from '../generate-styles';
+import { assertEngineBudgets, buildComponentCss, generateStyles, normalizeCssVarRootCls } from '../generate-styles';
+import { ENGINE_COMPONENTS_BUDGET, ENGINE_CORE_BUDGET, readManifest } from '../manifest';
 
 const componentsDir = path.resolve(__dirname, '../../../../components');
 
@@ -44,12 +45,52 @@ describe('normalizeCssVarRootCls', () => {
   });
 });
 
+describe('assertEngineBudgets', () => {
+  it('accepts sizes at the budgets', () => {
+    expect(() =>
+      assertEngineBudgets({ engineCoreBytes: ENGINE_CORE_BUDGET, engineComponentsBytes: ENGINE_COMPONENTS_BUDGET })
+    ).not.toThrow();
+  });
+  it('names the core budget when engine-core is too large', () => {
+    expect(() => assertEngineBudgets({ engineCoreBytes: ENGINE_CORE_BUDGET + 1, engineComponentsBytes: 0 })).toThrow(
+      /ENGINE_CORE_BUDGET/
+    );
+  });
+  it('names the components budget when engine-components is too large', () => {
+    expect(() =>
+      assertEngineBudgets({ engineCoreBytes: 0, engineComponentsBytes: ENGINE_COMPONENTS_BUDGET + 1 })
+    ).toThrow(/ENGINE_COMPONENTS_BUDGET/);
+  });
+  it('is enforced by generateStyles before anything is written', async () => {
+    const publishDir = mkdtempSync(path.join(os.tmpdir(), 'nz-v6-budget-'));
+    try {
+      await expect(
+        generateStyles({
+          publishDir,
+          componentsDir,
+          checkManifest: false,
+          engineSizes: { coreBytes: ENGINE_CORE_BUDGET + 1, componentsBytes: 0 }
+        })
+      ).rejects.toThrow(/v6 engine size budget exceeded[\s\S]*ENGINE_CORE_BUDGET/);
+      expect(existsSync(path.join(publishDir, 'ng-zorro-antd.v6.css'))).toBe(false);
+    } finally {
+      rmSync(publishDir, { recursive: true, force: true });
+    }
+  });
+});
+
 describe('generateStyles', () => {
   const publishDir = mkdtempSync(path.join(os.tmpdir(), 'nz-v6-publish-'));
   let result: Awaited<ReturnType<typeof generateStyles>>;
 
   beforeAll(async () => {
-    result = await generateStyles({ publishDir, componentsDir, updateManifest: false, checkManifest: false });
+    result = await generateStyles({
+      publishDir,
+      componentsDir,
+      updateManifest: false,
+      checkManifest: false,
+      engineSizes: { coreBytes: 0, componentsBytes: 0 }
+    });
   });
   afterAll(() => rmSync(publishDir, { recursive: true, force: true }));
 
@@ -64,7 +105,11 @@ describe('generateStyles', () => {
     const select = readFileSync(path.join(publishDir, 'select/style/v6/index.css'), 'utf8');
     const patch = readFileSync(path.join(componentsDir, 'select/style/v6/patch.css'), 'utf8').trim();
     expect(select.trimEnd().endsWith(patch)).toBe(true);
-    expect(select.indexOf('.ant-select-dropdown{')).toBeLessThan(select.indexOf(patch));
+    const templateAt = select.indexOf('.ant-select-dropdown{');
+    const patchAt = select.indexOf(patch);
+    expect(templateAt).toBeGreaterThanOrEqual(0);
+    expect(patchAt).toBeGreaterThanOrEqual(0);
+    expect(templateAt).toBeLessThan(patchAt);
     expect(result.perComponent['button']).not.toContain('/* antd positions popups');
   });
 
@@ -105,5 +150,28 @@ describe('generateStyles', () => {
     // reachable from the single bundled stylesheet, since an app may import only the bundle.
     expect(result.bundle).toContain('nz-space-item');
     expect(result.bundle).toContain('.ant-select-dropdown {');
+  });
+});
+
+describe('generateStyles manifest check', () => {
+  it('throws with the changed entries when the manifest is out of date', async () => {
+    const workDir = mkdtempSync(path.join(os.tmpdir(), 'nz-v6-manifest-'));
+    const committed = readManifest();
+    const stale = structuredClone(committed);
+    const removed = stale.components['button'].classes.shift()!;
+    const manifestPath = path.join(workDir, 'manifest.json');
+    writeFileSync(manifestPath, JSON.stringify(stale));
+    try {
+      const run = generateStyles({
+        publishDir: path.join(workDir, 'publish'),
+        componentsDir,
+        manifestPath,
+        engineSizes: { coreBytes: committed.engineCoreBytes, componentsBytes: committed.engineComponentsBytes }
+      });
+      await expect(run).rejects.toThrow('v6 manifest is out of date');
+      await expect(run).rejects.toThrow(`button: +class ${removed}`);
+    } finally {
+      rmSync(workDir, { recursive: true, force: true });
+    }
   });
 });

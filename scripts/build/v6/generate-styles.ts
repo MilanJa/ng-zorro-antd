@@ -16,12 +16,24 @@ import {
   extractClassNames,
   extractTokenNames,
   joinTemplate,
+  normalizeCssVarRootCls,
   partitionBlocks,
   withHeader
 } from './css-postprocess';
 import { extractAntdCss } from './extract-styles';
-import { generatedDir } from './generate-engine';
-import { diffManifest, readManifest, V6Manifest, writeManifest } from './manifest';
+import {
+  diffManifest,
+  ENGINE_COMPONENTS_BUDGET,
+  ENGINE_CORE_BUDGET,
+  manifestPath as defaultManifestPath,
+  readManifest,
+  V6Manifest,
+  writeManifest
+} from './manifest';
+import { generatedDir } from './paths';
+
+// Re-exported for existing importers; the implementation lives in css-postprocess.ts.
+export { normalizeCssVarRootCls } from './css-postprocess';
 
 const KEY = 'nz-root';
 const antdVersion = (require('antd/package.json') as { version: string }).version;
@@ -49,8 +61,26 @@ export interface GenerateStylesOptions {
   updateManifest?: boolean;
   /** Compare against manifest.json and throw on differences (default true). */
   checkManifest?: boolean;
-  /** Bundle sizes to record; read from the built bundles when omitted. */
-  engineSizes?: { coreBytes: number; componentsBytes: number };
+  /** Minified engine bundle sizes (from `bundleEngine`) to record in the manifest and check against the budgets. */
+  engineSizes: { coreBytes: number; componentsBytes: number };
+  /** Manifest file to compare against or rewrite (defaults to the committed `manifest.json`). */
+  manifestPath?: string;
+}
+
+/** Fails the generation when a minified engine bundle exceeds its budget (see `manifest.ts`). */
+export function assertEngineBudgets(sizes: Pick<V6Manifest, 'engineCoreBytes' | 'engineComponentsBytes'>): void {
+  const breaches: string[] = [];
+  if (sizes.engineCoreBytes > ENGINE_CORE_BUDGET) {
+    breaches.push(`engine-core is ${sizes.engineCoreBytes} B, over ENGINE_CORE_BUDGET (${ENGINE_CORE_BUDGET} B)`);
+  }
+  if (sizes.engineComponentsBytes > ENGINE_COMPONENTS_BUDGET) {
+    breaches.push(
+      `engine-components is ${sizes.engineComponentsBytes} B, over ENGINE_COMPONENTS_BUDGET (${ENGINE_COMPONENTS_BUDGET} B)`
+    );
+  }
+  if (breaches.length) {
+    throw new Error(`v6 engine size budget exceeded:\n  ${breaches.join('\n  ')}`);
+  }
 }
 
 export interface GeneratedStyles {
@@ -62,25 +92,6 @@ export interface GeneratedStyles {
 
 export function buildComponentCss(template: string, patchCss: string | null): string {
   return patchCss ? `${template}\n${patchCss}` : template;
-}
-
-/**
- * Some antd components (e.g. Input, Select) call `useCSSVarCls(prefixCls)` and register their reset
- * styles under that derived `<prefixCls>-css-var` root class instead of the plain component class. That
- * class only exists to scope antd's own React render; ng-zorro's markup never applies it. Rewriting the
- * class straight to `.ant-<x>` is *not* equivalent: antd's reset rules also target descendants via
- * `.ant-<x>-css-var [class^="ant-<x>"], .ant-<x>-css-var [class*=" ant-<x>"]` (see `genCommonStyle` in
- * `node_modules/antd/es/style/index.js`), and collapsing the root class alone turns those descendant
- * rules dead (e.g. `.ant-input [class^="ant-input"]{box-sizing:border-box}` never matches anything under
- * a bare `<input>`), silently dropping `box-sizing` from affix wrappers, dropdown roots, etc. antd's own
- * no-rootCls fallback in that same file is `[class^="ant-<x>"], [class*=" ant-<x>"]` (an attribute
- * selector matching the element carrying the class, with no separate root wrapper needed), so reproduce
- * that instead, wrapped in `:is(...)` to keep it a single compound selector at the same specificity as
- * the class it replaces. The negative lookahead keeps `.ant-x-css-var-foo` (a different, unrelated class)
- * from being mistaken for the scoping class.
- */
-export function normalizeCssVarRootCls(css: string): string {
-  return css.replace(/\.(ant-[a-z-]+)-css-var(?![\w-])/g, ':is([class^="$1"],[class*=" $1"])');
 }
 
 async function minify(css: string): Promise<string> {
@@ -100,15 +111,21 @@ function write(file: string, content: string): void {
 
 /** Runs AFTER the ng-packagr build (it wipes publish/). */
 export async function generateStyles(options: GenerateStylesOptions): Promise<GeneratedStyles> {
-  const { publishDir, componentsDir, updateManifest = false, checkManifest = true } = options;
+  const {
+    publishDir,
+    componentsDir,
+    updateManifest = false,
+    checkManifest = true,
+    manifestPath = defaultManifestPath
+  } = options;
   const perComponent: Record<string, string> = {};
   const manifest: V6Manifest = {
     antdVersion,
-    engineCoreBytes: options.engineSizes?.coreBytes ?? statSize(path.join(generatedDir, 'engine-core.ts')),
-    engineComponentsBytes:
-      options.engineSizes?.componentsBytes ?? statSize(path.join(generatedDir, 'engine-components.ts')),
+    engineCoreBytes: options.engineSizes.coreBytes,
+    engineComponentsBytes: options.engineSizes.componentsBytes,
     components: {}
   };
+  assertEngineBudgets(manifest);
 
   for (const dir of v6ComponentDirs) {
     const raw = extractAntdCss({ includes: [...v6Components[dir].antd], key: KEY });
@@ -157,7 +174,7 @@ export async function generateStyles(options: GenerateStylesOptions): Promise<Ge
   write(path.join(publishDir, 'ng-zorro-antd.v6.css'), withHeader(bundle, antdVersion));
   write(path.join(publishDir, 'ng-zorro-antd.v6.min.css'), withHeader(await minify(bundle), antdVersion));
 
-  const diff = checkManifest && !updateManifest ? diffManifest(readManifest(), manifest) : [];
+  const diff = checkManifest && !updateManifest ? diffManifest(readManifest(manifestPath), manifest) : [];
 
   for (const lang of docsLangs) {
     const docPath = path.join(docsDir, `customize-theme-v6.${lang}.md`);
@@ -173,7 +190,7 @@ export async function generateStyles(options: GenerateStylesOptions): Promise<Ge
   }
 
   if (updateManifest) {
-    writeManifest(manifest);
+    writeManifest(manifest, manifestPath);
   } else if (checkManifest && diff.length) {
     throw new Error(
       `v6 manifest is out of date. Review the changes and run \`npm run v6:update-manifest\` if they are intended:\n  ${diff.join('\n  ')}`
@@ -187,8 +204,4 @@ function kebab(name: string): string {
     .replace(/([A-Z]+)([A-Z][a-z])/g, '$1-$2')
     .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
     .toLowerCase();
-}
-
-function statSize(file: string): number {
-  return existsSync(file) ? readFileSync(file).byteLength : 0;
 }
