@@ -3,7 +3,9 @@
  * found in the LICENSE file at https://github.com/NG-ZORRO/ng-zorro-antd/blob/master/LICENSE
  */
 
+import { ApplicationRef } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { firstValueFrom } from 'rxjs';
 
 import { NZ_THEME_STYLE_ID } from 'ng-zorro-antd/core/theme';
 
@@ -39,6 +41,15 @@ describe('NzConfig.theme', () => {
     const service = TestBed.inject(NzConfigService);
     await service.whenThemeApplied();
     expect(document.getElementById(NZ_THEME_STYLE_ID)?.textContent).toContain('--ant-color-primary:#00b96b;');
+  });
+
+  it('keeps the application unstable until the lazily loaded v6 theme is written', async () => {
+    TestBed.configureTestingModule({ providers: [provideNzConfig({ theme: { token: { colorPrimary: '#0000ff' } } })] });
+    const appRef = TestBed.inject(ApplicationRef);
+    TestBed.inject(NzConfigService);
+    expect(await firstValueFrom(appRef.isStable)).toBe(false);
+    await appRef.whenStable();
+    expect(document.getElementById(NZ_THEME_STYLE_ID)?.textContent).toContain('--ant-color-primary:#0000ff;');
   });
 
   it('set("theme") with v6 keys re-renders', async () => {

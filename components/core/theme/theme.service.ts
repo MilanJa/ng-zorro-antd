@@ -4,7 +4,7 @@
  */
 
 import { DOCUMENT } from '@angular/common';
-import { CSP_NONCE, inject, Injectable, signal } from '@angular/core';
+import { CSP_NONCE, inject, Injectable, PendingTasks, signal } from '@angular/core';
 
 import type { NzAliasToken } from './generated/tokens';
 import { getDesignToken, renderThemeCss } from './render-theme-css';
@@ -14,18 +14,30 @@ export const NZ_THEME_STYLE_ID = 'nz-theme';
 
 /**
  * Applies an Ant Design v6 theme at runtime by writing the design-token CSS variables into a single
- * `<style id="nz-theme">` element. Works with the injected DOCUMENT only, so it also runs during SSR.
+ * `<style id="nz-theme">` element. Works with the injected DOCUMENT only, so it also runs during SSR, and
+ * registers a pending task per `set()` so server rendering waits for the theme before serialising.
  */
 @Injectable({ providedIn: 'root' })
 export class NzThemeService {
   private readonly doc = inject(DOCUMENT);
   private readonly cspNonce = inject(CSP_NONCE, { optional: true });
+  private readonly pendingTasks = inject(PendingTasks);
   private latestCall = 0;
 
   readonly config = signal<NzThemeConfig | null>(null);
   readonly token = signal<NzAliasToken | null>(null);
 
-  async set(config: NzThemeConfig): Promise<void> {
+  // TODO(wave 1): add the SSR serialisation test (render with platform-server and assert the serialised
+  // HTML contains `<style id="nz-theme">`); parked by the final-review ruling until a platform-server
+  // test harness exists. The pending task below is what that test would prove.
+  set(config: NzThemeConfig): Promise<void> {
+    const applied = this.apply(config);
+    // Errors reach the caller through the returned promise; the task only tracks completion.
+    this.pendingTasks.run(() => applied.catch(() => undefined));
+    return applied;
+  }
+
+  private async apply(config: NzThemeConfig): Promise<void> {
     const call = ++this.latestCall;
     const css = await renderThemeCss(config, ':root');
     if (call !== this.latestCall) {

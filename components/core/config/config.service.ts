@@ -8,6 +8,7 @@ import {
   DestroyRef,
   Injectable,
   Injector,
+  PendingTasks,
   afterNextRender,
   assertInInjectionContext,
   inject,
@@ -54,6 +55,8 @@ export class NzConfigService {
 
   private readonly injector = inject(Injector);
 
+  private readonly pendingTasks = inject(PendingTasks);
+
   private themeApplied: Promise<void> = Promise.resolve();
 
   constructor() {
@@ -73,9 +76,12 @@ export class NzConfigService {
     registerTheme(this.getConfig().prefixCls?.prefixCls || defaultPrefixCls, theme, this.cspNonce);
     if (hasV6ThemeKeys(theme)) {
       const { algorithm, token, components, cssVar } = theme;
-      this.themeApplied = import('ng-zorro-antd/core/theme')
+      const applied = import('ng-zorro-antd/core/theme')
         .then(({ NzThemeService }) => this.injector.get(NzThemeService).set({ algorithm, token, components, cssVar }))
         .catch(error => warn(`NzConfig.theme: failed to apply the antd v6 theme configuration.`, error));
+      this.themeApplied = applied;
+      // Keeps the application unstable (and server rendering waiting) until the lazily loaded theme is written.
+      this.pendingTasks.run(() => applied);
     }
   }
 

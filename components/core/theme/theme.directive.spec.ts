@@ -3,13 +3,15 @@
  * found in the LICENSE file at https://github.com/NG-ZORRO/ng-zorro-antd/blob/master/LICENSE
  */
 
-import { Component, signal } from '@angular/core';
+import { ApplicationRef, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { firstValueFrom } from 'rxjs';
 
 import { expect } from 'vitest';
 
 import { V6_TEMPLATE_CSS, V6_TOKENS_DEFAULT_CSS } from './generated/test-css';
 import { renderThemeCss } from './render-theme-css';
+import { NzThemeScopeIdService } from './theme-scope-id.service';
 import { NZ_THEME_RENDERER, NzThemeDirective } from './theme.directive';
 import type { NzThemeConfig } from './theme.types';
 
@@ -128,28 +130,76 @@ describe('NzThemeDirective destroyed before its first render resolves', () => {
     // property: renderThemeCss") -- so the directive obtains the renderer through the overridable
     // `NZ_THEME_RENDERER` injection token instead.
     let resolveRender!: (css: string) => void;
+    let renders = 0;
     TestBed.configureTestingModule({
       providers: [
-        { provide: NZ_THEME_RENDERER, useValue: () => new Promise<string>(resolve => (resolveRender = resolve)) }
+        {
+          provide: NZ_THEME_RENDERER,
+          useValue: () => {
+            renders++;
+            return new Promise<string>(resolve => (resolveRender = resolve));
+          }
+        }
       ]
     });
 
     fixture = TestBed.createComponent(DestroyBeforeRenderHost);
     fixture.detectChanges();
-    // Let the directive's effect run once and call the (still-pending) mocked `renderThemeCss`.
-    await fixture.whenStable();
+    // Let the directive's effect run once and call the (still-pending) mocked `renderThemeCss`. Do not
+    // await `whenStable()` here: the directive registers its render as a pending task, so the fixture is
+    // not stable until that render settles.
     await new Promise(r => setTimeout(r, 0));
+    expect(renders).toBe(1);
     expect(document.querySelectorAll('style[id^="nz-theme-"]').length).toBe(0);
 
     // Destroy the directive before its pending render settles.
     fixture.componentInstance.show.set(false);
     fixture.detectChanges();
+
+    // Now let the stale render resolve; its pending task is released even though nothing is written.
+    resolveRender('.nz-theme-x{--ant-color-primary:#000000;}');
     await fixture.whenStable();
 
-    // Now let the stale render resolve.
-    resolveRender('.nz-theme-x{--ant-color-primary:#000000;}');
-    await new Promise(r => setTimeout(r, 0));
-
     expect(document.querySelectorAll('style[id^="nz-theme-"]').length).toBe(0);
+  });
+
+  it('keeps the application unstable until its render has been written (server rendering waits)', async () => {
+    let resolveRender!: (css: string) => void;
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: NZ_THEME_RENDERER, useValue: () => new Promise<string>(resolve => (resolveRender = resolve)) }
+      ]
+    });
+    const appRef = TestBed.inject(ApplicationRef);
+
+    fixture = TestBed.createComponent(DestroyBeforeRenderHost);
+    fixture.detectChanges();
+    await new Promise(r => setTimeout(r, 0));
+    expect(await firstValueFrom(appRef.isStable)).toBe(false);
+
+    const scopeClass = document.getElementById('target')!.className;
+    resolveRender(`.${scopeClass}{--ant-color-primary:#000000;}`);
+    await appRef.whenStable();
+
+    expect(await firstValueFrom(appRef.isStable)).toBe(true);
+    expect(document.getElementById(scopeClass)?.textContent).toContain('--ant-color-primary:#000000;');
+  });
+});
+
+describe('NzThemeScopeIdService', () => {
+  it('numbers scopes per application instance', () => {
+    const first = TestBed.inject(NzThemeScopeIdService);
+    expect([first.next(), first.next()]).toEqual([1, 2]);
+    TestBed.resetTestingModule();
+    expect(TestBed.inject(NzThemeScopeIdService).next()).toBe(1);
+  });
+
+  it('gives the first [nzTheme] of an application the id 1', async () => {
+    TestBed.configureTestingModule({ providers: [{ provide: NZ_THEME_RENDERER, useValue: async () => '' }] });
+    const fixture = TestBed.createComponent(DestroyBeforeRenderHost);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(document.getElementById('target')!.className).toBe('nz-theme-1');
+    fixture.destroy();
   });
 });

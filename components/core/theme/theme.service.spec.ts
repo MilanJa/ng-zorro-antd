@@ -4,7 +4,9 @@
  */
 
 import { DOCUMENT } from '@angular/common';
+import { ApplicationRef } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { firstValueFrom } from 'rxjs';
 
 import { nzDarkAlgorithm } from './algorithms';
 import { V6_TEMPLATE_CSS } from './generated/test-css';
@@ -65,6 +67,15 @@ describe('NzThemeService', () => {
     expect(styles.length).toBe(1);
     expect(styles[0].textContent).toContain('--ant-color-primary:#00b96b;');
     expect(styles[0].textContent).not.toContain('#ff0000');
+  });
+
+  it('keeps the application unstable until the theme is written (server rendering waits)', async () => {
+    const appRef = TestBed.inject(ApplicationRef);
+    const done = service.set({ token: { colorPrimary: '#654321' } });
+    expect(await firstValueFrom(appRef.isStable)).toBe(false);
+    await appRef.whenStable();
+    expect(document.getElementById(NZ_THEME_STYLE_ID)?.textContent).toContain('--ant-color-primary:#654321;');
+    await done;
   });
 
   it('uses the injected DOCUMENT only (server-rendering safe)', async () => {

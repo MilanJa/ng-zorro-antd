@@ -14,14 +14,14 @@ import {
   inject,
   InjectionToken,
   input,
+  PendingTasks,
   Signal
 } from '@angular/core';
 
 import { renderThemeCss } from './render-theme-css';
+import { NzThemeScopeIdService } from './theme-scope-id.service';
 import { writeStyle } from './theme.service';
 import type { NzThemeConfig } from './theme.types';
-
-let nextId = 0;
 
 /**
  * @internal Testing seam only: production code always gets the real `renderThemeCss`. Overriding this
@@ -50,7 +50,8 @@ export class NzThemeDirective {
   private readonly cspNonce = inject(CSP_NONCE, { optional: true });
   private readonly parent = inject(NzThemeDirective, { optional: true, skipSelf: true });
   private readonly renderThemeCss = inject(NZ_THEME_RENDERER);
-  private readonly id = ++nextId;
+  private readonly pendingTasks = inject(PendingTasks);
+  private readonly id = inject(NzThemeScopeIdService).next();
 
   readonly nzTheme = input.required<NzThemeConfig>();
   readonly nzThemeInherit = input(true, { transform: booleanAttribute });
@@ -87,11 +88,15 @@ export class NzThemeDirective {
       onCleanup(() => {
         stale = true;
       });
-      void this.renderThemeCss(config, `.${this.scopeClass}`).then(css => {
-        if (!stale && !destroyed) {
-          writeStyle(this.doc, this.scopeClass, css, this.cspNonce);
-        }
-      });
+      // A pending task keeps the application unstable until the scoped CSS is written, so server
+      // rendering serialises the page only after this style element exists.
+      this.pendingTasks.run(() =>
+        this.renderThemeCss(config, `.${this.scopeClass}`).then(css => {
+          if (!stale && !destroyed) {
+            writeStyle(this.doc, this.scopeClass, css, this.cspNonce);
+          }
+        })
+      );
     });
     inject(DestroyRef).onDestroy(() => {
       destroyed = true;
