@@ -48,6 +48,11 @@ describe('engine parity with antd extraction', () => {
         components: { Button: { primaryShadow: 'none' } }
       }),
       antd: { token: { colorPrimary: '#00b96b', borderRadius: 2 }, components: { Button: { primaryShadow: 'none' } } }
+    },
+    {
+      name: 'component algorithm override',
+      nz: () => ({ components: { Button: { algorithm: true, colorPrimary: '#ff4d4f' } } }),
+      antd: { components: { Button: { algorithm: true, colorPrimary: '#ff4d4f' } } }
     }
   ];
 

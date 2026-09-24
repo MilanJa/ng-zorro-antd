@@ -78,10 +78,10 @@ export function computeGlobalToken(config: NzThemeConfig): AnyToken {
       const algorithms = algorithm === true ? toArray(config.algorithm) : toArray(algorithm);
       const componentBase: AnyToken = { ...alias, ...componentTokens };
       const componentDerived: AnyToken = applyAlgorithms(componentBase, algorithms);
-      alias[component] = {
-        ...core.formatToken({ ...componentDerived, override: componentTokens }),
-        ...componentTokens
-      };
+      // antd `getComputedToken` assigns the component-theme result as-is; `formatToken` deliberately
+      // deletes override keys that collide with seed-token names so they flow through derivation, so
+      // re-spreading `componentTokens` here would reinject the raw (pre-derivation) values.
+      alias[component] = core.formatToken({ ...componentDerived, override: componentTokens });
     } else {
       alias[component] = componentTokens;
     }
@@ -134,21 +134,31 @@ export async function renderThemeCss(
     const merged = { ...realToken, ...(realToken[component] ?? {}) };
     const defaultToken: AnyToken =
       typeof entry.getDefaultToken === 'function' ? entry.getDefaultToken(merged) : (entry.getDefaultToken ?? {});
-    const componentToken: AnyToken = { ...defaultToken, ...(realToken[component] ?? {}) };
+    // antd `getComponentToken`: the deprecated oldKey->newKey mapping is applied to the raw user
+    // override (`customToken`) alone, before merging with `defaultToken` (which almost always already
+    // defines `newKey`) — mapping after merging would make the "already defined" guard a no-op and
+    // silently drop the user's override.
+    const customToken: AnyToken = { ...(realToken[component] ?? {}) };
     for (const [oldKey, newKey] of entry.deprecatedTokens ?? []) {
-      if (componentToken[oldKey] !== undefined && componentToken[newKey] === undefined) {
-        componentToken[newKey] = componentToken[oldKey];
+      if (customToken[oldKey] || customToken[newKey]) {
+        customToken[newKey] ??= customToken[oldKey];
       }
     }
+    const componentToken: AnyToken = { ...defaultToken, ...customToken };
     // antd `getComponentToken`: drop values identical to the global token to minimise output
     for (const key of Object.keys(componentToken)) {
       if (componentToken[key] === realToken[key]) {
         delete componentToken[key];
       }
     }
-    const prefixed: AnyToken = {};
-    for (const key of Object.keys(componentToken)) {
-      prefixed[entry.prefixToken(key)] = componentToken[key];
+    // antd `genCSSVarRegister`: only keys the component's own `getDefaultToken` declares get prefixed
+    // and moved; any surviving key that came solely from the user's raw override (e.g. an alias-level
+    // token like `colorPrimary` set via a component's `algorithm: true` sub-theme) is not one of the
+    // component's own declared tokens, so it stays unprefixed, reusing the global variable name.
+    const prefixed: AnyToken = { ...componentToken };
+    for (const key of Object.keys(defaultToken)) {
+      prefixed[entry.prefixToken(key)] = prefixed[key];
+      delete prefixed[key];
     }
     const [, css] = core.transformToken(prefixed, THEME_KEY_PLACEHOLDER, {
       prefix,
