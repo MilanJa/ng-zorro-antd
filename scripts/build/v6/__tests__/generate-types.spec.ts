@@ -10,8 +10,8 @@ import os from 'node:os';
 import path from 'node:path';
 
 import { bundleEngine } from '../bundle-engine';
-import { allAntdComponentNames } from '../components';
-import { generateTypes } from '../generate-types';
+import { allAntdComponentNames, v6ComponentDirs, v6Components } from '../components';
+import { generateTypes, renderComponentRoots } from '../generate-types';
 
 describe('generateTypes', () => {
   const dir = mkdtempSync(path.join(os.tmpdir(), 'nz-v6-types-'));
@@ -68,6 +68,40 @@ describe('committed tokens.ts', () => {
     await bundleEngine({ outDir: dir, antdNames: allAntdComponentNames() });
     await generateTypes(dir);
     expect(readFileSync(path.join(dir, 'tokens.ts'), 'utf8')).toBe(committed);
+    rmSync(dir, { recursive: true, force: true });
+  });
+});
+
+describe('committed component-roots.ts', () => {
+  const committedPath = path.resolve(__dirname, '../../../../components/core/theme/generated/component-roots.ts');
+
+  it('maps every antd name in the component map to its entry prefixCls', async () => {
+    const { COMPONENT_ROOT_CLS } = await import(committedPath);
+    const expected: Record<string, string> = {};
+    for (const dir of v6ComponentDirs) {
+      for (const name of v6Components[dir].antd) {
+        expected[name] = v6Components[dir].prefixCls;
+      }
+    }
+    expect(COMPONENT_ROOT_CLS).toEqual(expected);
+    expect(COMPONENT_ROOT_CLS).toEqual({
+      Button: 'ant-btn',
+      Input: 'ant-input',
+      Select: 'ant-select',
+      Space: 'ant-space'
+    });
+  });
+
+  it('matches a fresh generation', () => {
+    expect(renderComponentRoots()).toBe(readFileSync(committedPath, 'utf8'));
+  });
+
+  it('has a root class for every component in the engine registry', async () => {
+    const { COMPONENT_ROOT_CLS } = await import(committedPath);
+    const dir = mkdtempSync(path.join(os.tmpdir(), 'nz-v6-roots-'));
+    await bundleEngine({ outDir: dir, antdNames: allAntdComponentNames() });
+    const { registry } = await import(path.join(dir, 'engine-components.ts'));
+    expect([...registry.keys()].filter(name => !COMPONENT_ROOT_CLS[name])).toEqual([]);
     rmSync(dir, { recursive: true, force: true });
   });
 });

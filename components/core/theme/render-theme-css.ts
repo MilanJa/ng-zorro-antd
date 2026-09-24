@@ -6,6 +6,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import type { EngineComponents, EngineCore } from './engine.types';
+import { COMPONENT_ROOT_CLS } from './generated/component-roots';
 import * as coreModule from './generated/engine-core';
 import type { NzMappingAlgorithm, NzThemeConfig } from './theme.types';
 
@@ -160,19 +161,40 @@ export async function renderThemeCss(
     // and moved; any surviving key that came solely from the user's raw override (e.g. an alias-level
     // token like `colorPrimary` set via a component's `algorithm: true` sub-theme) is not one of the
     // component's own declared tokens, so it stays unprefixed, reusing the global variable name.
-    const prefixed: AnyToken = { ...componentToken };
+    const own: AnyToken = {};
+    const shared: AnyToken = { ...componentToken };
     for (const key of Object.keys(defaultToken)) {
-      prefixed[entry.prefixToken(key)] = prefixed[key];
-      delete prefixed[key];
+      own[entry.prefixToken(key)] = shared[key];
+      delete shared[key];
     }
-    const [, css] = core.transformToken(prefixed, THEME_KEY_PLACEHOLDER, {
-      prefix,
-      unitless: entry.unitless,
-      ignore: entry.ignore
-    });
-    if (css) {
-      out.push(css.replace(`.${THEME_KEY_PLACEHOLDER}`, selector));
+    const transformOptions = { prefix, unitless: entry.unitless, ignore: entry.ignore };
+    // Namespaced `--ant-<component>-*` variables cannot collide with anything, so they live on `selector`.
+    const [, ownCss] = core.transformToken(own, THEME_KEY_PLACEHOLDER, transformOptions);
+    if (ownCss) {
+      out.push(ownCss.replace(`.${THEME_KEY_PLACEHOLDER}`, selector));
+    }
+    // Unprefixed keys reuse global names (`--ant-color-primary`), so emitting them on `selector` would
+    // override the global value for the whole page/scope. antd keeps them on the component's own css-var
+    // root class; ng-zorro has no such class, so scope them to the component's elements instead.
+    const [, sharedCss] = core.transformToken(shared, THEME_KEY_PLACEHOLDER, transformOptions);
+    if (sharedCss) {
+      out.push(sharedCss.replace(`.${THEME_KEY_PLACEHOLDER}`, componentScope(selector, component)));
     }
   }
   return out.join('\n');
+}
+
+/**
+ * Selector for a component's unprefixed (alias-level) overrides: every element whose class list contains a
+ * class starting with the component's root class (`ant-btn`, `ant-btn-icon`, ...), nested under the theme
+ * scope when the theme is not global. Falls back to `selector` for a registry entry without a root class
+ * (a Node test keeps `COMPONENT_ROOT_CLS` in sync with the registry, so this is defensive only).
+ */
+function componentScope(selector: string, component: string): string {
+  const root = COMPONENT_ROOT_CLS[component];
+  if (!root) {
+    return selector;
+  }
+  const elements = `:is([class^="${root}"],[class*=" ${root}"])`;
+  return selector === ':root' ? elements : `${selector} ${elements}`;
 }

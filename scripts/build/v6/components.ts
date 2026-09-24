@@ -5,15 +5,19 @@
 
 /**
  * Components that have Ant Design v6 style output. Keys are directories under `components/`,
- * values list the antd component names passed to `@ant-design/static-style-extract`.
+ * `antd` lists the antd component names passed to `@ant-design/static-style-extract`, and
+ * `prefixCls` is the component's root class (antd's `prefixCls`, e.g. `ant-btn`). The root class
+ * scopes alias-level tokens overridden for a single component (`components: { Button: { colorPrimary } }`)
+ * to that component's elements instead of `:root`; it is generated into
+ * `components/core/theme/generated/component-roots.ts` for every antd name of the entry.
  * Adding a component here is the first step of migrating it to v6 (see .claude/DEVELOPMENT.md).
  */
 export const v6Components = {
-  button: { antd: ['Button'] },
-  input: { antd: ['Input'] },
-  select: { antd: ['Select'] },
-  space: { antd: ['Space'] }
-} as const satisfies Record<string, { antd: readonly string[] }>;
+  button: { antd: ['Button'], prefixCls: 'ant-btn' },
+  input: { antd: ['Input'], prefixCls: 'ant-input' },
+  select: { antd: ['Select'], prefixCls: 'ant-select' },
+  space: { antd: ['Space'], prefixCls: 'ant-space' }
+} as const satisfies Record<string, { antd: readonly string[]; prefixCls: string }>;
 
 export type V6ComponentDir = keyof typeof v6Components;
 
@@ -22,4 +26,15 @@ export const v6ComponentDirs = Object.keys(v6Components) as V6ComponentDir[];
 /** All antd component names across the map, deduplicated, in map order. */
 export function allAntdComponentNames(): string[] {
   return [...new Set(v6ComponentDirs.flatMap(dir => [...v6Components[dir].antd]))];
+}
+
+/** antd component name -> root class, in map order (source of `generated/component-roots.ts`). */
+export function componentRootClasses(): Record<string, string> {
+  const roots: Record<string, string> = {};
+  for (const dir of v6ComponentDirs) {
+    for (const name of v6Components[dir].antd) {
+      roots[name] = v6Components[dir].prefixCls;
+    }
+  }
+  return roots;
 }

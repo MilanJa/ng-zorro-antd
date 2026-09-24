@@ -7,7 +7,16 @@ import { writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
+import { componentRootClasses } from './components';
+
 type Scalar = 'string' | 'number' | 'boolean';
+
+const LICENSE_HEADER = [
+  '/**',
+  ' * Use of this source code is governed by an MIT-style license that can be',
+  ' * found in the LICENSE file at https://github.com/NG-ZORRO/ng-zorro-antd/blob/master/LICENSE',
+  ' */'
+];
 
 const VALID_IDENTIFIER = /^[A-Za-z_$][A-Za-z0-9_$]*$/;
 
@@ -70,10 +79,7 @@ export async function generateTypes(generatedDir: string): Promise<void> {
     (core as { version?: string }).version ?? (require('antd/package.json') as { version: string }).version;
 
   const out = [
-    '/**',
-    ' * Use of this source code is governed by an MIT-style license that can be',
-    ' * found in the LICENSE file at https://github.com/NG-ZORRO/ng-zorro-antd/blob/master/LICENSE',
-    ' */',
+    ...LICENSE_HEADER,
     '',
     `/* Generated from Ant Design ${antdVersion} by scripts/build/v6/generate-types.ts. Do not edit. */`,
     '',
@@ -86,4 +92,27 @@ export async function generateTypes(generatedDir: string): Promise<void> {
     ''
   ].join('\n');
   writeFileSync(path.join(generatedDir, 'tokens.ts'), out);
+  writeFileSync(path.join(generatedDir, 'component-roots.ts'), renderComponentRoots());
+}
+
+/**
+ * Source of `generated/component-roots.ts` (committed): the root class of every mapped antd component,
+ * taken from `prefixCls` in `components.ts`. `renderThemeCss` scopes a component's alias-level overrides
+ * (keys that are not the component's own tokens and therefore keep their global variable name) to
+ * `:is([class^="<root>"],[class*=" <root>"])` so they do not leak onto the whole page.
+ */
+export function renderComponentRoots(roots: Record<string, string> = componentRootClasses()): string {
+  return [
+    ...LICENSE_HEADER,
+    '',
+    '/* Generated from scripts/build/v6/components.ts by scripts/build/v6/generate-types.ts. Do not edit. */',
+    '',
+    '/** antd component name -> root class of its elements (antd `prefixCls`). */',
+    'export const COMPONENT_ROOT_CLS: Record<string, string> = {',
+    ...Object.entries(roots).map(
+      ([name, cls], i, all) => `  ${propertyName(name)}: '${cls}'${i < all.length - 1 ? ',' : ''}`
+    ),
+    '};',
+    ''
+  ].join('\n');
 }

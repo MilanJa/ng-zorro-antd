@@ -56,18 +56,26 @@ describe('engine parity with antd extraction', () => {
     }
   ];
 
+  /**
+   * Every `--name:value` declaration of every variable block, deduplicated per block and sorted. antd keeps a
+   * component's unprefixed (alias-level) overrides in the same block as its `--ant-<component>-*` variables,
+   * while ng-zorro moves them to a block scoped to the component's root class (see `componentScope` in
+   * render-theme-css.ts), so the block grouping legitimately differs; names and values must still be byte-equal.
+   */
+  const declarations = (bodies: string[]): string[] =>
+    [...new Set(bodies)]
+      .flatMap(body => body.split(';'))
+      .filter(declaration => declaration !== '')
+      .sort();
+
   for (const c of cases) {
-    it(`renders byte-equal variable blocks for ${c.name}`, async () => {
+    it(`renders byte-equal variable declarations for ${c.name}`, async () => {
       const raw = extractAntdCss({ includes: allAntdComponentNames(), key: KEY, theme: c.antd });
-      const { vars } = partitionBlocks(raw, KEY);
-      // antd scopes component blocks to root classes; normalise both sides to `:root{...}` bodies.
-      const expected = [...new Set(vars.map(b => `:root{${b.body}}`))].sort();
+      const expected = declarations(partitionBlocks(raw, KEY).vars.map(b => b.body));
       // Split on brace balance, not `\n`: antd's real seed tokens (fontFamily, boxShadow*) legitimately
-      // contain embedded newlines inside a single block, so splitting on `\n` here would fragment a
-      // block that `partitionBlocks` above (also brace-based) keeps whole.
-      const mine = splitBlocks(await renderer.renderThemeCss(c.nz() as never, ':root'))
-        .map(b => b.raw)
-        .sort();
+      // contain embedded newlines inside a single block.
+      const mine = declarations(splitBlocks(await renderer.renderThemeCss(c.nz() as never, ':root')).map(b => b.body));
+      expect(mine.length).toBeGreaterThan(0);
       expect(mine).toEqual(expected);
     });
   }
