@@ -4,10 +4,11 @@
  */
 
 import { DOCUMENT } from '@angular/common';
-import { CSP_NONCE, inject, Injectable, PendingTasks, signal } from '@angular/core';
+import { CSP_NONCE, inject, Injectable, PendingTasks, Signal, signal } from '@angular/core';
 
 import type { NzAliasToken } from './generated/tokens';
-import { getDesignToken, renderThemeCss } from './render-theme-css';
+import { renderThemeCss } from './render-theme-css';
+import { getNzDesignToken } from './theme.api';
 import type { NzThemeConfig } from './theme.types';
 
 export const NZ_THEME_STYLE_ID = 'nz-theme';
@@ -24,8 +25,13 @@ export class NzThemeService {
   private readonly pendingTasks = inject(PendingTasks);
   private latestCall = 0;
 
-  readonly config = signal<NzThemeConfig | null>(null);
-  readonly token = signal<NzAliasToken | null>(null);
+  private readonly configState = signal<NzThemeConfig | null>(null);
+  private readonly tokenState = signal<NzAliasToken | null>(null);
+
+  /** The theme most recently applied by `set()`, or `null` before the first one is written. */
+  readonly config: Signal<NzThemeConfig | null> = this.configState.asReadonly();
+  /** The alias token of `config()`, or `null` before the first theme is written. */
+  readonly token: Signal<NzAliasToken | null> = this.tokenState.asReadonly();
 
   // TODO(wave 1): add the SSR serialisation test (render with platform-server and assert the serialised
   // HTML contains `<style id="nz-theme">`); parked by the final-review ruling until a platform-server
@@ -44,8 +50,8 @@ export class NzThemeService {
       return; // a newer call already applied its CSS
     }
     writeStyle(this.doc, NZ_THEME_STYLE_ID, css, this.cspNonce);
-    this.config.set(config);
-    this.token.set(getDesignToken(config) as NzAliasToken);
+    this.configState.set(config);
+    this.tokenState.set(getNzDesignToken(config));
   }
 }
 

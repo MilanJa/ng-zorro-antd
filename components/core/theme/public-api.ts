@@ -8,4 +8,4 @@ export * from './theme.types';
 export * from './theme.service';
 export * from './theme.directive';
 export type { NzAliasToken, NzComponentTokenMap, NzSeedToken } from './generated/tokens';
-export { getDesignToken as getNzDesignToken, renderThemeCss as renderNzThemeCss } from './render-theme-css';
+export * from './theme.api';
