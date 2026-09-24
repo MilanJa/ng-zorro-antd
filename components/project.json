@@ -94,6 +94,9 @@
       "inputs": [
         "{workspaceRoot}/scripts/build/v6/**/*",
         "{workspaceRoot}/scripts/tasks/generate-v6-engine.ts",
+        "{workspaceRoot}/components/**/style/v6/*.css",
+        "{workspaceRoot}/components/style/v6/*.css",
+        "{workspaceRoot}/components/core/theme/*.ts",
         "{workspaceRoot}/package-lock.json"
       ],
       "outputs": [
