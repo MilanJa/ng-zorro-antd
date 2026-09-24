@@ -58,6 +58,15 @@ describe('bundleEngine', () => {
     expect(button.prefixToken('defaultBg')).toBe('ButtonDefaultBg');
   });
 
+  it('registers exactly the requested components, with no extra leaked entries', async () => {
+    const comps = await import(pathToFileURL(path.join(outDir, 'engine-components.mjs')).href);
+    const registry: Map<string, unknown> = comps.registry;
+    // `Button`'s style module transitively reaches `antd/es/color-picker/components/ColorPresets.js`,
+    // which renders an unrelated `<Collapse>`; the bundle must not register `Collapse` (or anything else)
+    // that wasn't in `antdNames`.
+    expect([...registry.keys()].sort()).toEqual(['Button', 'Input', 'Select', 'Space'].sort());
+  });
+
   it('bundles contain no reference to the real react packages', async () => {
     const { readFileSync } = await import('node:fs');
     const core = readFileSync(path.join(outDir, 'engine-core.mjs'), 'utf8');

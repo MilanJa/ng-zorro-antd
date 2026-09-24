@@ -40,8 +40,13 @@ export { token2CSSVar, transformToken } from '@ant-design/cssinjs/es/util/css-va
 `;
 
 function componentsEntry(antdNames: string[]): string {
-  const imports = antdNames.map(n => `import '${antdStyleModulePath(n)}';`).join('\n');
-  return `${imports}\nexport { registry } from '${path.join(shimsDir, 'cssinjs-utils.js').replace(/\\/g, '/')}';\n`;
+  // Re-export (rather than bare-import) each style module's default so esbuild's real tree-shaking sees
+  // it as used and keeps it, while still safely dropping unrelated modules that happen to be reachable
+  // transitively (e.g. `antd/es/button/style` pulls in `antd/es/color-picker/components/ColorPresets.js`
+  // for an unrelated helper, which itself renders `<Collapse>` and would otherwise register a phantom
+  // `Collapse` entry in `registry` that real antd never emits for these components).
+  const exports = antdNames.map((n, i) => `export { default as _c${i} } from '${antdStyleModulePath(n)}';`).join('\n');
+  return `${exports}\nexport { registry } from '${path.join(shimsDir, 'cssinjs-utils.js').replace(/\\/g, '/')}';\n`;
 }
 
 export interface BundleEngineOptions {
@@ -85,6 +90,10 @@ export async function bundleEngine({
   });
   const components = await esbuild.build({
     ...common,
+    // Real (non-conservative) tree-shaking: combined with `componentsEntry`'s re-exports, this drops
+    // unused component style modules that are only transitively reachable (see `componentsEntry`) while
+    // still keeping the requested components, which are genuinely referenced.
+    ignoreAnnotations: false,
     stdin: { contents: componentsEntry(antdNames), resolveDir: path.resolve(__dirname, '../../..'), loader: 'js' }
   });
 
