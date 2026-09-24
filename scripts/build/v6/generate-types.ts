@@ -30,7 +30,18 @@ function renderInterface(name: string, entries: Array<[string, Scalar]>, extends
   return [head, ...entries.map(([k, t]) => `  ${propertyName(k)}: ${t};`), '}'].join('\n');
 }
 
-/** Writes tokens.d.ts next to the engine bundles in `generatedDir`. */
+/**
+ * Writes tokens.ts (a plain source file, not `.d.ts`) next to the engine bundles in `generatedDir`.
+ *
+ * It has to be a real `.ts` source rather than a hand-authored `.d.ts`: ng-packagr's declaration bundler
+ * (rollup-plugin-dts) only resolves relative imports against files TypeScript itself emitted for this
+ * compilation (its `outputCache`); a `.d.ts` inside `rootDir` is never "emitted" (tsc treats it as
+ * already-a-declaration and never copies it to `outDir`), so any entry point re-exporting types from it
+ * (`core/theme`'s `public-api.ts`, and `theme.service.ts`'s `Signal<NzAliasToken | null>`) would fail
+ * `ng-packagr build` with "Could not resolve './generated/tokens'" even though `tsc --noEmit` is clean.
+ * A `.ts` file with the same interface-only content compiles like any other source and lands in that
+ * cache at the expected relative path, so the bundler can find it.
+ */
 export async function generateTypes(generatedDir: string): Promise<void> {
   const core = await import(pathToFileURL(path.join(generatedDir, 'engine-core.mjs')).href);
   const { registry } = await import(pathToFileURL(path.join(generatedDir, 'engine-components.mjs')).href);
@@ -69,5 +80,5 @@ export async function generateTypes(generatedDir: string): Promise<void> {
     ['export interface NzComponentTokenMap {', ...mapEntries, '}'].join('\n'),
     ''
   ].join('\n');
-  writeFileSync(path.join(generatedDir, 'tokens.d.ts'), out);
+  writeFileSync(path.join(generatedDir, 'tokens.ts'), out);
 }

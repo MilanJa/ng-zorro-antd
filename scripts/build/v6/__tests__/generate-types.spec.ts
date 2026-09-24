@@ -20,7 +20,7 @@ describe('generateTypes', () => {
   beforeAll(async () => {
     await bundleEngine({ outDir: dir, antdNames: allAntdComponentNames() });
     await generateTypes(dir);
-    dts = readFileSync(path.join(dir, 'tokens.d.ts'), 'utf8');
+    dts = readFileSync(path.join(dir, 'tokens.ts'), 'utf8');
   });
   afterAll(() => rmSync(dir, { recursive: true, force: true }));
 
@@ -58,16 +58,16 @@ describe('generateTypes', () => {
   });
 });
 
-describe('committed tokens.d.ts', () => {
+describe('committed tokens.ts', () => {
   it('matches a fresh generation', async () => {
     const committed = readFileSync(
-      path.resolve(__dirname, '../../../../components/core/theme/generated/tokens.d.ts'),
+      path.resolve(__dirname, '../../../../components/core/theme/generated/tokens.ts'),
       'utf8'
     );
     const dir = mkdtempSync(path.join(os.tmpdir(), 'nz-v6-types2-'));
     await bundleEngine({ outDir: dir, antdNames: allAntdComponentNames() });
     await generateTypes(dir);
-    expect(readFileSync(path.join(dir, 'tokens.d.ts'), 'utf8')).toBe(committed);
+    expect(readFileSync(path.join(dir, 'tokens.ts'), 'utf8')).toBe(committed);
     rmSync(dir, { recursive: true, force: true });
   });
 });
