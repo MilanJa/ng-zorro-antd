@@ -31,7 +31,7 @@ Decide deliberately:
 - whether it needs browser-only DOM access, layout measurement, or side effects, and how it remains compatible with SSR and render timing; and
 - whether Angular CDK or an existing NG-ZORRO public utility already solves the problem.
 
-Translate upstream CSS-in-JS styling into the repository's Less theme variables and mixins. Keep theme defaults in Less; use ordinary inline styles only for public inputs whose values are genuinely runtime-dependent. Introduce CSS custom properties only when an existing integration specifically requires runtime inheritance or consumer customization.
+For components listed in `scripts/build/v6/components.ts`, do not translate upstream styles: regenerate them (`npm run v6:generate`) and align the Angular template and host classes to the upstream class names until the class-coverage test passes; hand-write only `style/v6/patch.css`. For components not yet listed, translate upstream CSS-in-JS styling into the repository's Less theme variables and mixins as before. Keep theme defaults in Less; use ordinary inline styles only for public inputs whose values are genuinely runtime-dependent. Introduce CSS custom properties only when an existing integration specifically requires runtime inheritance or consumer customization.
 
 When framework differences prevent a one-to-one mapping, choose an Angular API consistent with established repository patterns and document intentional differences.
 

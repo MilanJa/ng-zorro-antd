@@ -7,6 +7,8 @@ Except [less customize theme](/docs/customize-theme/en), We also provide CSS Var
 
 > This feature depends on CSS Variables. Please check the [browser compatibility](https://caniuse.com/css-variables).
 
+> Looking for the Ant Design v6 look and design tokens? See [Ant Design v6 Theme (Preview)](/docs/customize-theme-v6/en). The v4 approach on this page is unchanged.
+
 ## How to use
 
 ### Import antd.variable.min.css

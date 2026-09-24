@@ -6,6 +6,8 @@
 - Each template must be defined in the component "\*.ts" file using the `template` property of the `@Component` decorator.
 - Each official style must be defined in the component's `index.less` file.
 - Each CSS patch must be defined in the component's `patch.less` file.
+- Ant Design v6 styles are generated, not written: `scripts/build/v6/components.ts` lists the components that have v6 output, and `nx run ng-zorro-antd-lib:generate-v6-styles` produces their CSS from antd. The only hand-written v6 file is the component's `style/v6/patch.css`.
+- Migrating a component to v6: (1) add it to `scripts/build/v6/components.ts`; (2) align host classes and templates until `scripts/build/v6/__tests__/class-coverage.spec.ts` passes without allowlist entries; (3) port `style/patch.less` to `style/v6/patch.css` using `--ant-*` variables; (4) for components with popups, add an overlay test using `expectMotionSettled` from `ng-zorro-antd/core/testing`; (5) run `npm run v6:update-manifest` and commit `scripts/build/v6/manifest.json` and the docs coverage list.
 - Templates must follow the structure of the associated Ant Design component. Documentation can be found [here](https://ant.design/llms.txt) and [here](https://ant.design/llms-full.txt).
 - Support Server Side Rendering (SSR).
 - All imports of NG-ZORRO components need to be absolute. Example:

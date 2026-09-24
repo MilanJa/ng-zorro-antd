@@ -26,6 +26,22 @@ import { diffManifest, readManifest, V6Manifest, writeManifest } from './manifes
 const KEY = 'nz-root';
 const antdVersion = (require('antd/package.json') as { version: string }).version;
 
+const START = '<!-- v6-components:start -->';
+const END = '<!-- v6-components:end -->';
+const docsDir = path.resolve(__dirname, '../../../docs');
+const docsLangs = ['en-US', 'zh-CN'] as const;
+
+/** Replaces the list between the `v6-components` markers with a `- \`<dir>\`` line per entry. */
+export function updateCoverageBlock(markdown: string, dirs: string[]): string {
+  const s = markdown.indexOf(START);
+  const e = markdown.indexOf(END);
+  if (s < 0 || e < 0 || e < s) {
+    throw new Error(`docs page is missing the ${START} / ${END} markers`);
+  }
+  const list = dirs.map(d => `- \`${d}\``).join('\n');
+  return `${markdown.slice(0, s + START.length)}\n${list}\n${markdown.slice(e)}`;
+}
+
 export interface GenerateStylesOptions {
   publishDir: string;
   componentsDir: string;
@@ -141,15 +157,27 @@ export async function generateStyles(options: GenerateStylesOptions): Promise<Ge
   write(path.join(publishDir, 'ng-zorro-antd.v6.css'), withHeader(bundle, antdVersion));
   write(path.join(publishDir, 'ng-zorro-antd.v6.min.css'), withHeader(await minify(bundle), antdVersion));
 
+  const diff = checkManifest && !updateManifest ? diffManifest(readManifest(), manifest) : [];
+
+  for (const lang of docsLangs) {
+    const docPath = path.join(docsDir, `customize-theme-v6.${lang}.md`);
+    const current = readFileSync(docPath, 'utf8');
+    const updated = updateCoverageBlock(current, v6ComponentDirs);
+    if (updateManifest) {
+      if (updated !== current) {
+        writeFileSync(docPath, updated);
+      }
+    } else if (checkManifest && updated !== current) {
+      diff.push(`docs: customize-theme-v6.${lang}.md coverage list is stale`);
+    }
+  }
+
   if (updateManifest) {
     writeManifest(manifest);
-  } else if (checkManifest) {
-    const diff = diffManifest(readManifest(), manifest);
-    if (diff.length) {
-      throw new Error(
-        `v6 manifest is out of date. Review the changes and run \`npm run v6:update-manifest\` if they are intended:\n  ${diff.join('\n  ')}`
-      );
-    }
+  } else if (checkManifest && diff.length) {
+    throw new Error(
+      `v6 manifest is out of date. Review the changes and run \`npm run v6:update-manifest\` if they are intended:\n  ${diff.join('\n  ')}`
+    );
   }
   return { perComponent, template, tokens, bundle };
 }

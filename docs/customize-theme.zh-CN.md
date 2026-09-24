@@ -11,6 +11,8 @@ Ant Design 的样式使用了 [Less](https://lesscss.org/) 作为开发语言，
 
 > Ant Design React 的主题定制文件在 `ng-zorro-antd` 中同样可以使用。
 
+> 想了解 Ant Design v6 的外观与设计令牌？请查看 [Ant Design v6 主题（预览）](/docs/customize-theme-v6/zh)。本页介绍的 v4 方案不受影响。
+
 ## 使用预定义主题
 
 ### 配置非定制主题

@@ -7,6 +7,8 @@ title: 动态主题（实验性）
 
 > 该功能通过动态修改 CSS Variable 实现，在 IE 中页面将无法正常展示
 
+> 想了解 Ant Design v6 的外观与设计令牌？请查看 [Ant Design v6 主题（预览）](/docs/customize-theme-v6/zh)。本页介绍的 v4 方案不受影响。
+
 ## 如何使用
 
 ### 引入 ng-zorro-antd.variable.min.css

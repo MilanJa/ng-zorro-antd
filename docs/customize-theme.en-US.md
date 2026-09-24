@@ -11,6 +11,8 @@ We are using [Less](https://lesscss.org/) as the development language for stylin
 
 > You can use the theme define file of react version in ng-zorro-antd too.
 
+> Looking for the Ant Design v6 look and design tokens? See [Ant Design v6 Theme (Preview)](/docs/customize-theme-v6/en). The v4 approach on this page is unchanged.
+
 ## Use Pre-defined Themes
 
 ### Customize the theme
