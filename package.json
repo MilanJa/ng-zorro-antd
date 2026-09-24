@@ -30,7 +30,7 @@
     "lint-fix:script": "npm run lint:script -- --fix",
     "lint-fix:style": "npm run lint:style -- --fix",
     "pre-commit": "tsc -p components/tsconfig.json --noEmit && lint-staged",
-    "prepare": "husky"
+    "prepare": "husky && nx run ng-zorro-antd-lib:generate-v6-engine"
   },
   "dependencies": {
     "@angular/cdk": "^22.1.0",
