@@ -1,0 +1,45 @@
+textarea.nz-textarea-autosize-measuring {
+  height: auto !important;
+  padding: 2px 0 !important;
+  overflow: hidden !important;
+}
+
+.ant-input-affix-wrapper-textarea-with-clear-btn .ant-input-suffix {
+  margin-inline-start: 0;
+}
+
+nz-form-item-feedback-icon.ant-input-suffix {
+  position: absolute;
+  top: 0;
+  inset-inline-end: 0;
+  z-index: 1;
+  display: flex;
+  flex: none;
+  align-items: center;
+  height: 100%;
+  margin-inline-start: var(--ant-input-affix-margin, 4px);
+  margin-inline-end: var(--ant-padding-sm);
+  pointer-events: none;
+}
+
+.ant-input-status-error.ant-input-has-feedback,
+.ant-input-status-warning.ant-input-has-feedback,
+.ant-input-status-validating.ant-input-has-feedback,
+.ant-input-status-success.ant-input-has-feedback {
+  padding-inline-end: calc(var(--ant-padding-lg) + var(--ant-padding-xxs));
+}
+
+.ant-input-textarea-show-count {
+  position: relative;
+  display: block;
+}
+
+.ant-input-stepperless[type='number'] {
+  -moz-appearance: textfield;
+}
+
+.ant-input-stepperless[type='number']::-webkit-inner-spin-button,
+.ant-input-stepperless[type='number'] ::-webkit-outer-spin-button {
+  margin: 0;
+  -webkit-appearance: none;
+}

@@ -70,6 +70,15 @@
     "./ng-zorro-antd.variable.css": {
       "style": "./ng-zorro-antd.variable.css"
     },
+    "./ng-zorro-antd.v6.css": {
+      "style": "./ng-zorro-antd.v6.css"
+    },
+    "./ng-zorro-antd.v6.min.css": {
+      "style": "./ng-zorro-antd.v6.min.css"
+    },
+    "./style/v6/*": {
+      "style": "./style/v6/*"
+    },
     "./*.less": {
       "less": "./*.less"
     },
@@ -104,6 +113,9 @@
     "./button/style/*": {
       "less": "./button/style/*.less",
       "style": "./button/style/index.min.css"
+    },
+    "./button/style/v6/*": {
+      "style": "./button/style/v6/*"
     },
     "./calendar/style/*": {
       "less": "./calendar/style/*.less",
@@ -188,6 +200,9 @@
     "./input/style/*": {
       "less": "./input/style/*.less",
       "style": "./input/style/index.min.css"
+    },
+    "./input/style/v6/*": {
+      "style": "./input/style/v6/*"
     },
     "./input-number/style/*": {
       "less": "./input-number/style/*.less",
@@ -277,9 +292,15 @@
       "less": "./select/style/*.less",
       "style": "./select/style/index.min.css"
     },
+    "./select/style/v6/*": {
+      "style": "./select/style/v6/*"
+    },
     "./space/style/*": {
       "less": "./space/style/*.less",
       "style": "./space/style/index.min.css"
+    },
+    "./space/style/v6/*": {
+      "style": "./space/style/v6/*"
     },
     "./spin/style/*": {
       "less": "./spin/style/*.less",

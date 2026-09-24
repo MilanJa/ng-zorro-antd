@@ -19,6 +19,9 @@
         }
       },
       "defaultConfiguration": "production",
+      "dependsOn": [
+        "generate-v6-engine"
+      ],
       "inputs": [
         "production"
       ],
@@ -61,6 +64,9 @@
           "**/*.spec.ts"
         ]
       },
+      "dependsOn": [
+        "generate-v6-engine"
+      ],
       "inputs": [
         "default"
       ],
@@ -72,11 +78,34 @@
     },
     "test-scripts": {
       "command": "vitest run --config scripts/vitest.config.mts",
+      "dependsOn": [
+        "generate-v6-engine"
+      ],
       "inputs": [
         "{workspaceRoot}/scripts/**/*",
         "{workspaceRoot}/components/**/style/v6/*.css",
         "{workspaceRoot}/components/style/v6/*.css",
         "sharedGlobals"
+      ],
+      "cache": false
+    },
+    "generate-v6-engine": {
+      "command": "tsx scripts/tasks/generate-v6-engine.ts",
+      "inputs": [
+        "{workspaceRoot}/scripts/build/v6/**/*",
+        "{workspaceRoot}/scripts/tasks/generate-v6-engine.ts",
+        "{workspaceRoot}/package-lock.json"
+      ],
+      "outputs": [
+        "{workspaceRoot}/components/core/theme/generated"
+      ],
+      "cache": true
+    },
+    "generate-v6-styles": {
+      "command": "tsx scripts/tasks/generate-v6-styles.ts",
+      "dependsOn": [
+        "build",
+        "generate-v6-engine"
       ],
       "cache": false
     },
@@ -120,7 +149,8 @@
         "compile-styles",
         "generate-less-vars",
         "copy-resources",
-        "copy-schematics"
+        "copy-schematics",
+        "generate-v6-styles"
       ],
       "cache": false
     },

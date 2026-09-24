@@ -1,0 +1,22 @@
+/* antd positions popups with inline styles from rc-trigger; ng-zorro positions the CDK overlay pane instead. */
+.ant-select-dropdown {
+  position: relative;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 100%;
+}
+.ant-select-dropdown .cdk-virtual-scroll-content-wrapper {
+  right: 0;
+}
+.ant-select-dropdown .full-width {
+  contain: initial;
+}
+.ant-select-dropdown .full-width .cdk-virtual-scroll-content-wrapper {
+  position: static;
+}
+.ant-select-dropdown .full-width .cdk-virtual-scroll-spacer {
+  position: absolute;
+  top: 0;
+  width: 1px;
+}

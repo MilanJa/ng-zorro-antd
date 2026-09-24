@@ -12,6 +12,8 @@
     "test": "nx run ng-zorro-antd-lib:test --watch=false --coverage",
     "test:watch": "nx run ng-zorro-antd-lib:test --watch --coverage",
     "test:scripts": "nx run ng-zorro-antd-lib:test-scripts",
+    "v6:generate": "nx run ng-zorro-antd-lib:generate-v6-styles",
+    "v6:update-manifest": "nx run ng-zorro-antd-lib:generate-v6-engine && tsx scripts/tasks/generate-v6-styles.ts --update-manifest",
     "test:schematics": "nx run schematics:test",
     "build:schematics": "nx run schematics:build",
     "build": "nx run ng-zorro-antd-doc:build-site",

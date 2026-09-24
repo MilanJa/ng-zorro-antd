@@ -1,0 +1,193 @@
+/* CDK overlay and ng-zorro-specific rules for the v6 stylesheet. Hand-written; the v6 counterpart of style/patch.less. */
+.cdk-overlay-container,
+.cdk-global-overlay-wrapper {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.cdk-overlay-container {
+  position: fixed;
+  z-index: 1000;
+}
+
+.cdk-overlay-container:empty {
+  display: none;
+}
+
+.cdk-global-overlay-wrapper {
+  position: absolute;
+  z-index: 1000;
+  display: flex;
+}
+
+.cdk-overlay-pane {
+  position: absolute;
+  z-index: 1000;
+  display: flex;
+  box-sizing: border-box;
+  max-width: 100%;
+  max-height: 100%;
+  pointer-events: auto;
+}
+
+.cdk-overlay-backdrop {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity 400ms cubic-bezier(0.25, 0.8, 0.25, 1);
+  pointer-events: auto;
+  -webkit-tap-highlight-color: rgb(0, 0, 0, 0);
+}
+
+.cdk-overlay-backdrop.cdk-overlay-backdrop-showing {
+  opacity: 1;
+}
+
+.cdk-high-contrast-active .cdk-overlay-backdrop.cdk-overlay-backdrop-showing {
+  opacity: 0.6;
+}
+
+.cdk-overlay-dark-backdrop {
+  background: rgb(0, 0, 0, 0.32);
+}
+
+.cdk-overlay-transparent-backdrop {
+  visibility: hidden;
+  opacity: 1;
+  transition: visibility 1ms linear, opacity 1ms linear;
+}
+
+.cdk-overlay-transparent-backdrop.cdk-overlay-backdrop-showing {
+  visibility: visible;
+  opacity: 0;
+}
+
+.cdk-overlay-backdrop-noop-animation {
+  transition: none;
+}
+
+.cdk-overlay-connected-position-bounding-box {
+  position: absolute;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  min-width: 1px;
+  min-height: 1px;
+}
+
+.cdk-global-scrollblock {
+  position: fixed;
+  width: 100%;
+  overflow-y: scroll;
+}
+
+.cdk-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  outline: 0;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.nz-overlay-transparent-backdrop,
+.nz-overlay-transparent-backdrop.cdk-overlay-backdrop-showing {
+  opacity: 0;
+}
+
+.nz-animate-disabled.ant-scroll-number-only {
+  transition: none;
+  animation: none;
+}
+
+.nz-animate-disabled.ant-drawer.ant-drawer-open .ant-drawer-mask {
+  transition: none;
+  animation: none;
+}
+
+.nz-animate-disabled.ant-drawer > * {
+  transition: none;
+}
+
+.nz-animate-disabled .ant-modal-mask,
+.nz-animate-disabled .ant-modal {
+  transition: none;
+  animation: none;
+}
+
+.nz-animate-disabled .ant-modal-mask.zoom-enter,
+.nz-animate-disabled .ant-modal-mask.zoom-leave,
+.nz-animate-disabled .ant-modal-mask.zoom-enter-active,
+.nz-animate-disabled .ant-modal-mask.zoom-leave-active,
+.nz-animate-disabled .ant-modal.zoom-enter,
+.nz-animate-disabled .ant-modal.zoom-leave,
+.nz-animate-disabled .ant-modal.zoom-enter-active,
+.nz-animate-disabled .ant-modal.zoom-leave-active {
+  transition: none;
+  animation: none;
+}
+
+.nz-animate-disabled.ant-menu {
+  transition: none;
+}
+
+.nz-animate-disabled.ant-menu .ant-menu-item,
+.nz-animate-disabled.ant-menu .ant-menu-submenu-title {
+  transition: none;
+}
+
+.nz-animate-disabled.ant-menu .ant-menu-item .anticon,
+.nz-animate-disabled.ant-menu .ant-menu-submenu-title .anticon {
+  transition: none;
+}
+
+.nz-animate-disabled.ant-menu .ant-menu-item .anticon + span,
+.nz-animate-disabled.ant-menu .ant-menu-submenu-title .anticon + span {
+  transition: none;
+}
+
+.nz-animate-disabled.ant-tabs .ant-tabs-top-content.ant-tabs-content-animated,
+.nz-animate-disabled.ant-tabs .ant-tabs-bottom-content.ant-tabs-content-animated,
+.nz-animate-disabled.ant-tabs .ant-tabs-top-content > .ant-tabs-tabpane,
+.nz-animate-disabled.ant-tabs .ant-tabs-bottom-content > .ant-tabs-tabpane,
+.nz-animate-disabled.ant-tabs.ant-tabs-left .ant-tabs-ink-bar-animated,
+.nz-animate-disabled.ant-tabs.ant-tabs-right .ant-tabs-ink-bar-animated,
+.nz-animate-disabled.ant-tabs.ant-tabs-top .ant-tabs-ink-bar-animated,
+.nz-animate-disabled.ant-tabs.ant-tabs-bottom .ant-tabs-ink-bar-animated {
+  transition: none;
+}
+
+.nz-animate-disabled.ant-collapse > .ant-collapse-item > .ant-collapse-header .ant-collapse-arrow svg {
+  transition: none;
+}
+
+.nz-animate-disabled.ant-tooltip,
+.nz-animate-disabled.ant-popover {
+  animation: none;
+}
+
+.nz-animate-disabled.ant-menu-submenu {
+  transition: none;
+  animation: none;
+}
+
+.ant-tooltip.ant-zoom-big-fast-enter .ant-tooltip-arrow,
+.ant-tooltip.ant-zoom-big-fast-leave .ant-tooltip-arrow {
+  will-change: transform;
+}
+
+.ant-popover.ant-zoom-big-enter .ant-popover-arrow,
+.ant-popover.ant-zoom-big-leave .ant-popover-arrow {
+  will-change: transform;
+}
