@@ -10,7 +10,7 @@ import os from 'node:os';
 import path from 'node:path';
 
 import { v6ComponentDirs } from '../components';
-import { buildComponentCss, generateStyles } from '../generate-styles';
+import { buildComponentCss, generateStyles, normalizeCssVarRootCls } from '../generate-styles';
 
 const componentsDir = path.resolve(__dirname, '../../../../components');
 
@@ -20,6 +20,27 @@ describe('buildComponentCss', () => {
   });
   it('returns the template alone when there is no patch', () => {
     expect(buildComponentCss('.a{}', null)).toBe('.a{}');
+  });
+});
+
+describe('normalizeCssVarRootCls', () => {
+  it('rewrites a single-selector rule to the attribute-selector form', () => {
+    expect(normalizeCssVarRootCls('.ant-input-css-var{box-sizing:border-box;}')).toBe(
+      ':is([class^="ant-input"],[class*=" ant-input"]){box-sizing:border-box;}'
+    );
+  });
+  it('rewrites every occurrence in a selector list', () => {
+    expect(normalizeCssVarRootCls('.ant-input-css-var,.ant-select-css-var{box-sizing:border-box;}')).toBe(
+      ':is([class^="ant-input"],[class*=" ant-input"]),:is([class^="ant-select"],[class*=" ant-select"]){box-sizing:border-box;}'
+    );
+  });
+  it('rewrites the root class inside a descendant selector', () => {
+    expect(normalizeCssVarRootCls('.ant-input-css-var [class^="ant-input"]{box-sizing:border-box;}')).toBe(
+      ':is([class^="ant-input"],[class*=" ant-input"]) [class^="ant-input"]{box-sizing:border-box;}'
+    );
+  });
+  it('leaves an unrelated class that merely starts with the same prefix untouched', () => {
+    expect(normalizeCssVarRootCls('.ant-input-css-var-foo{color:red;}')).toBe('.ant-input-css-var-foo{color:red;}');
   });
 });
 
@@ -77,5 +98,12 @@ describe('generateStyles', () => {
     expect(result.tokens.dark).not.toBe(result.tokens.default);
     expect(result.bundle).toContain(result.template.split('\n')[1]);
     expect(result.bundle).toContain(result.tokens.default.split('\n')[0]);
+  });
+
+  it('includes every mapped component patch in the bundle, not just the template', () => {
+    // space's patch (nz-space-item display) and select's patch (CDK overlay positioning) must both be
+    // reachable from the single bundled stylesheet, since an app may import only the bundle.
+    expect(result.bundle).toContain('nz-space-item');
+    expect(result.bundle).toContain('.ant-select-dropdown {');
   });
 });

@@ -43,3 +43,7 @@ nz-form-item-feedback-icon.ant-input-suffix {
   margin: 0;
   -webkit-appearance: none;
 }
+
+.ant-otp-input {
+  width: auto;
+}

@@ -51,12 +51,20 @@ export function buildComponentCss(template: string, patchCss: string | null): st
 /**
  * Some antd components (e.g. Input, Select) call `useCSSVarCls(prefixCls)` and register their reset
  * styles under that derived `<prefixCls>-css-var` root class instead of the plain component class. That
- * class only exists to scope antd's own React render; ng-zorro's markup never applies it, so the reset
- * rules would silently never match. Rewrite them back onto the real component class before they reach
- * `assertNoAntdScoping`.
+ * class only exists to scope antd's own React render; ng-zorro's markup never applies it. Rewriting the
+ * class straight to `.ant-<x>` is *not* equivalent: antd's reset rules also target descendants via
+ * `.ant-<x>-css-var [class^="ant-<x>"], .ant-<x>-css-var [class*=" ant-<x>"]` (see `genCommonStyle` in
+ * `node_modules/antd/es/style/index.js`), and collapsing the root class alone turns those descendant
+ * rules dead (e.g. `.ant-input [class^="ant-input"]{box-sizing:border-box}` never matches anything under
+ * a bare `<input>`), silently dropping `box-sizing` from affix wrappers, dropdown roots, etc. antd's own
+ * no-rootCls fallback in that same file is `[class^="ant-<x>"], [class*=" ant-<x>"]` (an attribute
+ * selector matching the element carrying the class, with no separate root wrapper needed), so reproduce
+ * that instead, wrapped in `:is(...)` to keep it a single compound selector at the same specificity as
+ * the class it replaces. The negative lookahead keeps `.ant-x-css-var-foo` (a different, unrelated class)
+ * from being mistaken for the scoping class.
  */
-function normalizeCssVarRootCls(css: string): string {
-  return css.replace(/\.(ant-[a-z-]+)-css-var\b/g, '.$1');
+export function normalizeCssVarRootCls(css: string): string {
+  return css.replace(/\.(ant-[a-z-]+)-css-var(?![\w-])/g, ':is([class^="$1"],[class*=" $1"])');
 }
 
 async function minify(css: string): Promise<string> {
@@ -117,7 +125,13 @@ export async function generateStyles(options: GenerateStylesOptions): Promise<Ge
   }
 
   const globalPatch = readFileSync(path.join(componentsDir, 'style/v6/patch.css'), 'utf8');
-  const bundle = [template, tokens.default, globalPatch].join('\n');
+  // Every mapped component's own patch (map order, skipping components with none) so that an app
+  // importing only the bundle still gets e.g. select's CDK-overlay positioning and space's item display,
+  // not just the plain antd template.
+  const componentPatches = v6ComponentDirs
+    .map(dir => readPatch(componentsDir, dir))
+    .filter((patch): patch is string => patch !== null);
+  const bundle = [template, ...componentPatches, tokens.default, globalPatch].join('\n');
 
   write(path.join(publishDir, 'style/v6/template.css'), withHeader(template, antdVersion));
   for (const name of ['default', 'dark', 'compact'] as const) {
