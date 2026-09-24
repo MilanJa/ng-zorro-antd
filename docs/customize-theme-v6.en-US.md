@@ -38,7 +38,7 @@ Or per component: `ng-zorro-antd/button/style/v6/index.css` plus a token file.
 
 ## Configure the theme
 
-`NzConfig.theme` accepts the same fields as Ant Design's `ThemeConfig`:
+Besides the legacy colour keys, `NzConfig.theme` accepts these fields of Ant Design's `ThemeConfig`: `algorithm`, `token`, `components` (per-component tokens, optionally with `algorithm`) and `cssVar.prefix`. Other `ThemeConfig` fields (such as `hashed`, `inherit` or `zeroRuntime`) are not supported.
 
 ```ts
 import { provideNzConfig } from 'ng-zorro-antd/core/config';
@@ -59,6 +59,8 @@ Switch at runtime:
 inject(NzConfigService).set('theme', { algorithm: nzDarkAlgorithm });
 ```
 
+A global token overridden for one component (for example `components: { Button: { algorithm: true, colorPrimary: '#ff4d4f' } }`) applies to that component's elements only, not to the rest of the page.
+
 The engine that computes the variables is loaded lazily the first time a v6 field is used; applications that only load the CSS pay nothing at runtime. The legacy keys (`primaryColor` and friends) keep driving the v4 variable stylesheet.
 
 ## Read tokens in TypeScript
@@ -78,14 +80,16 @@ chart.color = token.colorPrimary;
 </section>
 ```
 
-`nzThemeInherit` (default `true`) merges the nearest ancestor's theme. Popups rendered by the CDK overlay (select dropdowns, tooltips) are outside the section and follow the global theme.
+`nzThemeInherit` (default `true`) merges the theme of the nearest ancestor `[nzTheme]`. Popups rendered by the CDK overlay (select dropdowns, tooltips) are outside the section and follow the global theme.
 
 ## Server-side rendering
 
-The theme service writes a `<style id="nz-theme">` element through Angular's `DOCUMENT`, so the variables are part of the server-rendered HTML and hydration reuses the element.
+The theme service writes a `<style id="nz-theme">` element through Angular's `DOCUMENT` and registers an Angular pending task (`PendingTasks`) until the element is written, so server rendering waits for the theme and the variables are part of the server-rendered HTML; hydration reuses the element. `[nzTheme]` registers a pending task for its scoped style in the same way.
 
 ## Limits of the preview
 
 - Components not listed above fall back to v4 rules.
 - Scoped themes do not reach CDK overlays.
+- `[nzTheme]` inherits only from an enclosing `[nzTheme]`, not from the global `NzConfig.theme`: without an ancestor directive it starts from the default theme.
+- `cssVar.prefix` values other than `ant` are not supported by the generated CSS, which references `--ant-*` variables.
 - Token names follow antd exactly (`--ant-color-primary`, `--ant-button-default-bg`); overriding them directly in CSS works for static values but is not re-derived, prefer `NzConfig.theme`.
