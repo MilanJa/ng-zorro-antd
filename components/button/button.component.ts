@@ -58,6 +58,8 @@ const NZ_CONFIG_MODULE_NAME: NzConfigKey = 'button';
   `,
   host: {
     class: 'ant-btn',
+    // antd v6 styles buttons by colour + variant; the legacy type classes below are kept for compatibility.
+    '[class]': 'v6Classes',
     '[class.ant-btn-default]': `nzType === 'default'`,
     '[class.ant-btn-primary]': `nzType === 'primary'`,
     '[class.ant-btn-dashed]': `nzType === 'dashed'`,
@@ -114,6 +116,26 @@ export class NzButtonComponent implements OnChanges, AfterViewInit, AfterContent
     }
     return this.size();
   });
+
+  /** antd v6 maps `type`/`danger` onto a colour and a variant class pair. */
+  protected get v6Classes(): string {
+    const type = this.nzType ?? 'default';
+    const variantClass = {
+      primary: 'ant-btn-variant-solid',
+      default: 'ant-btn-variant-outlined',
+      dashed: 'ant-btn-variant-dashed',
+      text: 'ant-btn-variant-text',
+      link: 'ant-btn-variant-link'
+    }[type];
+    const colorClass = this.nzDanger
+      ? 'ant-btn-color-dangerous'
+      : type === 'primary'
+        ? 'ant-btn-color-primary'
+        : type === 'link'
+          ? 'ant-btn-color-link'
+          : 'ant-btn-color-default';
+    return `${colorClass} ${variantClass}`;
+  }
 
   readonly iconDir = contentChild(NzIconDirective);
   readonly loadingIconDir = viewChild(NzIconDirective);

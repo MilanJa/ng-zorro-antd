@@ -7,5 +7,6 @@ export * from './directionality';
 export * from './dispatch-events';
 export * from './event-objects';
 export * from './mock-ng-zone';
+export * from './motion';
 export * from './type-in-element';
 export * from './zoneless-helpers';

@@ -83,7 +83,8 @@ describe('button', () => {
       expect(buttonElement.classList).toContain('ant-btn-dashed');
       component.nzType.set(null);
       fixture.detectChanges();
-      expect(buttonElement.className).toBe('ant-btn');
+      // antd v6 always emits a colour/variant class pair alongside the legacy `ant-btn` class.
+      expect(buttonElement.className).toBe('ant-btn ant-btn-color-default ant-btn-variant-outlined');
     });
 
     it('should apply classname based on nzShape', () => {
@@ -104,7 +105,8 @@ describe('button', () => {
       expect(buttonElement.classList).toContain('ant-btn-sm');
       component.nzSize.set('default');
       fixture.detectChanges();
-      expect(buttonElement.className).toBe('ant-btn');
+      // antd v6 always emits a colour/variant class pair alongside the legacy `ant-btn` class.
+      expect(buttonElement.className).toBe('ant-btn ant-btn-color-default ant-btn-variant-outlined');
     });
   });
 
@@ -201,6 +203,44 @@ describe('button', () => {
       await fixture.whenStable();
       expect(buttonElement.classList).toContain('ant-btn-icon-only');
     });
+  });
+
+  describe('antd v6 colour/variant classes', () => {
+    let fixture: ComponentFixture<TestButtonComponent>;
+    let component: TestButtonComponent;
+    let buttonDebugElement: ReturnType<ComponentFixture<TestButtonComponent>['debugElement']['query']>;
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(TestButtonComponent);
+      component = fixture.componentInstance;
+      buttonDebugElement = fixture.debugElement.query(By.directive(NzButtonComponent));
+    });
+
+    const cases: Array<[type: string | null, danger: boolean, expected: string[]]> = [
+      [null, false, ['ant-btn-color-default', 'ant-btn-variant-outlined']],
+      ['default', false, ['ant-btn-color-default', 'ant-btn-variant-outlined']],
+      ['primary', false, ['ant-btn-color-primary', 'ant-btn-variant-solid']],
+      ['dashed', false, ['ant-btn-color-default', 'ant-btn-variant-dashed']],
+      ['text', false, ['ant-btn-color-default', 'ant-btn-variant-text']],
+      ['link', false, ['ant-btn-color-link', 'ant-btn-variant-link']],
+      ['primary', true, ['ant-btn-color-dangerous', 'ant-btn-variant-solid']],
+      ['default', true, ['ant-btn-color-dangerous', 'ant-btn-variant-outlined']]
+    ];
+    for (const [type, danger, expected] of cases) {
+      it(`type=${type} danger=${danger} -> ${expected.join(' ')}`, () => {
+        component.nzType.set(type as NzButtonType);
+        component.nzDanger.set(danger);
+        fixture.detectChanges();
+        const el: HTMLElement = buttonDebugElement.nativeElement;
+        for (const cls of expected) {
+          expect(el.classList.contains(cls), cls).toBe(true);
+        }
+        expect(el.classList.contains('ant-btn')).toBe(true);
+        if (type) {
+          expect(el.classList.contains(`ant-btn-${type}`), 'legacy class kept').toBe(true);
+        }
+      });
+    }
   });
 
   testDirectionality(() => TestButtonComponent, By.directive(NzButtonComponent), 'ant-btn');

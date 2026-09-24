@@ -1,0 +1,37 @@
+{
+  "_comment": "ng-zorro-only classes that antd v6 CSS does not style. Remove entries as components are aligned (sub-project 2).",
+  "button": [
+    "ant-btn-color-link",
+    "ant-btn-dangerous",
+    "ant-btn-dashed",
+    "ant-btn-default",
+    "ant-btn-link",
+    "ant-btn-rtl",
+    "ant-btn-text"
+  ],
+  "input": [
+    "ant-input-affix-wrapper-readonly",
+    "ant-input-affix-wrapper-textarea-with-clear-btn",
+    "ant-input-focused",
+    "ant-input-password",
+    "ant-input-search-button",
+    "ant-input-search-with-button",
+    "ant-input-wrapper"
+  ],
+  "select": [
+    "ant-select-arrow-loading",
+    "ant-select-close-icon",
+    "ant-select-selected-icon",
+    "ant-select-selection-item-disabled",
+    "ant-select-selection-overflow",
+    "ant-select-selection-overflow-item",
+    "ant-select-selection-overflow-item-suffix",
+    "ant-select-selection-placeholder",
+    "ant-select-selection-search",
+    "ant-select-selection-search-input",
+    "ant-select-selection-search-mirror",
+    "ant-select-selection-wrap",
+    "ant-select-selector"
+  ],
+  "space": ["ant-space-horizontal", "ant-space-split"]
+}
