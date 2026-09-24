@@ -630,11 +630,11 @@ export interface NzInputToken {
 }
 
 export interface NzSelectToken {
+  INTERNAL_FIXED_ITEM_MARGIN: number;
   activeBorderColor: string;
   activeOutlineColor: string;
   clearBg: string;
   hoverBorderColor: string;
-  INTERNAL_FIXED_ITEM_MARGIN: number;
   lineWidthFocus: number;
   multipleItemBg: string;
   multipleItemBorderColor: string;

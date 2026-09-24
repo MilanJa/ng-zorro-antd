@@ -11,11 +11,16 @@ type Scalar = 'string' | 'number' | 'boolean';
 
 const VALID_IDENTIFIER = /^[A-Za-z_$][A-Za-z0-9_$]*$/;
 
+/** Ordinal (code-unit) comparison, so the output does not depend on the machine's locale/ICU data. */
+function ordinal(a: string, b: string): number {
+  return a < b ? -1 : a > b ? 1 : 0;
+}
+
 function scalarEntries(obj: Record<string, unknown>): Array<[string, Scalar]> {
   return Object.entries(obj)
     .filter(([, v]) => ['string', 'number', 'boolean'].includes(typeof v))
-    .map(([k, v]) => [k, typeof v as Scalar])
-    .sort(([a], [b]) => a.localeCompare(b));
+    .map(([k, v]): [string, Scalar] => [k, typeof v as Scalar])
+    .sort(([a], [b]) => ordinal(a, b));
 }
 
 // antd's own token keys include names such as `blue-1` (see `LegacyColorPalettes`) that are not valid
@@ -54,7 +59,7 @@ export async function generateTypes(generatedDir: string): Promise<void> {
 
   const componentBlocks: string[] = [];
   const mapEntries: string[] = [];
-  for (const [name, entry] of [...registry.entries()].sort(([a], [b]) => a.localeCompare(b))) {
+  for (const [name, entry] of [...registry.entries()].sort(([a], [b]) => ordinal(a as string, b as string))) {
     const defaults =
       typeof entry.getDefaultToken === 'function' ? entry.getDefaultToken({ ...alias }) : (entry.getDefaultToken ?? {});
     componentBlocks.push(renderInterface(`Nz${name}Token`, scalarEntries(defaults)));
