@@ -6,3 +6,5 @@ schematics/
 package.json
 **/template/*
 dist
+components/core/theme/generated/
+scripts/build/v6/manifest.json

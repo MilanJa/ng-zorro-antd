@@ -23,7 +23,8 @@ export default tseslint.config(
       'dist/',
       'scripts/site/{doc,template}/**/*',
       'junit/',
-      'coverage-report/'
+      'coverage-report/',
+      'components/core/theme/generated/'
     ]
   },
   {

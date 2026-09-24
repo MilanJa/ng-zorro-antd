@@ -70,6 +70,16 @@
       ],
       "cache": true
     },
+    "test-scripts": {
+      "command": "vitest run --config scripts/vitest.config.mts",
+      "inputs": [
+        "{workspaceRoot}/scripts/**/*",
+        "{workspaceRoot}/components/**/style/v6/*.css",
+        "{workspaceRoot}/components/style/v6/*.css",
+        "sharedGlobals"
+      ],
+      "cache": false
+    },
     "compile-styles": {
       "command": "tsx scripts/tasks/compile-styles.ts",
       "dependsOn": [
