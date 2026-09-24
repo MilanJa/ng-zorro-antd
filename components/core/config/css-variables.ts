@@ -83,6 +83,10 @@ export function getStyle(globalPrefixCls: string, theme: Theme): string {
     fillColor(theme.infoColor, 'info');
   }
 
+  if (!Object.keys(variables).length) {
+    return '';
+  }
+
   // Convert to css variables
   const cssList = Object.keys(variables).map(key => `--${globalPrefixCls}-${key}: ${variables[key]};`);
 
@@ -95,6 +99,10 @@ export function getStyle(globalPrefixCls: string, theme: Theme): string {
 
 export function registerTheme(globalPrefixCls: string, theme: Theme, cspNonce: string | null | undefined): void {
   const style = getStyle(globalPrefixCls, theme);
+
+  if (!style) {
+    return;
+  }
 
   if (canUseDom()) {
     updateCSS(style, `${dynamicStyleMark}-dynamic-theme`, { cspNonce });

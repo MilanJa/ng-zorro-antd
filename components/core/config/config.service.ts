@@ -7,6 +7,7 @@ import {
   CSP_NONCE,
   DestroyRef,
   Injectable,
+  Injector,
   afterNextRender,
   assertInInjectionContext,
   inject,
@@ -22,7 +23,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 
-import { NZ_CONFIG, NzConfig, NzConfigKey } from './config';
+import { hasV6ThemeKeys, NZ_CONFIG, NzConfig, NzConfigKey, Theme } from './config';
 import { registerTheme } from './css-variables';
 
 function isDefined<T>(value?: T): value is Exclude<T, undefined> {
@@ -49,10 +50,30 @@ export class NzConfigService {
 
   private readonly cspNonce: string | null = inject(CSP_NONCE, { optional: true });
 
+  private readonly injector = inject(Injector);
+
+  private themeApplied: Promise<void> = Promise.resolve();
+
   constructor() {
     if (this.config.theme) {
       // If theme is set with NZ_CONFIG, register theme to make sure css variables work
-      registerTheme(this.getConfig().prefixCls?.prefixCls || defaultPrefixCls, this.config.theme, this.cspNonce);
+      this.applyTheme(this.config.theme);
+    }
+  }
+
+  /** Resolves once the most recent theme configuration has been applied (v6 engine is loaded lazily). */
+  whenThemeApplied(): Promise<void> {
+    return this.themeApplied;
+  }
+
+  private applyTheme(theme: Theme): void {
+    // Legacy keys: v4 css-variable stylesheet, synchronous, unchanged behaviour.
+    registerTheme(this.getConfig().prefixCls?.prefixCls || defaultPrefixCls, theme, this.cspNonce);
+    if (hasV6ThemeKeys(theme)) {
+      const { algorithm, token, components, cssVar } = theme;
+      this.themeApplied = import('ng-zorro-antd/core/theme').then(({ NzThemeService }) =>
+        this.injector.get(NzThemeService).set({ algorithm, token, components, cssVar })
+      );
     }
   }
 
@@ -86,7 +107,7 @@ export class NzConfigService {
     this.config[componentName] = { ...this.config[componentName], ...value };
     this._configMap.get(componentName)?.set(this.config[componentName]);
     if (componentName === 'theme' && this.config.theme) {
-      registerTheme(this.getConfig().prefixCls?.prefixCls || defaultPrefixCls, this.config.theme, this.cspNonce);
+      this.applyTheme(this.config.theme);
     }
     this.configUpdated$.next(componentName);
   }

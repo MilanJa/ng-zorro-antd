@@ -10,6 +10,7 @@ import { SafeUrl } from '@angular/platform-browser';
 import { ThemeType } from '@ant-design/icons-angular';
 
 import { NzBreakpointEnum } from 'ng-zorro-antd/core/services';
+import type { NzThemeConfig } from 'ng-zorro-antd/core/theme';
 import {
   NzSafeAny,
   NzShapeSCType,
@@ -80,14 +81,24 @@ export interface PrefixCls {
   iconPrefixCls?: string;
 }
 
-export interface Theme {
+/**
+ * Theme configuration. The legacy colour keys drive the v4 CSS-variable stylesheet
+ * (`ng-zorro-antd.variable.css`). The antd v6 fields (`algorithm`, `token`, `components`, `cssVar`)
+ * drive the v6 stylesheets through `ng-zorro-antd/core/theme`, which is loaded lazily on first use.
+ */
+export interface Theme extends NzThemeConfig {
   primaryColor?: string;
   infoColor?: string;
   successColor?: string;
   processingColor?: string;
   errorColor?: string;
   warningColor?: string;
-  [key: string]: string | undefined;
+}
+
+const V6_THEME_KEYS: ReadonlyArray<keyof NzThemeConfig> = ['algorithm', 'token', 'components', 'cssVar'];
+
+export function hasV6ThemeKeys(theme: Theme): boolean {
+  return V6_THEME_KEYS.some(key => theme[key] !== undefined);
 }
 
 export interface SelectConfig {
