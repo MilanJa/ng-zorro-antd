@@ -93,6 +93,8 @@ export interface Theme extends NzThemeConfig {
   processingColor?: string;
   errorColor?: string;
   warningColor?: string;
+  /** Kept for v4 compatibility (arbitrary keys were accepted before); `unknown` admits the object-valued v6 fields. */
+  [key: string]: unknown;
 }
 
 const V6_THEME_KEYS: ReadonlyArray<keyof NzThemeConfig> = ['algorithm', 'token', 'components', 'cssVar'];

@@ -9,7 +9,7 @@ import { firstValueFrom } from 'rxjs';
 
 import { NZ_THEME_STYLE_ID } from 'ng-zorro-antd/core/theme';
 
-import { hasV6ThemeKeys, provideNzConfig } from './config';
+import { hasV6ThemeKeys, provideNzConfig, Theme } from './config';
 import { NzConfigService } from './config.service';
 
 describe('NzConfig.theme', () => {
@@ -34,6 +34,29 @@ describe('NzConfig.theme', () => {
     expect(getComputedStyle(document.documentElement).getPropertyValue('--ant-primary-color').trim()).toBe(
       'rgb(255, 0, 0)'
     );
+  });
+
+  it('clearing a legacy colour with undefined removes its v4 css variable', () => {
+    TestBed.configureTestingModule({});
+    const service = TestBed.inject(NzConfigService);
+    const primary = (): string =>
+      getComputedStyle(document.documentElement).getPropertyValue('--ant-primary-color').trim();
+    service.set('theme', { primaryColor: '#ff0000' });
+    expect(primary()).toBe('rgb(255, 0, 0)');
+    service.set('theme', { primaryColor: undefined });
+    expect(primary()).toBe('');
+  });
+
+  it('a theme with only v6 keys does not write the v4 css-variable style', async () => {
+    TestBed.configureTestingModule({ providers: [provideNzConfig({ theme: { token: { colorPrimary: '#00b96b' } } })] });
+    await TestBed.inject(NzConfigService).whenThemeApplied();
+    expect(document.querySelectorAll('style[rc-util-key$="-dynamic-theme"]').length).toBe(0);
+  });
+
+  it('keeps accepting arbitrary keys on Theme (v4 index signature)', () => {
+    const theme: Theme = { primaryColor: '#ff0000', customKey: 'kept' };
+    expect(theme['customKey']).toBe('kept');
+    expect(hasV6ThemeKeys(theme)).toBe(false);
   });
 
   it('v6 keys at bootstrap delegate to NzThemeService', async () => {

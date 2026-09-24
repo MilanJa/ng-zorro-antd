@@ -83,10 +83,6 @@ export function getStyle(globalPrefixCls: string, theme: Theme): string {
     fillColor(theme.infoColor, 'info');
   }
 
-  if (!Object.keys(variables).length) {
-    return '';
-  }
-
   // Convert to css variables
   const cssList = Object.keys(variables).map(key => `--${globalPrefixCls}-${key}: ${variables[key]};`);
 
@@ -97,12 +93,25 @@ export function getStyle(globalPrefixCls: string, theme: Theme): string {
   `.trim();
 }
 
-export function registerTheme(globalPrefixCls: string, theme: Theme, cspNonce: string | null | undefined): void {
-  const style = getStyle(globalPrefixCls, theme);
+/** The keys that drive the v4 css-variable stylesheet (`ng-zorro-antd.variable.css`). */
+const LEGACY_THEME_KEYS = [
+  'primaryColor',
+  'infoColor',
+  'successColor',
+  'processingColor',
+  'errorColor',
+  'warningColor'
+] as const;
 
-  if (!style) {
+export function registerTheme(globalPrefixCls: string, theme: Theme, cspNonce: string | null | undefined): void {
+  // A theme with only antd v6 fields has nothing for the v4 stylesheet; leave its style element alone. As
+  // soon as a legacy key is present (even `undefined`, e.g. to clear a colour) keep the v4 behaviour of
+  // rewriting the element, possibly with an empty `:root {}`.
+  if (!LEGACY_THEME_KEYS.some(key => key in theme)) {
     return;
   }
+
+  const style = getStyle(globalPrefixCls, theme);
 
   if (canUseDom()) {
     updateCSS(style, `${dynamicStyleMark}-dynamic-theme`, { cspNonce });
