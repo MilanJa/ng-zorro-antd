@@ -13,7 +13,7 @@ import { NzConfigService } from './config.service';
 describe('NzConfig.theme', () => {
   afterEach(() => {
     document.getElementById(NZ_THEME_STYLE_ID)?.remove();
-    document.querySelectorAll('style[data-rc-util-key$="-dynamic-theme"]').forEach(s => s.remove());
+    document.querySelectorAll('style[rc-util-key$="-dynamic-theme"]').forEach(s => s.remove());
   });
 
   it('hasV6ThemeKeys detects the antd ThemeConfig fields only', () => {
@@ -48,5 +48,19 @@ describe('NzConfig.theme', () => {
     service.set('theme', { token: { colorPrimary: '#123456' } });
     await service.whenThemeApplied();
     expect(document.getElementById(NZ_THEME_STYLE_ID)?.textContent).toContain('--ant-color-primary:#123456;');
+  });
+
+  it('whenThemeApplied reflects the latest of two unawaited set("theme") calls', async () => {
+    TestBed.configureTestingModule({ providers: [provideNzConfig({ theme: { token: { colorPrimary: '#00b96b' } } })] });
+    const service = TestBed.inject(NzConfigService);
+    await service.whenThemeApplied();
+
+    service.set('theme', { token: { colorPrimary: '#111111' } });
+    service.set('theme', { token: { colorPrimary: '#222222' } });
+    await service.whenThemeApplied();
+
+    const styleContent = document.getElementById(NZ_THEME_STYLE_ID)?.textContent;
+    expect(styleContent).toContain('--ant-color-primary:#222222;');
+    expect(styleContent).not.toContain('--ant-color-primary:#111111;');
   });
 });

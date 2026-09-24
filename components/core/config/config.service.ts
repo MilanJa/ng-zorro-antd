@@ -23,6 +23,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 
+import { warn } from 'ng-zorro-antd/core/logger';
+
 import { hasV6ThemeKeys, NZ_CONFIG, NzConfig, NzConfigKey, Theme } from './config';
 import { registerTheme } from './css-variables';
 
@@ -71,9 +73,9 @@ export class NzConfigService {
     registerTheme(this.getConfig().prefixCls?.prefixCls || defaultPrefixCls, theme, this.cspNonce);
     if (hasV6ThemeKeys(theme)) {
       const { algorithm, token, components, cssVar } = theme;
-      this.themeApplied = import('ng-zorro-antd/core/theme').then(({ NzThemeService }) =>
-        this.injector.get(NzThemeService).set({ algorithm, token, components, cssVar })
-      );
+      this.themeApplied = import('ng-zorro-antd/core/theme')
+        .then(({ NzThemeService }) => this.injector.get(NzThemeService).set({ algorithm, token, components, cssVar }))
+        .catch(error => warn(`NzConfig.theme: failed to apply the antd v6 theme configuration.`, error));
     }
   }
 
