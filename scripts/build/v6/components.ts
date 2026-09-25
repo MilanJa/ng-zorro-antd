@@ -12,12 +12,23 @@
  * `components/core/theme/generated/component-roots.ts` for every antd name of the entry.
  * Adding a component here is the first step of migrating it to v6 (see .claude/DEVELOPMENT.md).
  */
+export interface V6ComponentEntry {
+  antd: readonly string[];
+  prefixCls: string;
+  /**
+   * Extra class prefixes this component renders outside its own `prefixCls` (for example popconfirm's
+   * `ant-popover-*`, or auto-complete's `ant-select-dropdown*`), attributed to it by the rendered-class
+   * coverage check (`attributeRenderedClasses` in `rendered-coverage.ts`).
+   */
+  renderedPrefixes?: readonly string[];
+}
+
 export const v6Components = {
   button: { antd: ['Button'], prefixCls: 'ant-btn' },
   input: { antd: ['Input'], prefixCls: 'ant-input' },
   select: { antd: ['Select'], prefixCls: 'ant-select' },
   space: { antd: ['Space'], prefixCls: 'ant-space' }
-} as const satisfies Record<string, { antd: readonly string[]; prefixCls: string }>;
+} as const satisfies Record<string, V6ComponentEntry>;
 
 export type V6ComponentDir = keyof typeof v6Components;
 

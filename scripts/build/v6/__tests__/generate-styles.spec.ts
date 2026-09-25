@@ -10,7 +10,13 @@ import os from 'node:os';
 import path from 'node:path';
 
 import { v6ComponentDirs } from '../components';
-import { assertEngineBudgets, buildComponentCss, generateStyles, normalizeCssVarRootCls } from '../generate-styles';
+import {
+  assertEngineBudgets,
+  buildComponentCss,
+  generateStyles,
+  normalizeCssVarRootCls,
+  type V6Algorithm
+} from '../generate-styles';
 import { ENGINE_COMPONENTS_BUDGET, ENGINE_CORE_BUDGET, readManifest } from '../manifest';
 
 const componentsDir = path.resolve(__dirname, '../../../../components');
@@ -167,7 +173,7 @@ describe('generateStyles', () => {
     it('dark and compact bundles share the template and differ only in tokens', async () => {
       const { buildV6Bundle } = await import('../generate-styles');
       const [d, dark, compact] = await Promise.all(
-        ['default', 'dark', 'compact'].map(a => buildV6Bundle(a as never, componentsDir))
+        ['default', 'dark', 'compact'].map(a => buildV6Bundle(a as V6Algorithm, componentsDir))
       );
       expect(dark.template).toBe(d.template);
       expect(compact.template).toBe(d.template);

@@ -107,24 +107,36 @@ describe('renderedCoverageGaps', () => {
       { button: ['ant-btn-mystery'] },
       ['button']
     );
+    // `toEqual` also proves the unrequested `table` entry of the sample is not reported.
     expect(gaps).toEqual({ button: [] });
-    expect(Object.keys(gaps)).not.toContain('table');
+  });
+  it('reports no gaps for a requested component that has no rendered data', () => {
+    expect(sample['space']).toBeUndefined();
+    const gaps = renderedCoverageGaps(sample, new Set(['ant-btn', 'ant-btn-color-primary']), { button: [] }, [
+      'button',
+      'space'
+    ]);
+    expect(gaps).toEqual({ button: ['ant-btn-mystery'], space: [] });
   });
 });
 
 const renderedPath = path.resolve(__dirname, '../../../../tools/v6-compare/out/rendered-classes.json');
-const rendered = existsSync(renderedPath)
-  ? (JSON.parse(readFileSync(renderedPath, 'utf8')).components as Record<string, string[]>)
+const renderedFile = existsSync(renderedPath)
+  ? (JSON.parse(readFileSync(renderedPath, 'utf8')) as { generatedAt?: string; components: Record<string, string[]> })
   : null;
+const rendered = renderedFile?.components ?? null;
 
 describe('rendered class coverage (from tools/v6-compare/collect-classes)', () => {
   for (const dir of v6ComponentDirs) {
-    it.skipIf(!rendered || !rendered[dir])(
-      `${dir}: every class rendered in the doc site is styled or allowlisted`,
-      () => {
-        const gaps = renderedCoverageGaps(rendered!, styled, allowlist, [dir]);
-        expect(gaps[dir], `unstyled classes rendered by ${dir}`).toEqual([]);
+    it(`${dir}: every class rendered in the doc site is styled or allowlisted`, ctx => {
+      if (!rendered?.[dir]) {
+        ctx.skip('run tools/v6-compare/collect-classes.ts to enable');
       }
-    );
+      const gaps = renderedCoverageGaps(rendered!, styled, allowlist, [dir]);
+      expect(
+        gaps[dir],
+        `unstyled classes rendered by ${dir} (rendered-classes.json generated at ${renderedFile?.generatedAt ?? 'unknown'}; re-run collect-classes.ts if stale)`
+      ).toEqual([]);
+    });
   }
 });
