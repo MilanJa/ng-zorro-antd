@@ -80,7 +80,9 @@ chart.color = token.colorPrimary;
 </section>
 ```
 
-`nzThemeInherit` (default `true`) merges over the nearest ancestor `[nzTheme]`, or, when there is none, over the global theme applied through `NzConfig.theme`. Popups rendered by the CDK overlay (select dropdowns, tooltips) are outside the section and follow the global theme.
+`nzThemeInherit` (default `true`) merges over the nearest ancestor `[nzTheme]`, or, when there is none, over the global theme applied through `NzConfig.theme`. As in antd, `token` merges key by key and `components` merges per component.
+
+Popups rendered by the CDK overlay sit outside the section in the DOM. Select's dropdown carries the scope of the nearest enclosing `[nzTheme]`, so it is themed like the select itself; other overlays (tooltips, popovers, date pickers, ...) follow the global theme until they are migrated. The scope is resolved from Angular's _injector_ tree, not from the DOM, and, as with any CDK overlay, the dropdown's classes are applied when the overlay is first created: a later `nzDropdownClassName` change does not reach a dropdown that was already opened once.
 
 ## Server-side rendering
 
@@ -89,7 +91,8 @@ The theme service writes a `<style id="nz-theme">` element through Angular's `DO
 ## Limits of the preview
 
 - Components not listed above fall back to v4 rules.
-- Scoped themes do not reach CDK overlays.
+- Of the overlay-based components, only Select's dropdown carries a scoped theme so far; the other overlays follow the global theme until they are migrated.
+- A Select projected with `<ng-content>` into a component whose own template holds `[nzTheme]`, or stamped with `ngTemplateOutlet` from a template declared outside the scope, gets the scoped theme on its inline part (CSS variables inherit through the DOM) but an unscoped dropdown, because the scope follows the injector tree where the Select was declared. Put the `[nzTheme]` where the Select is declared in that case.
 - A component-level alias override set globally still applies inside a scope that does not inherit: it is written as a class-scoped rule on `:root`, and CSS variables inherit through the DOM regardless of `nzThemeInherit`.
 - `cssVar.prefix` values other than `ant` are not supported by the generated CSS, which references `--ant-*` variables.
 - Token names follow antd exactly (`--ant-color-primary`, `--ant-button-default-bg`); overriding them directly in CSS works for static values but is not re-derived, prefer `NzConfig.theme`.

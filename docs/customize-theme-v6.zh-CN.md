@@ -80,7 +80,9 @@ chart.color = token.colorPrimary;
 </section>
 ```
 
-`nzThemeInherit`（默认 `true`）会合并最近的祖先 `[nzTheme]` 的主题；若没有祖先指令，则合并通过 `NzConfig.theme` 应用的全局主题。由 CDK 浮层渲染的弹出内容（下拉选择框、提示框等）位于该区域之外，仍遵循全局主题。
+`nzThemeInherit`（默认 `true`）会合并最近的祖先 `[nzTheme]` 的主题；若没有祖先指令，则合并通过 `NzConfig.theme` 应用的全局主题。与 antd 一致，`token` 按键合并，`components` 按组件合并。
+
+由 CDK 浮层渲染的弹出内容在 DOM 中位于该区域之外。Select 的下拉菜单会带上最近的外层 `[nzTheme]` 的作用域，因此与选择框本身使用相同的主题；其他浮层（提示框、气泡卡片、日期选择面板等）在迁移之前仍遵循全局主题。作用域依据 Angular 的*注入器*树而不是 DOM 确定，并且与所有 CDK 浮层一样，下拉菜单的类名在浮层首次创建时应用：之后对 `nzDropdownClassName` 的修改不会作用于已经打开过的下拉菜单。
 
 ## 服务端渲染
 
@@ -89,7 +91,8 @@ chart.color = token.colorPrimary;
 ## 预览版的限制
 
 - 未在上方列出的组件仍会回退到 v4 规则。
-- 局部主题无法作用于 CDK 浮层。
+- 在基于浮层的组件中，目前只有 Select 的下拉菜单会带上局部主题；其他浮层在迁移之前仍遵循全局主题。
+- 如果 Select 通过 `<ng-content>` 投影到一个自身模板中包含 `[nzTheme]` 的组件里，或者通过 `ngTemplateOutlet` 渲染一个在作用域之外声明的模板，那么它的内联部分会获得局部主题（CSS 变量沿 DOM 继承），但下拉菜单不会带上作用域，因为作用域取决于 Select 声明位置的注入器树。此时请把 `[nzTheme]` 放在声明 Select 的位置。
 - 全局设置的组件级别名覆盖，即使在不继承主题的局部作用域内也仍然生效：它以类作用域规则的形式写在 `:root` 上，而 CSS 变量的继承不受 `nzThemeInherit` 影响，会沿 DOM 正常传递。
 - 生成的 CSS 引用的是 `--ant-*` 变量，因此不支持 `ant` 以外的 `cssVar.prefix` 取值。
 - 令牌名称与 antd 完全一致（例如 `--ant-color-primary`、`--ant-button-default-bg`）；直接在 CSS 中覆盖它们对静态值有效，但不会被重新推导，建议优先使用 `NzConfig.theme`。
