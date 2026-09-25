@@ -74,3 +74,4 @@ Thumbs.db
 components/core/theme/generated/engine-*.ts
 components/core/theme/generated/test-css.ts
 tools/v6-compare/out/
+tools/v6-compare/ssr-check/dist/

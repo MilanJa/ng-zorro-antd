@@ -1,0 +1,24 @@
+{
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "name": "v6-ssr-check",
+  "projectType": "application",
+  "sourceRoot": "tools/v6-compare/ssr-check/src",
+  "targets": {
+    "build": {
+      "executor": "@angular/build:application",
+      "dependsOn": [{ "projects": ["ng-zorro-antd-lib"], "target": "generate-v6-engine" }],
+      "options": {
+        "outputPath": "tools/v6-compare/ssr-check/dist",
+        "index": "tools/v6-compare/ssr-check/src/index.html",
+        "browser": "tools/v6-compare/ssr-check/src/main.ts",
+        "server": "tools/v6-compare/ssr-check/src/main.server.ts",
+        "outputMode": "static",
+        "prerender": true,
+        "tsConfig": "tools/v6-compare/ssr-check/tsconfig.app.json",
+        "styles": ["tools/v6-compare/ssr-check/src/styles.css"],
+        "optimization": false,
+        "sourceMap": false
+      }
+    }
+  }
+}

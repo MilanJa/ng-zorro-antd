@@ -1,0 +1,29 @@
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../../out-tsc/v6-ssr-check",
+    "module": "es2020",
+    "isolatedModules": true,
+    "types": [
+      "node",
+      "express"
+    ],
+    "paths": {
+      "ng-zorro-antd": [
+        "../../../components/ng-zorro-antd.module.ts"
+      ],
+      "ng-zorro-antd/*": [
+        "../../../components/*"
+      ]
+    }
+  },
+  "exclude": [
+    "test.ts",
+    "**/*.spec.ts"
+  ],
+  "angularCompilerOptions": {
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
+  }
+}
