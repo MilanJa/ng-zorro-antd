@@ -116,8 +116,11 @@ export class AppComponent implements OnInit {
   initTheme(): void {
     const fromQuery = new URLSearchParams(this.document.location.search).get('theme') as SiteTheme | null;
     const stored = localStorage.getItem('site-theme') as SiteTheme | null;
-    const theme = fromQuery && SITE_THEMES.includes(fromQuery) ? fromQuery : stored && SITE_THEMES.includes(stored) ? stored : 'default';
-    this.onThemeChange(theme, false);
+    const queried = fromQuery && SITE_THEMES.includes(fromQuery) ? fromQuery : null;
+    const theme = queried ?? (stored && SITE_THEMES.includes(stored) ? stored : 'default');
+    // A `?theme=` link (e.g. a shared v6 preview URL) applies for this visit only; it must not replace the
+    // reader's stored site theme.
+    this.onThemeChange(theme, false, !queried);
   }
 
   /** The v6 preview themes replace the v4 component CSS, so the injected base stylesheet is switched off with them. */
@@ -127,7 +130,7 @@ export class AppComponent implements OnInit {
       .forEach(link => (link.disabled = disabled));
   }
 
-  onThemeChange(theme: SiteTheme, notification: boolean = true): void {
+  onThemeChange(theme: SiteTheme, notification: boolean = true, persist: boolean = true): void {
     if (!this.platform.isBrowser) {
       return;
     }
@@ -140,7 +143,9 @@ export class AppComponent implements OnInit {
     this.renderer.addClass(this.document.activeElement, 'preload');
     const successLoaded = () => {
       this.app.theme.set(theme);
-      localStorage.setItem('site-theme', theme);
+      if (persist) {
+        localStorage.setItem('site-theme', theme);
+      }
       this.renderer.setAttribute(document.body, 'data-theme', theme);
       this.setBaseStylesheetDisabled(V6_SITE_THEMES.includes(theme));
       // remove previous theme
