@@ -4,11 +4,12 @@
  */
 
 import { spawnSync } from 'node:child_process';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, statSync } from 'node:fs';
 import path from 'node:path';
 
 const repoRoot = path.resolve(__dirname, '../../..');
 const publishCss = path.join(repoRoot, 'publish', 'ng-zorro-antd.v6.css');
+const v6Manifest = path.join(repoRoot, 'scripts', 'build', 'v6', 'manifest.json');
 const indexHtmlPath = path.join(repoRoot, 'tools', 'v6-compare', 'ssr-check', 'dist', 'browser', 'index.html');
 
 function run(command: string, args: string[]): void {
@@ -29,6 +30,10 @@ function main(): void {
       `Running step: build-lib (publish/ng-zorro-antd.v6.css is missing, needed for the SSR app's styles.css import)`
     );
     run('npx', ['nx', 'run', 'ng-zorro-antd-lib:build-lib', '--skip-nx-cache']);
+  } else if (statSync(publishCss).mtimeMs < statSync(v6Manifest).mtimeMs) {
+    // The v6 styles changed since publish/ was built; regenerate the CSS instead of reusing a stale file.
+    console.log('Running step: generate-v6-styles (publish/ng-zorro-antd.v6.css is older than the v6 manifest)');
+    run('npx', ['tsx', 'scripts/tasks/generate-v6-styles.ts']);
   }
 
   console.log('Running step: v6-ssr-check:build');
@@ -69,19 +74,30 @@ function main(): void {
   }
   console.log('PASS: exactly one element carries the "nz-theme-1" scope class.');
 
-  // Assertion 4: the scoped theme's style element serialises the scoped token override.
-  const scopedStyleMatch = html.match(/<style id="nz-theme-1">([\s\S]*?)<\/style>/);
-  if (!scopedStyleMatch) {
-    throw new Error(`Assertion failed: <style id="nz-theme-1"> not found in ${indexHtmlPath}.`);
+  // Assertion 4: exactly one scoped style element, serialising the scoped token override.
+  const scopedStyleMatches = [...html.matchAll(/<style id="nz-theme-1">([\s\S]*?)<\/style>/g)];
+  if (scopedStyleMatches.length !== 1) {
+    throw new Error(
+      `Assertion failed: expected exactly one <style id="nz-theme-1"> in ${indexHtmlPath}, found ${scopedStyleMatches.length}.`
+    );
   }
-  const scopedCss = scopedStyleMatch[1];
+  const scopedCss = scopedStyleMatches[0][1];
   const expectedScopedVar = '--ant-border-radius:0px';
   if (!scopedCss.includes(expectedScopedVar)) {
     throw new Error(
       `Assertion failed: expected "${expectedScopedVar}" inside <style id="nz-theme-1">. Actual content:\n${scopedCss}`
     );
   }
-  console.log(`PASS: <style id="nz-theme-1"> contains "${expectedScopedVar}".`);
+  console.log(`PASS: exactly one <style id="nz-theme-1">, containing "${expectedScopedVar}".`);
+
+  // Assertion 5: the scoped style inherits the global theme on the server (merged, not rendered over the
+  // defaults): the global dark-derived primary is part of the scope's CSS too.
+  if (!scopedCss.includes(expectedGlobalVar)) {
+    throw new Error(
+      `Assertion failed: expected the inherited "${expectedGlobalVar}" inside <style id="nz-theme-1">. Actual content:\n${scopedCss}`
+    );
+  }
+  console.log(`PASS: <style id="nz-theme-1"> inherits the global "${expectedGlobalVar}".`);
 
   console.log('\nAll SSR theme assertions passed.');
 }

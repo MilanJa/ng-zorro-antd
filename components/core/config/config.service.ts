@@ -6,6 +6,7 @@
 import {
   CSP_NONCE,
   DestroyRef,
+  EnvironmentProviders,
   Injectable,
   Injector,
   PendingTasks,
@@ -17,7 +18,9 @@ import {
   WritableSignal,
   signal,
   InputSignalWithTransform,
-  InputSignal
+  InputSignal,
+  makeEnvironmentProviders,
+  provideAppInitializer
 } from '@angular/core';
 import { SIGNAL } from '@angular/core/primitives/signals';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -59,6 +62,8 @@ export class NzConfigService {
 
   private themeApplied: Promise<void> = Promise.resolve();
 
+  private themeRequested: Promise<void> = Promise.resolve();
+
   constructor() {
     if (this.config.theme) {
       // If theme is set with NZ_CONFIG, register theme to make sure css variables work
@@ -71,14 +76,31 @@ export class NzConfigService {
     return this.themeApplied;
   }
 
+  /**
+   * @internal Resolves once the most recent v6 theme has been *requested* from `NzThemeService` (its lazy
+   * entry point imported and `set()` called), before its CSS is rendered. `provideNzConfig` waits for this at
+   * bootstrap so scoped `[nzTheme]` directives see the global theme from their first render.
+   */
+  whenThemeRequested(): Promise<void> {
+    return this.themeRequested;
+  }
+
   private applyTheme(theme: Theme): void {
     // Legacy keys: v4 css-variable stylesheet, synchronous, unchanged behaviour.
     registerTheme(this.getConfig().prefixCls?.prefixCls || defaultPrefixCls, theme, this.cspNonce);
     if (hasV6ThemeKeys(theme)) {
       const { algorithm, token, components, cssVar } = theme;
-      const applied = import('ng-zorro-antd/core/theme')
-        .then(({ NzThemeService }) => this.injector.get(NzThemeService).set({ algorithm, token, components, cssVar }))
+      // `set()` records the requested theme synchronously; wrapped so the request settles before the render.
+      const request = import('ng-zorro-antd/core/theme').then(({ NzThemeService }) => ({
+        rendered: this.injector.get(NzThemeService).set({ algorithm, token, components, cssVar })
+      }));
+      const applied = request
+        .then(({ rendered }) => rendered)
         .catch(error => warn(`NzConfig.theme: failed to apply the antd v6 theme configuration.`, error));
+      this.themeRequested = request.then(
+        () => undefined,
+        () => undefined
+      );
       this.themeApplied = applied;
       // Keeps the application unstable (and server rendering waiting) until the lazily loaded theme is written.
       this.pendingTasks.run(() => applied);
@@ -119,6 +141,23 @@ export class NzConfigService {
     }
     this.configUpdated$.next(componentName);
   }
+}
+
+/**
+ * Provides the global `NzConfig`. When `theme` has antd v6 keys (`algorithm`, `token`, `components`,
+ * `cssVar`), the theme also starts at bootstrap instead of when something first injects `NzConfigService`:
+ * an app initializer constructs the service and waits until the theme is *requested* from the lazily
+ * imported `ng-zorro-antd/core/theme` entry point (not until its CSS is rendered; the theme engine itself
+ * stays lazily loaded). Components, and so scoped `[nzTheme]` directives, are created after that, so they
+ * merge over the global theme from their first render instead of rendering over the defaults first.
+ */
+export function provideNzConfig(config: NzConfig): EnvironmentProviders {
+  return makeEnvironmentProviders([
+    { provide: NZ_CONFIG, useValue: config },
+    ...(config.theme && hasV6ThemeKeys(config.theme)
+      ? [provideAppInitializer(() => inject(NzConfigService).whenThemeRequested())]
+      : [])
+  ]);
 }
 
 /**

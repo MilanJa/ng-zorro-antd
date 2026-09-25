@@ -16,7 +16,8 @@ import {
   input,
   PendingTasks,
   signal,
-  Signal
+  Signal,
+  untracked
 } from '@angular/core';
 
 import { renderThemeCss } from './render-theme-css';
@@ -37,14 +38,16 @@ export const NZ_THEME_RENDERER = new InjectionToken<typeof renderThemeCss>('NZ_T
 });
 
 /**
- * Applies a theme to the host element's subtree. CDK overlays rendered outside the host keep the global theme.
+ * Applies a theme to the host element's subtree.
  *
  * ```html
  * <section [nzTheme]="{ algorithm: nzDarkAlgorithm }">...</section>
  * ```
  *
  * By default (`nzThemeInherit`, true) it inherits the enclosing `[nzTheme]`, otherwise the global
- * `NzConfig.theme`; CDK overlays get the scope through `nzThemeScopeClasses()` (Task 9).
+ * `NzConfig.theme`. Content rendered in the CDK overlay container sits outside the host; overlay-based
+ * components that add `nzThemeScopeClasses()` to their popup (Select's dropdown today) carry the scope of
+ * the nearest enclosing `[nzTheme]` in the *injector* tree, others keep the global theme.
  */
 @Directive({
   selector: '[nzTheme]',
@@ -74,14 +77,16 @@ export class NzThemeDirective {
 
   /**
    * Effective config after merging over the nearest ancestor `[nzTheme]` when inheriting, or, absent an
-   * ancestor, over the global theme applied through `NzThemeService`.
+   * ancestor, over the global theme requested through `NzThemeService` (available synchronously, before the
+   * global CSS is written). Like antd's nested `ConfigProvider`, `token` merges key by key and `components`
+   * merges per component, so a scoped `components.Button.colorPrimary` keeps the inherited Button tokens.
    */
   readonly effectiveConfig: Signal<NzThemeConfig> = computed(() => {
     const own = this.nzTheme();
     if (!this.nzThemeInherit()) {
       return own;
     }
-    const base = this.parent?.effectiveConfig() ?? this.globalTheme.config() ?? undefined;
+    const base = this.parent?.effectiveConfig() ?? this.globalTheme.config();
     if (!base) {
       return own;
     }
@@ -89,7 +94,7 @@ export class NzThemeDirective {
       algorithm: own.algorithm ?? base.algorithm,
       cssVar: own.cssVar ?? base.cssVar,
       token: { ...base.token, ...own.token },
-      components: { ...base.components, ...own.components }
+      components: mergeComponents(base.components, own.components)
     };
   });
 
@@ -111,7 +116,10 @@ export class NzThemeDirective {
       // rendering serialises the page only after this style element exists.
       this.pendingTasks.run(() =>
         this.renderThemeCss(config, `.${this.scopeClass}`).then(css => {
-          if (!stale && !destroyed) {
+          // `stale` flips only when the effect re-runs, which Angular schedules; comparing with the current
+          // effective config also drops a render whose inputs (e.g. the global theme requested meanwhile)
+          // already changed, so an intermediate own-only CSS never overwrites the style element.
+          if (!stale && !destroyed && untracked(this.effectiveConfig) === config) {
             writeStyle(this.doc, this.scopeClass, css, this.cspNonce);
           }
         })
@@ -122,4 +130,17 @@ export class NzThemeDirective {
       this.doc.getElementById(this.scopeClass)?.remove();
     });
   }
+}
+
+/** Merges `components` per component name, like antd's nested `ConfigProvider`. */
+function mergeComponents(
+  base: NzThemeConfig['components'],
+  own: NzThemeConfig['components']
+): NzThemeConfig['components'] {
+  const merged: Record<string, object | undefined> = { ...base };
+  for (const [name, value] of Object.entries(own ?? {})) {
+    const inherited = merged[name];
+    merged[name] = inherited && value ? { ...inherited, ...value } : (value ?? inherited);
+  }
+  return merged as NzThemeConfig['components'];
 }

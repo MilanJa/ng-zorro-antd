@@ -5,9 +5,13 @@
 
 import { ApplicationRef, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { firstValueFrom } from 'rxjs';
 
 import { expect } from 'vitest';
+
+import { NzButtonModule } from 'ng-zorro-antd/button';
+import { provideNzIconsTesting } from 'ng-zorro-antd/icon/testing';
 
 import { nzDarkAlgorithm } from './algorithms';
 import { V6_TEMPLATE_CSS, V6_TOKENS_DEFAULT_CSS } from './generated/test-css';
@@ -249,6 +253,92 @@ describe('NzThemeDirective global inheritance', () => {
     await fixture.whenStable();
     await new Promise(r => setTimeout(r, 0));
     expect(getComputedStyle(document.getElementById('s')!).backgroundColor).toBe('rgb(22, 104, 220)'); // dark primary
+  });
+});
+
+@Component({
+  imports: [NzButtonModule, NzThemeDirective],
+  template: `
+    <button
+      id="host-root"
+      nz-button
+      nzType="primary"
+      [nzTheme]="{ components: { Button: { colorPrimary: '#ff4d4f', algorithm: true } } }"
+    >
+      Red
+    </button>
+  `
+})
+class HostRootButtonComponent {}
+
+describe('NzThemeDirective on a component host', () => {
+  let base: HTMLStyleElement;
+
+  beforeEach(() => {
+    base = document.createElement('style');
+    base.textContent = `${V6_TEMPLATE_CSS}\n${V6_TOKENS_DEFAULT_CSS}\n*,*::before,*::after{transition:none!important;}`;
+    document.head.appendChild(base);
+    TestBed.configureTestingModule({ providers: [provideNzIconsTesting()] });
+  });
+
+  afterEach(() => {
+    base.remove();
+    document.querySelectorAll('style[id^="nz-theme-"]').forEach(s => s.remove());
+  });
+
+  it('styles the host itself and keeps the component classes next to the scope class', async () => {
+    const fixture = TestBed.createComponent(HostRootButtonComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    await new Promise(r => setTimeout(r, 0));
+    const button = document.getElementById('host-root')!;
+    const directive = fixture.debugElement.query(By.directive(NzThemeDirective)).injector.get(NzThemeDirective);
+    expect(getComputedStyle(button).backgroundColor).toBe('rgb(255, 77, 79)');
+    expect(button.classList).toContain('ant-btn');
+    expect(button.classList).toContain('ant-btn-color-primary');
+    expect(button.classList).toContain(directive.scopeClass);
+  });
+});
+
+@Component({
+  imports: [NzThemeDirective],
+  template: `
+    <section id="outer-c" [nzTheme]="{ components: { Button: { colorPrimary: '#ff4d4f', algorithm: true } } }">
+      <div [nzTheme]="{ components: { Button: { borderRadius: 0 } } }">
+        <button id="merged" class="ant-btn ant-btn-color-primary ant-btn-variant-solid">M</button>
+      </div>
+    </section>
+  `
+})
+class ComponentsMergeHostComponent {}
+
+describe('NzThemeDirective components merge', () => {
+  let base: HTMLStyleElement;
+
+  beforeEach(() => {
+    base = document.createElement('style');
+    base.textContent = `${V6_TEMPLATE_CSS}\n${V6_TOKENS_DEFAULT_CSS}\n*,*::before,*::after{transition:none!important;}`;
+    document.head.appendChild(base);
+  });
+
+  afterEach(() => {
+    base.remove();
+    document.querySelectorAll('style[id^="nz-theme-"]').forEach(s => s.remove());
+  });
+
+  it('merges inherited component tokens per component, like antd', async () => {
+    const fixture = TestBed.createComponent(ComponentsMergeHostComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    await new Promise(r => setTimeout(r, 0));
+    const [, inner] = fixture.debugElement
+      .queryAll(By.directive(NzThemeDirective))
+      .map(de => de.injector.get(NzThemeDirective));
+    expect(inner.effectiveConfig().components).toEqual({
+      Button: { colorPrimary: '#ff4d4f', algorithm: true, borderRadius: 0 }
+    });
+    expect(bg('merged')).toBe('rgb(255, 77, 79)');
+    expect(radius('merged')).toBe('0px');
   });
 });
 

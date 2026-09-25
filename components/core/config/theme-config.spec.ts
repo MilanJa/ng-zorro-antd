@@ -3,14 +3,14 @@
  * found in the LICENSE file at https://github.com/NG-ZORRO/ng-zorro-antd/blob/master/LICENSE
  */
 
-import { ApplicationRef } from '@angular/core';
+import { ApplicationInitStatus, ApplicationRef, Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom } from 'rxjs';
 
-import { NZ_THEME_STYLE_ID } from 'ng-zorro-antd/core/theme';
+import { nzDarkAlgorithm, NZ_THEME_STYLE_ID, NzThemeDirective, NzThemeService } from 'ng-zorro-antd/core/theme';
 
-import { hasV6ThemeKeys, provideNzConfig, Theme } from './config';
-import { NzConfigService } from './config.service';
+import { hasV6ThemeKeys, Theme } from './config';
+import { NzConfigService, provideNzConfig } from './config.service';
 
 describe('NzConfig.theme', () => {
   afterEach(() => {
@@ -96,5 +96,71 @@ describe('NzConfig.theme', () => {
     const styleContent = document.getElementById(NZ_THEME_STYLE_ID)?.textContent;
     expect(styleContent).toContain('--ant-color-primary:#222222;');
     expect(styleContent).not.toContain('--ant-color-primary:#111111;');
+  });
+});
+
+@Component({
+  imports: [NzThemeDirective],
+  template: `<section id="scoped" [nzTheme]="{ token: { borderRadius: 0 } }"></section>`
+})
+class ScopedUnderGlobalThemeComponent {}
+
+/** Every text written into a `<style id="nz-theme-N">` (scoped theme) element, in order. */
+function scopedStyleWrites(records: MutationRecord[]): string[] {
+  const writes: string[] = [];
+  for (const record of records) {
+    const target = record.type === 'characterData' ? record.target.parentElement : record.target;
+    if (!(target instanceof HTMLStyleElement) || !/^nz-theme-\d+$/.test(target.id)) {
+      continue;
+    }
+    if (record.type === 'characterData') {
+      writes.push((record.target as Text).data);
+    } else {
+      record.addedNodes.forEach(node => {
+        if (node.nodeType === Node.TEXT_NODE) {
+          writes.push((node as Text).data);
+        }
+      });
+    }
+  }
+  return writes;
+}
+
+describe('NzConfig.theme with a scoped [nzTheme]', () => {
+  afterEach(() => {
+    document.getElementById(NZ_THEME_STYLE_ID)?.remove();
+    document.querySelectorAll('style[id^="nz-theme-"]').forEach(s => s.remove());
+  });
+
+  it('requests the global v6 theme during bootstrap, before anything else injects NzConfigService', async () => {
+    TestBed.configureTestingModule({ providers: [provideNzConfig({ theme: { algorithm: nzDarkAlgorithm } })] });
+    // What bootstrapApplication awaits before creating the root component.
+    await TestBed.inject(ApplicationInitStatus).donePromise;
+    expect(TestBed.inject(NzThemeService).config()?.algorithm).toBe(nzDarkAlgorithm);
+  });
+
+  it('only ever writes the merged global + scoped CSS into the scope style element', async () => {
+    const records: MutationRecord[] = [];
+    const observer = new MutationObserver(batch => records.push(...batch));
+    observer.observe(document.head, { childList: true, characterData: true, subtree: true });
+    TestBed.configureTestingModule({ providers: [provideNzConfig({ theme: { algorithm: nzDarkAlgorithm } })] });
+    // As in bootstrapApplication, components are created once the app initializers have settled.
+    await TestBed.inject(ApplicationInitStatus).donePromise;
+    const fixture = TestBed.createComponent(ScopedUnderGlobalThemeComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    await TestBed.inject(NzConfigService).whenThemeApplied();
+    await new Promise(r => setTimeout(r, 0));
+    records.push(...observer.takeRecords());
+    const writes = scopedStyleWrites(records);
+    observer.disconnect();
+
+    expect(writes.length).toBeGreaterThan(0);
+    for (const css of writes) {
+      // The light default primary would mean the scope rendered over the defaults before the global theme.
+      expect(css).not.toContain('--ant-color-primary:#1677ff');
+    }
+    expect(writes.at(-1)).toContain('--ant-color-primary:#1668dc');
+    expect(writes.at(-1)).toContain('--ant-border-radius:0px');
   });
 });

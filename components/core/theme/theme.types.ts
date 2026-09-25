@@ -7,10 +7,15 @@ import type { NzAliasToken, NzComponentTokenMap, NzSeedToken } from './generated
 
 export type NzMappingAlgorithm = (seed: NzSeedToken) => Record<string, unknown>;
 
+/**
+ * Per-component overrides: the component's own tokens and, like antd's `ComponentsConfig`, any alias token
+ * (e.g. `components: { Button: { colorPrimary } }`), scoped to that component's elements.
+ */
 export type NzComponentsConfig = {
-  [K in keyof NzComponentTokenMap]?: Partial<NzComponentTokenMap[K]> & {
-    algorithm?: boolean | NzMappingAlgorithm | NzMappingAlgorithm[];
-  };
+  [K in keyof NzComponentTokenMap]?: Partial<NzComponentTokenMap[K]> &
+    Partial<NzAliasToken> & {
+      algorithm?: boolean | NzMappingAlgorithm | NzMappingAlgorithm[];
+    };
 };
 
 /** Mirrors antd's `ThemeConfig` so antd documentation and examples translate directly. */

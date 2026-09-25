@@ -8,8 +8,8 @@ import { TestBed } from '@angular/core/testing';
 
 import { NzButtonSize } from 'ng-zorro-antd/button';
 
-import { NzConfigKey, provideNzConfig } from './config';
-import { NzConfigService, withConfigFactory, WithConfig } from './config.service';
+import { NzConfigKey } from './config';
+import { NzConfigService, provideNzConfig, withConfigFactory, WithConfig } from './config.service';
 
 const NZ_CONFIG_MODULE_NAME: NzConfigKey = 'button';
 const withConfig = withConfigFactory(NZ_CONFIG_MODULE_NAME);

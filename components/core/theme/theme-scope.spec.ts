@@ -31,6 +31,7 @@ class ThemeScopeProbeComponent {
       </div>
     </div>
     <test-theme-scope-probe id="out" />
+    <test-theme-scope-probe id="same" [nzTheme]="{}" />
   `
 })
 class TestHostComponent {}
@@ -69,6 +70,11 @@ describe('nzThemeScopeClasses', () => {
 
   it('gives a probe outside any [nzTheme] no scope class', () => {
     expect(probe('out').classes()).toEqual([]);
+  });
+
+  it('gives a probe on the same element as [nzTheme] that directive’s scope class', () => {
+    const sameDirective = fixture.debugElement.query(By.css('#same')).injector.get(NzThemeDirective);
+    expect(probe('same').classes()).toEqual([sameDirective.scopeClass]);
   });
 
   it('gives a probe nested under two directives only the innermost scope class', () => {

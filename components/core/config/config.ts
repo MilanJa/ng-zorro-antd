@@ -4,7 +4,7 @@
  */
 
 import { Direction } from '@angular/cdk/bidi';
-import { EnvironmentProviders, InjectionToken, makeEnvironmentProviders, TemplateRef, Type } from '@angular/core';
+import { InjectionToken, TemplateRef, Type } from '@angular/core';
 import { SafeUrl } from '@angular/platform-browser';
 
 import { ThemeType } from '@ant-design/icons-angular';
@@ -404,7 +404,3 @@ export type NzConfigKey = keyof NzConfig;
  * User should provide an object implements this interface to set global configurations.
  */
 export const NZ_CONFIG = new InjectionToken<NzConfig>(typeof ngDevMode !== 'undefined' && ngDevMode ? 'nz-config' : '');
-
-export function provideNzConfig(config: NzConfig): EnvironmentProviders {
-  return makeEnvironmentProviders([{ provide: NZ_CONFIG, useValue: config }]);
-}

@@ -28,15 +28,23 @@ export class NzThemeService {
   private readonly configState = signal<NzThemeConfig | null>(null);
   private readonly tokenState = signal<NzAliasToken | null>(null);
 
-  /** The theme most recently applied by `set()`, or `null` before the first one is written. */
+  /**
+   * The theme most recently *requested* through `set()`, or `null` before the first call. It updates
+   * synchronously in `set()`, before the CSS is rendered, so scoped `[nzTheme]` directives merge over the
+   * requested global theme from their first render instead of rendering over the defaults first.
+   */
   readonly config: Signal<NzThemeConfig | null> = this.configState.asReadonly();
-  /** The alias token of `config()`, or `null` before the first theme is written. */
+  /**
+   * The alias token of the theme most recently *written*, or `null` before the first theme is written. It
+   * updates once the CSS for a `set()` call is in the document (and never for a call superseded meanwhile),
+   * so it can lag `config()` while a theme is rendering.
+   */
   readonly token: Signal<NzAliasToken | null> = this.tokenState.asReadonly();
 
-  // TODO(wave 1): add the SSR serialisation test (render with platform-server and assert the serialised
-  // HTML contains `<style id="nz-theme">`); parked by the final-review ruling until a platform-server
-  // test harness exists. The pending task below is what that test would prove.
+  // Server rendering waits for the pending task registered below; tools/v6-compare/ssr-check asserts the
+  // serialised `<style id="nz-theme">`.
   set(config: NzThemeConfig): Promise<void> {
+    this.configState.set(config);
     const applied = this.apply(config);
     // Errors reach the caller through the returned promise; the task only tracks completion.
     this.pendingTasks.run(() => applied.catch(() => undefined));
@@ -50,7 +58,6 @@ export class NzThemeService {
       return; // a newer call already applied its CSS
     }
     writeStyle(this.doc, NZ_THEME_STYLE_ID, css, this.cspNonce);
-    this.configState.set(config);
     this.tokenState.set(getNzDesignToken(config));
   }
 }
