@@ -22,9 +22,21 @@ const demoMap = JSON.parse(readFileSync(path.join(__dirname, 'demo-map.json'), '
 >;
 const EXCLUDE = /^(_semantic|component-token|debug|_?internal)/;
 // esbuild's default resolution walks up from the importer's directory; the demo entry files live
-// under the sibling `ant-design` checkout (which has no node_modules of its own), so `antd`,
-// `react` etc. would not resolve without pointing esbuild at this fork's node_modules explicitly.
+// under the sibling `ant-design` checkout (which has no node_modules of its own), so `react`,
+// `@ant-design/icons` etc. would not resolve without pointing esbuild at this fork's node_modules
+// explicitly. (`antd` itself resolves via the checkout's own tsconfig `paths` alias to its source,
+// not through nodePaths — see the version.ts check below and the README.)
 const nodePaths = [path.join(repoRoot, 'node_modules')];
+
+const antdVersionFile = path.join(antdRepo, 'components', 'version', 'version.ts');
+if (!existsSync(antdVersionFile)) {
+  throw new Error(
+    `Missing ${antdVersionFile}. The ant-design checkout's own build generates this git-ignored ` +
+      `file from its package.json version, so a bare checkout won't have it. Either create it ` +
+      `manually as \`export default '<version>';\` matching that checkout's package.json version, ` +
+      `or run \`npm run version\` there.`
+  );
+}
 
 export function antdDirFor(dir: string): string {
   return demoMap[dir]?.['_antdDir'] ?? kebabCase(v6Components[dir as keyof typeof v6Components].antd[0]);
@@ -67,7 +79,7 @@ async function bundleComponent(dir: string, report: Report): Promise<void> {
       kept.push(demo);
     } catch (error) {
       report[dir].skipped.push({
-        file: path.relative(antdRepo, file),
+        file: path.relative(antdRepo, file).replace(/\\/g, '/'),
         error: String((error as Error).message).split('\n')[0]
       });
     }
@@ -103,7 +115,11 @@ async function bundleComponent(dir: string, report: Report): Promise<void> {
 }
 
 async function main(): Promise<void> {
-  const only = process.argv.includes('--component') ? process.argv[process.argv.indexOf('--component') + 1] : null;
+  const componentFlagIndex = process.argv.indexOf('--component');
+  if (componentFlagIndex !== -1 && componentFlagIndex === process.argv.length - 1) {
+    throw new Error('--component requires a directory name');
+  }
+  const only = componentFlagIndex !== -1 ? process.argv[componentFlagIndex + 1] : null;
   mkdirSync(demosOut, { recursive: true });
   const report: Report = {};
   for (const dir of v6ComponentDirs) {

@@ -8,8 +8,19 @@ whether a migrated ng-zorro component matches antd v6's visuals.
 
 - A sibling `ant-design` checkout (antd 6.6.5 source) at `../ant-design`, or set
   `ANTD_REPO` to its path. It needs no `node_modules` of its own; demo bundling
-  resolves `antd`, `react`, `react-dom` and `@ant-design/icons` from this fork's
-  `node_modules` via esbuild's `nodePaths`.
+  resolves `react`, `react-dom` and `@ant-design/icons` from this fork's
+  `node_modules` via esbuild's `nodePaths`. `antd` itself is **not** resolved
+  from there: the checkout's own `tsconfig.json` aliases `antd` →
+  `components/index.ts`, and esbuild picks that alias up, so demos bundle
+  against the checkout's **source**, not the installed `node_modules/antd`.
+  The checkout must therefore be at the same version as this fork's `antd`
+  dependency (6.6.5).
+- The checkout's git-ignored generated file `components/version/version.ts`
+  must exist (its own build produces this from `package.json` at publish
+  time, and a bare checkout won't have it). Either create it manually as
+  `export default '<version>';` matching that checkout's `package.json`
+  version, or run `npm run version` there. `build-demos.ts` fails fast with
+  this same guidance if the file is missing.
 - `npm ci` in this fork (installs antd, react, react-dom, @ant-design/icons,
   esbuild, playwright).
 - The doc site running on `http://localhost:4200` (`nx serve doc-site` or
