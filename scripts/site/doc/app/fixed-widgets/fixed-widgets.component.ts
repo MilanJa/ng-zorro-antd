@@ -54,7 +54,10 @@ export class FixedWidgetsComponent {
       {
         label: language === 'zh' ? '阿里云主题' : 'Aliyun Theme',
         value: 'aliyun'
-      }
+      },
+      { label: language === 'zh' ? 'Ant Design v6（预览）' : 'Ant Design v6 (preview)', value: 'v6' },
+      { label: language === 'zh' ? 'v6 暗黑' : 'v6 dark', value: 'v6-dark' },
+      { label: language === 'zh' ? 'v6 紧凑' : 'v6 compact', value: 'v6-compact' }
     ];
   });
 }

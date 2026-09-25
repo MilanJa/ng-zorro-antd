@@ -23,7 +23,7 @@ import { NzMessageRef, NzMessageService } from 'ng-zorro-antd/message';
 import { NzPopoverModule } from 'ng-zorro-antd/popover';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 
-import { AppService, SiteTheme } from './app.service';
+import { AppService, SITE_THEMES, SiteTheme, V6_SITE_THEMES } from './app.service';
 import { APP_LANGUAGE, APP_PAGE } from './app.token';
 import { ContributorsListComponent } from './contributors-list/contributors-list.component';
 import { FixedWidgetsComponent } from './fixed-widgets/fixed-widgets.component';
@@ -114,8 +114,17 @@ export class AppComponent implements OnInit {
   }
 
   initTheme(): void {
-    const theme = (localStorage.getItem('site-theme') as SiteTheme) || 'default';
+    const fromQuery = new URLSearchParams(this.document.location.search).get('theme') as SiteTheme | null;
+    const stored = localStorage.getItem('site-theme') as SiteTheme | null;
+    const theme = fromQuery && SITE_THEMES.includes(fromQuery) ? fromQuery : stored && SITE_THEMES.includes(stored) ? stored : 'default';
     this.onThemeChange(theme, false);
+  }
+
+  /** The v6 preview themes replace the v4 component CSS, so the injected base stylesheet is switched off with them. */
+  private setBaseStylesheetDisabled(disabled: boolean): void {
+    this.document
+      .querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"][href^="styles"]')
+      .forEach(link => (link.disabled = disabled));
   }
 
   onThemeChange(theme: SiteTheme, notification: boolean = true): void {
@@ -133,8 +142,9 @@ export class AppComponent implements OnInit {
       this.app.theme.set(theme);
       localStorage.setItem('site-theme', theme);
       this.renderer.setAttribute(document.body, 'data-theme', theme);
+      this.setBaseStylesheetDisabled(V6_SITE_THEMES.includes(theme));
       // remove previous theme
-      ['dark', 'compact', 'aliyun']
+      SITE_THEMES.filter(item => item !== 'default')
         .filter(item => item !== theme)
         .forEach(item => {
           const dom = document.getElementById(`site-theme-${item}`);

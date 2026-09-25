@@ -13,7 +13,9 @@ export const RESPONSIVE_XXS = 768;
 export const RESPONSIVE_XS = 1120;
 export const RESPONSIVE_SM = 1200;
 
-export type SiteTheme = 'default' | 'dark' | 'compact' | 'aliyun';
+export type SiteTheme = 'default' | 'dark' | 'compact' | 'aliyun' | 'v6' | 'v6-dark' | 'v6-compact';
+export const SITE_THEMES: readonly SiteTheme[] = ['default', 'dark', 'compact', 'aliyun', 'v6', 'v6-dark', 'v6-compact'];
+export const V6_SITE_THEMES: readonly SiteTheme[] = ['v6', 'v6-dark', 'v6-compact'];
 
 @Injectable({
   providedIn: 'root'

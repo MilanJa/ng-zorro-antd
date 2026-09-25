@@ -1,0 +1,14 @@
+// Site chrome for the Ant Design v6 preview themes: the same site styles as styles.less, but without
+// ng-zorro-antd.variable.less (the v4 component CSS). The generated v6 CSS is appended by generate-theme.ts.
+@root-entry-name: default;
+
+@import '../components/style/themes/default.less';
+@import '../components/style/mixins/index.less';
+@import '../components/resizable/style/entry.less';
+@import '../components/code-editor/style/entry.less';
+@import '../components/graph/style/entry.less';
+@import '../components/tag/style/entry.less';
+@import './app/header/header';
+@import 'style/index';
+@import 'style/patch';
+@import 'style/doc-search';
