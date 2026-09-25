@@ -50,16 +50,16 @@ async function generateV6Theme(algorithm: V6Algorithm, fileName: string): Promis
   return writeFile(path.join(__dirname, `../../site/assets/${fileName}`), `${chrome.css}\n${bundle.css}`);
 }
 
-export function generateV6Themes(): Promise<void[]> {
-  return Promise.all([
+export async function generateV6Themes(): Promise<void> {
+  await Promise.all([
     generateV6Theme('default', 'v6.css'),
     generateV6Theme('dark', 'v6-dark.css'),
     generateV6Theme('compact', 'v6-compact.css')
   ]);
 }
 
-export default function generateAllTheme(): Promise<void[]> {
-  return Promise.all([
+export default async function generateAllTheme(): Promise<void> {
+  await Promise.all([
     generateTheme(compactPaletteLess, 'compact.css'),
     generateTheme(darkPaletteLess, 'dark.css'),
     generateTheme(aliyunPaletteLess, 'aliyun.css'),
