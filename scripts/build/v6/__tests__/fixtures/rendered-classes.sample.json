@@ -1,0 +1,6 @@
+{
+  "components": {
+    "button": ["ant-btn", "ant-btn-color-primary", "ant-btn-mystery"],
+    "table": ["ant-table"]
+  }
+}

@@ -5,17 +5,20 @@
 
 import { describe, expect, it } from 'vitest';
 
-import { readdirSync, readFileSync, statSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import path from 'node:path';
 
 import { v6ComponentDirs } from '../components';
 import { readManifest } from '../manifest';
+import { renderedCoverageGaps } from '../rendered-coverage';
 
 const componentsRoot = path.resolve(__dirname, '../../../../components');
 const allowlist = JSON.parse(readFileSync(path.resolve(__dirname, '../class-allowlist.json'), 'utf8')) as Record<
   string,
   string[]
 >;
+const manifest = readManifest();
+const styled = new Set(Object.values(manifest.components).flatMap(c => c.classes));
 
 function sourceFiles(dir: string): string[] {
   const out: string[] = [];
@@ -51,9 +54,6 @@ export function emittedClasses(dir: string): string[] {
 }
 
 describe('class coverage of migrated components', () => {
-  const manifest = readManifest();
-  const styled = new Set(Object.values(manifest.components).flatMap(c => c.classes));
-
   for (const dir of v6ComponentDirs) {
     it(`${dir}: every emitted ant-* class is styled by v6 CSS or allowlisted`, () => {
       const allowed = new Set(allowlist[dir] ?? []);
@@ -88,4 +88,43 @@ describe('class coverage of migrated components', () => {
       'ant-btn-text'
     ]);
   });
+});
+
+describe('renderedCoverageGaps', () => {
+  const sample = JSON.parse(
+    readFileSync(path.resolve(__dirname, 'fixtures/rendered-classes.sample.json'), 'utf8')
+  ).components;
+  it('reports rendered classes that are neither styled nor allowlisted, only for mapped components', () => {
+    const gaps = renderedCoverageGaps(sample, new Set(['ant-btn', 'ant-btn-color-primary']), { button: [] }, [
+      'button'
+    ]);
+    expect(gaps).toEqual({ button: ['ant-btn-mystery'] });
+  });
+  it('honours the allowlist and ignores unmapped components in the file', () => {
+    const gaps = renderedCoverageGaps(
+      sample,
+      new Set(['ant-btn', 'ant-btn-color-primary']),
+      { button: ['ant-btn-mystery'] },
+      ['button']
+    );
+    expect(gaps).toEqual({ button: [] });
+    expect(Object.keys(gaps)).not.toContain('table');
+  });
+});
+
+const renderedPath = path.resolve(__dirname, '../../../../tools/v6-compare/out/rendered-classes.json');
+const rendered = existsSync(renderedPath)
+  ? (JSON.parse(readFileSync(renderedPath, 'utf8')).components as Record<string, string[]>)
+  : null;
+
+describe('rendered class coverage (from tools/v6-compare/collect-classes)', () => {
+  for (const dir of v6ComponentDirs) {
+    it.skipIf(!rendered || !rendered[dir])(
+      `${dir}: every class rendered in the doc site is styled or allowlisted`,
+      () => {
+        const gaps = renderedCoverageGaps(rendered!, styled, allowlist, [dir]);
+        expect(gaps[dir], `unstyled classes rendered by ${dir}`).toEqual([]);
+      }
+    );
+  }
 });
