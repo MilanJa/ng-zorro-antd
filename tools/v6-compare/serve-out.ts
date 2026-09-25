@@ -14,17 +14,25 @@ const MIME: Record<string, string> = {
   '.json': 'application/json'
 };
 
-function isAlreadyServing(port: number): Promise<boolean> {
+// compare.html's <title>; used to tell "this is our harness" apart from an unrelated server that
+// happens to answer on the same port (which must not be silently reused or double-bound).
+const HARNESS_MARKER = '<title>antd v6 vs ng-zorro</title>';
+
+type PortProbe = 'free' | 'harness' | 'occupied';
+
+function probePort(port: number): Promise<PortProbe> {
   return new Promise(resolve => {
     const req = get({ host: 'localhost', port, path: '/compare.html', timeout: 1000 }, res => {
-      res.resume();
-      resolve(res.statusCode !== undefined);
+      let body = '';
+      res.on('data', (chunk: Buffer) => (body += chunk));
+      res.on('end', () => resolve(res.statusCode === 200 && body.includes(HARNESS_MARKER) ? 'harness' : 'occupied'));
+      res.on('error', () => resolve('occupied'));
     });
     req.on('timeout', () => {
       req.destroy();
-      resolve(false);
+      resolve('occupied');
     });
-    req.on('error', () => resolve(false));
+    req.on('error', (error: NodeJS.ErrnoException) => resolve(error.code === 'ECONNREFUSED' ? 'free' : 'occupied'));
   });
 }
 
@@ -48,13 +56,19 @@ function createOutServer(dir: string): Server {
 
 /**
  * Serves `dir` (the compare harness's `out/`) at `http://localhost:${port}`. If a server already
- * answers `GET /compare.html` on that port, resolves immediately with a no-op stop function instead
- * of starting a second server.
+ * answers `GET /compare.html` on that port with the compare harness's own page, resolves immediately
+ * with a no-op stop function instead of starting a second server. If something else is listening on
+ * the port (wrong status, wrong body, or a non-HTTP socket), throws rather than reusing or double-
+ * binding it.
  */
 export async function startOutServer(dir: string, port: number): Promise<() => Promise<void>> {
-  if (await isAlreadyServing(port)) {
+  const probe = await probePort(port);
+  if (probe === 'harness') {
     console.log(`Reusing server already serving http://localhost:${port}`);
     return async () => {};
+  }
+  if (probe === 'occupied') {
+    throw new Error(`port ${port} is in use by something other than the compare harness`);
   }
   const server = createOutServer(dir);
   await new Promise<void>((resolve, reject) => {

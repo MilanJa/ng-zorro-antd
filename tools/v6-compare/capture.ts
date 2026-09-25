@@ -34,7 +34,7 @@ function ngDemoKeys(dir: string): string[] {
 }
 
 async function shotElement(page: Page, selector: string, file: string): Promise<boolean> {
-  const el = await page.$(selector);
+  const el = await page.waitForSelector(selector, { timeout: 5000, state: 'attached' }).catch(() => null);
   if (!el) return false;
   await el.scrollIntoViewIfNeeded();
   await page.waitForTimeout(300);
@@ -53,7 +53,8 @@ async function main(): Promise<void> {
     string,
     Record<string, string | null>
   >;
-  const stopServer = await startOutServer(outDir, 4301);
+  const harnessPort = Number(new URL(harnessUrl).port || 80);
+  const stopServer = await startOutServer(outDir, harnessPort);
   const browser = await chromium.launch();
   const page = await browser.newPage({ viewport: { width: 900, height: 800 } });
   const index: string[] = [
