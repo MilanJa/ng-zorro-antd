@@ -166,7 +166,7 @@ export type NzSelectSizeType = NzSizeLDSType;
       [cdkConnectedOverlayWidth]="$any(nzDropdownMatchSelectWidth ? triggerWidth : null)"
       [cdkConnectedOverlayOrigin]="origin"
       cdkConnectedOverlayTransformOriginOn=".ant-select-dropdown"
-      [cdkConnectedOverlayPanelClass]="dropdownPanelClasses"
+      [cdkConnectedOverlayPanelClass]="dropdownPanelClasses!"
       [cdkConnectedOverlayOpen]="nzOpen"
       [cdkConnectedOverlayPositions]="positions"
       (overlayOutsideClick)="onClickOutside($event)"
@@ -304,11 +304,24 @@ export class NzSelectComponent implements ControlValueAccessor, OnInit, AfterCon
     return this.nzMaxMultipleCount !== Infinity && this.listOfValue.length === this.nzMaxMultipleCount;
   }
 
-  /** @internal user classes plus the enclosing `[nzTheme]` scope, for the CDK overlay pane */
-  get dropdownPanelClasses(): string[] {
+  /**
+   * @internal The CDK overlay pane classes: `nzDropdownClassName` plus the enclosing `[nzTheme]` scope.
+   * Stored rather than derived in a getter: `CdkConnectedOverlay.ngOnChanges` rebuilds its position strategy
+   * and resizes the pane on any input change, so the binding must keep its reference between checks. Outside
+   * a theme scope it is `nzDropdownClassName` itself, exactly as bound before scopes existed.
+   */
+  dropdownPanelClasses: string[] | string | null = null;
+
+  private updateDropdownPanelClasses(): void {
+    // The scope is constant per instance (resolved from the injector at construction).
+    const scope = this.themeScopeClasses();
     const user = this.nzDropdownClassName;
+    if (!scope.length) {
+      this.dropdownPanelClasses = user;
+      return;
+    }
     const list = Array.isArray(user) ? user : user ? [user] : [];
-    return [...list, ...this.themeScopeClasses()];
+    this.dropdownPanelClasses = [...list, ...scope];
   }
 
   @Output() readonly nzOnSearch = new EventEmitter<string>();
@@ -649,6 +662,7 @@ export class NzSelectComponent implements ControlValueAccessor, OnInit, AfterCon
   }
 
   constructor() {
+    this.updateDropdownPanelClasses();
     this.destroyRef.onDestroy(() => {
       cancelAnimationFrame(this.requestId);
       this.focusMonitor.stopMonitoring(this.host);
@@ -700,7 +714,19 @@ export class NzSelectComponent implements ControlValueAccessor, OnInit, AfterCon
     this.cdr.markForCheck();
   }
 
-  ngOnChanges({ nzOpen, nzDisabled, nzOptions, nzStatus, nzPlacement, nzSize, nzVariant }: SimpleChanges): void {
+  ngOnChanges({
+    nzOpen,
+    nzDisabled,
+    nzOptions,
+    nzStatus,
+    nzPlacement,
+    nzSize,
+    nzVariant,
+    nzDropdownClassName
+  }: SimpleChanges): void {
+    if (nzDropdownClassName) {
+      this.updateDropdownPanelClasses();
+    }
     if (nzOpen) {
       this.onOpenChange();
     }

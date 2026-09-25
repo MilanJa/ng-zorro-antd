@@ -7,12 +7,14 @@ import { OverlayContainer } from '@angular/cdk/overlay';
 import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
+import { By } from '@angular/platform-browser';
 
 import { expectMotionSettled } from 'ng-zorro-antd/core/testing';
-import { NzThemeDirective } from 'ng-zorro-antd/core/theme';
+import { getNzDesignToken, NzThemeDirective } from 'ng-zorro-antd/core/theme';
 import { V6_PATCH_CSS, V6_TEMPLATE_CSS, V6_TOKENS_DEFAULT_CSS } from 'ng-zorro-antd/core/theme/generated/test-css';
 import { provideNzIconsTesting } from 'ng-zorro-antd/icon/testing';
 
+import { NzSelectComponent } from './select.component';
 import { NzSelectModule } from './select.module';
 
 @Component({
@@ -143,6 +145,17 @@ describe('select dropdown panel picks up the enclosing theme scope', () => {
     document.querySelectorAll('style[id^="nz-theme-"]').forEach(s => s.remove());
   });
 
+  function enclosingScopeClass(): string {
+    return fixture.debugElement.query(By.directive(NzThemeDirective)).injector.get(NzThemeDirective).scopeClass;
+  }
+
+  function selects(): { scoped: NzSelectComponent; plain: NzSelectComponent } {
+    const [scoped, plain] = fixture.debugElement
+      .queryAll(By.directive(NzSelectComponent))
+      .map(de => de.componentInstance as NzSelectComponent);
+    return { scoped, plain };
+  }
+
   it('adds the enclosing [nzTheme] scope class to the overlay pane of a scoped select', async () => {
     fixture.componentInstance.openScoped.set(true);
     fixture.detectChanges();
@@ -150,7 +163,71 @@ describe('select dropdown panel picks up the enclosing theme scope', () => {
     await new Promise(r => setTimeout(r, 0));
     const pane = overlay.getContainerElement().querySelector('.cdk-overlay-pane') as HTMLElement;
     expect(pane).not.toBeNull();
-    expect(pane.className).toMatch(/nz-theme-\d+/);
+    expect(pane.classList).toContain(enclosingScopeClass());
+  });
+
+  it('keeps the bound pane class reference stable across change detection', async () => {
+    const userClasses = ['my-dd'];
+    fixture.componentInstance.plainDropdownClassName.set(userClasses);
+    fixture.componentInstance.scopedDropdownClassName.set('my-dd');
+    fixture.detectChanges();
+    const { scoped, plain } = selects();
+    const scopedClasses = scoped.dropdownPanelClasses;
+    expect(scopedClasses).toEqual(['my-dd', enclosingScopeClass()]);
+    // Outside a scope the CDK input receives nzDropdownClassName itself, as before theme scopes existed.
+    expect(plain.dropdownPanelClasses).toBe(userClasses);
+
+    fixture.componentInstance.openScoped.set(true);
+    fixture.componentInstance.openPlain.set(true);
+    for (let i = 0; i < 3; i++) {
+      fixture.detectChanges();
+      await fixture.whenStable();
+    }
+    expect(scoped.dropdownPanelClasses).toBe(scopedClasses);
+    expect(scoped.cdkConnectedOverlay.panelClass).toBe(scopedClasses);
+    expect(plain.cdkConnectedOverlay.panelClass).toBe(userClasses);
+
+    // A new nzDropdownClassName value is the only thing that produces a new reference.
+    fixture.componentInstance.scopedDropdownClassName.set(['a']);
+    fixture.detectChanges();
+    expect(scoped.dropdownPanelClasses).not.toBe(scopedClasses);
+    expect(scoped.dropdownPanelClasses).toEqual(['a', enclosingScopeClass()]);
+  });
+
+  it('styles the dropdown of a scoped select with the scoped tokens', async () => {
+    fixture.componentInstance.openScoped.set(true);
+    fixture.componentInstance.openPlain.set(true);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    await new Promise(r => setTimeout(r, 0));
+    const scopedPane = overlay.getContainerElement().querySelector(`.cdk-overlay-pane.${enclosingScopeClass()}`);
+    const plainPane = Array.from(overlay.getContainerElement().querySelectorAll('.cdk-overlay-pane')).find(
+      pane => pane !== scopedPane
+    );
+    const toRgb = (color: string): string => {
+      const probe = document.createElement('div');
+      probe.style.backgroundColor = color;
+      document.body.appendChild(probe);
+      const rgb = getComputedStyle(probe).backgroundColor;
+      probe.remove();
+      return rgb;
+    };
+    // The selected option's background: `controlItemBgActive`, or `controlItemBgActiveHover` while it is
+    // also the active (keyboard-highlighted) option.
+    const selected = (pane: Element | null | undefined): HTMLElement =>
+      pane!.querySelector<HTMLElement>('.ant-select-item-option-selected')!;
+    const expectedBg = (option: HTMLElement, colorPrimary?: string): string => {
+      const token = getNzDesignToken(colorPrimary ? { token: { colorPrimary } } : {});
+      return toRgb(
+        option.classList.contains('ant-select-item-option-active')
+          ? token.controlItemBgActiveHover
+          : token.controlItemBgActive
+      );
+    };
+    const selectedBg = (pane: Element | null | undefined): string => getComputedStyle(selected(pane)).backgroundColor;
+    expect(selectedBg(scopedPane)).toBe(expectedBg(selected(scopedPane), '#00b96b'));
+    expect(selectedBg(plainPane)).toBe(expectedBg(selected(plainPane)));
+    expect(selectedBg(scopedPane)).not.toBe(selectedBg(plainPane));
   });
 
   it('adds no scope class and no empty class token for a select outside any theme scope', async () => {
@@ -189,7 +266,7 @@ describe('select dropdown panel picks up the enclosing theme scope', () => {
     const tokens = pane.className.trim().split(/\s+/);
     expect(tokens).toContain('a');
     expect(tokens).toContain('b');
-    expect(tokens.filter(token => /^nz-theme-\d+$/.test(token)).length).toBe(1);
+    expect(tokens.filter(token => /^nz-theme-\d+$/.test(token))).toEqual([enclosingScopeClass()]);
     expect(new Set(tokens).size).toBe(tokens.length);
     expect(tokens).not.toContain('');
   });
@@ -204,6 +281,6 @@ describe('select dropdown panel picks up the enclosing theme scope', () => {
     expect(pane).not.toBeNull();
     const tokens = pane.className.trim().split(/\s+/);
     expect(tokens).toContain('my-dd');
-    expect(tokens.some(token => /^nz-theme-\d+$/.test(token))).toBe(true);
+    expect(tokens).toContain(enclosingScopeClass());
   });
 });
