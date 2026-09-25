@@ -10,13 +10,16 @@ import path from 'node:path';
 
 const shimsDir = path.resolve(__dirname, 'shims');
 
-/** `DatePicker` -> `antd/es/date-picker/style/index.js`, `QRCode` -> `antd/es/qr-code/style/index.js`. */
-export function antdStyleModulePath(name: string): string {
-  const kebab = name
+/** `DatePicker` -> `date-picker`, `QRCode` -> `qr-code` (antd directory naming). */
+export function kebabCase(name: string): string {
+  return name
     .replace(/([A-Z]+)([A-Z][a-z])/g, '$1-$2')
     .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
     .toLowerCase();
-  return `antd/es/${kebab}/style/index.js`;
+}
+
+export function antdStyleModulePath(name: string): string {
+  return `antd/es/${kebabCase(name)}/style/index.js`;
 }
 
 const shimPlugin: esbuild.Plugin = {

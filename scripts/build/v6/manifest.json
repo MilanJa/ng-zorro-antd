@@ -379,6 +379,7 @@
         "--ant-select-active-outline-color",
         "--ant-select-clear-bg",
         "--ant-select-hover-border-color",
+        "--ant-select-internal_fixed_item_margin",
         "--ant-select-line-width-focus",
         "--ant-select-multiple-item-bg",
         "--ant-select-multiple-item-border-color",

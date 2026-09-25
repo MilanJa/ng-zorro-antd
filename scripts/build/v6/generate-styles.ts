@@ -14,7 +14,6 @@ import { allAntdComponentNames, v6ComponentDirs, v6Components } from './componen
 import {
   assertNoAntdScoping,
   extractClassNames,
-  extractTokenNames,
   joinTemplate,
   normalizeCssVarRootCls,
   partitionBlocks,
@@ -99,6 +98,22 @@ export interface V6Bundle {
   globalPatch: string;
   /** template + component patches + tokens + global patch, in that order */
   css: string;
+}
+
+/** `--ant-<component>-<token>` names a component's default-token factory declares, from the engine registry. */
+export async function componentTokenNames(component: string, prefix = 'ant'): Promise<string[]> {
+  const core = await import(pathToFileURL(path.join(generatedDir, 'engine-core.ts')).href);
+  const { registry } = await import(pathToFileURL(path.join(generatedDir, 'engine-components.ts')).href);
+  const entry = registry.get(component);
+  if (!entry) {
+    return [];
+  }
+  const alias = core.formatToken({ ...core.defaultAlgorithm(core.seedToken), override: {} });
+  const defaults =
+    typeof entry.getDefaultToken === 'function' ? entry.getDefaultToken({ ...alias }) : (entry.getDefaultToken ?? {});
+  return Object.keys(defaults)
+    .map(key => core.token2CSSVar(entry.prefixToken(key), prefix))
+    .sort();
 }
 
 async function renderTokens(algorithm: V6Algorithm): Promise<string> {
@@ -196,8 +211,8 @@ export async function generateStyles(options: GenerateStylesOptions): Promise<Ge
     compact: await renderTokens('compact')
   };
   for (const dir of v6ComponentDirs) {
-    const own = v6Components[dir].antd.map(n => `--ant-${kebab(n)}-`);
-    manifest.components[dir].tokens = extractTokenNames(tokens.default).filter(t => own.some(p => t.startsWith(p)));
+    const names = await Promise.all(v6Components[dir].antd.map(name => componentTokenNames(name)));
+    manifest.components[dir].tokens = [...new Set(names.flat())].sort();
   }
 
   const defaultBundle = await buildV6Bundle('default', componentsDir);
@@ -234,11 +249,4 @@ export async function generateStyles(options: GenerateStylesOptions): Promise<Ge
     );
   }
   return { perComponent, template, tokens, bundle };
-}
-
-function kebab(name: string): string {
-  return name
-    .replace(/([A-Z]+)([A-Z][a-z])/g, '$1-$2')
-    .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
-    .toLowerCase();
 }
