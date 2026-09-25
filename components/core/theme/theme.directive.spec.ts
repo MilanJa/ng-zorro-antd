@@ -9,10 +9,12 @@ import { firstValueFrom } from 'rxjs';
 
 import { expect } from 'vitest';
 
+import { nzDarkAlgorithm } from './algorithms';
 import { V6_TEMPLATE_CSS, V6_TOKENS_DEFAULT_CSS } from './generated/test-css';
 import { renderThemeCss } from './render-theme-css';
 import { NzThemeScopeIdService } from './theme-scope-id.service';
 import { NZ_THEME_RENDERER, NzThemeDirective } from './theme.directive';
+import { NzThemeService } from './theme.service';
 import type { NzThemeConfig } from './theme.types';
 
 @Component({
@@ -183,6 +185,60 @@ describe('NzThemeDirective destroyed before its first render resolves', () => {
 
     expect(await firstValueFrom(appRef.isStable)).toBe(true);
     expect(document.getElementById(scopeClass)?.textContent).toContain('--ant-color-primary:#000000;');
+  });
+});
+
+@Component({
+  imports: [NzThemeDirective],
+  template: `
+    <section id="scoped" [nzTheme]="cfg()" [nzThemeInherit]="inherit()">
+      <button id="s" class="ant-btn ant-btn-color-primary ant-btn-variant-solid">S</button>
+    </section>
+  `
+})
+class GlobalInheritHostComponent {
+  cfg = signal<NzThemeConfig>({});
+  inherit = signal(true);
+}
+
+describe('NzThemeDirective global inheritance', () => {
+  let fixture: ComponentFixture<GlobalInheritHostComponent>;
+  let base: HTMLStyleElement;
+
+  beforeEach(async () => {
+    base = document.createElement('style');
+    base.textContent = `${V6_TEMPLATE_CSS}\n${V6_TOKENS_DEFAULT_CSS}\n*,*::before,*::after{transition:none!important;}`;
+    document.head.appendChild(base);
+    await TestBed.inject(NzThemeService).set({ algorithm: nzDarkAlgorithm });
+    fixture = TestBed.createComponent(GlobalInheritHostComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    await new Promise(r => setTimeout(r, 0));
+  });
+
+  afterEach(async () => {
+    base.remove();
+    document.querySelectorAll('style[id^="nz-theme-"]').forEach(s => s.remove());
+    document.getElementById('nz-theme')?.remove();
+    await TestBed.inject(NzThemeService).set({});
+  });
+
+  it('inherits the global theme by default', async () => {
+    fixture.componentInstance.cfg.set({ token: { borderRadius: 0 } });
+    fixture.detectChanges();
+    await fixture.whenStable();
+    await new Promise(r => setTimeout(r, 0));
+    expect(getComputedStyle(document.getElementById('s')!).backgroundColor).toBe('rgb(22, 104, 220)'); // dark primary
+    expect(getComputedStyle(document.getElementById('s')!).borderRadius).toBe('0px');
+  });
+
+  it('starts from the defaults when nzThemeInherit is false', async () => {
+    fixture.componentInstance.inherit.set(false);
+    fixture.componentInstance.cfg.set({ token: { borderRadius: 0 } });
+    fixture.detectChanges();
+    await fixture.whenStable();
+    await new Promise(r => setTimeout(r, 0));
+    expect(getComputedStyle(document.getElementById('s')!).backgroundColor).toBe('rgb(22, 119, 255)'); // light primary
   });
 });
 

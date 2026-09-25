@@ -186,9 +186,13 @@ export async function renderThemeCss(
 
 /**
  * Selector for a component's unprefixed (alias-level) overrides: every element whose class list contains a
- * class starting with the component's root class (`ant-btn`, `ant-btn-icon`, ...), nested under the theme
- * scope when the theme is not global. Falls back to `selector` for a registry entry without a root class
- * (a Node test keeps `COMPONENT_ROOT_CLS` in sync with the registry, so this is defensive only).
+ * class starting with the component's root class (`ant-btn`, `ant-btn-icon`, ...). Falls back to `selector`
+ * for a registry entry without a root class (a Node test keeps `COMPONENT_ROOT_CLS` in sync with the
+ * registry, so this is defensive only).
+ *
+ * For `:root` this is any matching element on the page. For a scoped selector (a `[nzTheme]` host's class)
+ * it is both the host's matching descendants *and* the host itself, since the host can be the component
+ * root (e.g. `<button nz-button [nzTheme]>`), which the descendant-only combinator would otherwise miss.
  */
 function componentScope(selector: string, component: string): string {
   const root = COMPONENT_ROOT_CLS[component];
@@ -196,5 +200,5 @@ function componentScope(selector: string, component: string): string {
     return selector;
   }
   const elements = `:is([class^="${root}"],[class*=" ${root}"])`;
-  return selector === ':root' ? elements : `${selector} ${elements}`;
+  return selector === ':root' ? elements : `${selector} ${elements}, ${selector}${elements}`;
 }

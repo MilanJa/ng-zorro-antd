@@ -80,7 +80,7 @@ chart.color = token.colorPrimary;
 </section>
 ```
 
-`nzThemeInherit`（默认 `true`）会合并最近的祖先 `[nzTheme]` 的主题。由 CDK 浮层渲染的弹出内容（下拉选择框、提示框等）位于该区域之外，仍遵循全局主题。
+`nzThemeInherit`（默认 `true`）会合并最近的祖先 `[nzTheme]` 的主题；若没有祖先指令，则合并通过 `NzConfig.theme` 应用的全局主题。由 CDK 浮层渲染的弹出内容（下拉选择框、提示框等）位于该区域之外，仍遵循全局主题。
 
 ## 服务端渲染
 
@@ -90,6 +90,6 @@ chart.color = token.colorPrimary;
 
 - 未在上方列出的组件仍会回退到 v4 规则。
 - 局部主题无法作用于 CDK 浮层。
-- `[nzTheme]` 只继承外层 `[nzTheme]` 的主题，而不继承全局的 `NzConfig.theme`：没有祖先指令时，它从默认主题开始。
+- 全局设置的组件级别名覆盖，即使在不继承主题的局部作用域内也仍然生效：它以类作用域规则的形式写在 `:root` 上，而 CSS 变量的继承不受 `nzThemeInherit` 影响，会沿 DOM 正常传递。
 - 生成的 CSS 引用的是 `--ant-*` 变量，因此不支持 `ant` 以外的 `cssVar.prefix` 取值。
 - 令牌名称与 antd 完全一致（例如 `--ant-color-primary`、`--ant-button-default-bg`）；直接在 CSS 中覆盖它们对静态值有效，但不会被重新推导，建议优先使用 `NzConfig.theme`。

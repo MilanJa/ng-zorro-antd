@@ -20,7 +20,7 @@ import {
 
 import { renderThemeCss } from './render-theme-css';
 import { NzThemeScopeIdService } from './theme-scope-id.service';
-import { writeStyle } from './theme.service';
+import { NzThemeService, writeStyle } from './theme.service';
 import type { NzThemeConfig } from './theme.types';
 
 /**
@@ -40,6 +40,9 @@ export const NZ_THEME_RENDERER = new InjectionToken<typeof renderThemeCss>('NZ_T
  * ```html
  * <section [nzTheme]="{ algorithm: nzDarkAlgorithm }">...</section>
  * ```
+ *
+ * By default (`nzThemeInherit`, true) it inherits the enclosing `[nzTheme]`, otherwise the global
+ * `NzConfig.theme`; CDK overlays get the scope through `nzThemeScopeClasses()` (Task 9).
  */
 @Directive({
   selector: '[nzTheme]',
@@ -49,6 +52,7 @@ export class NzThemeDirective {
   private readonly doc = inject(DOCUMENT);
   private readonly cspNonce = inject(CSP_NONCE, { optional: true });
   private readonly parent = inject(NzThemeDirective, { optional: true, skipSelf: true });
+  private readonly globalTheme = inject(NzThemeService);
   private readonly renderThemeCss = inject(NZ_THEME_RENDERER);
   private readonly pendingTasks = inject(PendingTasks);
   private readonly id = inject(NzThemeScopeIdService).next();
@@ -59,18 +63,24 @@ export class NzThemeDirective {
   /** @internal */
   readonly scopeClass = `nz-theme-${this.id}`;
 
-  /** Effective config after merging the ancestor directive's config when inheriting. */
+  /**
+   * Effective config after merging over the nearest ancestor `[nzTheme]` when inheriting, or, absent an
+   * ancestor, over the global theme applied through `NzThemeService`.
+   */
   readonly effectiveConfig: Signal<NzThemeConfig> = computed(() => {
     const own = this.nzTheme();
-    const parent = this.nzThemeInherit() ? this.parent?.effectiveConfig() : undefined;
-    if (!parent) {
+    if (!this.nzThemeInherit()) {
+      return own;
+    }
+    const base = this.parent?.effectiveConfig() ?? this.globalTheme.config() ?? undefined;
+    if (!base) {
       return own;
     }
     return {
-      algorithm: own.algorithm ?? parent.algorithm,
-      cssVar: own.cssVar ?? parent.cssVar,
-      token: { ...parent.token, ...own.token },
-      components: { ...parent.components, ...own.components }
+      algorithm: own.algorithm ?? base.algorithm,
+      cssVar: own.cssVar ?? base.cssVar,
+      token: { ...base.token, ...own.token },
+      components: { ...base.components, ...own.components }
     };
   });
 

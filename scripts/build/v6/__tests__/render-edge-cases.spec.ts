@@ -58,9 +58,9 @@ describe('renderThemeCss edge cases', () => {
       expect(rootBlocks.some(b => b.body.includes('--ant-button-'))).toBe(true);
     });
 
-    it('are nested under a non-root theme selector', async () => {
+    it('are nested under a non-root theme selector, and also target the host itself', async () => {
       const blocks = splitBlocks(await r.renderThemeCss(config, '.nz-theme-1'));
-      expect(blocks.map(b => b.selector)).toContain(`.nz-theme-1 ${buttonScope}`);
+      expect(blocks.map(b => b.selector)).toContain(`.nz-theme-1 ${buttonScope}, .nz-theme-1${buttonScope}`);
       const scopeBlocks = blocks.filter(b => b.selector === '.nz-theme-1');
       expect(scopeBlocks.length).toBeGreaterThan(0);
       expect(scopeBlocks.every(b => !b.body.includes('--ant-color-primary:#ff4d4f'))).toBe(true);
@@ -77,5 +77,16 @@ describe('renderThemeCss edge cases', () => {
     const t = r.getDesignToken({ components: { Button: { primaryShadow: 'none' } } } as never);
     expect(t['Button']).toBeUndefined();
     expect(t['colorPrimary']).toBe('#1677ff');
+  });
+
+  it('scoped component alias overrides target descendants and the host itself', async () => {
+    const css = await r.renderThemeCss(
+      { components: { Button: { algorithm: true, colorPrimary: '#ff4d4f' } } } as never,
+      '.nz-theme-7'
+    );
+    const block = splitBlocks(css).find(b => b.body.includes('--ant-color-primary:#ff4d4f'));
+    expect(block?.selector).toBe(
+      '.nz-theme-7 :is([class^="ant-btn"],[class*=" ant-btn"]), .nz-theme-7:is([class^="ant-btn"],[class*=" ant-btn"])'
+    );
   });
 });

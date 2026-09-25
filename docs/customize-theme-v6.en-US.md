@@ -80,7 +80,7 @@ chart.color = token.colorPrimary;
 </section>
 ```
 
-`nzThemeInherit` (default `true`) merges the theme of the nearest ancestor `[nzTheme]`. Popups rendered by the CDK overlay (select dropdowns, tooltips) are outside the section and follow the global theme.
+`nzThemeInherit` (default `true`) merges over the nearest ancestor `[nzTheme]`, or, when there is none, over the global theme applied through `NzConfig.theme`. Popups rendered by the CDK overlay (select dropdowns, tooltips) are outside the section and follow the global theme.
 
 ## Server-side rendering
 
@@ -90,6 +90,6 @@ The theme service writes a `<style id="nz-theme">` element through Angular's `DO
 
 - Components not listed above fall back to v4 rules.
 - Scoped themes do not reach CDK overlays.
-- `[nzTheme]` inherits only from an enclosing `[nzTheme]`, not from the global `NzConfig.theme`: without an ancestor directive it starts from the default theme.
+- A component-level alias override set globally still applies inside a scope that does not inherit: it is written as a class-scoped rule on `:root`, and CSS variables inherit through the DOM regardless of `nzThemeInherit`.
 - `cssVar.prefix` values other than `ant` are not supported by the generated CSS, which references `--ant-*` variables.
 - Token names follow antd exactly (`--ant-color-primary`, `--ant-button-default-bg`); overriding them directly in CSS works for static values but is not re-derived, prefer `NzConfig.theme`.
