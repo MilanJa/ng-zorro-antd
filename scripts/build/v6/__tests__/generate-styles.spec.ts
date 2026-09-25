@@ -151,6 +151,37 @@ describe('generateStyles', () => {
     expect(result.bundle).toContain('nz-space-item');
     expect(result.bundle).toContain('.ant-select-dropdown {');
   });
+
+  describe('buildV6Bundle', () => {
+    it('composes template, component patches, tokens and global patch in that order', async () => {
+      const { buildV6Bundle } = await import('../generate-styles');
+      const bundle = await buildV6Bundle('default', componentsDir);
+      const parts = [bundle.template, ...bundle.componentPatches, bundle.tokens, bundle.globalPatch];
+      expect(bundle.css).toBe(parts.join('\n'));
+      expect(bundle.template).toContain('.ant-btn');
+      expect(bundle.componentPatches.join('\n')).toContain('nz-space-item');
+      expect(bundle.tokens).toMatch(/^:root\{--ant-/m);
+      expect(bundle.globalPatch).toContain('.cdk-overlay-container');
+    });
+
+    it('dark and compact bundles share the template and differ only in tokens', async () => {
+      const { buildV6Bundle } = await import('../generate-styles');
+      const [d, dark, compact] = await Promise.all(
+        ['default', 'dark', 'compact'].map(a => buildV6Bundle(a as never, componentsDir))
+      );
+      expect(dark.template).toBe(d.template);
+      expect(compact.template).toBe(d.template);
+      expect(dark.tokens).not.toBe(d.tokens);
+      expect(compact.tokens).not.toBe(d.tokens);
+      expect(dark.tokens).toContain('--ant-color-bg-container:#141414');
+    });
+
+    it('generateStyles publishes exactly buildV6Bundle("default").css as the bundle', async () => {
+      const { buildV6Bundle } = await import('../generate-styles');
+      const expected = (await buildV6Bundle('default', componentsDir)).css;
+      expect(result.bundle).toBe(expected);
+    });
+  });
 });
 
 describe('generateStyles manifest check', () => {

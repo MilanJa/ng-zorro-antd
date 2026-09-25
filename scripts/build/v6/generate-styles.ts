@@ -90,6 +90,53 @@ export interface GeneratedStyles {
   bundle: string;
 }
 
+export type V6Algorithm = 'default' | 'dark' | 'compact';
+
+export interface V6Bundle {
+  template: string;
+  componentPatches: string[];
+  tokens: string;
+  globalPatch: string;
+  /** template + component patches + tokens + global patch, in that order */
+  css: string;
+}
+
+async function renderTokens(algorithm: V6Algorithm): Promise<string> {
+  const renderer = await import('../../../components/core/theme/render-theme-css');
+  const core = await import(pathToFileURL(path.join(generatedDir, 'engine-core.ts')).href);
+  const algorithms = { default: undefined, dark: core.darkAlgorithm, compact: core.compactAlgorithm };
+  return renderer.renderThemeCss(algorithms[algorithm] ? { algorithm: algorithms[algorithm] } : {}, ':root');
+}
+
+let templateCache: string | null = null;
+
+/** The full v6 template (all mapped components, one extraction, shared reset rules emitted once). */
+export function buildV6Template(): string {
+  if (templateCache === null) {
+    const allRaw = extractAntdCss({ includes: allAntdComponentNames(), key: KEY });
+    templateCache = normalizeCssVarRootCls(joinTemplate(partitionBlocks(allRaw, KEY).template));
+    assertNoAntdScoping(templateCache);
+  }
+  return templateCache;
+}
+
+/** Everything an application needs for one algorithm; used by publish and by the doc site. */
+export async function buildV6Bundle(algorithm: V6Algorithm, componentsDir: string): Promise<V6Bundle> {
+  const template = buildV6Template();
+  const componentPatches = v6ComponentDirs
+    .map(dir => readPatch(componentsDir, dir))
+    .filter((patch): patch is string => patch !== null);
+  const tokens = await renderTokens(algorithm);
+  const globalPatch = readFileSync(path.join(componentsDir, 'style/v6/patch.css'), 'utf8');
+  return {
+    template,
+    componentPatches,
+    tokens,
+    globalPatch,
+    css: [template, ...componentPatches, tokens, globalPatch].join('\n')
+  };
+}
+
 export function buildComponentCss(template: string, patchCss: string | null): string {
   return patchCss ? `${template}\n${patchCss}` : template;
 }
@@ -140,31 +187,21 @@ export async function generateStyles(options: GenerateStylesOptions): Promise<Ge
   }
 
   // Full template: one extraction with every mapped component (shared reset rules are emitted once).
-  const allRaw = extractAntdCss({ includes: allAntdComponentNames(), key: KEY });
-  const template = normalizeCssVarRootCls(joinTemplate(partitionBlocks(allRaw, KEY).template));
-  assertNoAntdScoping(template);
+  const template = buildV6Template();
 
   // Token files come from the engine so runtime and static paths share one code path (parity test proves equality).
-  const renderer = await import('../../../components/core/theme/render-theme-css');
-  const core = await import(pathToFileURL(path.join(generatedDir, 'engine-core.ts')).href);
   const tokens = {
-    default: await renderer.renderThemeCss({}, ':root'),
-    dark: await renderer.renderThemeCss({ algorithm: core.darkAlgorithm }, ':root'),
-    compact: await renderer.renderThemeCss({ algorithm: core.compactAlgorithm }, ':root')
+    default: await renderTokens('default'),
+    dark: await renderTokens('dark'),
+    compact: await renderTokens('compact')
   };
   for (const dir of v6ComponentDirs) {
     const own = v6Components[dir].antd.map(n => `--ant-${kebab(n)}-`);
     manifest.components[dir].tokens = extractTokenNames(tokens.default).filter(t => own.some(p => t.startsWith(p)));
   }
 
-  const globalPatch = readFileSync(path.join(componentsDir, 'style/v6/patch.css'), 'utf8');
-  // Every mapped component's own patch (map order, skipping components with none) so that an app
-  // importing only the bundle still gets e.g. select's CDK-overlay positioning and space's item display,
-  // not just the plain antd template.
-  const componentPatches = v6ComponentDirs
-    .map(dir => readPatch(componentsDir, dir))
-    .filter((patch): patch is string => patch !== null);
-  const bundle = [template, ...componentPatches, tokens.default, globalPatch].join('\n');
+  const defaultBundle = await buildV6Bundle('default', componentsDir);
+  const bundle = defaultBundle.css;
 
   write(path.join(publishDir, 'style/v6/template.css'), withHeader(template, antdVersion));
   for (const name of ['default', 'dark', 'compact'] as const) {
