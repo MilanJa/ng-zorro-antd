@@ -14,7 +14,17 @@ export function genStyleUtils(config) {
   const getCompUnitless = config.getCompUnitless;
 
   const record = (component, getDefaultToken, options) => {
-    const name = Array.isArray(component) ? component[0] : component;
+    const [name, subStyle] = Array.isArray(component) ? [component[0], component[1] ?? component[0]] : [component, component];
+    const existing = registry.get(name);
+    if (existing) {
+      if (existing.getDefaultToken !== getDefaultToken) {
+        throw new Error(
+          `v6 recorder: conflicting default-token factories for ${String(name)} (sub-styles: ${[...existing.subStyles, subStyle].join(', ')})`
+        );
+      }
+      existing.subStyles.push(subStyle);
+      return;
+    }
     const prefixToken = key => `${String(name)}${key.slice(0, 1).toUpperCase()}${key.slice(1)}`;
     const unitless = {
       ...(typeof getCompUnitless === 'function' ? getCompUnitless(component) : {}),
@@ -28,7 +38,8 @@ export function genStyleUtils(config) {
       unitless,
       ignore: options && options.ignore,
       deprecatedTokens: options && options.deprecatedTokens,
-      prefixToken
+      prefixToken,
+      subStyles: [subStyle]
     });
   };
 

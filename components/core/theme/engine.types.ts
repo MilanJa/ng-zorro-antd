@@ -43,6 +43,7 @@ export interface RegistryEntry {
   ignore?: Record<string, boolean>;
   deprecatedTokens?: Array<[string, string]>;
   prefixToken: (key: string) => string;
+  subStyles?: string[];
 }
 
 export interface EngineComponents {
