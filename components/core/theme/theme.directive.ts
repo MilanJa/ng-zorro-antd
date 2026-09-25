@@ -15,10 +15,12 @@ import {
   InjectionToken,
   input,
   PendingTasks,
+  signal,
   Signal
 } from '@angular/core';
 
 import { renderThemeCss } from './render-theme-css';
+import { NZ_THEME_SCOPE } from './theme-scope';
 import { NzThemeScopeIdService } from './theme-scope-id.service';
 import { NzThemeService, writeStyle } from './theme.service';
 import type { NzThemeConfig } from './theme.types';
@@ -46,7 +48,8 @@ export const NZ_THEME_RENDERER = new InjectionToken<typeof renderThemeCss>('NZ_T
  */
 @Directive({
   selector: '[nzTheme]',
-  host: { '[class]': 'scopeClass' }
+  host: { '[class]': 'scopeClass' },
+  providers: [{ provide: NZ_THEME_SCOPE, useFactory: () => inject(NzThemeDirective).scopeSignal }]
 })
 export class NzThemeDirective {
   private readonly doc = inject(DOCUMENT);
@@ -62,6 +65,12 @@ export class NzThemeDirective {
 
   /** @internal */
   readonly scopeClass = `nz-theme-${this.id}`;
+
+  /**
+   * @internal A constant per instance; a signal keeps `NZ_THEME_SCOPE`'s contract uniform for consumers
+   * (`nzThemeScopeClasses()`), which reads any enclosing scope reactively regardless of whether it can change.
+   */
+  readonly scopeSignal: Signal<string | null> = signal(this.scopeClass).asReadonly();
 
   /**
    * Effective config after merging over the nearest ancestor `[nzTheme]` when inheriting, or, absent an

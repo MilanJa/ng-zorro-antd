@@ -9,6 +9,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 
 import { expectMotionSettled } from 'ng-zorro-antd/core/testing';
+import { NzThemeDirective } from 'ng-zorro-antd/core/theme';
 import { V6_PATCH_CSS, V6_TEMPLATE_CSS, V6_TOKENS_DEFAULT_CSS } from 'ng-zorro-antd/core/theme/generated/test-css';
 import { provideNzIconsTesting } from 'ng-zorro-antd/icon/testing';
 
@@ -85,5 +86,67 @@ describe('select under antd v6 css', () => {
     await fixture.whenStable();
     await new Promise(r => setTimeout(r, 400));
     expect(overlay.getContainerElement().querySelector('.ant-select-dropdown')).toBeNull();
+  });
+});
+
+@Component({
+  imports: [FormsModule, NzSelectModule, NzThemeDirective],
+  template: `
+    <div [nzTheme]="{ token: { colorPrimary: '#00b96b' } }">
+      <nz-select id="scoped" [ngModel]="value()" [nzOpen]="openScoped()" style="width: 160px; margin-top: 40px">
+        <nz-option nzValue="jack" nzLabel="Jack" />
+      </nz-select>
+    </div>
+    <nz-select id="plain" [ngModel]="value()" [nzOpen]="openPlain()" style="width: 160px; margin-top: 40px">
+      <nz-option nzValue="jack" nzLabel="Jack" />
+    </nz-select>
+  `
+})
+class ScopedSelectHostComponent {
+  value = signal('jack');
+  openScoped = signal(false);
+  openPlain = signal(false);
+}
+
+describe('select dropdown panel picks up the enclosing theme scope', () => {
+  let fixture: ComponentFixture<ScopedSelectHostComponent>;
+  let overlay: OverlayContainer;
+  let style: HTMLStyleElement;
+
+  beforeEach(() => {
+    style = document.createElement('style');
+    style.textContent = [V6_TEMPLATE_CSS, V6_TOKENS_DEFAULT_CSS, V6_PATCH_CSS].join('\n');
+    document.head.appendChild(style);
+    TestBed.configureTestingModule({ providers: [provideNzIconsTesting()] });
+    fixture = TestBed.createComponent(ScopedSelectHostComponent);
+    overlay = TestBed.inject(OverlayContainer);
+    fixture.detectChanges();
+  });
+
+  afterEach(() => {
+    style.remove();
+    overlay.ngOnDestroy();
+    document.querySelectorAll('style[id^="nz-theme-"]').forEach(s => s.remove());
+  });
+
+  it('adds the enclosing [nzTheme] scope class to the overlay pane of a scoped select', async () => {
+    fixture.componentInstance.openScoped.set(true);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    await new Promise(r => setTimeout(r, 0));
+    const pane = overlay.getContainerElement().querySelector('.cdk-overlay-pane') as HTMLElement;
+    expect(pane).not.toBeNull();
+    expect(pane.className).toMatch(/nz-theme-\d+/);
+  });
+
+  it('adds no scope class and no empty class token for a select outside any theme scope', async () => {
+    fixture.componentInstance.openPlain.set(true);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    await new Promise(r => setTimeout(r, 0));
+    const pane = overlay.getContainerElement().querySelector('.cdk-overlay-pane') as HTMLElement;
+    expect(pane).not.toBeNull();
+    expect(pane.className).not.toMatch(/nz-theme-\d+/);
+    expect(pane.className.trim().split(/\s+/)).not.toContain('');
   });
 });

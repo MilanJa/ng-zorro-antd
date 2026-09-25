@@ -54,6 +54,7 @@ import {
 } from 'ng-zorro-antd/core/form';
 import { getPlacementName, NzOverlayModule, POSITION_MAP, POSITION_TYPE } from 'ng-zorro-antd/core/overlay';
 import { cancelAnimationFrame, requestAnimationFrame } from 'ng-zorro-antd/core/polyfill';
+import { nzThemeScopeClasses } from 'ng-zorro-antd/core/theme';
 import {
   NgClassInterface,
   NzSafeAny,
@@ -165,7 +166,7 @@ export type NzSelectSizeType = NzSizeLDSType;
       [cdkConnectedOverlayWidth]="$any(nzDropdownMatchSelectWidth ? triggerWidth : null)"
       [cdkConnectedOverlayOrigin]="origin"
       cdkConnectedOverlayTransformOriginOn=".ant-select-dropdown"
-      [cdkConnectedOverlayPanelClass]="nzDropdownClassName!"
+      [cdkConnectedOverlayPanelClass]="dropdownPanelClasses"
       [cdkConnectedOverlayOpen]="nzOpen"
       [cdkConnectedOverlayPositions]="positions"
       (overlayOutsideClick)="onClickOutside($event)"
@@ -241,6 +242,7 @@ export class NzSelectComponent implements ControlValueAccessor, OnInit, AfterCon
   private readonly platform = inject(Platform);
   private readonly focusMonitor = inject(FocusMonitor);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly themeScopeClasses = nzThemeScopeClasses();
 
   protected readonly noAnimation = inject(NzNoAnimationDirective, { host: true, optional: true });
   protected readonly nzFormStatusService = inject(NzFormStatusService, { optional: true });
@@ -300,6 +302,13 @@ export class NzSelectComponent implements ControlValueAccessor, OnInit, AfterCon
 
   get isMaxMultipleCountReached(): boolean {
     return this.nzMaxMultipleCount !== Infinity && this.listOfValue.length === this.nzMaxMultipleCount;
+  }
+
+  /** @internal user classes plus the enclosing `[nzTheme]` scope, for the CDK overlay pane */
+  get dropdownPanelClasses(): string[] {
+    const user = this.nzDropdownClassName;
+    const list = Array.isArray(user) ? user : user ? [user] : [];
+    return [...list, ...this.themeScopeClasses()];
   }
 
   @Output() readonly nzOnSearch = new EventEmitter<string>();

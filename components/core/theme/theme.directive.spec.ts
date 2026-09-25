@@ -209,7 +209,6 @@ describe('NzThemeDirective global inheritance', () => {
     base = document.createElement('style');
     base.textContent = `${V6_TEMPLATE_CSS}\n${V6_TOKENS_DEFAULT_CSS}\n*,*::before,*::after{transition:none!important;}`;
     document.head.appendChild(base);
-    await TestBed.inject(NzThemeService).set({ algorithm: nzDarkAlgorithm });
     fixture = TestBed.createComponent(GlobalInheritHostComponent);
     fixture.detectChanges();
     await fixture.whenStable();
@@ -224,6 +223,7 @@ describe('NzThemeDirective global inheritance', () => {
   });
 
   it('inherits the global theme by default', async () => {
+    await TestBed.inject(NzThemeService).set({ algorithm: nzDarkAlgorithm });
     fixture.componentInstance.cfg.set({ token: { borderRadius: 0 } });
     fixture.detectChanges();
     await fixture.whenStable();
@@ -233,12 +233,22 @@ describe('NzThemeDirective global inheritance', () => {
   });
 
   it('starts from the defaults when nzThemeInherit is false', async () => {
+    await TestBed.inject(NzThemeService).set({ algorithm: nzDarkAlgorithm });
     fixture.componentInstance.inherit.set(false);
     fixture.componentInstance.cfg.set({ token: { borderRadius: 0 } });
     fixture.detectChanges();
     await fixture.whenStable();
     await new Promise(r => setTimeout(r, 0));
     expect(getComputedStyle(document.getElementById('s')!).backgroundColor).toBe('rgb(22, 119, 255)'); // light primary
+  });
+
+  it('re-renders when the global theme changes after the scope rendered', async () => {
+    expect(getComputedStyle(document.getElementById('s')!).backgroundColor).toBe('rgb(22, 119, 255)'); // light primary
+    await TestBed.inject(NzThemeService).set({ algorithm: nzDarkAlgorithm });
+    fixture.detectChanges();
+    await fixture.whenStable();
+    await new Promise(r => setTimeout(r, 0));
+    expect(getComputedStyle(document.getElementById('s')!).backgroundColor).toBe('rgb(22, 104, 220)'); // dark primary
   });
 });
 

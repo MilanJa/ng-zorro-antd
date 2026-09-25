@@ -7,5 +7,6 @@ export * from './algorithms';
 export * from './theme.types';
 export * from './theme.service';
 export * from './theme.directive';
+export * from './theme-scope';
 export type { NzAliasToken, NzComponentTokenMap, NzSeedToken } from './generated/tokens';
 export * from './theme.api';
