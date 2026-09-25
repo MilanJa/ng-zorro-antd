@@ -20,22 +20,52 @@ const demoMap = JSON.parse(readFileSync(path.join(__dirname, 'demo-map.json'), '
   string,
   Record<string, string | null>
 >;
-const EXCLUDE = /^(_semantic|component-token|debug|_?internal)/;
+// antd's docs-only demos: semantic-DOM tables, component-token playgrounds, internal fixtures and
+// the `debug-*`/`*-debug` demos (e.g. `borderless-debug`, `placement-debug`) that antd hides from its site.
+const EXCLUDE = /^(_semantic|component-token|debug|_?internal)|(^|-)debug$/;
 // esbuild's default resolution walks up from the importer's directory; the demo entry files live
 // under the sibling `ant-design` checkout (which has no node_modules of its own), so `react`,
 // `@ant-design/icons` etc. would not resolve without pointing esbuild at this fork's node_modules
-// explicitly. (`antd` itself resolves via the checkout's own tsconfig `paths` alias to its source,
-// not through nodePaths — see the version.ts check below and the README.)
+// explicitly.
 const nodePaths = [path.join(repoRoot, 'node_modules')];
+// The checkout's tsconfig `paths` map `antd` (and `antd/es/*`, `antd/lib/*`, `antd/locale/*`) to its
+// own `components/` source, while `compare.tsx` (in this fork) resolves `antd` to the installed
+// package. Without this alias the bundle holds two antd copies with two separate `ConfigContext`s, so
+// compare.tsx's `<ConfigProvider theme={{ zeroRuntime: true }}>` never reaches the demos and they
+// fall back to antd's runtime CSS-in-JS (light default theme in every harness theme). esbuild applies
+// `alias` before tsconfig `paths` and resolves the substituted path from `absWorkingDir` (this fork's
+// root), so every importer, checkout demos included, gets the one installed `node_modules/antd`: the
+// same package the v6 CSS is generated from. Subpaths (`antd/es/...`) are aliased too.
+const alias = { antd: 'antd' };
 
-const antdVersionFile = path.join(antdRepo, 'components', 'version', 'version.ts');
-if (!existsSync(antdVersionFile)) {
-  throw new Error(
-    `Missing ${antdVersionFile}. The ant-design checkout's own build generates this git-ignored ` +
-      `file from its package.json version, so a bare checkout won't have it. Either create it ` +
-      `manually as \`export default '<version>';\` matching that checkout's package.json version, ` +
-      `or run \`npm run version\` there.`
-  );
+/** Fails unless the checkout's package.json, its generated version.ts and the installed antd agree. */
+function assertAntdVersions(): void {
+  const antdVersionFile = path.join(antdRepo, 'components', 'version', 'version.ts');
+  if (!existsSync(antdVersionFile)) {
+    throw new Error(
+      `Missing ${antdVersionFile}. The ant-design checkout's own build generates this git-ignored ` +
+        `file from its package.json version, so a bare checkout won't have it. Either create it ` +
+        `manually as \`export default '<version>';\` matching that checkout's package.json version, ` +
+        `or run \`npm run version\` there.`
+    );
+  }
+  const checkout = (JSON.parse(readFileSync(path.join(antdRepo, 'package.json'), 'utf8')) as { version: string })
+    .version;
+  const versionTs =
+    /export default ['"]([^'"]+)['"]/.exec(readFileSync(antdVersionFile, 'utf8'))?.[1] ?? '<unparsable>';
+  const installed = (
+    JSON.parse(readFileSync(path.join(repoRoot, 'node_modules', 'antd', 'package.json'), 'utf8')) as {
+      version: string;
+    }
+  ).version;
+  if (checkout !== installed || versionTs !== installed) {
+    throw new Error(
+      `antd version mismatch: checkout package.json ${checkout}, checkout components/version/version.ts ` +
+        `${versionTs}, installed node_modules/antd ${installed}. The demos come from the checkout and the ` +
+        `v6 CSS from the installed package, so they must match: run \`git -C ${antdRepo} checkout ${installed}\` ` +
+        `(and regenerate version.ts there).`
+    );
+  }
 }
 
 export function antdDirFor(dir: string): string {
@@ -46,8 +76,9 @@ export function listAntdDemos(antdDir: string): string[] {
   const folder = path.join(antdRepo, 'components', antdDir, 'demo');
   if (!existsSync(folder)) return [];
   return readdirSync(folder)
-    .filter(f => f.endsWith('.tsx') && !EXCLUDE.test(f))
+    .filter(f => f.endsWith('.tsx'))
     .map(f => f.replace(/\.tsx$/, ''))
+    .filter(demo => !EXCLUDE.test(demo))
     .sort();
 }
 
@@ -74,13 +105,14 @@ async function bundleComponent(dir: string, report: Report): Promise<void> {
         logLevel: 'silent',
         absWorkingDir: repoRoot,
         nodePaths,
+        alias,
         define: { 'process.env.NODE_ENV': '"development"' }
       });
       kept.push(demo);
     } catch (error) {
       report[dir].skipped.push({
         file: path.relative(antdRepo, file).replace(/\\/g, '/'),
-        error: String((error as Error).message).split('\n')[0]
+        error: (error as esbuild.BuildFailure).errors?.[0]?.text ?? String((error as Error).message).split('\n')[0]
       });
     }
   }
@@ -109,6 +141,7 @@ async function bundleComponent(dir: string, report: Report): Promise<void> {
     absWorkingDir: repoRoot,
     outfile: path.join(demosOut, `${dir}.js`),
     nodePaths,
+    alias,
     define: { 'process.env.NODE_ENV': '"development"', __DEMOS__: 'globalThis.__DEMOS__' },
     loader: { '.png': 'dataurl', '.svg': 'dataurl', '.css': 'text' }
   });
@@ -120,6 +153,7 @@ async function main(): Promise<void> {
     throw new Error('--component requires a directory name');
   }
   const only = componentFlagIndex !== -1 ? process.argv[componentFlagIndex + 1] : null;
+  assertAntdVersions();
   mkdirSync(demosOut, { recursive: true });
   const report: Report = {};
   for (const dir of v6ComponentDirs) {
@@ -141,7 +175,9 @@ async function main(): Promise<void> {
     console.log(`${dir}: ${r.demos.length} demos bundled, ${r.skipped.length} skipped (${r.antdDir})`);
 }
 
-main().catch(error => {
-  console.error(error);
-  process.exit(1);
-});
+if (require.main === module) {
+  main().catch(error => {
+    console.error(error);
+    process.exit(1);
+  });
+}

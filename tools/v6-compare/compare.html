@@ -52,7 +52,7 @@
       } else {
         const s = document.createElement('script');
         s.type = 'module';
-        s.src = `demos/${component}.js`;
+        s.src = `demos/${encodeURIComponent(component)}.js`;
         document.body.appendChild(s);
         if (p.get('live')) {
           const site = p.get('site') || 'http://localhost:4200';
@@ -60,7 +60,14 @@
           const pane = document.getElementById('site-pane');
           pane.hidden = false;
           document.getElementById('layout').classList.remove('single');
-          pane.innerHTML = `<iframe src="${site}/components/${component}/en?theme=${p.get('theme') || 'v6'}${demo ? `#components-${component}-demo-${demo}` : ''}"></iframe>`;
+          // Build the iframe URL through the URL API (query values are encoded, never parsed as HTML).
+          const src = new URL(`${site.replace(/\/+$/, '')}/components/${encodeURIComponent(component)}/en`);
+          if (src.protocol !== 'http:' && src.protocol !== 'https:') throw new Error(`unsupported site ${site}`);
+          src.searchParams.set('theme', p.get('theme') || 'v6');
+          if (demo) src.hash = `components-${component}-demo-${demo}`;
+          const frame = document.createElement('iframe');
+          frame.src = src.href;
+          pane.appendChild(frame);
         }
       }
     </script>

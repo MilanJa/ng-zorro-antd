@@ -42,6 +42,50 @@ async function shotElement(page: Page, selector: string, file: string): Promise<
   return true;
 }
 
+/**
+ * The antd pane must be styled only by the generated v6 CSS. `compare.tsx` renders under
+ * `ConfigProvider theme={{ zeroRuntime: true, hashed: false }}` and sends what antd still registers at
+ * runtime (its default-theme CSS-variable blocks) to a detached element. If antd's runtime CSS-in-JS reaches
+ * the document anyway (for example because the bundle holds a second antd copy that the providers do not
+ * reach), the pane shows antd's light default theme whatever the harness theme is. Fail the run instead of
+ * producing misleading screenshots when the page has:
+ * - a `<style data-css-hash>`/`<style data-rc-order>` element (runtime CSS-in-JS output);
+ * - a hashed `css-dev-only-*` class (runtime component styles, i.e. the provider was not reached);
+ * - a `css-var-*` class that a rule in the document targets. antd v6 always puts its CSS-variable class
+ *   on components; it is inert unless runtime variable blocks were injected for it.
+ */
+async function assertNoAntdRuntimeStyles(page: Page, what: string): Promise<void> {
+  const found = await page.evaluate(() => {
+    const selectors = Array.from(document.styleSheets).flatMap(sheet => {
+      try {
+        return Array.from(sheet.cssRules).map(rule => (rule as CSSStyleRule).selectorText ?? '');
+      } catch {
+        return [];
+      }
+    });
+    const classes = [
+      ...new Set(
+        Array.from(document.querySelectorAll('[class]'))
+          .flatMap(el => Array.from(el.classList))
+          .filter(c => /^css-(dev-only|var)/.test(c))
+      )
+    ];
+    return {
+      styles: document.querySelectorAll('style[data-css-hash], style[data-rc-order]').length,
+      classes: classes.filter(c => c.startsWith('css-dev-only') || selectors.some(s => s.includes(`.${c}`)))
+    };
+  });
+  if (found.styles > 0 || found.classes.length > 0) {
+    throw new Error(
+      `antd runtime CSS-in-JS is active on the antd pane of ${what}: ${found.styles} runtime <style> ` +
+        `element(s), styled runtime classes ${JSON.stringify(found.classes.slice(0, 5))}. The antd demos ` +
+        `must render against the generated v6 CSS only; check that out/demos bundles a single antd copy ` +
+        `(node_modules/antd) and that compare.tsx's StyleProvider/ConfigProvider wrap every demo, then ` +
+        `rebuild with build-demos.ts.`
+    );
+  }
+}
+
 async function main(): Promise<void> {
   const only = arg('component');
   const themes = arg('theme') ? [arg('theme')!] : [...THEMES];
@@ -77,6 +121,7 @@ async function main(): Promise<void> {
         await antdPage.goto(`${harnessUrl}/compare.html?component=${dir}&demo=${antd}&theme=${theme}`, {
           waitUntil: 'networkidle'
         });
+        await assertNoAntdRuntimeStyles(antdPage, `${dir}/${antd} (${theme})`);
         const antdFile = path.join(folder, `${key}.antd.png`);
         const okAntd = await shotElement(antdPage, `.cmp-demo[data-demo="${antd}"]`, antdFile);
         await antdPage.close();
