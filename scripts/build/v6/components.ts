@@ -28,6 +28,7 @@ export const v6Components = {
   button: { antd: ['Button'], prefixCls: 'ant-btn' },
   drawer: { antd: ['Drawer'], prefixCls: 'ant-drawer' },
   input: { antd: ['Input'], prefixCls: 'ant-input' },
+  message: { antd: ['message'], prefixCls: 'ant-message' },
   modal: { antd: ['Modal'], prefixCls: 'ant-modal' },
   result: { antd: ['Result'], prefixCls: 'ant-result' },
   select: { antd: ['Select'], prefixCls: 'ant-select' },
@@ -44,17 +45,39 @@ export type V6ComponentDir = keyof typeof v6Components;
 
 export const v6ComponentDirs = Object.keys(v6Components) as V6ComponentDir[];
 
+/**
+ * `v6Components[dir].antd` must hold the real antd package export name (`@ant-design/static-style-extract`'s
+ * `extractStyle` looks components up as `antdInstance[name]`, and `components.spec.ts` pins that every
+ * entry is a real export) -- but `message`/`notification` are the two components antd exports as
+ * lowercase functions instead of PascalCase React components, while antd's *own* internal cssinjs
+ * recorder still registers their style hooks under the PascalCase name (`genStyleHooks('Message', ...)`).
+ * Everything that reads the bundled engine's registry by antd name (`componentTokenNames`, and
+ * `componentRootClasses` below, whose output feeds `COMPONENT_ROOT_CLS`/generate-types.spec's "has a
+ * root class for every component in the engine registry" check) needs that PascalCase registry name,
+ * not the lowercase export name. Translate only at those read sites so the map itself keeps the literal
+ * antd export name everywhere.
+ */
+const ANTD_REGISTRY_NAME_OVERRIDES: Record<string, string> = {
+  message: 'Message',
+  notification: 'Notification'
+};
+
+/** antd export name -> the name antd's own cssinjs recorder registers its style hook under. */
+export function antdRegistryName(name: string): string {
+  return ANTD_REGISTRY_NAME_OVERRIDES[name] ?? name;
+}
+
 /** All antd component names across the map, deduplicated, in map order. */
 export function allAntdComponentNames(): string[] {
   return [...new Set(v6ComponentDirs.flatMap(dir => [...v6Components[dir].antd]))];
 }
 
-/** antd component name -> root class, in map order (source of `generated/component-roots.ts`). */
+/** antd registry name -> root class, in map order (source of `generated/component-roots.ts`). */
 export function componentRootClasses(): Record<string, string> {
   const roots: Record<string, string> = {};
   for (const dir of v6ComponentDirs) {
     for (const name of v6Components[dir].antd) {
-      roots[name] = v6Components[dir].prefixCls;
+      roots[antdRegistryName(name)] = v6Components[dir].prefixCls;
     }
   }
   return roots;

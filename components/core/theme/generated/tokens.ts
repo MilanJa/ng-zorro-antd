@@ -643,6 +643,12 @@ export interface NzInputToken {
   warningActiveShadow: string;
 }
 
+export interface NzMessageToken {
+  contentBg: string;
+  contentPadding: string;
+  zIndexPopup: number;
+}
+
 export interface NzModalToken {
   bodyPadding: number;
   confirmBodyPadding: number;
@@ -766,6 +772,7 @@ export interface NzComponentTokenMap {
   Button: NzButtonToken;
   Drawer: NzDrawerToken;
   Input: NzInputToken;
+  Message: NzMessageToken;
   Modal: NzModalToken;
   Popconfirm: NzPopconfirmToken;
   Popover: NzPopoverToken;

@@ -38,6 +38,16 @@ const shimPlugin: esbuild.Plugin = {
       }
       return undefined;
     });
+    // antd/es/message/style/index.js imports only `prepareNotificationToken`/`sharedGenerateStyle`
+    // from notification/style; the real module also registers the unrelated `Notification` component
+    // at module scope, which the recorder above rejects once both Message and Notification try to
+    // register (see shims/notification-style.js).
+    build.onResolve({ filter: /^\.\.\/\.\.\/notification\/style$/ }, args => {
+      if (args.importer.replace(/\\/g, '/').includes('/antd/es/message/style/')) {
+        return { path: path.join(shimsDir, 'notification-style.js') };
+      }
+      return undefined;
+    });
   }
 };
 

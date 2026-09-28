@@ -33,30 +33,32 @@ import { NzMessageData } from './typings';
       (mouseenter)="onEnter()"
       (mouseleave)="onLeave()"
     >
-      <div class="ant-message-notice-content">
+      <div class="ant-message-notice-content ant-message-notice-wrapper">
         <div class="ant-message-custom-content" [class]="'ant-message-' + instance.type">
           @switch (instance.type) {
             @case ('success') {
-              <nz-icon nzType="check-circle" />
+              <nz-icon nzType="check-circle" class="ant-message-notice-icon ant-message-notice-icon-success" />
             }
             @case ('info') {
-              <nz-icon nzType="info-circle" />
+              <nz-icon nzType="info-circle" class="ant-message-notice-icon ant-message-notice-icon-info" />
             }
             @case ('warning') {
-              <nz-icon nzType="exclamation-circle" />
+              <nz-icon nzType="exclamation-circle" class="ant-message-notice-icon ant-message-notice-icon-warning" />
             }
             @case ('error') {
-              <nz-icon nzType="close-circle" />
+              <nz-icon nzType="close-circle" class="ant-message-notice-icon ant-message-notice-icon-error" />
             }
             @case ('loading') {
-              <nz-icon nzType="loading" />
+              <nz-icon nzType="loading" class="ant-message-notice-icon ant-message-notice-icon-loading" />
             }
           }
-          <ng-container
-            *nzStringTemplateOutlet="instance.content; context: { $implicit: this, data: instance.options?.nzData }"
-          >
-            <span [innerHTML]="instance.content"></span>
-          </ng-container>
+          <span class="ant-message-notice-title">
+            <ng-container
+              *nzStringTemplateOutlet="instance.content; context: { $implicit: this, data: instance.options?.nzData }"
+            >
+              <span [innerHTML]="instance.content"></span>
+            </ng-container>
+          </span>
         </div>
       </div>
     </div>

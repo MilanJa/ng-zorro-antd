@@ -234,6 +234,9 @@
       "less": "./message/style/*.less",
       "style": "./message/style/index.min.css"
     },
+    "./message/style/v6/*": {
+      "style": "./message/style/v6/*"
+    },
     "./modal/style/*": {
       "less": "./modal/style/*.less",
       "style": "./modal/style/index.min.css"

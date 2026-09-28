@@ -1,0 +1,68 @@
+/* Ported from components/message/style/animation.less: v6's message CSS is transition-based
+   and defines no keyframes, but ng-zorro's NzMNComponent (message/base.ts:273-300) drives motion
+   by adding ant-message-move-up-enter/-leave and waiting for `animationend` on the MessageMoveIn/
+   MessageMoveOut keyframes below. Without this file the leave animation never fires and a toast
+   never gets removed (message-v6.spec.ts "is removed after its duration under v6 CSS" pins this). */
+.ant-message .ant-message-move-up-enter,
+.ant-message .ant-message-move-up-leave {
+  animation-duration: var(--ant-motion-duration-slow);
+  animation-timing-function: var(--ant-motion-ease-in-out-circ);
+  animation-fill-mode: forwards;
+}
+.ant-message .ant-message-move-up-enter {
+  animation-name: MessageMoveIn;
+}
+.ant-message .ant-message-move-up-leave {
+  animation-name: MessageMoveOut;
+}
+@keyframes MessageMoveIn {
+  0% {
+    padding: 0;
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  100% {
+    padding: var(--ant-padding-xs);
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+@keyframes MessageMoveOut {
+  0% {
+    max-height: 150px;
+    padding: var(--ant-padding-xs);
+    opacity: 1;
+  }
+  100% {
+    max-height: 0;
+    padding: 0;
+    opacity: 0;
+  }
+}
+
+/* v6's own template CSS sets `.ant-message .ant-message-notice { position: absolute; ... }`
+   unconditionally (antd/es/message/style/index.js genMessageStyle) -- it assumes rc-notification's
+   virtual-list stacking model, where every notice is absolutely positioned and offset with a
+   per-notice `--notification-y` custom property the JS layer maintains. ng-zorro's container
+   instead renders `*ngFor` siblings in normal block flow and never sets `--notification-y`.
+   Without this override every toast collapses onto the same absolute position (out of flow, so
+   later siblings don't reserve space for earlier ones) as soon as more than one message is
+   showing at once. Mirrored back to `position: relative` (same selector, so it wins on source
+   order) keeps ng-zorro's simple flow-based stacking intact while still picking up every other
+   v6-declared property (background, radius, shadow, padding, colours) on the same element. */
+.ant-message .ant-message-notice {
+  position: relative;
+}
+
+/* v6 declares the icon/title flex row and gap on `.ant-message-notice-wrapper` (antd/es/message/
+   style/index.js: `.ant-message-notice-wrapper{display:flex;align-items:center;gap:...}`). ng-zorro
+   adds that class to the existing `.ant-message-notice-content` div (see the mapping in
+   message-v6.spec.ts / task-14-report.md), but keeps `.ant-message-custom-content` as the direct
+   parent of the icon and title for v4-compat, one level deeper than v6's real DOM -- so the flex/gap
+   never reaches the icon+title pair. Mirrored onto the actual ancestor so the two align the way v6
+   intends. Inert under v4 (v4's `.ant-message-custom-content` has no `display` rule of its own). */
+.ant-message-notice-wrapper .ant-message-custom-content {
+  display: flex;
+  align-items: center;
+  gap: var(--ant-margin-xs);
+}

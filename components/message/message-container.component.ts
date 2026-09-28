@@ -28,7 +28,7 @@ const NZ_MESSAGE_DEFAULT_CONFIG: Required<MessageConfig> = {
   exportAs: 'nzMessageContainer',
   encapsulation: ViewEncapsulation.None,
   template: `
-    <div class="ant-message" [class.ant-message-rtl]="dir === 'rtl'" [style.top]="top">
+    <div class="ant-message ant-message-top ant-message-list" [class.ant-message-rtl]="dir === 'rtl'" [style.top]="top">
       @for (instance of instances; track instance) {
         <nz-message [instance]="instance" (destroyed)="remove($event.id, $event.userAction)" />
       }

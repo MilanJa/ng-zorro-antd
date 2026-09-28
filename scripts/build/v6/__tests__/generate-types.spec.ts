@@ -10,7 +10,7 @@ import os from 'node:os';
 import path from 'node:path';
 
 import { bundleEngine } from '../bundle-engine';
-import { allAntdComponentNames, v6ComponentDirs, v6Components } from '../components';
+import { allAntdComponentNames, antdRegistryName, v6ComponentDirs, v6Components } from '../components';
 import { generateTypes, renderComponentRoots } from '../generate-types';
 
 describe('generateTypes', () => {
@@ -80,7 +80,12 @@ describe('committed component-roots.ts', () => {
     const expected: Record<string, string> = {};
     for (const dir of v6ComponentDirs) {
       for (const name of v6Components[dir].antd) {
-        expected[name] = v6Components[dir].prefixCls;
+        // Keyed by the antd *registry* name (antdRegistryName), not the literal `.antd` entry: for
+        // `message`/`notification` those differ (antd exports them lowercase, but its own cssinjs
+        // recorder still registers their style hooks under the PascalCase name), and the next test
+        // ("has a root class for every component in the engine registry") needs this map keyed the
+        // same way the registry itself is keyed. See components.ts's `antdRegistryName` comment.
+        expected[antdRegistryName(name)] = v6Components[dir].prefixCls;
       }
     }
     expect(COMPONENT_ROOT_CLS).toEqual(expected);

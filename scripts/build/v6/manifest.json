@@ -1,7 +1,7 @@
 {
   "antdVersion": "6.6.5",
   "engineCoreBytes": 42701,
-  "engineComponentsBytes": 155566,
+  "engineComponentsBytes": 165184,
   "components": {
     "alert": {
       "classes": [
@@ -392,6 +392,46 @@
         "--ant-input-padding-inline-lg",
         "--ant-input-padding-inline-sm",
         "--ant-input-warning-active-shadow"
+      ]
+    },
+    "message": {
+      "classes": [
+        "ant-message",
+        "ant-message-bottom",
+        "ant-message-fade",
+        "ant-message-fade-appear-active",
+        "ant-message-fade-appear-prepare",
+        "ant-message-fade-appear-start",
+        "ant-message-fade-enter-active",
+        "ant-message-fade-enter-prepare",
+        "ant-message-fade-enter-start",
+        "ant-message-fade-leave-active",
+        "ant-message-fade-leave-start",
+        "ant-message-hook-holder",
+        "ant-message-list",
+        "ant-message-list-content",
+        "ant-message-list-content-decrease",
+        "ant-message-notice",
+        "ant-message-notice-actions",
+        "ant-message-notice-icon",
+        "ant-message-notice-icon-error",
+        "ant-message-notice-icon-info",
+        "ant-message-notice-icon-loading",
+        "ant-message-notice-icon-success",
+        "ant-message-notice-icon-warning",
+        "ant-message-notice-pure-panel",
+        "ant-message-notice-stack-in-threshold",
+        "ant-message-notice-title",
+        "ant-message-notice-wrapper",
+        "ant-message-rtl",
+        "ant-message-stack",
+        "ant-message-stack-expanded",
+        "ant-message-top"
+      ],
+      "tokens": [
+        "--ant-message-content-bg",
+        "--ant-message-content-padding",
+        "--ant-message-z-index-popup"
       ]
     },
     "modal": {

@@ -10,7 +10,7 @@ import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-import { allAntdComponentNames, v6ComponentDirs, v6Components } from './components';
+import { allAntdComponentNames, antdRegistryName, v6ComponentDirs, v6Components } from './components';
 import {
   assertNoAntdScoping,
   dropForeignCssVarBlocks,
@@ -215,7 +215,7 @@ export async function generateStyles(options: GenerateStylesOptions): Promise<Ge
     compact: await renderTokens('compact')
   };
   for (const dir of v6ComponentDirs) {
-    const names = await Promise.all(v6Components[dir].antd.map(name => componentTokenNames(name)));
+    const names = await Promise.all(v6Components[dir].antd.map(name => componentTokenNames(antdRegistryName(name))));
     manifest.components[dir].tokens = [...new Set(names.flat())].sort();
   }
 
