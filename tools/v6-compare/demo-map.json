@@ -5,5 +5,6 @@
   "skeleton": { "_antdDir": "skeleton" },
   "space": { "_antdDir": "space" },
   "button": { "_antdDir": "button" },
-  "spin": { "_antdDir": "spin", "delay-and-debounce": "delayAndDebounce", "inside": null }
+  "spin": { "_antdDir": "spin", "delay-and-debounce": "delayAndDebounce", "inside": null },
+  "result": { "_antdDir": "result", "custom": "customIcon", "fof": "404", "foo": "500", "fot": "403" }
 }

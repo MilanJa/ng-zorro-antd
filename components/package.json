@@ -276,6 +276,9 @@
       "less": "./result/style/*.less",
       "style": "./result/style/index.min.css"
     },
+    "./result/style/v6/*": {
+      "style": "./result/style/v6/*"
+    },
     "./skeleton/style/*": {
       "less": "./skeleton/style/*.less",
       "style": "./skeleton/style/index.min.css"

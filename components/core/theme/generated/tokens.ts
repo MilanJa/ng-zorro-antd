@@ -629,6 +629,13 @@ export interface NzInputToken {
   warningActiveShadow: string;
 }
 
+export interface NzResultToken {
+  extraMargin: string;
+  iconFontSize: number;
+  subtitleFontSize: number;
+  titleFontSize: number;
+}
+
 export interface NzSelectToken {
   INTERNAL_FIXED_ITEM_MARGIN: number;
   activeBorderColor: string;
@@ -683,6 +690,7 @@ export interface NzSpinToken {
 export interface NzComponentTokenMap {
   Button: NzButtonToken;
   Input: NzInputToken;
+  Result: NzResultToken;
   Select: NzSelectToken;
   Skeleton: NzSkeletonToken;
   Space: NzSpaceToken;

@@ -13,6 +13,7 @@ Only the components below have v6 styles so far. Others keep rendering with the 
 <!-- v6-components:start -->
 - `button`
 - `input`
+- `result`
 - `select`
 - `skeleton`
 - `space`

@@ -33,7 +33,7 @@ export class NzResultIconDirective {}
   selector: 'div[nz-result-content]',
   exportAs: 'nzResultContent',
   host: {
-    class: 'ant-result-content'
+    class: 'ant-result-content ant-result-body'
   }
 })
 export class NzResultContentDirective {}

@@ -1,7 +1,7 @@
 {
   "antdVersion": "6.6.5",
   "engineCoreBytes": 42701,
-  "engineComponentsBytes": 123482,
+  "engineComponentsBytes": 125100,
   "components": {
     "button": {
       "classes": [
@@ -279,6 +279,28 @@
         "--ant-input-padding-inline-lg",
         "--ant-input-padding-inline-sm",
         "--ant-input-warning-active-shadow"
+      ]
+    },
+    "result": {
+      "classes": [
+        "ant-result",
+        "ant-result-body",
+        "ant-result-error",
+        "ant-result-extra",
+        "ant-result-icon",
+        "ant-result-image",
+        "ant-result-info",
+        "ant-result-rtl",
+        "ant-result-subtitle",
+        "ant-result-success",
+        "ant-result-title",
+        "ant-result-warning"
+      ],
+      "tokens": [
+        "--ant-result-extra-margin",
+        "--ant-result-icon-font-size",
+        "--ant-result-subtitle-font-size",
+        "--ant-result-title-font-size"
       ]
     },
     "select": {
