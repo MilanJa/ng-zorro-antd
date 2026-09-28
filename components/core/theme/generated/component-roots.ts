@@ -10,5 +10,6 @@ export const COMPONENT_ROOT_CLS: Record<string, string> = {
   Button: 'ant-btn',
   Input: 'ant-input',
   Select: 'ant-select',
+  Skeleton: 'ant-skeleton',
   Space: 'ant-space'
 };

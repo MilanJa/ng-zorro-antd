@@ -27,6 +27,7 @@ export const v6Components = {
   button: { antd: ['Button'], prefixCls: 'ant-btn' },
   input: { antd: ['Input'], prefixCls: 'ant-input' },
   select: { antd: ['Select'], prefixCls: 'ant-select' },
+  skeleton: { antd: ['Skeleton'], prefixCls: 'ant-skeleton' },
   space: { antd: ['Space'], prefixCls: 'ant-space' }
 } as const satisfies Record<string, V6ComponentEntry>;
 

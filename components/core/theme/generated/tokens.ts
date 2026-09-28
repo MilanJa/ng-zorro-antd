@@ -659,6 +659,17 @@ export interface NzSelectToken {
   zIndexPopup: number;
 }
 
+export interface NzSkeletonToken {
+  blockRadius: number;
+  color: string;
+  colorGradientEnd: string;
+  gradientFromColor: string;
+  gradientToColor: string;
+  paragraphLiHeight: number;
+  paragraphMarginTop: number;
+  titleHeight: number;
+}
+
 export interface NzSpaceToken {
 }
 
@@ -666,5 +677,6 @@ export interface NzComponentTokenMap {
   Button: NzButtonToken;
   Input: NzInputToken;
   Select: NzSelectToken;
+  Skeleton: NzSkeletonToken;
   Space: NzSpaceToken;
 }

@@ -1,7 +1,7 @@
 {
   "antdVersion": "6.6.5",
   "engineCoreBytes": 42701,
-  "engineComponentsBytes": 115293,
+  "engineComponentsBytes": 120084,
   "components": {
     "button": {
       "classes": [
@@ -402,6 +402,48 @@
         "--ant-select-show-arrow-padding-inline-end",
         "--ant-select-single-item-height-lg",
         "--ant-select-z-index-popup"
+      ]
+    },
+    "skeleton": {
+      "classes": [
+        "ant-skeleton",
+        "ant-skeleton-active",
+        "ant-skeleton-avatar",
+        "ant-skeleton-avatar-circle",
+        "ant-skeleton-avatar-lg",
+        "ant-skeleton-avatar-sm",
+        "ant-skeleton-block",
+        "ant-skeleton-button",
+        "ant-skeleton-button-circle",
+        "ant-skeleton-button-lg",
+        "ant-skeleton-button-round",
+        "ant-skeleton-button-sm",
+        "ant-skeleton-element",
+        "ant-skeleton-header",
+        "ant-skeleton-image",
+        "ant-skeleton-image-circle",
+        "ant-skeleton-image-path",
+        "ant-skeleton-image-svg",
+        "ant-skeleton-image-svg-circle",
+        "ant-skeleton-input",
+        "ant-skeleton-input-lg",
+        "ant-skeleton-input-sm",
+        "ant-skeleton-node",
+        "ant-skeleton-paragraph",
+        "ant-skeleton-round",
+        "ant-skeleton-section",
+        "ant-skeleton-title",
+        "ant-skeleton-with-avatar"
+      ],
+      "tokens": [
+        "--ant-skeleton-block-radius",
+        "--ant-skeleton-color",
+        "--ant-skeleton-color-gradient-end",
+        "--ant-skeleton-gradient-from-color",
+        "--ant-skeleton-gradient-to-color",
+        "--ant-skeleton-paragraph-li-height",
+        "--ant-skeleton-paragraph-margin-top",
+        "--ant-skeleton-title-height"
       ]
     },
     "space": {

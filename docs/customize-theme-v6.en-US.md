@@ -14,6 +14,7 @@ Only the components below have v6 styles so far. Others keep rendering with the 
 - `button`
 - `input`
 - `select`
+- `skeleton`
 - `space`
 <!-- v6-components:end -->
 <!-- prettier-ignore-end -->

@@ -46,7 +46,7 @@ import {
           />
         </div>
       }
-      <div class="ant-skeleton-content">
+      <div class="ant-skeleton-content ant-skeleton-section">
         @if (!!nzTitle) {
           <h3 class="ant-skeleton-title" [style.width]="toCSSUnit(title.width)"></h3>
         }

@@ -34,5 +34,7 @@
     "ant-select-selection-wrap",
     "ant-select-selector"
   ],
-  "space": ["ant-space-horizontal", "ant-space-split"]
+  "space": ["ant-space-horizontal", "ant-space-split"],
+  "_skeleton_comment": "antd-emits: -avatar-square, -button-square (shape classes v6 CSS never styles). v4-compat: -content (kept next to -section)",
+  "skeleton": ["ant-skeleton-avatar-square", "ant-skeleton-button-square", "ant-skeleton-content"]
 }
