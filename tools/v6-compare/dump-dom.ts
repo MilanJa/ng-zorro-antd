@@ -59,6 +59,9 @@ async function main(): Promise<void> {
   const harnessPort = Number(new URL(harnessUrl).port || 80);
   const stopServer = await startOutServer(outDir, harnessPort);
   const browser = await chromium.launch();
+  // Set on the no-match path instead of calling `process.exit` inside the `try`, which would skip
+  // the `finally` below and leak the browser and the out server on every no-match run.
+  let noMatchError: string | null = null;
   try {
     const page = await browser.newPage({ viewport: { width: 900, height: 800 } });
     await page.goto(`${harnessUrl}/compare.html?component=${dir}&demo=${demo}&theme=${theme}`, {
@@ -99,15 +102,17 @@ async function main(): Promise<void> {
 
     const lines = await page.evaluate(dump, selector);
     if (lines.length === 0) {
-      console.error(
-        `No elements matched selector "${selector}" for --component ${dir} --demo ${demo} --theme ${theme}.`
-      );
-      process.exit(1);
+      noMatchError = `No elements matched selector "${selector}" for --component ${dir} --demo ${demo} --theme ${theme}.`;
+    } else {
+      console.log(lines.join('\n'));
     }
-    console.log(lines.join('\n'));
   } finally {
     await browser.close();
     await stopServer();
+  }
+  if (noMatchError) {
+    console.error(noMatchError);
+    process.exitCode = 1;
   }
 }
 
