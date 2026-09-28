@@ -280,6 +280,9 @@
       "less": "./skeleton/style/*.less",
       "style": "./skeleton/style/index.min.css"
     },
+    "./skeleton/style/v6/*": {
+      "style": "./skeleton/style/v6/*"
+    },
     "./slider/style/*": {
       "less": "./slider/style/*.less",
       "style": "./slider/style/index.min.css"
@@ -305,6 +308,9 @@
     "./spin/style/*": {
       "less": "./spin/style/*.less",
       "style": "./spin/style/index.min.css"
+    },
+    "./spin/style/v6/*": {
+      "style": "./spin/style/v6/*"
     },
     "./statistic/style/*": {
       "less": "./statistic/style/*.less",
