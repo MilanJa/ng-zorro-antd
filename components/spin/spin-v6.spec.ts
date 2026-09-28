@@ -64,7 +64,11 @@ describe('spin under antd v6 css', () => {
     await new Promise(r => setTimeout(r, 0));
     fixture.detectChanges();
     await fixture.whenStable();
-    // `.ant-spin-container`'s opacity change is CSS-transitioned (`--ant-motion-duration-slow`); let it settle.
+    // These specs run in real Chromium (Vitest browser mode), so the patch.css rule
+    // `transition: opacity var(--ant-motion-duration-slow)` (0.3s, default theme) on `.ant-spin-container`
+    // is a genuine CSS transition that animates over wall-clock time: `getComputedStyle` right after the
+    // `.ant-spin-blur` class is removed still reports the pre-transition 0.5, not the settled 1. Confirmed
+    // by removing this wait: the assertion below failed consistently (3/3 runs) with `opacity` still '0.5'.
     await new Promise(r => setTimeout(r, 400));
     expect(document.querySelector('#host .ant-spin')).toBeNull();
     expect(getComputedStyle(container).opacity).toBe('1');
