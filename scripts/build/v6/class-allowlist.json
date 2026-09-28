@@ -40,5 +40,16 @@
   "_spin_comment": "v4-compat, all four styled by style/v6/patch.css mirrors until v6 is default",
   "spin": ["ant-spin-blur", "ant-spin-nested-loading", "ant-spin-show-text", "ant-spin-text"],
   "_result_comment": "v4-compat: -content kept next to -body. antd-emits: -403/-404/-500 (exception-status root classes antd's own React component emits; v6 CSS never styles them, the icon renders as an SVG illustration instead)",
-  "result": ["ant-result-content", "ant-result-403", "ant-result-404", "ant-result-500"]
+  "result": ["ant-result-content", "ant-result-403", "ant-result-404", "ant-result-500"],
+  "_alert_comment": "v4-compat: -action (kept next to -actions), -content (kept next to -section), -message (kept next to -title), -closable (kept as-is; v6 CSS has no rule for it at all, no v6 replacement exists) -- all four dropped once v6 becomes the default. nz-only: -marquee, -marquee-pause-on-hover, -marquee-track (ng-zorro's looping-banner feature, styled by style/v6/patch.css). antd-emits: -no-icon (antd's own React Alert emits it; v6 CSS never styles it)",
+  "alert": [
+    "ant-alert-action",
+    "ant-alert-closable",
+    "ant-alert-content",
+    "ant-alert-marquee",
+    "ant-alert-marquee-pause-on-hover",
+    "ant-alert-marquee-track",
+    "ant-alert-message",
+    "ant-alert-no-icon"
+  ]
 }

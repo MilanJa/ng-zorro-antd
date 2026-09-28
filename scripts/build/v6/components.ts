@@ -24,6 +24,7 @@ export interface V6ComponentEntry {
 }
 
 export const v6Components = {
+  alert: { antd: ['Alert'], prefixCls: 'ant-alert' },
   button: { antd: ['Button'], prefixCls: 'ant-btn' },
   input: { antd: ['Input'], prefixCls: 'ant-input' },
   result: { antd: ['Result'], prefixCls: 'ant-result' },

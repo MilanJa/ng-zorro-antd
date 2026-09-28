@@ -59,11 +59,11 @@ export type NzAlertType = 'success' | 'info' | 'warning' | 'error';
         }
 
         @if (nzMessage || nzDescription) {
-          <div class="ant-alert-content">
+          <div class="ant-alert-content ant-alert-section">
             @if (nzMessage) {
-              <span class="ant-alert-message">
+              <div class="ant-alert-message ant-alert-title">
                 <ng-container *nzStringTemplateOutlet="nzMessage">{{ nzMessage }}</ng-container>
-              </span>
+              </div>
             }
             @if (nzDescription) {
               <span class="ant-alert-description">
@@ -74,7 +74,7 @@ export type NzAlertType = 'success' | 'info' | 'warning' | 'error';
         }
 
         @if (nzAction) {
-          <div class="ant-alert-action">
+          <div class="ant-alert-action ant-alert-actions">
             <ng-container *nzStringTemplateOutlet="nzAction">{{ nzAction }}</ng-container>
           </div>
         }
@@ -141,17 +141,22 @@ export class NzAlertComponent implements OnChanges {
       return;
     }
 
-    // Apply animation classes
-    element.classList.add('ant-alert-motion-leave', 'ant-alert-motion-leave-active');
-
     // Listen for transition end to complete the animation
     const onTransitionEnd = (): void => {
       element.removeEventListener('transitionend', onTransitionEnd);
       this.nzOnClose.emit(true);
       event.animationComplete();
     };
-
     element.addEventListener('transitionend', onTransitionEnd);
+
+    // `max-height` cannot transition from its default `none`, so pin a concrete starting height, force a
+    // reflow to commit it, then let `ant-alert-motion-leave-active` collapse from that committed value.
+    element.style.maxHeight = `${element.scrollHeight}px`;
+    element.classList.add('ant-alert-motion-leave');
+
+    element.offsetHeight;
+    element.style.maxHeight = '';
+    element.classList.add('ant-alert-motion-leave-active');
   }
 
   ngOnChanges(changes: SimpleChanges): void {

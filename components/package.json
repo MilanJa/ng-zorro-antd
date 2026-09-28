@@ -90,6 +90,9 @@
       "less": "./alert/style/*.less",
       "style": "./alert/style/index.min.css"
     },
+    "./alert/style/v6/*": {
+      "style": "./alert/style/v6/*"
+    },
     "./anchor/style/*": {
       "less": "./anchor/style/*.less",
       "style": "./anchor/style/index.min.css"

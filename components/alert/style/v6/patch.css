@@ -1,0 +1,37 @@
+/* patch.less: nz-alert { display: block } */
+nz-alert {
+  display: block;
+}
+
+/* ng-zorro-only feature: the marquee (looping banner) block, ported verbatim from patch.less. No Less
+   variables were used for colours/durations here (the 20s fallback duration is overridden per-instance by
+   NzAlertMarqueeComponent's `[style.animation-duration.s]`), so no --ant-* token substitution is needed. */
+.ant-alert-marquee {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.ant-alert-marquee-track {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  min-width: 100%;
+  white-space: nowrap;
+  animation: alertMarquee 20s linear infinite;
+}
+
+.ant-alert-marquee.ant-alert-marquee-pause-on-hover:hover .ant-alert-marquee-track {
+  animation-play-state: paused;
+}
+
+@keyframes alertMarquee {
+  from {
+    transform: translateX(0%);
+  }
+
+  to {
+    transform: translateX(-100%);
+  }
+}

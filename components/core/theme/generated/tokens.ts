@@ -547,6 +547,13 @@ export interface NzAliasToken extends NzSeedToken {
   yellowHover: string;
 }
 
+export interface NzAlertToken {
+  borderRadius: number;
+  defaultPadding: string;
+  withDescriptionIconSize: number;
+  withDescriptionPadding: string;
+}
+
 export interface NzButtonToken {
   blueShadowColor: string;
   borderColorDisabled: string;
@@ -688,6 +695,7 @@ export interface NzSpinToken {
 }
 
 export interface NzComponentTokenMap {
+  Alert: NzAlertToken;
   Button: NzButtonToken;
   Input: NzInputToken;
   Result: NzResultToken;

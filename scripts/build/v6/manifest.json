@@ -1,8 +1,36 @@
 {
   "antdVersion": "6.6.5",
   "engineCoreBytes": 42701,
-  "engineComponentsBytes": 125100,
+  "engineComponentsBytes": 127652,
   "components": {
+    "alert": {
+      "classes": [
+        "ant-alert",
+        "ant-alert-actions",
+        "ant-alert-banner",
+        "ant-alert-close-icon",
+        "ant-alert-close-text",
+        "ant-alert-description",
+        "ant-alert-error",
+        "ant-alert-filled",
+        "ant-alert-icon",
+        "ant-alert-info",
+        "ant-alert-motion-leave",
+        "ant-alert-motion-leave-active",
+        "ant-alert-rtl",
+        "ant-alert-section",
+        "ant-alert-success",
+        "ant-alert-title",
+        "ant-alert-warning",
+        "ant-alert-with-description"
+      ],
+      "tokens": [
+        "--ant-alert-border-radius",
+        "--ant-alert-default-padding",
+        "--ant-alert-with-description-icon-size",
+        "--ant-alert-with-description-padding"
+      ]
+    },
     "button": {
       "classes": [
         "ant-btn",
