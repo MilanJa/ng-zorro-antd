@@ -22,7 +22,10 @@
     opacity: 0;
   }
   100% {
-    padding: var(--ant-padding-xs);
+    /* v6's actual notice padding (--ant-message-content-padding, e.g. 9px 12px) rather than the
+       brief's --ant-padding-xs (8px): ending here means the enter motion settles the toast at its
+       real rest padding instead of overshooting past it and snapping to the wider value. */
+    padding: var(--ant-message-content-padding);
     transform: translateY(0);
     opacity: 1;
   }
@@ -30,7 +33,9 @@
 @keyframes MessageMoveOut {
   0% {
     max-height: 150px;
-    padding: var(--ant-padding-xs);
+    /* Starts from the same real rest padding MessageMoveIn ends at (see above), so the leave
+       motion doesn't visibly snap the toast to a different padding before it starts shrinking. */
+    padding: var(--ant-message-content-padding);
     opacity: 1;
   }
   100% {
@@ -38,6 +43,21 @@
     padding: 0;
     opacity: 0;
   }
+}
+
+/* Mirrors `.ant-message .ant-message-list-content { gap: var(--ant-margin); }` (antd/es/notification/
+   style/index.js's genNotificationListContentStyle, shared by Message) -- ng-zorro never renders the
+   `.ant-message-list-content` holder (see the position:relative comment below for why: rc-virtual-list
+   stacking isn't reproduced), so the inter-toast gap it would provide is mirrored directly onto the
+   list root instead. Also zeroes the list's own top padding: v6's `.ant-message.ant-message-list`
+   sets `padding: var(--notification-margin-edge)` (a variable ng-zorro never defines, so it padded
+   with a stale/inherited value), which stacked on top of the container's own `[style.top]` (nzTop,
+   24px by default) pushed the first toast to y=48 instead of the antd's y=8-from-list-edge. Zeroing
+   block-start padding here leaves nzTop as the only vertical offset, matching antd's own single
+   `--notification-top` positioning source. */
+.ant-message.ant-message-list {
+  gap: var(--ant-margin);
+  padding-block-start: 0;
 }
 
 /* v6's own template CSS sets `.ant-message .ant-message-notice { position: absolute; ... }`
@@ -52,6 +72,24 @@
    v6-declared property (background, radius, shadow, padding, colours) on the same element. */
 .ant-message .ant-message-notice {
   position: relative;
+}
+
+/* Mirrors `.ant-message.ant-message-top .ant-message-notice { left: 50%; transform: translate3d(-50%, 0, 0) }`
+   (antd/es/message/style/index.js via the shared notification placement styles) using a technique that
+   doesn't touch the *keyframes*: MessageMoveIn/-Out are ng-zorro's own ported v4 keyframes (see above)
+   and only ever set `transform: translateY(...)`, so for the ~300ms the enter/leave animation classes
+   are applied, v6's `translate3d(-50%, 0, 0)` centring transform is overridden by the animation's own
+   `transform: translateY(...)` -- the toast enters off-centre (still offset by v6's `left: 50%` with no
+   compensating negative margin) and only snaps to centred once the animation class is removed. Centring
+   via `margin-inline: auto` (needs `left: auto` since v6's own `left: 50%` would otherwise still apply)
+   works throughout the animation because it's independent of `transform`. Deliberately NOT folding
+   `translateX(-50%)` into the keyframes themselves: the keyframes are shared, unscoped `@keyframes`
+   (only nameable once per document), so if v4's own CSS is ever loaded alongside this patch, baking a
+   v6-only horizontal offset into them would visibly shift v4 toasts too. */
+.ant-message.ant-message-top .ant-message-notice {
+  left: auto;
+  transform: none;
+  margin-inline: auto;
 }
 
 /* v6 declares the icon/title flex row and gap on `.ant-message-notice-wrapper` (antd/es/message/

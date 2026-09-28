@@ -13,13 +13,15 @@
 // export, so shimming out the two registration calls and keeping only the two helpers it actually
 // imports is safe.
 //
-// TODO(wave 2): if a future task adds `notification` to `v6Components`, this shim's dodge stops
-// working -- `antd/es/notification/style/index.js` must then run for real (including its own
-// `genStyleHooks('Notification', ...)`), and this file (and the bundle-engine.ts redirect that points
-// `../../notification/style` at it from `/message/style/`) should be removed.
+// TODO(wave 2, optional cleanup): the bundle-engine.ts redirect only fires for the relative
+// `../../notification/style` specifier as imported from `/antd/es/message/style/`, so this shim
+// keeps working unchanged once a future task adds `notification` to `v6Components` and the real
+// `antd/es/notification/style/index.js` starts running for real (via its own direct entry) -- the
+// two coexist without conflict since they register under different names. Removing this shim then
+// (and importing the two helpers below from the real module instead) is optional tidying, not a
+// requirement.
 import { unit } from '@ant-design/cssinjs';
 
-import { CONTAINER_MAX_OFFSET } from 'antd/es/_util/hooks';
 import { resetComponent } from 'antd/es/style';
 import { mergeToken } from 'antd/es/theme/internal';
 import genNotificationStyle from 'antd/es/notification/style/notification.js';
