@@ -9,5 +9,6 @@
   "result": { "_antdDir": "result", "custom": "customIcon", "fof": "404", "foo": "500", "fot": "403" },
   "alert": { "_antdDir": "alert", "close-text": null, "style": "style-class" },
   "tooltip": { "_antdDir": "tooltip", "color": "colorful", "template": null },
-  "popover": { "_antdDir": "popover", "trigger-type": "triggerType", "overlay": null, "template": null }
+  "popover": { "_antdDir": "popover", "trigger-type": "triggerType", "overlay": null, "template": null },
+  "popconfirm": { "_antdDir": "popconfirm", "custom-icon": "icon", "hide-arrow": null }
 }

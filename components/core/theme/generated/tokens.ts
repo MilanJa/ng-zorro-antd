@@ -636,6 +636,10 @@ export interface NzInputToken {
   warningActiveShadow: string;
 }
 
+export interface NzPopconfirmToken {
+  zIndexPopup: number;
+}
+
 export interface NzPopoverToken {
   arrowOffsetHorizontal: number;
   arrowOffsetVertical: number;
@@ -723,6 +727,7 @@ export interface NzComponentTokenMap {
   Alert: NzAlertToken;
   Button: NzButtonToken;
   Input: NzInputToken;
+  Popconfirm: NzPopconfirmToken;
   Popover: NzPopoverToken;
   Result: NzResultToken;
   Select: NzSelectToken;

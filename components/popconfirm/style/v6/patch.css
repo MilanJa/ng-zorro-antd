@@ -1,0 +1,8 @@
+/* CDK overlay pane positioning; v6's `position: absolute` on the popup root would collapse the
+   pane to 0x0 inside the CDK overlay pane (which is itself positioned), mispositioning the bubble.
+   Port of `style/patch.less`'s `.ant-popover { position: relative; }` rule (popconfirm's popup root
+   also carries `ant-popover`). Same fix as popover's `style/v6/patch.css` (Task 9) and tooltip's
+   (Task 8, fix round 1). */
+.ant-popconfirm.ant-popover {
+  position: relative;
+}

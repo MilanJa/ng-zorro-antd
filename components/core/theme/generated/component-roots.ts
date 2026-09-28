@@ -13,6 +13,7 @@ export const COMPONENT_ROOT_CLS: Record<string, string> = {
   Result: 'ant-result',
   Select: 'ant-select',
   Skeleton: 'ant-skeleton',
+  Popconfirm: 'ant-popconfirm',
   Popover: 'ant-popover',
   Space: 'ant-space',
   Spin: 'ant-spin',

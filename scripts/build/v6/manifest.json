@@ -1,7 +1,7 @@
 {
   "antdVersion": "6.6.5",
   "engineCoreBytes": 42701,
-  "engineComponentsBytes": 139496,
+  "engineComponentsBytes": 140338,
   "components": {
     "alert": {
       "classes": [
@@ -494,6 +494,53 @@
         "--ant-skeleton-paragraph-li-height",
         "--ant-skeleton-paragraph-margin-top",
         "--ant-skeleton-title-height"
+      ]
+    },
+    "popconfirm": {
+      "classes": [
+        "ant-popconfirm",
+        "ant-popconfirm-buttons",
+        "ant-popconfirm-description",
+        "ant-popconfirm-message",
+        "ant-popconfirm-message-icon",
+        "ant-popconfirm-title",
+        "ant-popover",
+        "ant-popover-arrow",
+        "ant-popover-blue",
+        "ant-popover-container",
+        "ant-popover-content",
+        "ant-popover-cyan",
+        "ant-popover-geekblue",
+        "ant-popover-gold",
+        "ant-popover-green",
+        "ant-popover-hidden",
+        "ant-popover-inner",
+        "ant-popover-lime",
+        "ant-popover-magenta",
+        "ant-popover-orange",
+        "ant-popover-pink",
+        "ant-popover-placement-bottom",
+        "ant-popover-placement-left",
+        "ant-popover-placement-right",
+        "ant-popover-placement-top",
+        "ant-popover-pure",
+        "ant-popover-purple",
+        "ant-popover-red",
+        "ant-popover-rtl",
+        "ant-popover-title",
+        "ant-popover-volcano",
+        "ant-popover-yellow",
+        "ant-zoom-big-appear",
+        "ant-zoom-big-appear-active",
+        "ant-zoom-big-appear-prepare",
+        "ant-zoom-big-enter",
+        "ant-zoom-big-enter-active",
+        "ant-zoom-big-enter-prepare",
+        "ant-zoom-big-leave",
+        "ant-zoom-big-leave-active"
+      ],
+      "tokens": [
+        "--ant-popconfirm-z-index-popup"
       ]
     },
     "popover": {

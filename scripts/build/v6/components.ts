@@ -30,6 +30,7 @@ export const v6Components = {
   result: { antd: ['Result'], prefixCls: 'ant-result' },
   select: { antd: ['Select'], prefixCls: 'ant-select' },
   skeleton: { antd: ['Skeleton'], prefixCls: 'ant-skeleton' },
+  popconfirm: { antd: ['Popconfirm'], prefixCls: 'ant-popconfirm', renderedPrefixes: ['ant-popover'] },
   popover: { antd: ['Popover'], prefixCls: 'ant-popover' },
   space: { antd: ['Space'], prefixCls: 'ant-space' },
   spin: { antd: ['Spin'], prefixCls: 'ant-spin' },

@@ -165,7 +165,7 @@ export class NzPopconfirmDirective extends NzTooltipBaseDirective {
       <div
         cdkTrapFocus
         [cdkTrapFocusAutoCapture]="nzAutoFocus !== null"
-        class="ant-popover"
+        class="ant-popover ant-popconfirm"
         [class]="_classMap"
         [class.ant-popover-rtl]="dir() === 'rtl'"
         [style]="nzOverlayStyle"
@@ -176,53 +176,51 @@ export class NzPopconfirmDirective extends NzTooltipBaseDirective {
         @if (nzPopconfirmShowArrow) {
           <div class="ant-popover-arrow"></div>
         }
-        <div class="ant-popover-content">
-          <div class="ant-popover-inner">
-            <div>
-              <div class="ant-popover-inner-content">
-                <div class="ant-popover-message">
-                  @if (nzIcon !== null) {
-                    <span class="ant-popover-message-icon">
-                      <ng-container *nzStringTemplateOutlet="nzIcon; let icon">
-                        <nz-icon [nzType]="icon || 'exclamation-circle'" nzTheme="fill" />
-                      </ng-container>
-                    </span>
-                  }
-                  <div class="ant-popover-message-title">
-                    <ng-container *nzStringTemplateOutlet="nzTitle; context: nzTitleContext">
-                      {{ nzTitle }}
-                    </ng-container>
-                  </div>
-                </div>
-                <div class="ant-popover-buttons">
-                  <button
-                    nz-button
-                    #cancelBtn
-                    nzSize="small"
-                    [nzDanger]="nzCancelButtonProps()?.nzDanger"
-                    (click)="onCancel()"
-                    [disabled]="nzCancelButtonProps()?.nzDisabled"
-                    [attr.cdkFocusInitial]="nzAutoFocus === 'cancel' || null"
-                  >
-                    @let cancelText = nzCancelText() || ('Modal.cancelText' | nzI18n);
-                    {{ cancelText }}
-                  </button>
-                  <button
-                    nz-button
-                    #okBtn
-                    nzSize="small"
-                    [nzType]="nzOkButtonProps().nzType"
-                    [nzDanger]="nzOkButtonProps().nzDanger"
-                    [nzLoading]="confirmLoading"
-                    [disabled]="nzOkButtonProps().nzDisabled"
-                    (click)="onConfirm()"
-                    [attr.cdkFocusInitial]="nzAutoFocus === 'ok' || null"
-                  >
-                    @let okText = nzOkText() || ('Modal.okText' | nzI18n);
-                    {{ okText }}
-                  </button>
+        <div class="ant-popover-inner ant-popover-container">
+          <div class="ant-popover-inner-content ant-popconfirm-inner-content">
+            <div class="ant-popover-message ant-popconfirm-message">
+              @if (nzIcon !== null) {
+                <span class="ant-popover-message-icon ant-popconfirm-message-icon">
+                  <ng-container *nzStringTemplateOutlet="nzIcon; let icon">
+                    <nz-icon [nzType]="icon || 'exclamation-circle'" nzTheme="fill" />
+                  </ng-container>
+                </span>
+              }
+              <div class="ant-popover-message-title ant-popconfirm-message-text">
+                <div class="ant-popconfirm-title">
+                  <ng-container *nzStringTemplateOutlet="nzTitle; context: nzTitleContext">
+                    {{ nzTitle }}
+                  </ng-container>
                 </div>
               </div>
+            </div>
+            <div class="ant-popover-buttons ant-popconfirm-buttons">
+              <button
+                nz-button
+                #cancelBtn
+                nzSize="small"
+                [nzDanger]="nzCancelButtonProps()?.nzDanger"
+                (click)="onCancel()"
+                [disabled]="nzCancelButtonProps()?.nzDisabled"
+                [attr.cdkFocusInitial]="nzAutoFocus === 'cancel' || null"
+              >
+                @let cancelText = nzCancelText() || ('Modal.cancelText' | nzI18n);
+                {{ cancelText }}
+              </button>
+              <button
+                nz-button
+                #okBtn
+                nzSize="small"
+                [nzType]="nzOkButtonProps().nzType"
+                [nzDanger]="nzOkButtonProps().nzDanger"
+                [nzLoading]="confirmLoading"
+                [disabled]="nzOkButtonProps().nzDisabled"
+                (click)="onConfirm()"
+                [attr.cdkFocusInitial]="nzAutoFocus === 'ok' || null"
+              >
+                @let okText = nzOkText() || ('Modal.okText' | nzI18n);
+                {{ okText }}
+              </button>
             </div>
           </div>
         </div>

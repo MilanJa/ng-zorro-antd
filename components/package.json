@@ -251,6 +251,9 @@
       "less": "./popconfirm/style/*.less",
       "style": "./popconfirm/style/index.min.css"
     },
+    "./popconfirm/style/v6/*": {
+      "style": "./popconfirm/style/v6/*"
+    },
     "./popover/style/*": {
       "less": "./popover/style/*.less",
       "style": "./popover/style/index.min.css"

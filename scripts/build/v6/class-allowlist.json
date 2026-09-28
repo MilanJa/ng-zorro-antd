@@ -55,5 +55,17 @@
   "_tooltip_comment": "antd-emits: -open (the trigger host's own visibility class; antd's React Tooltip toggles it too, but v6 CSS never styles it). patch-motion: ant-zoom-big-fast (the literal animation-class prefix token; the emitted -enter/-leave/-enter-active/-leave-active variants it builds are styled by v6 CSS's own antZoomBigIn/Out keyframes, not by a patch)",
   "tooltip": ["ant-tooltip-open", "ant-zoom-big-fast"],
   "_popover_comment": "v4-compat: -inner-content (kept next to -content until v6 becomes the default). antd-emits: -open (the trigger host's own visibility class; antd's React Popover toggles it too, but v6 CSS never styles it). patch-motion: ant-zoom-big (the literal animation-class prefix token; the emitted -enter/-leave/-enter-active/-leave-active variants it builds are styled by v6 CSS's own antZoomBigIn/Out keyframes, not by a patch)",
-  "popover": ["ant-popover-inner-content", "ant-popover-open", "ant-zoom-big"]
+  "popover": ["ant-popover-inner-content", "ant-popover-open", "ant-zoom-big"],
+  "_popconfirm_comment": "v4-compat: the five ant-popover-* body classes (-buttons, -inner-content, -message, -message-icon, -message-title), kept next to their ant-popconfirm-* replacements until v6 becomes the default. antd-emits: -open (the trigger host's own visibility class), -inner-content (antd's own React Popconfirm/PurePanel emits ant-popconfirm-inner-content itself; v6 CSS never styles it, only .ant-popconfirm-message/-buttons etc.), -message-text (antd emits it too; unstyled by v6 CSS, only .ant-popconfirm-title within it is styled). patch-motion: ant-zoom-big (the literal animation-class prefix token; the emitted -enter/-leave/-enter-active/-leave-active variants it builds are styled by v6 CSS's own antZoomBigIn/Out keyframes, not by a patch).",
+  "popconfirm": [
+    "ant-popover-buttons",
+    "ant-popover-inner-content",
+    "ant-popover-message",
+    "ant-popover-message-icon",
+    "ant-popover-message-title",
+    "ant-popover-open",
+    "ant-zoom-big",
+    "ant-popconfirm-inner-content",
+    "ant-popconfirm-message-text"
+  ]
 }
