@@ -45,11 +45,7 @@ import { BaseModalContainerComponent } from './modal-container.directive';
 
         <div class="ant-modal-body" [style]="config.nzBodyStyle!">
           <div class="ant-modal-confirm-body-wrapper">
-            <div
-              class="ant-modal-confirm-body"
-              [class.ant-modal-confirm-body-has-title]="!!config.nzTitle"
-              [class.ant-modal-confirm-body-no-icon]="!config.nzIconType"
-            >
+            <div class="ant-modal-confirm-body" [class.ant-modal-confirm-body-has-title]="!!config.nzTitle">
               <nz-icon [nzType]="config.nzIconType!" />
               <span class="ant-modal-confirm-title">
                 <ng-container *nzStringTemplateOutlet="config.nzTitle">

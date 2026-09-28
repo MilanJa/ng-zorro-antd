@@ -27,7 +27,7 @@ function installV6Css(): void {
   imports: [NzModalModule, NzThemeDirective, NzModalContentDirective],
   template: `
     <div [nzTheme]="{ token: { colorPrimary: '#00b96b' } }">
-      <nz-modal [nzVisible]="open()" nzTitle="T" (nzOnCancel)="open.set(false)">
+      <nz-modal [nzVisible]="open()" [nzCentered]="centered()" nzTitle="T" (nzOnCancel)="open.set(false)">
         <ng-container *nzModalContent>body</ng-container>
       </nz-modal>
     </div>
@@ -35,6 +35,7 @@ function installV6Css(): void {
 })
 class DeclarativeModalHostComponent {
   open = signal(false);
+  centered = signal(false);
 }
 
 describe('modal under antd v6 css', () => {
@@ -67,6 +68,13 @@ describe('modal under antd v6 css', () => {
     expect(getComputedStyle(container).borderRadius).toBe('8px');
     expect(getComputedStyle(container).padding).toBe('20px 24px');
     expect(wrap.className).toMatch(/\bnz-theme-\d+\b/);
+    // Fix round 1, item 1: `.ant-modal-wrap` must be the fixed, full-viewport positioning context (v6's
+    // own rule for it is scoped under `.ant-modal-root`, which ng-zorro never renders -- mirrored in
+    // `style/v6/patch.css`); without it the modal renders pinned to the left edge instead of centred.
+    expect(getComputedStyle(wrap).position).toBe('fixed');
+    const rect = modal.getBoundingClientRect();
+    const centre = rect.left + rect.width / 2;
+    expect(Math.abs(centre - window.innerWidth / 2)).toBeLessThanOrEqual(2);
     // `NzThemeDirective`'s scoped CSS lands after the button's first paint with the default
     // `--ant-color-primary`; `.ant-btn`'s own `transition: all ...` animates to the scoped colour rather
     // than switching instantly (see popconfirm-v6.spec.ts for the full explanation). Wait the transition
@@ -75,6 +83,26 @@ describe('modal under antd v6 css', () => {
     expect(
       getComputedStyle(wrap.querySelector('.ant-modal-footer .ant-btn-color-primary') as HTMLElement).backgroundColor
     ).toBe('rgb(0, 185, 107)');
+  });
+
+  it('vertically centres the modal when nzCentered is set', async () => {
+    const fixture: ComponentFixture<DeclarativeModalHostComponent> =
+      TestBed.createComponent(DeclarativeModalHostComponent);
+    overlay = TestBed.inject(OverlayContainer);
+    fixture.componentInstance.centered.set(true);
+    fixture.detectChanges();
+
+    fixture.componentInstance.open.set(true);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const wrap = overlay.getContainerElement().querySelector('.ant-modal-wrap') as HTMLElement;
+    const modal = wrap.querySelector('.ant-modal') as HTMLElement;
+    await expectMotionSettled(modal);
+    expect(modal.classList.contains('ant-modal-centered')).toBe(false); // the class is on the wrap, not the panel
+    expect(wrap.classList.contains('ant-modal-centered')).toBe(true);
+    const rect = modal.getBoundingClientRect();
+    const centreY = rect.top + rect.height / 2;
+    expect(Math.abs(centreY - window.innerHeight / 2)).toBeLessThanOrEqual(2);
   });
 
   it('colours the confirm icon per type', async () => {
@@ -98,6 +126,17 @@ describe('modal under antd v6 css', () => {
     // an adjacent-sibling chain that requires title/content to remain direct siblings of the icon).
     expect(body.querySelector('.ant-modal-confirm-title')?.textContent?.trim()).toBe('Delete?');
     expect(getComputedStyle(body.querySelector(':scope > .anticon') as HTMLElement).color).toBe('rgb(250, 173, 20)');
+    // Fix round 1, item 3: pin the grid layout (`style/v6/patch.css`) rather than only the icon's
+    // colour -- title/content sit beside the icon (not below it), stacked on top of each other.
+    const icon = body.querySelector(':scope > .anticon') as HTMLElement;
+    const title = body.querySelector('.ant-modal-confirm-title') as HTMLElement;
+    const content = body.querySelector('.ant-modal-confirm-content') as HTMLElement;
+    const iconRect = icon.getBoundingClientRect();
+    const titleRect = title.getBoundingClientRect();
+    const contentRect = content.getBoundingClientRect();
+    expect(titleRect.left).toBeGreaterThanOrEqual(iconRect.right);
+    expect(Math.abs(contentRect.left - titleRect.left)).toBeLessThanOrEqual(1);
+    expect(contentRect.top).toBeGreaterThan(titleRect.top);
     ref.close();
     fixture.detectChanges();
     await fixture.whenStable();
