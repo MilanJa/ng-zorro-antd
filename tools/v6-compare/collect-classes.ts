@@ -25,6 +25,17 @@ const TRIGGERS = [
   '.ant-cascader .ant-select-selector'
 ];
 
+// Components whose popup only opens on click (not hover), scoped to the component's own demo
+// containers; clicked up to 4 times each, closed with Escape/close buttons between attempts.
+const CLICK_TRIGGERS: Partial<Record<string, string>> = {
+  modal: '.ant-btn',
+  drawer: '.ant-btn',
+  message: '.ant-btn',
+  notification: '.ant-btn',
+  popconfirm: '.ant-btn',
+  'float-button': '.ant-float-btn-group-trigger, .ant-float-btn'
+};
+
 async function main(): Promise<void> {
   const componentFlagIndex = process.argv.indexOf('--component');
   if (componentFlagIndex !== -1 && componentFlagIndex === process.argv.length - 1) {
@@ -74,6 +85,25 @@ async function main(): Promise<void> {
         await page.keyboard.press('Escape');
       }
       if (activated > 0) opened.push(`${selector} (${activated}/${handles.length})`);
+    }
+    if (CLICK_TRIGGERS[dir]) {
+      const clickable = await page.$$(`[id^="components-${dir}-demo-"] ${CLICK_TRIGGERS[dir]}`);
+      for (const button of clickable.slice(0, 4)) {
+        try {
+          await button.scrollIntoViewIfNeeded();
+          await button.click({ timeout: 1000 });
+        } catch {
+          continue; // disabled or covered button: skip
+        }
+        await page.waitForTimeout(600); // open motion (--ant-motion-duration-slow is 0.3s)
+        (await page.evaluate(collect, dir)).forEach(c => seen.add(c));
+        await page.keyboard.press('Escape');
+        for (const closer of await page.$$('.ant-modal-close, .ant-drawer-close, .ant-notification-notice-close')) {
+          await closer.click({ timeout: 500 }).catch(() => undefined);
+        }
+        await page.waitForTimeout(400);
+        opened.push(CLICK_TRIGGERS[dir]!);
+      }
     }
     triggers[dir] = opened;
     // Keep only classes owned by this component (its prefixCls, its `renderedPrefixes`, minus classes of a

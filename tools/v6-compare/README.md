@@ -56,11 +56,23 @@ whether a migrated ng-zorro component matches antd v6's visuals.
 - `npx tsx tools/v6-compare/capture.ts [--component <dir>] [--theme v6]` —
   screenshots antd/ng-zorro demo pairs and regenerates `out/index.html`. Starts
   `serve-out` itself on `HARNESS_URL`'s port (or reuses a running one) and
-  reads the doc site from `SITE_URL`.
+  reads the doc site from `SITE_URL`. `--theme default` captures the plain
+  v4 ng-zorro page only (no antd pane) for a component task's before/after
+  diff; copy `out/<dir>/default/` to `out/<dir>/default-before/` by hand
+  before the template change.
+- `npx tsx tools/v6-compare/dump-dom.ts --component <dir> --demo <stem> [--theme v6] [--selector <css>] [--click]` —
+  prints the antd demo's rendered DOM (text stripped, `style`/`id`/`aria-*`/
+  `data-*` stripped, indented by depth) for comparing against the ng-zorro
+  DOM before editing templates. `--selector` defaults from the component's
+  `prefixCls`, or (with `--click`, which first clicks the demo's `.ant-btn`)
+  from a popup-selector set (`.ant-message`, `.ant-notification`,
+  `[class*="-wrap"]`, `[role="tooltip"]`). Exits non-zero on no match.
 - `npx tsx tools/v6-compare/collect-classes.ts [--component <dir>]` — records
   `ant-*` classes rendered on the doc-site page (`SITE_URL`) into
   `out/rendered-classes.json` for the style-coverage tests, with the popup
-  triggers it managed to open per component. Classes are attributed by
+  triggers it managed to open per component (hover `TRIGGERS` first, then
+  click-only popups via `CLICK_TRIGGERS`, e.g. modal/drawer/message/
+  notification/popconfirm/float-button). Classes are attributed by
   `prefixCls` plus `renderedPrefixes` (see `scripts/build/v6/components.ts`).
 - `npx tsx tools/v6-compare/check-toggle.ts` — asserts the doc site's
   `?theme=v6|v6-dark|default` toggle swaps stylesheets and tokens correctly on

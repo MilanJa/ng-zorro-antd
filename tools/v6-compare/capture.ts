@@ -117,6 +117,15 @@ async function main(): Promise<void> {
       for (const { key, antd } of pairing.pairs) {
         const nzFile = path.join(folder, `${key}.nz.png`);
         const okNz = await shotElement(page, `#components-${dir}-demo-${key}`, nzFile);
+        const rel = (f: string): string => path.relative(outDir, f).replace(/\\/g, '/');
+        // `default` is the plain v4 theme, captured for the before/after diff a component task keeps
+        // under `out/<dir>/default(-before)/`; there is no antd v6 pane to compare it against.
+        if (theme === 'default') {
+          index.push(
+            `<div class="pair"><figure><figcaption>ng-zorro · ${key} (v4 default)</figcaption>${okNz ? `<img src="${rel(nzFile)}">` : '<em>not found on page</em>'}</figure></div>`
+          );
+          continue;
+        }
         const antdPage = await browser.newPage({ viewport: { width: 900, height: 800 } });
         await antdPage.goto(`${harnessUrl}/compare.html?component=${dir}&demo=${antd}&theme=${theme}`, {
           waitUntil: 'networkidle'
@@ -125,7 +134,6 @@ async function main(): Promise<void> {
         const antdFile = path.join(folder, `${key}.antd.png`);
         const okAntd = await shotElement(antdPage, `.cmp-demo[data-demo="${antd}"]`, antdFile);
         await antdPage.close();
-        const rel = (f: string): string => path.relative(outDir, f).replace(/\\/g, '/');
         index.push(
           `<div class="pair"><figure><figcaption>antd · ${antd}</figcaption>${okAntd ? `<img src="${rel(antdFile)}">` : '<em>not rendered</em>'}</figure><figure><figcaption>ng-zorro · ${key}</figcaption>${okNz ? `<img src="${rel(nzFile)}">` : '<em>not found on page</em>'}</figure></div>`
         );

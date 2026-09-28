@@ -168,6 +168,9 @@ export default function generate(target: string): void {
     const docsMap: Record<string, I18n<Buffer>> = {};
     const docsMeta: Record<string, I18n<ComponentIndexDocMeta>> = {};
     docsDir.forEach(doc => {
+      // Fork-only files (e.g. `v6-api-gaps.md`) have no `.en-US.md`/`.zh-CN.md` locale pair and are not
+      // site pages; skip anything that is not itself one half of such a pair.
+      if (!/\.(en-US|zh-CN)\.md$/.test(doc)) return;
       const name = nameWithoutSuffixUtil(doc);
       docsMap[name] = {
         zh: readFileSync(path.join(docsPath, `${name}.zh-CN.md`)),
