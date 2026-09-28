@@ -60,13 +60,26 @@ whether a migrated ng-zorro component matches antd v6's visuals.
   v4 ng-zorro page only (no antd pane) for a component task's before/after
   diff; copy `out/<dir>/default/` to `out/<dir>/default-before/` by hand
   before the template change.
-- `npx tsx tools/v6-compare/dump-dom.ts --component <dir> --demo <stem> [--theme v6] [--selector <css>] [--click]` —
-  prints the antd demo's rendered DOM (text stripped, `style`/`id`/`aria-*`/
-  `data-*` stripped, indented by depth) for comparing against the ng-zorro
-  DOM before editing templates. `--selector` defaults from the component's
-  `prefixCls`, or (with `--click`, which first clicks the demo's `.ant-btn`)
-  from a popup-selector set (`.ant-message`, `.ant-notification`,
-  `[class*="-wrap"]`, `[role="tooltip"]`). Exits non-zero on no match.
+- `npx tsx tools/v6-compare/dump-dom.ts --component <dir> --demo <stem> [--side antd|nz] [--theme v6] [--selector <css>] [--click]` —
+  prints a demo's rendered DOM (text stripped, `style`/`id`/`aria-*`/
+  `data-*` stripped, indented by depth), for comparing the antd side against
+  the ng-zorro side before editing templates. `--side antd` (default) reads
+  the bundled antd demo from the out server it starts itself, same as
+  before. `--side nz` reads the live doc site instead (`SITE_URL`, default
+  `http://localhost:4200`; `<dir>`'s demo key must match a demo on that
+  page) and starts no out server. `--selector` defaults from the component's
+  `prefixCls` on the antd side, or (with `--click`, which first clicks the
+  demo's `.ant-btn`) from a popup-selector set (`.ant-message`,
+  `.ant-notification`, `[class*="-wrap"]`, `[role="tooltip"]`); on the `nz`
+  side it defaults to `[id="components-<dir>-demo-<demo>"] [class^="ant-"]`
+  (the doc site wraps every demo in a `<section>` with that id), plus
+  `.cdk-overlay-container [class^="ant-"]` when `--click` is given (for
+  overlay-based demos: modal, drawer, message, notification, popconfirm,
+  …), clicking `#components-<dir>-demo-<demo> .ant-btn` first. Either
+  default selector only dumps top-most matches (a broad `[class^="ant-"]`
+  match nested under another match is skipped; its subtree is already
+  printed via the depth-first walk from the outer match). Exits non-zero on
+  no match.
 - `npx tsx tools/v6-compare/collect-classes.ts [--component <dir>]` — records
   `ant-*` classes rendered on the doc-site page (`SITE_URL`) into
   `out/rendered-classes.json` for the style-coverage tests, with the popup

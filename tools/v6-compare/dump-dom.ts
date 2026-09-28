@@ -30,18 +30,32 @@ async function main(): Promise<void> {
   const dir = arg('component');
   const demo = arg('demo');
   const theme = arg('theme') ?? 'v6';
+  const side = arg('side') ?? 'antd';
   const click = hasFlag('click');
   let selector = arg('selector');
 
   if (!dir || !demo) {
     console.error(
-      'Usage: dump-dom.ts --component <dir> --demo <antd demo stem> [--theme v6] [--selector <css>] [--click]'
+      'Usage: dump-dom.ts --component <dir> --demo <name> [--side antd|nz] [--theme v6] [--selector <css>] [--click]'
     );
     process.exit(1);
   }
 
+  if (side !== 'antd' && side !== 'nz') {
+    console.error(`--side must be "antd" or "nz", got "${side}".`);
+    process.exit(1);
+  }
+
   if (!selector) {
-    if (click) {
+    if (side === 'nz') {
+      // The doc site wraps every demo in `<section id="components-<dir>-demo-<demo>">` (`nz-code-box`'s
+      // `nzId`, see `codebox.component.html`). `--click` opens overlay-based demos (modal, drawer, message,
+      // notification, popconfirm, …), which portal to `.cdk-overlay-container` outside that section.
+      selector = `[id="components-${dir}-demo-${demo}"] [class^="ant-"]`;
+      if (click) {
+        selector += ', .cdk-overlay-container [class^="ant-"]';
+      }
+    } else if (click) {
       selector = CLICK_DEFAULT_SELECTOR;
     } else {
       const entry = (v6Components as Record<string, { prefixCls: string } | undefined>)[dir];
@@ -56,23 +70,40 @@ async function main(): Promise<void> {
     }
   }
 
-  const harnessPort = Number(new URL(harnessUrl).port || 80);
-  const stopServer = await startOutServer(outDir, harnessPort);
+  // The nz side reads the live doc site directly; it never touches the antd-demo out/ bundle, so the
+  // out server (which serves compare.html and out/demos/*.js for the antd side) stays unstarted for it.
+  let stopServer: () => Promise<void> = async () => {};
+  if (side === 'antd') {
+    const harnessPort = Number(new URL(harnessUrl).port || 80);
+    stopServer = await startOutServer(outDir, harnessPort);
+  }
   const browser = await chromium.launch();
   // Set on the no-match path instead of calling `process.exit` inside the `try`, which would skip
   // the `finally` below and leak the browser and the out server on every no-match run.
   let noMatchError: string | null = null;
   try {
     const page = await browser.newPage({ viewport: { width: 900, height: 800 } });
-    await page.goto(`${harnessUrl}/compare.html?component=${dir}&demo=${demo}&theme=${theme}`, {
-      waitUntil: 'networkidle'
-    });
 
-    if (click) {
-      const button = await page.$('.cmp-demo-body .ant-btn');
-      if (button) {
-        await button.click();
-        await page.waitForTimeout(600);
+    if (side === 'nz') {
+      const siteUrl = process.env['SITE_URL'] ?? 'http://localhost:4200';
+      await page.goto(`${siteUrl}/components/${dir}/en?theme=${theme}`, { waitUntil: 'networkidle' });
+      if (click) {
+        const button = await page.$(`#components-${dir}-demo-${demo} .ant-btn`);
+        if (button) {
+          await button.click();
+          await page.waitForTimeout(600);
+        }
+      }
+    } else {
+      await page.goto(`${harnessUrl}/compare.html?component=${dir}&demo=${demo}&theme=${theme}`, {
+        waitUntil: 'networkidle'
+      });
+      if (click) {
+        const button = await page.$('.cmp-demo-body .ant-btn');
+        if (button) {
+          await button.click();
+          await page.waitForTimeout(600);
+        }
       }
     }
 
@@ -83,7 +114,20 @@ async function main(): Promise<void> {
     const dump = (sel: string): string[] => {
       const lines: string[] = [];
       const stack: Array<[Element, number]> = [];
-      const roots = Array.from(document.querySelectorAll(sel));
+      const allMatches = Array.from(document.querySelectorAll(sel));
+      const matchSet = new Set(allMatches);
+      // Top-most matches only: a broad wildcard selector (e.g. `[class^="ant-"]`) matches every
+      // descendant too, but the depth-first walk below already prints a matched root's full subtree
+      // (regardless of whether a given descendant itself matches `sel`), so keeping a matched
+      // descendant as a second root would print its subtree twice.
+      const roots = allMatches.filter(el => {
+        for (let p = el.parentElement; p; p = p.parentElement) {
+          if (matchSet.has(p)) {
+            return false;
+          }
+        }
+        return true;
+      });
       for (let i = roots.length - 1; i >= 0; i--) stack.push([roots[i], 0]);
       while (stack.length) {
         const [el, depth] = stack.pop()!;
@@ -102,7 +146,7 @@ async function main(): Promise<void> {
 
     const lines = await page.evaluate(dump, selector);
     if (lines.length === 0) {
-      noMatchError = `No elements matched selector "${selector}" for --component ${dir} --demo ${demo} --theme ${theme}.`;
+      noMatchError = `No elements matched selector "${selector}" for --side ${side} --component ${dir} --demo ${demo} --theme ${theme}.`;
     } else {
       console.log(lines.join('\n'));
     }
