@@ -48,6 +48,7 @@ import { NzNoAnimationDirective, withAnimationCheck } from 'ng-zorro-antd/core/a
 import { NzConfigKey, WithConfig } from 'ng-zorro-antd/core/config';
 import { NzOutletModule } from 'ng-zorro-antd/core/outlet';
 import { overlayZIndexSetter } from 'ng-zorro-antd/core/overlay';
+import { nzThemeScopeClasses } from 'ng-zorro-antd/core/theme';
 import { NgStyleInterface, NzSafeAny } from 'ng-zorro-antd/core/types';
 import { isTemplateRef, toCssPixel } from 'ng-zorro-antd/core/util';
 import { NzIconModule } from 'ng-zorro-antd/icon';
@@ -75,6 +76,7 @@ const NZ_CONFIG_MODULE_NAME: NzConfigKey = 'drawer';
     <ng-template #drawerTemplate>
       <div
         class="ant-drawer"
+        [class]="themeScopeClasses()"
         [nzNoAnimation]="nzNoAnimation"
         [class.ant-drawer-rtl]="dir() === 'rtl'"
         [class.ant-drawer-open]="isOpen"
@@ -103,7 +105,7 @@ const NZ_CONFIG_MODULE_NAME: NzConfigKey = 'drawer';
           [style.transform]="transform"
           [style.transition]="placementChanging ? 'none' : null"
         >
-          <div class="ant-drawer-content">
+          <div class="ant-drawer-content ant-drawer-section">
             <div class="ant-drawer-wrapper-body" [style.height]="isLeftOrRight ? '100%' : null">
               @if (nzTitle || nzClosable) {
                 <div class="ant-drawer-header" [class.ant-drawer-header-close-only]="!nzTitle">
@@ -166,6 +168,9 @@ export class NzDrawerComponent<T extends {} = NzSafeAny, R = NzSafeAny, D extend
   private readonly document = inject(DOCUMENT);
 
   readonly _nzModuleName: NzConfigKey = NZ_CONFIG_MODULE_NAME;
+
+  /** Classes carrying a scoped theme (`[nzTheme]`) into this drawer's overlay root. */
+  protected readonly themeScopeClasses = nzThemeScopeClasses();
 
   @Input() nzContent!: TemplateRef<{ $implicit: D; drawerRef: NzDrawerRef<R> }> | Type<T>;
   @Input() nzCloseIcon: string | TemplateRef<void> = 'close';

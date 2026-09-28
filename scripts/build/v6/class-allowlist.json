@@ -67,5 +67,7 @@
     "ant-zoom-big",
     "ant-popconfirm-inner-content",
     "ant-popconfirm-message-text"
-  ]
+  ],
+  "_drawer_comment": "v4-compat: -wrapper-body (kept as the flex container; style/v6/patch.css mirrors v6's -section flex layout onto it since v6 lays header/body/footer out directly under -section, no wrapper). antd-emits: -header-close-only, -open (both emitted by antd's own React DrawerPanel/DrawerPopup; v6 CSS never styles either -- verified no rule for them in node_modules/antd/es/drawer/style/index.js). -content needs no entry: v6 CSS already styles it (`.ant-drawer-content-wrapper-dragging .ant-drawer-content{pointer-events:none}`, the resizable feature's dragging state), so it is not stale/unstyled even though ng-zorro keeps it only as the v4 wrapper class.",
+  "drawer": ["ant-drawer-header-close-only", "ant-drawer-open", "ant-drawer-wrapper-body"]
 }

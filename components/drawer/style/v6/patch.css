@@ -1,0 +1,17 @@
+/* Port of `style/patch.less`: fix the drawer panel's shadow showing through while closed
+   (v6's own CSS has no equivalent rule -- the closed state is normally unmounted by React,
+   but ng-zorro keeps the DOM and drives visibility with the `-open` class and an inline
+   transform, so the v4 patch still applies). */
+.ant-drawer:not(.ant-drawer-open) .ant-drawer-content-wrapper {
+  box-shadow: none;
+}
+
+/* ng-zorro keeps the v4 wrapper (`.ant-drawer-wrapper-body`); v6 lays header/body/footer out
+   directly under `.ant-drawer-section` as flex children. Mirror v4's flex column onto the kept
+   wrapper so `.ant-drawer-section`'s flex layout still stretches the body correctly. */
+.ant-drawer-section > .ant-drawer-wrapper-body {
+  display: flex;
+  flex-flow: column nowrap;
+  width: 100%;
+  height: 100%;
+}

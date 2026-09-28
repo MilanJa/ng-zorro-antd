@@ -9,6 +9,7 @@
 export const COMPONENT_ROOT_CLS: Record<string, string> = {
   Alert: 'ant-alert',
   Button: 'ant-btn',
+  Drawer: 'ant-drawer',
   Input: 'ant-input',
   Result: 'ant-result',
   Select: 'ant-select',

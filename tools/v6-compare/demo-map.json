@@ -10,5 +10,6 @@
   "alert": { "_antdDir": "alert", "close-text": null, "style": "style-class" },
   "tooltip": { "_antdDir": "tooltip", "color": "colorful", "template": null },
   "popover": { "_antdDir": "popover", "trigger-type": "triggerType", "overlay": null, "template": null },
-  "popconfirm": { "_antdDir": "popconfirm", "custom-icon": "icon", "hide-arrow": null }
+  "popconfirm": { "_antdDir": "popconfirm", "custom-icon": "icon", "hide-arrow": null },
+  "drawer": { "_antdDir": "drawer", "from-drawer": "form-in-drawer", "service": null }
 }

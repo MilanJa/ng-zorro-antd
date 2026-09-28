@@ -172,6 +172,9 @@
       "less": "./drawer/style/*.less",
       "style": "./drawer/style/index.min.css"
     },
+    "./drawer/style/v6/*": {
+      "style": "./drawer/style/v6/*"
+    },
     "./dropdown/style/*": {
       "less": "./dropdown/style/*.less",
       "style": "./dropdown/style/index.min.css"

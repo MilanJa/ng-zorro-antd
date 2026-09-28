@@ -615,6 +615,13 @@ export interface NzButtonToken {
   yellowShadowColor: string;
 }
 
+export interface NzDrawerToken {
+  draggerSize: number;
+  footerPaddingBlock: number;
+  footerPaddingInline: number;
+  zIndexPopup: number;
+}
+
 export interface NzInputToken {
   activeBg: string;
   activeBorderColor: string;
@@ -726,6 +733,7 @@ export interface NzTooltipToken {
 export interface NzComponentTokenMap {
   Alert: NzAlertToken;
   Button: NzButtonToken;
+  Drawer: NzDrawerToken;
   Input: NzInputToken;
   Popconfirm: NzPopconfirmToken;
   Popover: NzPopoverToken;
