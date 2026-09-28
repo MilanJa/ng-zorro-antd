@@ -164,7 +164,8 @@ async function minify(css: string): Promise<string> {
   return out;
 }
 
-function readPatch(componentsDir: string, dir: string): string | null {
+/** A component's `style/v6/patch.css`, trimmed, or `null` if it has none. Shared with `generate-engine.ts`. */
+export function readPatch(componentsDir: string, dir: string): string | null {
   const file = path.join(componentsDir, dir, 'style/v6/patch.css');
   return existsSync(file) ? readFileSync(file, 'utf8').trim() : null;
 }
