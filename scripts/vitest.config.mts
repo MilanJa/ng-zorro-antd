@@ -9,6 +9,7 @@ export default defineConfig({
   test: {
     environment: 'node',
     include: ['scripts/**/__tests__/**/*.spec.ts', 'tools/**/__tests__/**/*.spec.ts'],
+    exclude: ['**/node_modules/**', '**/fixtures/**'],
     testTimeout: 120_000,
     hookTimeout: 120_000,
     fileParallelism: false
