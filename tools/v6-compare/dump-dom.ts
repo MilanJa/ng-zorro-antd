@@ -26,6 +26,20 @@ function hasFlag(name: string): boolean {
 // or portal to `document.body` level (message/notification/tooltip-like overlays).
 const CLICK_DEFAULT_SELECTOR = '.ant-message, .ant-notification, [class^="ant-"][class*="-wrap"], [role="tooltip"]';
 
+// Any popup trigger inside a demo container, mirroring `collect-classes.ts`'s `TRIGGERS` set: a plain
+// `.ant-btn` (modal/drawer/message/notification/…) or a directive-driven overlay trigger
+// (popconfirm/popover/tooltip/dropdown) that may render on a non-button element (e.g. `<a nz-popconfirm>`).
+const CLICK_TARGET_SELECTOR = '.ant-btn, [nz-popconfirm], [nz-popover], [nz-tooltip], [nz-dropdown]';
+
+// Scopes each comma-branch of `CLICK_TARGET_SELECTOR` to `containerSelector` individually -- a bare
+// `"${containerSelector} ${CLICK_TARGET_SELECTOR}"` would only scope the first branch (`.ant-btn`) and
+// leave the rest unscoped, matching the first `[nz-popconfirm]` etc. anywhere on the page.
+function scopedClickSelector(containerSelector: string): string {
+  return CLICK_TARGET_SELECTOR.split(',')
+    .map(part => `${containerSelector} ${part.trim()}`)
+    .join(', ');
+}
+
 async function main(): Promise<void> {
   const dir = arg('component');
   const demo = arg('demo');
@@ -88,10 +102,15 @@ async function main(): Promise<void> {
       const siteUrl = process.env['SITE_URL'] ?? 'http://localhost:4200';
       await page.goto(`${siteUrl}/components/${dir}/en?theme=${theme}`, { waitUntil: 'networkidle' });
       if (click) {
-        const button = await page.$(`#components-${dir}-demo-${demo} .ant-btn`);
+        const containerSelector = `#components-${dir}-demo-${demo}`;
+        const button = await page.$(scopedClickSelector(containerSelector));
         if (button) {
           await button.click();
           await page.waitForTimeout(600);
+        } else {
+          console.error(
+            `--click: no element matched "${CLICK_TARGET_SELECTOR}" inside ${containerSelector}; nothing clicked.`
+          );
         }
       }
     } else {
@@ -99,10 +118,12 @@ async function main(): Promise<void> {
         waitUntil: 'networkidle'
       });
       if (click) {
-        const button = await page.$('.cmp-demo-body .ant-btn');
+        const button = await page.$(scopedClickSelector('.cmp-demo-body'));
         if (button) {
           await button.click();
           await page.waitForTimeout(600);
+        } else {
+          console.error(`--click: no element matched ".cmp-demo-body ${CLICK_TARGET_SELECTOR}"; nothing clicked.`);
         }
       }
     }

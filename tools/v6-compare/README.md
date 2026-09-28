@@ -75,7 +75,11 @@ whether a migrated ng-zorro component matches antd v6's visuals.
   (the doc site wraps every demo in a `<section>` with that id), plus
   `.cdk-overlay-container [class^="ant-"]` when `--click` is given (for
   overlay-based demos: modal, drawer, message, notification, popconfirm,
-  …), clicking `#components-<dir>-demo-<demo> .ant-btn` first. Either
+  …), first clicking the first element inside `#components-<dir>-demo-<demo>`
+  matching `.ant-btn, [nz-popconfirm], [nz-popover], [nz-tooltip],
+[nz-dropdown]` (mirroring `collect-classes.ts`'s trigger set, so a
+  non-button trigger like `<a nz-popconfirm>` is still clicked) and printing
+  a note naming that selector set if nothing matches. Either
   default selector only dumps top-most matches (a broad `[class^="ant-"]`
   match nested under another match is skipped; its subtree is already
   printed via the depth-first walk from the outer match). Exits non-zero on
