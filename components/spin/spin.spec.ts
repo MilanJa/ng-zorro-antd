@@ -38,7 +38,12 @@ describe('spin', () => {
     });
 
     it('should className correct', () => {
-      expect(spin.nativeElement.querySelector('.ant-spin').firstElementChild!.classList).toContain('ant-spin-dot');
+      expect(spin.nativeElement.querySelector('.ant-spin').firstElementChild!.classList).toContain(
+        'ant-spin-dot-holder'
+      );
+      expect(spin.nativeElement.querySelector('.ant-spin-dot-holder').firstElementChild!.classList).toContain(
+        'ant-spin-dot'
+      );
     });
 
     it('should size work', () => {

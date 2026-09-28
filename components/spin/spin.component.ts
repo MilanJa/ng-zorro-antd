@@ -35,11 +35,13 @@ const NZ_CONFIG_MODULE_NAME: NzConfigKey = 'spin';
   encapsulation: ViewEncapsulation.None,
   template: `
     <ng-template #defaultTemplate>
-      <span class="ant-spin-dot ant-spin-dot-spin">
-        <i class="ant-spin-dot-item"></i>
-        <i class="ant-spin-dot-item"></i>
-        <i class="ant-spin-dot-item"></i>
-        <i class="ant-spin-dot-item"></i>
+      <span class="ant-spin-dot-holder">
+        <span class="ant-spin-dot ant-spin-dot-spin">
+          <i class="ant-spin-dot-item"></i>
+          <i class="ant-spin-dot-item"></i>
+          <i class="ant-spin-dot-item"></i>
+          <i class="ant-spin-dot-item"></i>
+        </span>
       </span>
     </ng-template>
     @if (isLoading()) {
@@ -50,10 +52,11 @@ const NZ_CONFIG_MODULE_NAME: NzConfigKey = 'spin';
           [class.ant-spin-lg]="nzSize === 'large'"
           [class.ant-spin-sm]="nzSize === 'small'"
           [class.ant-spin-show-text]="nzTip"
+          [class.ant-spin-section]="nzSimple"
         >
           <ng-template [ngTemplateOutlet]="nzIndicator || defaultTemplate" />
           @if (nzTip) {
-            <div class="ant-spin-text">{{ nzTip }}</div>
+            <div class="ant-spin-text ant-spin-description">{{ nzTip }}</div>
           }
         </div>
       </div>

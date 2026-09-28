@@ -1,0 +1,59 @@
+/* patch.less: nz-spin { display: block } */
+nz-spin {
+  display: block;
+}
+
+/* mirrors antd v6 `.ant-spin.ant-spin-section,.ant-spin >.ant-spin-section` (flex layout + primary
+   colour) and `.ant-spin >.ant-spin-section` (absolute centering) for ng-zorro's nested structure
+   (`.ant-spin-nested-loading > div > .ant-spin`), where ng-zorro's inner `.ant-spin` plays the role
+   v6 gives its `.ant-spin-section` child: it holds the indicator + description and is centered over
+   the sibling `.ant-spin-container`. */
+.ant-spin-nested-loading > div > .ant-spin {
+  position: absolute;
+  top: 50%;
+  inset-inline-start: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ant-padding-sm);
+  color: var(--ant-color-primary);
+}
+
+/* mirrors antd v6 `.ant-spin .ant-spin-container` */
+.ant-spin-nested-loading .ant-spin-container {
+  position: relative;
+  transition: opacity var(--ant-motion-duration-slow);
+}
+
+/* mirrors antd v6 `.ant-spin .ant-spin-container::after` */
+.ant-spin-nested-loading .ant-spin-container::after {
+  position: absolute;
+  top: 0;
+  inset-inline-end: 0;
+  bottom: 0;
+  inset-inline-start: 0;
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+  background: var(--ant-color-bg-container);
+  opacity: 0;
+  transition: all var(--ant-motion-duration-slow);
+  content: '';
+  pointer-events: none;
+}
+
+/* mirrors antd v6 `.ant-spin-spinning .ant-spin-container` onto ng-zorro's v4-compat `.ant-spin-blur` */
+.ant-spin-container.ant-spin-blur {
+  clear: both;
+  opacity: 0.5;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* mirrors antd v6 `.ant-spin-spinning .ant-spin-container::after` */
+.ant-spin-container.ant-spin-blur::after {
+  opacity: 0.4;
+  pointer-events: auto;
+}

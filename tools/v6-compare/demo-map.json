@@ -4,5 +4,6 @@
   "select": { "_antdDir": "select" },
   "skeleton": { "_antdDir": "skeleton" },
   "space": { "_antdDir": "space" },
-  "button": { "_antdDir": "button" }
+  "button": { "_antdDir": "button" },
+  "spin": { "_antdDir": "spin", "delay-and-debounce": "delayAndDebounce", "inside": null }
 }

@@ -673,10 +673,18 @@ export interface NzSkeletonToken {
 export interface NzSpaceToken {
 }
 
+export interface NzSpinToken {
+  contentHeight: number;
+  dotSize: number;
+  dotSizeLG: number;
+  dotSizeSM: number;
+}
+
 export interface NzComponentTokenMap {
   Button: NzButtonToken;
   Input: NzInputToken;
   Select: NzSelectToken;
   Skeleton: NzSkeletonToken;
   Space: NzSpaceToken;
+  Spin: NzSpinToken;
 }

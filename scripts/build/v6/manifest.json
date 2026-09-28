@@ -1,7 +1,7 @@
 {
   "antdVersion": "6.6.5",
   "engineCoreBytes": 42701,
-  "engineComponentsBytes": 120084,
+  "engineComponentsBytes": 123482,
   "components": {
     "button": {
       "classes": [
@@ -543,6 +543,33 @@
         "ant-wave"
       ],
       "tokens": []
+    },
+    "spin": {
+      "classes": [
+        "ant-spin",
+        "ant-spin-container",
+        "ant-spin-description",
+        "ant-spin-dot",
+        "ant-spin-dot-circle",
+        "ant-spin-dot-circle-bg",
+        "ant-spin-dot-holder",
+        "ant-spin-dot-holder-hidden",
+        "ant-spin-dot-item",
+        "ant-spin-dot-progress",
+        "ant-spin-dot-spin",
+        "ant-spin-fullscreen",
+        "ant-spin-lg",
+        "ant-spin-rtl",
+        "ant-spin-section",
+        "ant-spin-sm",
+        "ant-spin-spinning"
+      ],
+      "tokens": [
+        "--ant-spin-content-height",
+        "--ant-spin-dot-size",
+        "--ant-spin-dot-size-lg",
+        "--ant-spin-dot-size-sm"
+      ]
     }
   }
 }
