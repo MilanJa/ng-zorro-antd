@@ -671,6 +671,12 @@ export interface NzModalToken {
   titleLineHeight: number;
 }
 
+export interface NzNotificationToken {
+  progressBg: string;
+  width: number;
+  zIndexPopup: number;
+}
+
 export interface NzPopconfirmToken {
   zIndexPopup: number;
 }
@@ -774,6 +780,7 @@ export interface NzComponentTokenMap {
   Input: NzInputToken;
   Message: NzMessageToken;
   Modal: NzModalToken;
+  Notification: NzNotificationToken;
   Popconfirm: NzPopconfirmToken;
   Popover: NzPopoverToken;
   Progress: NzProgressToken;

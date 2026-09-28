@@ -30,6 +30,7 @@ export const v6Components = {
   input: { antd: ['Input'], prefixCls: 'ant-input' },
   message: { antd: ['message'], prefixCls: 'ant-message' },
   modal: { antd: ['Modal'], prefixCls: 'ant-modal' },
+  notification: { antd: ['notification'], prefixCls: 'ant-notification' },
   result: { antd: ['Result'], prefixCls: 'ant-result' },
   select: { antd: ['Select'], prefixCls: 'ant-select' },
   skeleton: { antd: ['Skeleton'], prefixCls: 'ant-skeleton' },

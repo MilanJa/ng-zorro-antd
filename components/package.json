@@ -248,6 +248,9 @@
       "less": "./notification/style/*.less",
       "style": "./notification/style/index.min.css"
     },
+    "./notification/style/v6/*": {
+      "style": "./notification/style/v6/*"
+    },
     "./page-header/style/*": {
       "less": "./page-header/style/*.less",
       "style": "./page-header/style/index.min.css"

@@ -1,0 +1,169 @@
+/* Ported from components/notification/style/placement.less: v6's notification CSS is
+   transition-based (rc-motion CSSMotion prepare/start/active classes driven by --notification-y/
+   -x custom properties) and defines no keyframes, but ng-zorro's NzNotificationComponent
+   (notification.component.ts:110-122) drives motion by adding ant-notification-fade-enter/-leave
+   and waiting for `animationend` on the antNotificationFadeIn/antNotificationFadeOut keyframes
+   below. Without this file the leave animation never fires and a notification never gets removed
+   (notification-v6.spec.ts "is removed after its duration under v6 CSS" pins this).
+   @notification-margin-edge -> var(--ant-margin-lg); durations -> var(--ant-motion-duration-mid),
+   per the brief. @notification-margin-bottom (16px, a separate v4 token from margin-edge) has no
+   brief-specified substitution; mapped to var(--ant-margin) (16px default, same numeric value as
+   the v4 token it replaces) since it is the inter-notice spacing token, substitution recorded here. */
+.ant-notification .ant-notification-fade-enter,
+.ant-notification .ant-notification-fade-leave {
+  animation-duration: var(--ant-motion-duration-mid);
+  animation-timing-function: var(--ant-motion-ease-in-out);
+  animation-fill-mode: both;
+}
+.ant-notification .ant-notification-fade-enter {
+  animation-name: antNotificationFadeIn;
+}
+.ant-notification .ant-notification-fade-leave {
+  animation-name: antNotificationFadeOut;
+}
+.ant-notification.ant-notification-top .ant-notification-fade-enter {
+  animation-name: antNotificationTopFadeIn;
+}
+.ant-notification.ant-notification-bottom .ant-notification-fade-enter {
+  animation-name: antNotificationBottomFadeIn;
+}
+.ant-notification.ant-notification-topLeft .ant-notification-fade-enter,
+.ant-notification.ant-notification-bottomLeft .ant-notification-fade-enter {
+  animation-name: antNotificationLeftFadeIn;
+}
+@keyframes antNotificationFadeIn {
+  0% {
+    transform: translate3d(100%, 0, 0);
+    opacity: 0;
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+}
+@keyframes antNotificationTopFadeIn {
+  0% {
+    top: -150px;
+    opacity: 0;
+  }
+  100% {
+    top: 0;
+    opacity: 1;
+  }
+}
+@keyframes antNotificationBottomFadeIn {
+  0% {
+    bottom: -150px;
+    opacity: 0;
+  }
+  100% {
+    bottom: 0;
+    opacity: 1;
+  }
+}
+@keyframes antNotificationLeftFadeIn {
+  0% {
+    transform: translate3d(-100%, 0, 0);
+    opacity: 0;
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+}
+@keyframes antNotificationFadeOut {
+  0% {
+    max-height: 150px;
+    margin-block-end: var(--ant-margin);
+  }
+  100% {
+    max-height: 0;
+    margin-block-end: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    opacity: 0;
+  }
+}
+
+/* Note: placement.less also has `&-top, &-bottom { margin-inline: 0; }` and
+   `&-topLeft, &-bottomLeft { margin-right: 0; margin-left: @notification-margin-edge; }`. Both
+   are v4-only positioning fixups for a base `.ant-notification { margin-inline-end: @notification-
+   margin-edge }` rule that only exists in v4 Less -- v6's own template CSS never sets a margin on
+   the bare `.ant-notification` root (confirmed against the extracted publish/style/v6/template.css),
+   and ng-zorro's six placement roots position themselves via `[style.top]`/`[style.left]`/etc.
+   inline bindings, not margin. Dropped: nothing to mirror, there is no v6 margin to cancel. */
+
+/* v6's own template CSS sets `.ant-notification .ant-notification-notice { position: absolute; ... }`
+   unconditionally (antd/es/notification/style/index.js) -- it assumes rc-notification's virtual-list
+   stacking model, where every notice is absolutely positioned and offset with per-notice
+   `--notification-y`/`--notification-x` custom properties a JS layer maintains. ng-zorro's container
+   instead renders `*ngFor` siblings in normal block flow and never sets those properties. Without
+   this override every notification collapses onto the same absolute position (out of flow, so later
+   siblings don't reserve space for earlier ones) as soon as more than one notification is showing at
+   once -- same finding as message/style/v6/patch.css's position:relative mirror (task-14-report.md).
+   Mirrored back to `position: relative` (same selector, so it wins on source order) keeps ng-zorro's
+   simple flow-based stacking intact while still picking up every other v6-declared property
+   (background, radius, shadow, padding, colours) on the same element. */
+.ant-notification .ant-notification-notice {
+  position: relative;
+}
+
+/* v6's inter-notice gap lives on `.ant-notification .ant-notification-list-content { gap:
+   var(--ant-margin) }` (antd/es/notification/style/index.js's genNotificationListContentStyle) --
+   a holder ng-zorro never renders (its six placement roots each render `*ngFor` notice siblings
+   directly, no intermediate `-list-content` div; adding it would need a new wrapper element, which
+   the brief doesn't authorize and which JS-maintained rc-virtual-list bookkeeping the holder assumes
+   ng-zorro doesn't have anyway -- same reasoning as message's `-list-content` omission). Mirrored
+   directly onto the six placement roots instead, per component-dispatch-context.md's explicit ask.
+   `gap` on a plain block container (no `display: flex`/`grid`) is supported by the CSS Box Alignment
+   spec in the evergreen browsers this suite runs in -- confirmed by message/style/v6/patch.css's
+   `.ant-message.ant-message-list { gap: ... }` using the identical technique on a block container. */
+.ant-notification.ant-notification-topLeft,
+.ant-notification.ant-notification-topRight,
+.ant-notification.ant-notification-bottomLeft,
+.ant-notification.ant-notification-bottomRight,
+.ant-notification.ant-notification-top,
+.ant-notification.ant-notification-bottom {
+  gap: var(--ant-margin);
+}
+
+/* v6 centres each notice within the `-top`/`-bottom` placements at the *notice* level
+   (`.ant-notification.ant-notification-top .ant-notification-notice { left: 50%; transform:
+   translate3d(-50%, 0, 0) }`), assuming a full-width root. ng-zorro's `-top`/`-bottom` roots are
+   instead already centred as a whole via inline styles on the container
+   (`[style.left]="'50%'" [style.transform]="'translateX(-50%)'"`, notification-container.component.ts),
+   so applying v6's own notice-level centring on top would double-offset the notice to the right by
+   half its own width. Also, exactly like message's centring finding (task-14-report.md item 2):
+   ng-zorro's ported antNotificationFadeIn/-Out keyframes set their own `transform` (translate3d) for
+   the ~motion-duration-mid the enter/leave animation classes are present, overriding v6's centring
+   transform mid-animation and producing a visible off-centre snap. Cancelling `left`/`transform`
+   here (the container's own centring already handles horizontal placement, and block-level notices
+   are laid out left-to-right within the already-centred, content-width container) fixes both: no
+   double offset, and no dependency on `transform` that the enter/leave keyframes could clobber. */
+.ant-notification.ant-notification-top .ant-notification-notice,
+.ant-notification.ant-notification-bottom .ant-notification-notice {
+  left: auto;
+  transform: none;
+}
+
+/* v6's real DOM nests icon and `-notice-section` (title+description column) as flex siblings under
+   `-notice-wrapper` (`.ant-notification-notice-wrapper { display: flex; align-items: flex-start;
+   gap: var(--ant-margin-sm) }`, `.ant-notification-notice-section { display: flex; flex-direction:
+   column; gap: var(--ant-margin-xs) }`). Per the brief's additive mapping, ng-zorro's `-wrapper`
+   class lands on the outer content div and `-section` lands on the existing `-with-icon` div, which
+   is the direct parent of the icon *and* title/description/actions all as flat siblings (not a
+   further-nested title/description-only column) -- the same DOM shape v4 always had. Restructuring
+   into v6's real nesting would need new wrapper elements the brief doesn't authorize. Mirroring the
+   icon/text layout using v4's own already-proven-safe technique instead (components/notification/
+   style/index.less's `&-icon { position: absolute; margin-inline-start: 4px; ... }` /
+   `&-with-icon &-message/-description { margin-inline-start: 48px }`, ported verbatim as literal px
+   values since v4 itself hardcodes them, not tokens) keeps the icon visually beside the title/
+   description under v6-only CSS without touching the DOM. */
+.ant-notification-notice-icon {
+  position: absolute;
+  margin-inline-start: 4px;
+}
+.ant-notification-notice-section .ant-notification-notice-title,
+.ant-notification-notice-section .ant-notification-notice-description {
+  margin-inline-start: 48px;
+}

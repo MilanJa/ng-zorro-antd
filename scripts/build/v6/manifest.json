@@ -1,7 +1,7 @@
 {
   "antdVersion": "6.6.5",
   "engineCoreBytes": 42701,
-  "engineComponentsBytes": 165184,
+  "engineComponentsBytes": 168014,
   "components": {
     "alert": {
       "classes": [
@@ -553,6 +553,59 @@
         "--ant-modal-title-color",
         "--ant-modal-title-font-size",
         "--ant-modal-title-line-height"
+      ]
+    },
+    "notification": {
+      "classes": [
+        "ant-notification",
+        "ant-notification-bottom",
+        "ant-notification-fade",
+        "ant-notification-fade-appear-active",
+        "ant-notification-fade-appear-prepare",
+        "ant-notification-fade-appear-start",
+        "ant-notification-fade-enter-active",
+        "ant-notification-fade-enter-prepare",
+        "ant-notification-fade-enter-start",
+        "ant-notification-fade-leave-active",
+        "ant-notification-fade-leave-start",
+        "ant-notification-hook-holder",
+        "ant-notification-list",
+        "ant-notification-list-content",
+        "ant-notification-list-content-decrease",
+        "ant-notification-notice",
+        "ant-notification-notice-actions",
+        "ant-notification-notice-closable",
+        "ant-notification-notice-close",
+        "ant-notification-notice-description",
+        "ant-notification-notice-error",
+        "ant-notification-notice-icon",
+        "ant-notification-notice-icon-error",
+        "ant-notification-notice-icon-info",
+        "ant-notification-notice-icon-loading",
+        "ant-notification-notice-icon-success",
+        "ant-notification-notice-icon-warning",
+        "ant-notification-notice-info",
+        "ant-notification-notice-progress",
+        "ant-notification-notice-pure-panel",
+        "ant-notification-notice-section",
+        "ant-notification-notice-stack-in-threshold",
+        "ant-notification-notice-success",
+        "ant-notification-notice-title",
+        "ant-notification-notice-warning",
+        "ant-notification-notice-wrapper",
+        "ant-notification-rtl",
+        "ant-notification-stack",
+        "ant-notification-stack-expanded",
+        "ant-notification-top"
+      ],
+      "tokens": [
+        "--ant-notification-color-error-bg",
+        "--ant-notification-color-info-bg",
+        "--ant-notification-color-success-bg",
+        "--ant-notification-color-warning-bg",
+        "--ant-notification-progress-bg",
+        "--ant-notification-width",
+        "--ant-notification-z-index-popup"
       ]
     },
     "result": {

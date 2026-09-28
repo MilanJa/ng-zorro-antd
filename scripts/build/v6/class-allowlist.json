@@ -10,6 +10,17 @@
     "ant-btn-rtl",
     "ant-btn-text"
   ],
+  "_notification_comment": "antd-emits: ant-notification-close-icon (antd emits this class on the close anticon itself, PurePanel.js:33; v6 CSS never styles `.ant-notification-close-icon`, only the `.ant-notification-notice-close` button it sits inside). v4-compat (dropped once v6 becomes the default): ant-notification-notice-with-icon (kept next to the new v6 -notice-section class on the same div), ant-notification-notice-content (kept on the inner, now-bare div alongside the outer div's new -notice-wrapper class; v6 CSS has no rule for the bare -notice-content name), ant-notification-notice-message (kept next to the new v6 -notice-title class), ant-notification-notice-btn (kept next to the new v6 -notice-actions class), ant-notification-notice-close-x (the inner close-icon wrapper span; antd's PurePanel keeps an equivalent internal span too, but v6 CSS never styles the bare class, only -notice-close). patch-motion: ant-notification-fade-enter, ant-notification-fade-leave (styled only by notification/style/v6/patch.css, ported from style/placement.less; v6's own CSS is transition-based and defines no such classes/keyframes).",
+  "notification": [
+    "ant-notification-close-icon",
+    "ant-notification-fade-enter",
+    "ant-notification-fade-leave",
+    "ant-notification-notice-btn",
+    "ant-notification-notice-close-x",
+    "ant-notification-notice-content",
+    "ant-notification-notice-message",
+    "ant-notification-notice-with-icon"
+  ],
   "_message_comment": "v4-compat: ant-message-custom-content (kept as the icon/title's direct parent alongside the new v6 .ant-message-notice-wrapper class on its own ancestor div, so v4's descendant `.ant-message .anticon`/`.ant-message-success .anticon` colour rules keep matching; v6 CSS never styles the bare class), ant-message-notice-content (kept alongside the new v6 .ant-message-notice-wrapper class on the same div; v6 CSS has no rule for the bare .ant-message-notice-content name), ant-message-{success,info,warning,error,loading} (the runtime `[class]=\"'ant-message-' + instance.type\"` binding on .ant-message-custom-content -- a template-literal, so the static scan never sees it, but the rendered-coverage check captures the real strings; v6 puts type colour on .ant-message-notice-icon-{type} instead, so this class is unstyled under v6 CSS). patch-motion: ant-message-move-up-enter, ant-message-move-up-leave (styled only by message/style/v6/patch.css, ported from style/animation.less; v6's own CSS is transition-based and defines no such classes/keyframes).",
   "message": [
     "ant-message-custom-content",

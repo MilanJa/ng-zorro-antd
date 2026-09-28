@@ -8,4 +8,5 @@ Limitations met while aligning components with antd v6 that cannot be closed wit
 | Popconfirm            | `description` prop              | no `nzPopconfirmDescription`           | new input (sub-project 3) |
 | Progress              | `percentPosition`/`size` object | not available                          | inputs (sub-project 3)    |
 | Message               | message stacking (`stack`)      | not available                          | new config                |
+| Notification          | notification stacking (`stack`) | not available                          | new config                |
 | Message, Notification | global singletons               | scoped `[nzTheme]` does not reach them | documented limit          |

@@ -20,8 +20,11 @@ import { NzNotificationData } from './typings';
     <div
       #animationElement
       class="ant-notification-notice ant-notification-notice-closable"
+      [class]="[
+        instance.options?.nzClass || '',
+        instance.type !== 'blank' ? 'ant-notification-notice-' + instance.type : ''
+      ]"
       [style]="instance.options?.nzStyle || null"
-      [class]="instance.options?.nzClass || ''"
       (click)="onClick($event)"
       (mouseenter)="onEnter()"
       (mouseleave)="onLeave()"
@@ -32,9 +35,12 @@ import { NzNotificationData } from './typings';
           [ngTemplateOutletContext]="{ $implicit: this, data: instance.options?.nzData }"
         />
       } @else {
-        <div class="ant-notification-notice-content">
-          <div class="ant-notification-notice-content">
-            <div [class.ant-notification-notice-with-icon]="instance.type !== 'blank'">
+        <div class="ant-notification-notice-content ant-notification-notice-wrapper">
+          <div>
+            <div
+              class="ant-notification-notice-section"
+              [class.ant-notification-notice-with-icon]="instance.type !== 'blank'"
+            >
               @switch (instance.type) {
                 @case ('success') {
                   <nz-icon
@@ -61,7 +67,7 @@ import { NzNotificationData } from './typings';
                   />
                 }
               }
-              <div class="ant-notification-notice-message">
+              <div class="ant-notification-notice-message ant-notification-notice-title">
                 <ng-container *nzStringTemplateOutlet="instance.title">
                   <div [innerHTML]="instance.title"></div>
                 </ng-container>
@@ -77,7 +83,7 @@ import { NzNotificationData } from './typings';
                 </ng-container>
               </div>
               @if (instance.options?.nzButton; as btn) {
-                <span class="ant-notification-notice-btn">
+                <span class="ant-notification-notice-btn ant-notification-notice-actions">
                   <ng-template [ngTemplateOutlet]="btn" [ngTemplateOutletContext]="{ $implicit: this }" />
                 </span>
               }
