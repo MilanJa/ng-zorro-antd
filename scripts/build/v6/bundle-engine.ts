@@ -50,19 +50,25 @@ function componentsEntry(antdNames: string[]): string {
   // `<Collapse>` and would otherwise register a phantom `Collapse` entry in `registry` that real antd
   // never emits for these components).
   //
-  // Most style modules call `genStyleHooks(Name, ...)` eagerly at module scope, which is what actually
-  // records the component into the shimmed `registry` (see `shims/cssinjs-utils.js`) -- importing the
-  // module is enough. A few (Tooltip, whose style is shared with Popover/Popconfirm) instead export a
-  // `(prefixCls, rootCls, injectStyle) => { const useStyle = genStyleHooks(Name, ...); return
-  // useStyle(...); }` wrapper, deferring the `genStyleHooks` call to when antd's React component actually
-  // renders and invokes it -- which never happens here, so the component would never make it into the
-  // registry. Calling each default export once (with no arguments) fixes that: for the eager case the
-  // default is already `genStyleHooks`'s own return value (a dummy `(prefixCls, rootCls) => ['', '']` from
-  // the shim), so calling it again is a harmless extra no-op; for the lazy case, calling it is what
-  // actually runs `genStyleHooks` and records the component.
+  // Most style modules call `genStyleHooks(Name, ...)` eagerly at module scope (e.g.
+  // `antd/es/popover/style/index.js` and `antd/es/popconfirm/style/index.js` both do `export default
+  // genStyleHooks('Popover'/'Popconfirm', ...)` directly), which is what actually records the component
+  // into the shimmed `registry` (see `shims/cssinjs-utils.js`) -- importing the module is enough. A few
+  // (Tooltip; also Menu, per `antd/es/menu/style/index.js`) instead export a `(prefixCls, rootCls,
+  // injectStyle) => { const useStyle = genStyleHooks(Name, ...); return useStyle(...); }` wrapper,
+  // deferring the `genStyleHooks` call to when antd's React component actually renders and invokes it --
+  // which never happens here, so the component would never make it into the registry. Calling each
+  // default export once (with no arguments) fixes that: for the eager case the default is already
+  // `genStyleHooks`'s own return value (a dummy `(prefixCls, rootCls) => ['', '']` from the shim), so
+  // calling it again is a harmless extra no-op; for the lazy case, calling it is what actually runs
+  // `genStyleHooks` and records the component.
   const lines = antdNames.map((n, i) => {
     const p = antdStyleModulePath(n);
-    return [`import { default as _c${i} } from '${p}';`, `export { _c${i} };`, `try { _c${i}(); } catch {}`].join('\n');
+    return [
+      `import { default as _c${i} } from '${p}';`,
+      `export { _c${i} };`,
+      `try { _c${i}(); } catch (e) { console.warn('v6 engine: calling the default export of ${p} threw', e); }`
+    ].join('\n');
   });
   return `${lines.join('\n')}\nexport { registry } from '${path.join(shimsDir, 'cssinjs-utils.js').replace(/\\/g, '/')}';\n`;
 }

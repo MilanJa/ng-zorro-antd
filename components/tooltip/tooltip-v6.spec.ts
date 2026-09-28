@@ -24,7 +24,7 @@ function installV6Css(): void {
 @Component({
   imports: [NzTooltipModule, NzThemeDirective],
   template: `
-    <div [nzTheme]="{ token: { colorPrimary: '#00b96b' } }">
+    <div [nzTheme]="{ token: { colorPrimary: '#00b96b' } }" style="margin: 80px 0 0 200px">
       <button id="trigger" nz-tooltip nzTooltipTitle="Hello" [nzTooltipVisible]="visible()" nzTooltipTrigger="click">
         t
       </button>
@@ -69,6 +69,19 @@ describe('tooltip under antd v6 css', () => {
     expect(root.getBoundingClientRect().height).toBeGreaterThan(20);
     expect(root.className).toMatch(/\bnz-theme-\d+\b/);
     expect(getComputedStyle(root).getPropertyValue('--ant-color-primary').trim()).toBe('#00b96b');
+    // Positioned above the trigger (default `top` placement) and horizontally centred on it. CDK's
+    // FlexibleConnectedPositionStrategy writes the offsets that produce this onto `.ant-tooltip` itself
+    // (not onto `.cdk-overlay-pane`); without `style/v6/patch.css`'s `.ant-tooltip { position: relative; }`,
+    // v6's own `position: absolute` on that same element misinterprets those offsets and the bubble is
+    // mispositioned (verified directly: without the patch this element measures `left: 209.86` / `top: 68`
+    // against a trigger at `left: 200` / `top: 80` -- overlapping the trigger instead of sitting centred
+    // above it; see fix round 1).
+    const trigger = document.getElementById('trigger')!.getBoundingClientRect();
+    const rootRect = root.getBoundingClientRect();
+    expect(rootRect.bottom).toBeLessThanOrEqual(trigger.top + 1);
+    const rootCentre = rootRect.left + rootRect.width / 2;
+    const triggerCentre = trigger.left + trigger.width / 2;
+    expect(Math.abs(rootCentre - triggerCentre)).toBeLessThanOrEqual(2);
   });
 
   it('is removed after close', async () => {

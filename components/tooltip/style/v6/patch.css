@@ -1,0 +1,5 @@
+/* CDK overlay pane positioning; v6's `position: absolute` would collapse the pane to 0x0 inside the
+   CDK overlay pane (which is itself positioned), mispositioning the bubble. Port of `style/patch.less`. */
+.ant-tooltip {
+  position: relative;
+}
