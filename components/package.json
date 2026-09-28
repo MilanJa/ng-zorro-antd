@@ -183,6 +183,9 @@
       "less": "./empty/style/*.less",
       "style": "./empty/style/index.min.css"
     },
+    "./float-button/style/v6/*": {
+      "style": "./float-button/style/v6/*"
+    },
     "./form/style/*": {
       "less": "./form/style/*.less",
       "style": "./form/style/index.min.css"

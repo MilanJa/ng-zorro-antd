@@ -72,7 +72,13 @@ export class NzFloatButtonComponent {
   protected readonly dir = inject(Directionality).valueSignal;
   protected readonly class = computed<string[]>(() => {
     const dir = this.dir();
-    const classes = [CLASS_NAME, this.generateClass(this.shape())];
+    // v6 DOM: button.ant-btn….ant-float-btn.ant-float-btn-{type}.ant-float-btn-{shape}[.ant-float-btn-icon-only]
+    // (antd/es/float-button/FloatButton.js:97-102). The `ant-btn*` layer itself is not reproduced
+    // (task-16 ruling), but the `-{type}`/`-{shape}`/`-icon-only` classes are additive on the host.
+    const classes = [CLASS_NAME, this.generateClass(this.nzType()), this.generateClass(this.shape())];
+    if (!this.nzDescription()) {
+      classes.push(`${CLASS_NAME}-icon-only`);
+    }
     if (dir === 'rtl') {
       classes.push(this.generateClass(dir));
     }

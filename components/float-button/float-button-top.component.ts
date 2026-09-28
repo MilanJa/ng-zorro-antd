@@ -95,7 +95,15 @@ export class NzFloatButtonTopComponent implements OnInit {
   readonly shape = linkedSignal(() => this.nzShape());
   protected readonly class = computed<string[]>(() => {
     const dir = this.directionality.valueSignal();
-    const classes = [CLASS_NAME, `${CLASS_NAME}-top`, this.generateClass(this.shape())];
+    // v6 DOM: same button.ant-btn….ant-float-btn.ant-float-btn-{type}.ant-float-btn-{shape} shape as
+    // FloatButton (antd/es/float-button/BackTop.js:82-88 renders FloatButton itself); `-progress` is
+    // only added with `showProgress`, a documented gap (docs/v6-api-gaps.md).
+    const classes = [
+      CLASS_NAME,
+      `${CLASS_NAME}-top`,
+      this.generateClass(this.nzType()),
+      this.generateClass(this.shape())
+    ];
     if (dir === 'rtl') {
       classes.push(this.generateClass(dir));
     }

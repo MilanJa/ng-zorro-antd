@@ -622,6 +622,9 @@ export interface NzDrawerToken {
   zIndexPopup: number;
 }
 
+export interface NzFloatButtonToken {
+}
+
 export interface NzInputToken {
   activeBg: string;
   activeBorderColor: string;
@@ -777,6 +780,7 @@ export interface NzComponentTokenMap {
   Alert: NzAlertToken;
   Button: NzButtonToken;
   Drawer: NzDrawerToken;
+  FloatButton: NzFloatButtonToken;
   Input: NzInputToken;
   Message: NzMessageToken;
   Modal: NzModalToken;

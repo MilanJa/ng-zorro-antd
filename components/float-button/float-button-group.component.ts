@@ -37,7 +37,11 @@ const CLASS_NAME = 'ant-float-btn-group';
       <ng-container *ngTemplateOutlet="menu" />
     } @else {
       @if (open()) {
-        <div class="ant-float-btn-group-wrap" [animate.enter]="enterAnimation()" [animate.leave]="leaveAnimation()">
+        <div
+          class="ant-float-btn-group-wrap ant-float-btn-group-list"
+          [animate.enter]="enterAnimation()"
+          [animate.leave]="leaveAnimation()"
+        >
           <ng-container *ngTemplateOutlet="menu" />
         </div>
       }
@@ -95,6 +99,10 @@ export class NzFloatButtonGroupComponent {
       classes.push(this.generateClass(`${shape}-shadow`));
     } else {
       classes.push(this.generateClass(this.nzPlacement()));
+      // v6 DOM: div.ant-float-btn-group.ant-float-btn-group-{shape}.ant-float-btn-group-{placement}
+      // .ant-float-btn-group-menu-mode (FloatButtonGroup.js:172-218), added whenever `nzTrigger` puts
+      // the group in click/hover menu mode.
+      classes.push(`${CLASS_NAME}-menu-mode`);
     }
     if (dir === 'rtl') {
       classes.push(this.generateClass(dir));

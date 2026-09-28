@@ -1,0 +1,273 @@
+/*
+ * antd v6's FloatButton root is itself an antd `Button` (button.ant-btn….ant-float-btn…,
+ * antd/es/float-button/FloatButton.js:34-46,97-102), so most of the visible box model (fixed
+ * position/shadow, 40px circle/square sizing, per-type colour) comes from `.ant-btn*` rules, not
+ * from `.ant-float-btn*` rules. Per task-16's dual-rendering ruling, the `ant-btn*` class layer is
+ * never added to ng-zorro's host div (it would additionally inherit v4 button styles there), so
+ * every rule below mirrors, onto ng-zorro's existing v4-compat structure, exactly the properties
+ * that v6's own `.ant-float-btn*`-scoped CSS never supplies on its own -- verified against
+ * `publish/ng-zorro-antd.v6.css`. `-{type}` colouring is left to the kept `nz-button` directive on
+ * `.ant-float-btn-inner` (it already emits real v6 `ant-btn`/colour/variant classes unconditionally),
+ * which this patch only resizes to fill the host, not recolours.
+ */
+
+/* Mirrors `.ant-float-btn.ant-float-btn-individual` (position/z-index/inset/shadow), which real v6
+   only applies via the `-individual` class antd's own React component adds to every standalone
+   FloatButton; ng-zorro's host never carries that class (not in this task's mapping table). */
+.ant-float-btn {
+  position: fixed;
+  z-index: var(--ant-z-index-popup-base);
+  inset-inline-end: var(--ant-margin-lg);
+  bottom: var(--ant-margin-xxl);
+  box-shadow: var(--ant-box-shadow-secondary);
+}
+
+/* `.ant-float-btn{width:var(--ant-float-btn-size);height:auto}` is already real v6 CSS; circle
+   shape additionally needs a fixed (not auto) height to stay round -- mirrors what
+   `.ant-btn.ant-btn-circle.ant-btn-lg` would have given the inner button had the `ant-btn` layer
+   been reproduced. */
+.ant-float-btn-circle {
+  height: var(--ant-float-btn-size);
+  border-radius: 50%;
+}
+.ant-float-btn-square {
+  border-radius: var(--ant-border-radius-lg);
+}
+
+/* Resizes the kept v4-compat inner button/anchor (`.ant-float-btn-inner`) to fill the host and pick
+   up its shape radius; `nz-button`'s own v6 colour/variant classes stay on the element so per-type
+   colouring (default/primary/dashed/link/text) keeps working, unlike the sizing antd's own
+   `ant-btn-circle`/`ant-btn-lg` classes would otherwise have set. */
+.ant-btn.ant-float-btn-inner {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  padding: 0;
+  border-radius: inherit;
+}
+
+/* v6's real DOM has no `-body` wrapper (icon/content sit directly inside the `ant-btn` flex box);
+   ng-zorro keeps `-body` (v4-compat) as `-content`'s parent, so this mirrors v6's
+   `.ant-float-btn .ant-float-btn-content` (font-size) / `.ant-float-btn .ant-float-btn-icon`
+   (line-height) plus v4's own `-body`/`-content`/`-icon` flex-centring (`style/index.less`) onto the
+   wrapper -- without it the body wrapper collapses centring under the v6 theme. */
+.ant-float-btn-body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  transition: all 0.2s;
+}
+.ant-float-btn-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--ant-float-btn-size);
+  padding: calc(var(--ant-padding-xxs) / 2) var(--ant-padding-xxs);
+  overflow: hidden;
+  text-align: center;
+  font-size: var(--ant-font-size-sm);
+}
+.ant-float-btn-icon {
+  width: calc(var(--ant-font-size-sm) * 1.5);
+  margin: auto;
+  font-size: calc(var(--ant-font-size-sm) * 1.5);
+  line-height: 1;
+  text-align: center;
+}
+.ant-float-btn-description {
+  display: flex;
+  align-items: center;
+  font-size: var(--ant-font-size-sm);
+  line-height: var(--ant-line-height);
+}
+
+/* Group root layout -- real v6 CSS gives `.ant-float-btn-group` its `gap` (line ~1327 of the
+   extracted CSS) but never a `display`, because in real antd the gap lives on a `Flex`/
+   `Space.Compact` list wrapper, not the group root itself; ng-zorro's non-menu-mode group renders
+   its buttons as direct children of the root (no such wrapper, no wrapper element authorized by
+   this task's mapping table), so the flex context has to be supplied here for `gap` to do anything. */
+.ant-float-btn-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-width: var(--ant-float-btn-size);
+  min-height: var(--ant-float-btn-size);
+  border-radius: var(--ant-border-radius-lg);
+}
+
+/* Group members: real v6's `.ant-float-btn-group .ant-float-btn{position:relative;inset:auto}`
+   already cancels the base rule's fixed position above, but not its z-index/box-shadow. Circle
+   groups keep antd's real per-item shadow (`individual` is true for circle groups in antd's own
+   FloatButtonGroup.js:122); square groups render one shadow around the whole list instead (mirrors
+   v4's own `&-square-shadow .ant-float-btn-square{box-shadow:none}`), so z-index/shadow/radius are
+   reset only for square list items, with square-list-specific corner rounding ported from v4. */
+.ant-float-btn-group-square .ant-float-btn-square {
+  z-index: auto;
+  box-shadow: none;
+  border-radius: 0;
+}
+.ant-float-btn-group-square .ant-float-btn-square:first-child {
+  border-start-start-radius: var(--ant-border-radius-lg);
+  border-start-end-radius: var(--ant-border-radius-lg);
+}
+.ant-float-btn-group-square .ant-float-btn-square:last-child {
+  border-end-start-radius: var(--ant-border-radius-lg);
+  border-end-end-radius: var(--ant-border-radius-lg);
+}
+.ant-float-btn-group-square .ant-float-btn-square:not(:last-child) {
+  border-bottom: 1px solid var(--ant-color-split);
+}
+.ant-float-btn-group-square .ant-float-btn-group-trigger {
+  border-radius: var(--ant-border-radius-lg);
+}
+
+/* Menu-mode list wrap (`.ant-float-btn-group-wrap.ant-float-btn-group-list`, mapping table row 19):
+   real v6 positions it (`position:absolute` + the per-placement `bottom`/`top` custom-property
+   offsets, all already active once the class is present) but, same reasoning as the group root
+   above, never gives it a `display` (that lives on antd's own `Flex`/`Space.Compact`, not
+   reproduced here) -- ported from v4's own `&-wrap`/per-placement `flex-direction` rules
+   (`style/index.less`). Kept `z-index:-1` from v4 unchanged (keeps the trigger button paintable on
+   top of the list in its own stacking context). */
+.ant-float-btn-group-wrap.ant-float-btn-group-list {
+  position: absolute;
+  z-index: -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ant-padding);
+}
+.ant-float-btn-group-top .ant-float-btn-group-wrap,
+.ant-float-btn-group-bottom .ant-float-btn-group-wrap {
+  flex-direction: column;
+}
+.ant-float-btn-group-left .ant-float-btn-group-wrap,
+.ant-float-btn-group-right .ant-float-btn-group-wrap {
+  flex-direction: row;
+}
+
+/* Whole page must stay clickable while a float button group's list is closed/collapsed -- mirrors
+   the lesson from Task 15 (notification)'s fix round: an always-rendered, unconditionally-sized
+   box can tile over page content. The group root here is only ever exactly the trigger/list's own
+   content box (no `height:100vh` risk like notification's placement roots), so no extra
+   `pointer-events` mirror is needed; recorded here as the check this task's dispatch note asked for.
+   The group's `mouseleave` handler and the list's own `display:flex`/finite size keep hit-testing
+   scoped to the rendered buttons, confirmed in the v6 spec below. */
+
+/* Motion classes ported from `style/animation.less` (`@animation-duration: @animation-duration-slow`
+   -> `var(--ant-motion-duration-slow)`, `@ease-in-out` -> `var(--ant-motion-ease-in-out)`,
+   `@slide-distance: 40px` kept as a literal, matching float-button's own v4 token, which is not a
+   design-token concept in v6). Real v6 CSS is transition-based for the group list
+   (`-group-list-motion-*`) and defines none of these eight classes/keyframes; allowlisted as
+   `patch-motion`. */
+.ant-float-btn-enter-top {
+  animation: ant-float-btn-enter-top-keyframes var(--ant-motion-duration-slow) var(--ant-motion-ease-in-out);
+}
+.ant-float-btn-leave-top {
+  animation: ant-float-btn-leave-top-keyframes var(--ant-motion-duration-slow) var(--ant-motion-ease-in-out);
+}
+.ant-float-btn-enter-bottom {
+  animation: ant-float-btn-enter-bottom-keyframes var(--ant-motion-duration-slow) var(--ant-motion-ease-in-out);
+}
+.ant-float-btn-leave-bottom {
+  animation: ant-float-btn-leave-bottom-keyframes var(--ant-motion-duration-slow) var(--ant-motion-ease-in-out);
+}
+.ant-float-btn-enter-left {
+  animation: ant-float-btn-enter-left-keyframes var(--ant-motion-duration-slow) var(--ant-motion-ease-in-out);
+}
+.ant-float-btn-leave-left {
+  animation: ant-float-btn-leave-left-keyframes var(--ant-motion-duration-slow) var(--ant-motion-ease-in-out);
+}
+.ant-float-btn-enter-right {
+  animation: ant-float-btn-enter-right-keyframes var(--ant-motion-duration-slow) var(--ant-motion-ease-in-out);
+}
+.ant-float-btn-leave-right {
+  animation: ant-float-btn-leave-right-keyframes var(--ant-motion-duration-slow) var(--ant-motion-ease-in-out);
+}
+
+@keyframes ant-float-btn-enter-top-keyframes {
+  from {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+@keyframes ant-float-btn-leave-top-keyframes {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+}
+@keyframes ant-float-btn-enter-bottom-keyframes {
+  from {
+    transform: translateY(-40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+@keyframes ant-float-btn-leave-bottom-keyframes {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-40px);
+    opacity: 0;
+  }
+}
+@keyframes ant-float-btn-enter-left-keyframes {
+  from {
+    transform: translateX(40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+@keyframes ant-float-btn-leave-left-keyframes {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(40px);
+    opacity: 0;
+  }
+}
+@keyframes ant-float-btn-enter-right-keyframes {
+  from {
+    transform: translateX(-40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+@keyframes ant-float-btn-leave-right-keyframes {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(-40px);
+    opacity: 0;
+  }
+}
