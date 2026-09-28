@@ -271,6 +271,9 @@
       "less": "./progress/style/*.less",
       "style": "./progress/style/index.min.css"
     },
+    "./progress/style/v6/*": {
+      "style": "./progress/style/v6/*"
+    },
     "./qr-code/style/*": {
       "less": "./qr-code/style/*.less",
       "style": "./qr-code/style/index.min.css"

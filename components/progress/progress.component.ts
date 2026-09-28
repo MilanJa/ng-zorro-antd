@@ -58,7 +58,11 @@ const defaultFormatter: NzProgressFormatter = (p: number): string => `${p}%`;
   template: `
     <ng-template #progressInfoTemplate>
       @if (nzShowInfo) {
-        <span class="ant-progress-text">
+        <span
+          class="ant-progress-text ant-progress-indicator"
+          [class.ant-progress-indicator-end]="nzType === 'line'"
+          [class.ant-progress-indicator-outer]="nzType === 'line'"
+        >
           @if ((status === 'exception' || status === 'success') && !nzFormat) {
             <nz-icon [nzType]="icon" />
           } @else {
@@ -81,20 +85,26 @@ const defaultFormatter: NzProgressFormatter = (p: number): string => `${p}%`;
       [class.ant-progress-rtl]="dir() === 'rtl'"
     >
       @if (nzType === 'line') {
-        <div>
-          <!-- normal line style -->
+        <div style="display: contents">
+          <!-- normal line style; antd v6's root is a flex container with no wrapper around
+               ant-progress-body, so this v4-only structural div must not take part in that
+               flex layout (display: contents removes its own box, matching the flat v6 DOM) -->
           @if (isSteps) {
-            <div class="ant-progress-steps-outer">
+            <div class="ant-progress-steps-outer ant-progress-steps-body">
               @for (step of steps; track $index) {
-                <div class="ant-progress-steps-item" [style]="step"></div>
+                <div
+                  class="ant-progress-steps-item"
+                  [class.ant-progress-steps-item-active]="$index < activeStepsCount"
+                  [style]="step"
+                ></div>
               }
               <ng-template [ngTemplateOutlet]="progressInfoTemplate" />
             </div>
           } @else {
-            <div class="ant-progress-outer">
-              <div class="ant-progress-inner">
+            <div class="ant-progress-outer ant-progress-body">
+              <div class="ant-progress-inner ant-progress-rail" [style.height.px]="strokeWidth">
                 <div
-                  class="ant-progress-bg"
+                  class="ant-progress-bg ant-progress-track"
                   [style.width.%]="nzPercent"
                   [style.border-radius]="nzStrokeLinecap === 'round' ? '100px' : '0'"
                   [style.background]="!isGradient ? nzStrokeColor : null"
@@ -103,7 +113,7 @@ const defaultFormatter: NzProgressFormatter = (p: number): string => `${p}%`;
                 ></div>
                 @if (nzSuccessPercent || nzSuccessPercent === 0) {
                   <div
-                    class="ant-progress-success-bg"
+                    class="ant-progress-success-bg ant-progress-track ant-progress-track-success"
                     [style.width.%]="nzSuccessPercent"
                     [style.border-radius]="nzStrokeLinecap === 'round' ? '100px' : '0'"
                     [style.height.px]="strokeWidth"
@@ -124,7 +134,7 @@ const defaultFormatter: NzProgressFormatter = (p: number): string => `${p}%`;
           [style.width.px]="this.nzWidth"
           [style.height.px]="this.nzWidth"
           [style.fontSize.px]="this.nzWidth * 0.15 + 6"
-          class="ant-progress-inner"
+          class="ant-progress-inner ant-progress-body"
           [class.ant-progress-circle-gradient]="isGradient"
         >
           <svg class="ant-progress-circle " viewBox="0 0 100 100">
@@ -139,7 +149,7 @@ const defaultFormatter: NzProgressFormatter = (p: number): string => `${p}%`;
             }
 
             <path
-              class="ant-progress-circle-trail"
+              class="ant-progress-circle-trail ant-progress-circle-rail"
               stroke="#f3f3f3"
               fill-opacity="0"
               [attr.stroke-width]="strokeWidth"
@@ -187,6 +197,9 @@ export class NzProgressComponent implements OnChanges {
   @Input({ transform: numberAttribute }) nzSteps: number = 0;
 
   steps: NzProgressStepItem[] = [];
+
+  /** Number of leading step items considered active (v6's `ant-progress-steps-item-active`). */
+  activeStepsCount = 0;
 
   /** Gradient style when `nzType` is `line`. */
   lineGradient: string | null = null;
@@ -296,6 +309,7 @@ export class NzProgressComponent implements OnChanges {
    */
   private getSteps(): void {
     const current = Math.floor(this.nzSteps * (this.nzPercent / 100));
+    this.activeStepsCount = current;
     const stepWidth = this.nzSize === 'small' ? 2 : 14;
 
     const steps = [];

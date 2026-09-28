@@ -34,6 +34,7 @@ export const v6Components = {
   skeleton: { antd: ['Skeleton'], prefixCls: 'ant-skeleton' },
   popconfirm: { antd: ['Popconfirm'], prefixCls: 'ant-popconfirm', renderedPrefixes: ['ant-popover'] },
   popover: { antd: ['Popover'], prefixCls: 'ant-popover' },
+  progress: { antd: ['Progress'], prefixCls: 'ant-progress' },
   space: { antd: ['Space'], prefixCls: 'ant-space' },
   spin: { antd: ['Spin'], prefixCls: 'ant-spin' },
   tooltip: { antd: ['Tooltip'], prefixCls: 'ant-tooltip' }

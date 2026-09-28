@@ -684,6 +684,15 @@ export interface NzPopoverToken {
   zIndexPopup: number;
 }
 
+export interface NzProgressToken {
+  circleIconFontSize: string;
+  circleTextColor: string;
+  circleTextFontSize: string;
+  defaultColor: string;
+  lineBorderRadius: number;
+  remainingColor: string;
+}
+
 export interface NzResultToken {
   extraMargin: string;
   iconFontSize: number;
@@ -760,6 +769,7 @@ export interface NzComponentTokenMap {
   Modal: NzModalToken;
   Popconfirm: NzPopconfirmToken;
   Popover: NzPopoverToken;
+  Progress: NzProgressToken;
   Result: NzResultToken;
   Select: NzSelectToken;
   Skeleton: NzSkeletonToken;

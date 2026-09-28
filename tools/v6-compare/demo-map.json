@@ -12,6 +12,7 @@
   "popover": { "_antdDir": "popover", "trigger-type": "triggerType", "overlay": null, "template": null },
   "popconfirm": { "_antdDir": "popconfirm", "custom-icon": "icon", "hide-arrow": null },
   "drawer": { "_antdDir": "drawer", "from-drawer": "form-in-drawer", "service": null },
+  "progress": { "_antdDir": "progress", "dashboard-layout": null, "gradient": "gradient-line", "step": "steps", "round": "linecap" },
   "modal": {
     "_antdDir": "modal",
     "footer2": null,
