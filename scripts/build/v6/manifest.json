@@ -1,7 +1,7 @@
 {
   "antdVersion": "6.6.5",
   "engineCoreBytes": 42701,
-  "engineComponentsBytes": 127652,
+  "engineComponentsBytes": 136415,
   "components": {
     "alert": {
       "classes": [
@@ -619,6 +619,61 @@
         "--ant-spin-dot-size",
         "--ant-spin-dot-size-lg",
         "--ant-spin-dot-size-sm"
+      ]
+    },
+    "tooltip": {
+      "classes": [
+        "ant-fade-appear",
+        "ant-fade-appear-active",
+        "ant-fade-enter",
+        "ant-fade-enter-active",
+        "ant-fade-leave",
+        "ant-fade-leave-active",
+        "ant-tooltip",
+        "ant-tooltip-arrow",
+        "ant-tooltip-blue",
+        "ant-tooltip-container",
+        "ant-tooltip-content",
+        "ant-tooltip-cyan",
+        "ant-tooltip-geekblue",
+        "ant-tooltip-gold",
+        "ant-tooltip-green",
+        "ant-tooltip-hidden",
+        "ant-tooltip-inner",
+        "ant-tooltip-lime",
+        "ant-tooltip-magenta",
+        "ant-tooltip-orange",
+        "ant-tooltip-pink",
+        "ant-tooltip-placement-bottom",
+        "ant-tooltip-placement-left",
+        "ant-tooltip-placement-right",
+        "ant-tooltip-placement-top",
+        "ant-tooltip-pure",
+        "ant-tooltip-purple",
+        "ant-tooltip-red",
+        "ant-tooltip-rtl",
+        "ant-tooltip-unique-container",
+        "ant-tooltip-unique-container-hidden",
+        "ant-tooltip-unique-container-visible",
+        "ant-tooltip-volcano",
+        "ant-tooltip-yellow",
+        "ant-zoom-big-fast-appear",
+        "ant-zoom-big-fast-appear-active",
+        "ant-zoom-big-fast-appear-prepare",
+        "ant-zoom-big-fast-enter",
+        "ant-zoom-big-fast-enter-active",
+        "ant-zoom-big-fast-enter-prepare",
+        "ant-zoom-big-fast-leave",
+        "ant-zoom-big-fast-leave-active"
+      ],
+      "tokens": [
+        "--ant-tooltip-arrow-offset-horizontal",
+        "--ant-tooltip-arrow-offset-vertical",
+        "--ant-tooltip-arrow-path",
+        "--ant-tooltip-arrow-polygon",
+        "--ant-tooltip-arrow-shadow-width",
+        "--ant-tooltip-max-width",
+        "--ant-tooltip-z-index-popup"
       ]
     }
   }

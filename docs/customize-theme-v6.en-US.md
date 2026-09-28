@@ -19,6 +19,7 @@ Only the components below have v6 styles so far. Others keep rendering with the 
 - `skeleton`
 - `space`
 - `spin`
+- `tooltip`
 <!-- v6-components:end -->
 <!-- prettier-ignore-end -->
 

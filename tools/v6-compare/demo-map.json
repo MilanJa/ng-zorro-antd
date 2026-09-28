@@ -7,5 +7,6 @@
   "button": { "_antdDir": "button" },
   "spin": { "_antdDir": "spin", "delay-and-debounce": "delayAndDebounce", "inside": null },
   "result": { "_antdDir": "result", "custom": "customIcon", "fof": "404", "foo": "500", "fot": "403" },
-  "alert": { "_antdDir": "alert", "close-text": null, "style": "style-class" }
+  "alert": { "_antdDir": "alert", "close-text": null, "style": "style-class" },
+  "tooltip": { "_antdDir": "tooltip", "color": "colorful", "template": null }
 }

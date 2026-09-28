@@ -43,13 +43,28 @@ export { token2CSSVar, transformToken } from '@ant-design/cssinjs/es/util/css-va
 `;
 
 function componentsEntry(antdNames: string[]): string {
-  // Re-export (rather than bare-import) each style module's default so esbuild's real tree-shaking sees
-  // it as used and keeps it, while still safely dropping unrelated modules that happen to be reachable
-  // transitively (e.g. `antd/es/button/style` pulls in `antd/es/color-picker/components/ColorPresets.js`
-  // for an unrelated helper, which itself renders `<Collapse>` and would otherwise register a phantom
-  // `Collapse` entry in `registry` that real antd never emits for these components).
-  const exports = antdNames.map((n, i) => `export { default as _c${i} } from '${antdStyleModulePath(n)}';`).join('\n');
-  return `${exports}\nexport { registry } from '${path.join(shimsDir, 'cssinjs-utils.js').replace(/\\/g, '/')}';\n`;
+  // Import (rather than bare side-effect import) each style module's default so esbuild's real
+  // tree-shaking sees it as used and keeps it, while still safely dropping unrelated modules that happen
+  // to be reachable transitively (e.g. `antd/es/button/style` pulls in
+  // `antd/es/color-picker/components/ColorPresets.js` for an unrelated helper, which itself renders
+  // `<Collapse>` and would otherwise register a phantom `Collapse` entry in `registry` that real antd
+  // never emits for these components).
+  //
+  // Most style modules call `genStyleHooks(Name, ...)` eagerly at module scope, which is what actually
+  // records the component into the shimmed `registry` (see `shims/cssinjs-utils.js`) -- importing the
+  // module is enough. A few (Tooltip, whose style is shared with Popover/Popconfirm) instead export a
+  // `(prefixCls, rootCls, injectStyle) => { const useStyle = genStyleHooks(Name, ...); return
+  // useStyle(...); }` wrapper, deferring the `genStyleHooks` call to when antd's React component actually
+  // renders and invokes it -- which never happens here, so the component would never make it into the
+  // registry. Calling each default export once (with no arguments) fixes that: for the eager case the
+  // default is already `genStyleHooks`'s own return value (a dummy `(prefixCls, rootCls) => ['', '']` from
+  // the shim), so calling it again is a harmless extra no-op; for the lazy case, calling it is what
+  // actually runs `genStyleHooks` and records the component.
+  const lines = antdNames.map((n, i) => {
+    const p = antdStyleModulePath(n);
+    return [`import { default as _c${i} } from '${p}';`, `export { _c${i} };`, `try { _c${i}(); } catch {}`].join('\n');
+  });
+  return `${lines.join('\n')}\nexport { registry } from '${path.join(shimsDir, 'cssinjs-utils.js').replace(/\\/g, '/')}';\n`;
 }
 
 export interface BundleEngineOptions {

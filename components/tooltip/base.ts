@@ -38,6 +38,7 @@ import {
   getPlacementName,
   setConnectedPositionOffset
 } from 'ng-zorro-antd/core/overlay';
+import { nzThemeScopeClasses } from 'ng-zorro-antd/core/theme';
 import { NgClassInterface, NgStyleInterface, NzSafeAny, NzTSType } from 'ng-zorro-antd/core/types';
 import { isNotNil, toBoolean } from 'ng-zorro-antd/core/util';
 
@@ -346,6 +347,12 @@ export abstract class NzTooltipBaseComponent {
   protected readonly cdr = inject(ChangeDetectorRef);
   protected readonly elementRef = inject(ElementRef);
   protected readonly destroyRef = inject(DestroyRef);
+  /**
+   * Classes the enclosing `[nzTheme]` scope adds to the popup root so a scoped theme reaches content
+   * rendered in the CDK overlay container (resolved from the injector at construction; see Select's
+   * `updateDropdownPanelClasses`). Shared by tooltip, popover and popconfirm through this base class.
+   */
+  protected readonly themeScopeClasses = nzThemeScopeClasses();
 
   @ViewChild('overlay', { static: false }) overlay!: CdkConnectedOverlay;
 
@@ -489,7 +496,8 @@ export abstract class NzTooltipBaseComponent {
   protected updateStyles(): void {
     this._classMap = {
       ...this.transformClassListToMap(this.nzOverlayClassName),
-      [`${this._prefix}-placement-${this.preferredPlacement}`]: true
+      [`${this._prefix}-placement-${this.preferredPlacement}`]: true,
+      ...Object.fromEntries(this.themeScopeClasses().map(c => [c, true]))
     };
   }
 

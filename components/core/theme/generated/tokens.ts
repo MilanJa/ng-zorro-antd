@@ -694,6 +694,16 @@ export interface NzSpinToken {
   dotSizeSM: number;
 }
 
+export interface NzTooltipToken {
+  arrowOffsetHorizontal: number;
+  arrowOffsetVertical: number;
+  arrowPath: string;
+  arrowPolygon: string;
+  arrowShadowWidth: number;
+  maxWidth: number;
+  zIndexPopup: number;
+}
+
 export interface NzComponentTokenMap {
   Alert: NzAlertToken;
   Button: NzButtonToken;
@@ -703,4 +713,5 @@ export interface NzComponentTokenMap {
   Skeleton: NzSkeletonToken;
   Space: NzSpaceToken;
   Spin: NzSpinToken;
+  Tooltip: NzTooltipToken;
 }

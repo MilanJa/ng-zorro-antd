@@ -98,10 +98,8 @@ export class NzTooltipDirective extends NzTooltipBaseDirective {
         [animate.leave]="zoomAnimationLeave()"
       >
         <div class="ant-tooltip-arrow" [style]="_arrowStyleMap"></div>
-        <div class="ant-tooltip-content">
-          <div class="ant-tooltip-inner" [style]="_contentStyleMap">
-            <ng-container *nzStringTemplateOutlet="nzTitle; context: nzTitleContext">{{ nzTitle }}</ng-container>
-          </div>
+        <div class="ant-tooltip-inner ant-tooltip-container" role="tooltip" [style]="_contentStyleMap">
+          <ng-container *nzStringTemplateOutlet="nzTitle; context: nzTitleContext">{{ nzTitle }}</ng-container>
         </div>
       </div>
     </ng-template>
@@ -134,7 +132,8 @@ export class NzTooltipComponent extends NzTooltipBaseComponent {
     this._classMap = {
       ...this.transformClassListToMap(this.nzOverlayClassName),
       [`${this._prefix}-placement-${this.preferredPlacement}`]: true,
-      [`${this._prefix}-${this.nzColor}`]: isColorPreset
+      [`${this._prefix}-${this.nzColor}`]: isColorPreset,
+      ...Object.fromEntries(this.themeScopeClasses().map(c => [c, true]))
     };
 
     this._contentStyleMap = {

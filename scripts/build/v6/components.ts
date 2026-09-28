@@ -31,7 +31,8 @@ export const v6Components = {
   select: { antd: ['Select'], prefixCls: 'ant-select' },
   skeleton: { antd: ['Skeleton'], prefixCls: 'ant-skeleton' },
   space: { antd: ['Space'], prefixCls: 'ant-space' },
-  spin: { antd: ['Spin'], prefixCls: 'ant-spin' }
+  spin: { antd: ['Spin'], prefixCls: 'ant-spin' },
+  tooltip: { antd: ['Tooltip'], prefixCls: 'ant-tooltip' }
 } as const satisfies Record<string, V6ComponentEntry>;
 
 export type V6ComponentDir = keyof typeof v6Components;

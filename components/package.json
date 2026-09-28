@@ -354,6 +354,9 @@
       "less": "./tooltip/style/*.less",
       "style": "./tooltip/style/index.min.css"
     },
+    "./tooltip/style/v6/*": {
+      "style": "./tooltip/style/v6/*"
+    },
     "./transfer/style/*": {
       "less": "./transfer/style/*.less",
       "style": "./transfer/style/index.min.css"

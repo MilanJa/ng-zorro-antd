@@ -51,5 +51,7 @@
     "ant-alert-marquee-track",
     "ant-alert-message",
     "ant-alert-no-icon"
-  ]
+  ],
+  "_tooltip_comment": "antd-emits: -open (the trigger host's own visibility class; antd's React Tooltip toggles it too, but v6 CSS never styles it). patch-motion: ant-zoom-big-fast (the literal animation-class prefix token; the emitted -enter/-leave/-enter-active/-leave-active variants it builds are styled by v6 CSS's own antZoomBigIn/Out keyframes, not by a patch)",
+  "tooltip": ["ant-tooltip-open", "ant-zoom-big-fast"]
 }
