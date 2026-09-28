@@ -20,6 +20,15 @@
 }
 .ant-notification .ant-notification-fade-leave {
   animation-name: antNotificationFadeOut;
+  /* Minor (fix round 1): v6's own template CSS sets `.ant-notification .ant-notification-notice {
+     ... overflow: visible ... }` unconditionally (the same rule this file's position:relative mirror
+     targets), so the antNotificationFadeOut keyframe's `max-height: 150px -> 0` collapse never
+     actually clips the notice's content -- the text/icon stay visible, unclipped, overflowing the
+     shrinking box, right up until the `opacity: 0` end state hides it abruptly instead of appearing
+     to shrink away. `overflow: hidden`, scoped to only the leave-animation class (so the resting/
+     entering notice keeps v6's own `overflow: visible`), restores the clipping the v4-ported
+     max-height collapse animation was designed around. */
+  overflow: hidden;
 }
 .ant-notification.ant-notification-top .ant-notification-fade-enter {
   animation-name: antNotificationTopFadeIn;
@@ -74,7 +83,15 @@
 @keyframes antNotificationFadeOut {
   0% {
     max-height: 150px;
-    margin-block-end: var(--ant-margin);
+    /* Minor (fix round 1): the v4-ported value here was `var(--ant-margin)` (16px), matching the
+       *root's own* inter-notice `gap` (also `var(--ant-margin)`, see the gap/padding mirror above).
+       Starting the leave animation's own `margin-block-end` at 16px on top of the 16px `gap` the
+       root already provides between flow siblings doubled the visible space to 32px the instant the
+       leave class was added, then visibly snapped back down as the keyframe ran to its 100% (0px)
+       end state. Starting from 0 instead removes the double-counted margin without changing the
+       collapse animation itself (the 150px -> 0 max-height shrink still happens over the same
+       duration; the root's own `gap` still provides the real 16px spacing throughout). */
+    margin-block-end: 0;
   }
   100% {
     max-height: 0;
@@ -117,7 +134,18 @@
    directly onto the six placement roots instead, per component-dispatch-context.md's explicit ask.
    `gap` on a plain block container (no `display: flex`/`grid`) is supported by the CSS Box Alignment
    spec in the evergreen browsers this suite runs in -- confirmed by message/style/v6/patch.css's
-   `.ant-message.ant-message-list { gap: ... }` using the identical technique on a block container. */
+   `.ant-message.ant-message-list { gap: ... }` using the identical technique on a block container.
+
+   Also mirrors `.ant-notification.ant-notification-list { padding: var(--notification-margin-edge) }`
+   (same antd source file) onto the roots: v6 insets every notice from the viewport edge by
+   `--notification-margin-edge` (`var(--ant-margin-lg)`, 24px) via that padding, but ng-zorro's roots
+   never carry the `-list` class so never got the padding. Fix round 1 (reviewer measurement): topRight's
+   right edge sat at x=1232 against antd's/v4's 1256 (24px short); topLeft/bottomLeft sat flush at x=0
+   instead of inset 24px; top/bottom centred at x=616 instead of 640 (a 1280px-wide viewport, half of
+   384px notice width = 192, 640-192=448, but the un-padded root centred the notice against the full
+   viewport width, not the padded content box). `padding-inline` supplies the missing horizontal inset
+   for every placement (vertical offset already comes from the roots' own `[style.top]`/`[style.bottom]`
+   inline bindings, which already start from the configured nzTop/nzBottom -- unaffected by this). */
 .ant-notification.ant-notification-topLeft,
 .ant-notification.ant-notification-topRight,
 .ant-notification.ant-notification-bottomLeft,
@@ -125,6 +153,37 @@
 .ant-notification.ant-notification-top,
 .ant-notification.ant-notification-bottom {
   gap: var(--ant-margin);
+  padding-inline: var(--ant-margin-lg);
+}
+
+/* Critical (fix round 1): v6 sets `.ant-notification { position: fixed; width: calc(384px + 2 *
+   24px); height: 100vh }` on the bare root class (antd/es/notification/style/index.js) and puts
+   `pointer-events: none` only on `.ant-notification.ant-notification-list` -- a class ng-zorro's six
+   placement roots never carry (same reasoning as the gap/padding mirror above: the `-list` class
+   belongs to rc-virtual-list's stacking holder, not reproduced here). All six roots render
+   unconditionally, even with zero notifications, so each becomes a 432 (or however wide) x 100vh
+   `position: fixed` box with default `pointer-events: auto`, tiling most of the viewport at
+   `z-index: var(--ant-notification-z-index-popup)` (2050) -- the reviewer's `elementFromPoint` probes
+   at (100,400)/(640,600)/(900,120) each landed on one of these empty root boxes, not the page content
+   under them, making the whole page unclickable while (or even when) a placement root exists in the
+   DOM. This is also the actual cause the earlier report misdiagnosed as a "Playwright scroll-anchoring
+   reflow": Playwright's real mouse click was being intercepted by one of these boxes and silently
+   retried/rescrolled, not by a genuine layout reflow. v6's own notice element already carries
+   `pointer-events: auto` (`.ant-notification .ant-notification-notice`, confirmed in the extracted
+   template.css), so cancelling it only on the six roots restores click-through everywhere except the
+   notices themselves. `height: auto; max-height: 100vh` replaces the fixed `100vh` height (which this
+   selector's own `.ant-notification` base rule sets) with content-sized boxes capped at the viewport,
+   matching what `.ant-notification.ant-notification-list`'s `max-height: 100vh; overflow-y: auto` would
+   have provided had ng-zorro rendered that class. */
+.ant-notification.ant-notification-topLeft,
+.ant-notification.ant-notification-topRight,
+.ant-notification.ant-notification-bottomLeft,
+.ant-notification.ant-notification-bottomRight,
+.ant-notification.ant-notification-top,
+.ant-notification.ant-notification-bottom {
+  pointer-events: none;
+  height: auto;
+  max-height: 100vh;
 }
 
 /* v6 centres each notice within the `-top`/`-bottom` placements at the *notice* level
@@ -166,4 +225,24 @@
 .ant-notification-notice-section .ant-notification-notice-title,
 .ant-notification-notice-section .ant-notification-notice-description {
   margin-inline-start: 48px;
+}
+
+/* Important (fix round 1): v6's own generated CSS already applies `.ant-notification .ant-
+   notification-notice-section { display: flex; flex-direction: column; flex: auto; gap: var(--ant-
+   margin-xs); min-width: 0 }` to this exact literal class ng-zorro renders on the with-icon div (the
+   brief's mapping put `-notice-section` there). `-notice-actions` (aliased onto the existing
+   `.ant-notification-notice-btn` span, a direct child of that div) is therefore a flex item of a
+   column flex container, where `float` -- v6's own real-DOM mechanism for right-aligning actions
+   (`.ant-notification-notice-actions { float: right; margin-top: var(--ant-margin-sm) }`,
+   antd/es/notification/style/index.js) -- has no effect at all (the CSS spec says `float` computes to
+   `none` on a flex item). Reviewer measurement confirmed the visible defect: actions rendered at
+   x=24, stretched to the section's full 336px width, instead of antd's right-aligned x=203.
+   `align-self: flex-end` is the flex-context equivalent of v6's own `float: right` -- pulls the
+   actions item to the end of the cross axis (right, for a column container) without stretching it to
+   the container's full width, matching the real antd result under the flex layout v6's own CSS (not
+   patch.css) already established. Keeping v6's own `margin-top: var(--ant-margin-sm)` (its `float`
+   sibling in the same real rule) rather than inventing a new value. */
+.ant-notification-notice-section > .ant-notification-notice-actions {
+  align-self: flex-end;
+  margin-top: var(--ant-margin-sm);
 }

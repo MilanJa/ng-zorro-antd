@@ -67,4 +67,36 @@ describe('notification under antd v6 css', () => {
     await new Promise(r => setTimeout(r, 100 + 400 + 200)); // duration + leave motion + slack
     expect(overlay.getContainerElement().querySelector('.ant-notification-notice')).toBeNull();
   });
+
+  it('does not block clicks on the page while a notification is showing (fix round 1)', async () => {
+    // Regression pin for the critical defect: v6's `.ant-notification { position: fixed; ...;
+    // height: 100vh }` root, rendered unconditionally on all six placement roots even when empty,
+    // intercepted pointer events everywhere it overlapped the page (see style/v6/patch.css's
+    // `pointer-events: none` mirror). A button placed near the bottom-left corner -- far from the
+    // topRight notice this test opens, but still within one of the other five (empty) fixed roots
+    // before the patch -- pins that the whole page stays clickable.
+    const button = document.createElement('button');
+    document.body.appendChild(button);
+    button.style.position = 'fixed';
+    button.style.left = '0px';
+    button.style.bottom = '0px';
+    button.style.width = '10px';
+    button.style.height = '10px';
+    let clicked = false;
+    button.addEventListener('click', () => (clicked = true));
+    try {
+      TestBed.inject(NzNotificationService).success('Title', 'Body', { nzDuration: 0 });
+      await Promise.resolve();
+      await Promise.resolve();
+      const notice = overlay.getContainerElement().querySelector('.ant-notification-notice') as HTMLElement;
+      expect(notice).not.toBeNull();
+      await expectMotionSettled(notice);
+      const probe = document.elementFromPoint(20, window.innerHeight - 20);
+      expect(probe?.closest('.ant-notification')).toBeNull();
+      button.click();
+      expect(clicked).toBe(true);
+    } finally {
+      button.remove();
+    }
+  });
 });
