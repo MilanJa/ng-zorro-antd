@@ -20,11 +20,6 @@ describe('emittedClasses', () => {
   });
 
   it('drops the partial token before a template-literal interpolation', () => {
-    expect(emittedClasses('scan-sample', root)).toEqual([
-      'ant-sample',
-      'ant-sample-inner',
-      'ant-sample-open',
-      'ant-sample-status'
-    ]);
+    expect(emittedClasses('scan-sample', root)).toEqual(['ant-sample', 'ant-sample-inner', 'ant-sample-open']);
   });
 });

@@ -29,15 +29,16 @@ export function sourceFiles(dir: string, root: string = componentsRoot): string[
 }
 
 /**
- * `ant-*` class tokens written as complete literals in the component's sources. A token must end in a
- * letter or digit: the text before a template-literal interpolation (`ant-btn-color-` in
- * `` `ant-btn-color-${color}` ``) is a prefix, not a class, and the rendered-class check
- * (tools/v6-compare/collect-classes.ts) is what covers runtime-built names.
+ * `ant-*` class tokens written as complete literals in the component's sources. A token must not be
+ * a prefix to a template-literal interpolation (e.g. `ant-btn-color-` from `` `ant-btn-color-${color}` ``)
+ * or continue into a hyphenated word: the regex matches only tokens where the next character after the
+ * final alphanumeric is neither alphanumeric nor hyphen. The rendered-class check
+ * (tools/v6-compare/collect-classes.ts) covers runtime-built names.
  */
 export function emittedClasses(dir: string, root: string = componentsRoot): string[] {
   const names = new Set<string>();
   for (const file of sourceFiles(dir, root)) {
-    for (const m of readFileSync(file, 'utf8').matchAll(/\bant-[a-z][a-z0-9-]*[a-z0-9]/g)) {
+    for (const m of readFileSync(file, 'utf8').matchAll(/\bant-[a-z][a-z0-9-]*[a-z0-9](?![a-z0-9-])/g)) {
       names.add(m[0]);
     }
   }
