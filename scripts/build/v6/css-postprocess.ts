@@ -44,6 +44,30 @@ export function partitionBlocks(css: string, key: string): { template: CssBlock[
   };
 }
 
+/**
+ * antd renders some variants inside a nested `ConfigProvider` without our `cssVar.key` (Modal's confirm
+ * dialog does), so the extracted CSS gains blocks scoped by a React-`useId` key such as
+ * `.css-var-_R_1f_{--ant-blue:…}` or `.css-var-_R_1f_.ant-btn{--ant-button-…}`. They only repeat token
+ * values that our `.${key}` variable blocks already carry, so they are dropped. A foreign block with a
+ * non-variable declaration would be a real style we are about to lose, hence the throw.
+ */
+export function dropForeignCssVarBlocks(blocks: CssBlock[], key: string): CssBlock[] {
+  return blocks.filter(block => {
+    const foreign = block.selector.includes('.css-var-') && !block.selector.includes(`.${key}`);
+    if (!foreign) {
+      return true;
+    }
+    const declarations = block.body
+      .split(';')
+      .map(d => d.trim())
+      .filter(Boolean);
+    if (declarations.some(d => !d.startsWith('--'))) {
+      throw new Error(`foreign css-var block with non-variable declarations: ${block.selector}`);
+    }
+    return false;
+  });
+}
+
 /** Component variable names are namespaced, so every variable block can live on :root. */
 export function varsToRoot(vars: CssBlock[]): string {
   return [...new Set(vars.map(b => `:root{${b.body}}`))].join('\n');

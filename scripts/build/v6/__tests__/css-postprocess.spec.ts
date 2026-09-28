@@ -7,6 +7,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   assertNoAntdScoping,
+  dropForeignCssVarBlocks,
   extractClassNames,
   extractTokenNames,
   joinTemplate,
@@ -104,5 +105,26 @@ describe('withHeader', () => {
     const out = withHeader('.a{}', '6.6.5');
     expect(out.startsWith('/*! Generated from Ant Design 6.6.5 (MIT)')).toBe(true);
     expect(out.endsWith('.a{}')).toBe(true);
+  });
+});
+
+describe('dropForeignCssVarBlocks', () => {
+  it('drops variable-only blocks scoped by a foreign css-var key and keeps ours', () => {
+    const css = [
+      '.nz-root{--ant-blue:#1677FF}',
+      '.css-var-_R_1f_{--ant-blue:#1677FF;--ant-purple:#722ED1}',
+      '.css-var-_R_1f_.ant-css-var{--ant-modal-header-bg:transparent}',
+      '.css-var-_R_1f_.ant-btn{--ant-button-primary-color:#fff}',
+      '.ant-modal{position:relative}'
+    ].join('');
+    const kept = dropForeignCssVarBlocks(splitBlocks(css), 'nz-root').map(b => b.selector);
+    expect(kept).toEqual(['.nz-root', '.ant-modal']);
+  });
+
+  it('throws when a foreign block carries a real declaration', () => {
+    const blocks = splitBlocks('.css-var-_R_2a_.ant-x{--ant-a:1;color:red}');
+    expect(() => dropForeignCssVarBlocks(blocks, 'nz-root')).toThrow(
+      /non-variable declarations: \.css-var-_R_2a_\.ant-x/
+    );
   });
 });

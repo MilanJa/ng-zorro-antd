@@ -13,6 +13,7 @@ import { pathToFileURL } from 'node:url';
 import { allAntdComponentNames, v6ComponentDirs, v6Components } from './components';
 import {
   assertNoAntdScoping,
+  dropForeignCssVarBlocks,
   extractClassNames,
   joinTemplate,
   normalizeCssVarRootCls,
@@ -129,7 +130,9 @@ let templateCache: string | null = null;
 export function buildV6Template(): string {
   if (templateCache === null) {
     const allRaw = extractAntdCss({ includes: allAntdComponentNames(), key: KEY });
-    templateCache = normalizeCssVarRootCls(joinTemplate(partitionBlocks(allRaw, KEY).template));
+    templateCache = normalizeCssVarRootCls(
+      joinTemplate(dropForeignCssVarBlocks(partitionBlocks(allRaw, KEY).template, KEY))
+    );
     assertNoAntdScoping(templateCache);
   }
   return templateCache;
@@ -192,7 +195,7 @@ export async function generateStyles(options: GenerateStylesOptions): Promise<Ge
   for (const dir of v6ComponentDirs) {
     const raw = extractAntdCss({ includes: [...v6Components[dir].antd], key: KEY });
     const { template } = partitionBlocks(raw, KEY);
-    const templateCss = normalizeCssVarRootCls(joinTemplate(template));
+    const templateCss = normalizeCssVarRootCls(joinTemplate(dropForeignCssVarBlocks(template, KEY)));
     assertNoAntdScoping(templateCss);
     const css = buildComponentCss(templateCss, readPatch(componentsDir, dir));
     perComponent[dir] = css;
