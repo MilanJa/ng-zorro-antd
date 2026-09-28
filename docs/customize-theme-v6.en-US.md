@@ -53,6 +53,8 @@ provideNzConfig({
 });
 ```
 
+`provideNzConfig` starts the v6 theme during bootstrap, so the global stylesheet is written before the first component renders and scoped `[nzTheme]` sections inherit it from their first render. Providing `NZ_CONFIG` directly does not: the theme is then applied when the first component injects `NzConfigService`, which can show default tokens briefly and lets a scoped section render before the global theme it inherits from.
+
 Switch at runtime:
 
 ```ts

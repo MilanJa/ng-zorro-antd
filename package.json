@@ -56,6 +56,7 @@
     "@angular/router": "^22.1.0",
     "@angular/service-worker": "^22.1.0",
     "@angular/ssr": "^22.1.0",
+    "@ant-design/cssinjs": "2.1.2",
     "@ant-design/static-style-extract": "^2.1.0",
     "@commitlint/cli": "^21.1.0",
     "@commitlint/config-angular": "^21.1.0",

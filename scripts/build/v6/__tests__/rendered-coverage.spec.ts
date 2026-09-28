@@ -53,6 +53,12 @@ describe('attributeRenderedClasses', () => {
     ]);
   });
 
+  it('does not let another component’s renderedPrefixes take classes away from their owner', () => {
+    expect(
+      attributeRenderedClasses('select', ['ant-select', 'ant-select-dropdown', 'ant-select-item'], components)
+    ).toEqual(['ant-select', 'ant-select-dropdown', 'ant-select-item']);
+  });
+
   it('deduplicates and sorts', () => {
     expect(attributeRenderedClasses('select', ['ant-select-item', 'ant-select', 'ant-select'], components)).toEqual([
       'ant-select',

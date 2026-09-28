@@ -38,9 +38,12 @@ export function attributeRenderedClasses(
 ): string[] {
   const prefixesOf = (entry: RenderedClassOwner): string[] => [entry.prefixCls, ...(entry.renderedPrefixes ?? [])];
   const own = prefixesOf(components[dir]);
+  // Only another component's *own* prefix competes: a `renderedPrefixes` entry means that component
+  // borrows those classes (tree-select renders `ant-select-*`), which must not take them away from
+  // the component that owns them.
   const others = Object.entries(components)
     .filter(([other]) => other !== dir)
-    .flatMap(([, entry]) => prefixesOf(entry));
+    .map(([, entry]) => entry.prefixCls);
   return [...new Set(classes)]
     .filter(cls => {
       const ownLength = Math.max(-1, ...own.filter(prefix => matchesPrefix(cls, prefix)).map(p => p.length));

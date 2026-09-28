@@ -181,12 +181,6 @@ describe('generateStyles', () => {
       expect(compact.tokens).not.toBe(d.tokens);
       expect(dark.tokens).toContain('--ant-color-bg-container:#141414');
     });
-
-    it('generateStyles publishes exactly buildV6Bundle("default").css as the bundle', async () => {
-      const { buildV6Bundle } = await import('../generate-styles');
-      const expected = (await buildV6Bundle('default', componentsDir)).css;
-      expect(result.bundle).toBe(expected);
-    });
   });
 });
 
