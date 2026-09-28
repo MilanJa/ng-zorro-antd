@@ -311,9 +311,36 @@ describe('NzAlertComponent Animation', () => {
     expect(component.nzOnClose.emit).not.toHaveBeenCalled();
     expect(mockEvent.animationComplete).not.toHaveBeenCalled();
 
-    const transitionEndEvent = new Event('transitionend');
+    const transitionEndEvent = new TransitionEvent('transitionend', { propertyName: 'max-height' });
     element.dispatchEvent(transitionEndEvent);
 
+    expect(component.nzOnClose.emit).toHaveBeenCalledWith(true);
+    expect(mockEvent.animationComplete).toHaveBeenCalled();
+  });
+
+  it('should ignore a transitionend bubbling from a child or for an unrelated property', () => {
+    vi.spyOn(component.nzOnClose, 'emit');
+    const element = fixture.nativeElement.querySelector('.ant-alert');
+    const child = document.createElement('span');
+    element.appendChild(child);
+    const mockEvent = {
+      target: element,
+      animationComplete: vi.fn()
+    } as NzSafeAny;
+
+    component.onLeaveAnimationDone(mockEvent);
+
+    // A child's transitionend (different target) must not end the leave.
+    child.dispatchEvent(new TransitionEvent('transitionend', { propertyName: 'max-height', bubbles: true }));
+    expect(component.nzOnClose.emit).not.toHaveBeenCalled();
+    expect(mockEvent.animationComplete).not.toHaveBeenCalled();
+
+    // An unrelated property on the element itself must not end the leave either.
+    element.dispatchEvent(new TransitionEvent('transitionend', { propertyName: 'opacity' }));
+    expect(component.nzOnClose.emit).not.toHaveBeenCalled();
+    expect(mockEvent.animationComplete).not.toHaveBeenCalled();
+
+    element.dispatchEvent(new TransitionEvent('transitionend', { propertyName: 'max-height' }));
     expect(component.nzOnClose.emit).toHaveBeenCalledWith(true);
     expect(mockEvent.animationComplete).toHaveBeenCalled();
   });

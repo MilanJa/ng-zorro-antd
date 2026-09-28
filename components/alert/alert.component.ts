@@ -141,16 +141,25 @@ export class NzAlertComponent implements OnChanges {
       return;
     }
 
-    // Listen for transition end to complete the animation
-    const onTransitionEnd = (): void => {
+    // Listen for transition end to complete the animation. Ignore events bubbling up from children
+    // (e.g. a close-icon colour transition) and react to only one property, so an unrelated transition
+    // on a descendant can't end the leave early.
+    const onTransitionEnd = (transitionEvent: TransitionEvent): void => {
+      if (transitionEvent.target !== element || transitionEvent.propertyName !== 'max-height') {
+        return;
+      }
       element.removeEventListener('transitionend', onTransitionEnd);
       this.nzOnClose.emit(true);
       event.animationComplete();
     };
     element.addEventListener('transitionend', onTransitionEnd);
 
-    // `max-height` cannot transition from its default `none`, so pin a concrete starting height, force a
-    // reflow to commit it, then let `ant-alert-motion-leave-active` collapse from that committed value.
+    // On an element that has never had a style computed (created and closed within the same task --
+    // e.g. this component's own v6 spec), `max-height` has no committed starting value yet, so adding
+    // both motion classes together produces no transition at all: `transitionend` never fires, and
+    // Angular's animate.leave fallback removes the node ~4s later without emitting `nzOnClose`. Pinning
+    // a concrete starting height and forcing a reflow before `-active` flips it to 0 fixes that case, and
+    // as a side effect turns what was an instant max-height snap into a smooth height collapse.
     element.style.maxHeight = `${element.scrollHeight}px`;
     element.classList.add('ant-alert-motion-leave');
 
