@@ -29,6 +29,15 @@ const shimPlugin: esbuild.Plugin = {
     build.onResolve({ filter: /^@ant-design\/cssinjs-utils$/ }, () => ({
       path: path.join(shimsDir, 'cssinjs-utils.js')
     }));
+    // antd/es/modal/style/index.js imports only `getMediaSize` from grid/style; the real module also
+    // registers two conflicting `Grid` default-token factories (Row + Col) at module scope, which the
+    // recorder above rejects (see shims/grid-style.js).
+    build.onResolve({ filter: /^\.\.\/\.\.\/grid\/style$/ }, args => {
+      if (args.importer.replace(/\\/g, '/').includes('/antd/es/modal/style/')) {
+        return { path: path.join(shimsDir, 'grid-style.js') };
+      }
+      return undefined;
+    });
   }
 };
 

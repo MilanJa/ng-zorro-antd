@@ -28,6 +28,7 @@ export const v6Components = {
   button: { antd: ['Button'], prefixCls: 'ant-btn' },
   drawer: { antd: ['Drawer'], prefixCls: 'ant-drawer' },
   input: { antd: ['Input'], prefixCls: 'ant-input' },
+  modal: { antd: ['Modal'], prefixCls: 'ant-modal' },
   result: { antd: ['Result'], prefixCls: 'ant-result' },
   select: { antd: ['Select'], prefixCls: 'ant-select' },
   skeleton: { antd: ['Skeleton'], prefixCls: 'ant-skeleton' },

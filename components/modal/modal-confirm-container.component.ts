@@ -9,6 +9,7 @@ import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '
 
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzOutletModule } from 'ng-zorro-antd/core/outlet';
+import { nzThemeScopeClasses } from 'ng-zorro-antd/core/theme';
 import { NzI18nPipe } from 'ng-zorro-antd/i18n';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzPipesModule } from 'ng-zorro-antd/pipes';
@@ -37,14 +38,18 @@ import { BaseModalContainerComponent } from './modal-container.directive';
       [style]="config.nzStyle!"
       [style.width]="config?.nzWidth! | nzToCssUnit"
     >
-      <div class="ant-modal-content">
+      <div class="ant-modal-content ant-modal-container">
         @if (config.nzClosable) {
           <button nz-modal-close (click)="onCloseClick()"></button>
         }
 
         <div class="ant-modal-body" [style]="config.nzBodyStyle!">
           <div class="ant-modal-confirm-body-wrapper">
-            <div class="ant-modal-confirm-body">
+            <div
+              class="ant-modal-confirm-body"
+              [class.ant-modal-confirm-body-has-title]="!!config.nzTitle"
+              [class.ant-modal-confirm-body-no-icon]="!config.nzIconType"
+            >
               <nz-icon [nzType]="config.nzIconType!" />
               <span class="ant-modal-confirm-title">
                 <ng-container *nzStringTemplateOutlet="config.nzTitle">
@@ -93,7 +98,7 @@ import { BaseModalContainerComponent } from './modal-container.directive';
   host: {
     tabindex: '-1',
     role: 'dialog',
-    '[class]': 'config.nzWrapClassName ? "ant-modal-wrap " + config.nzWrapClassName : "ant-modal-wrap"',
+    '[class]': 'hostClasses()',
     '[class.ant-modal-wrap-rtl]': `dir === 'rtl'`,
     '[class.ant-modal-centered]': 'config.nzCentered',
     '[style.zIndex]': 'config.nzZIndex',
@@ -101,6 +106,8 @@ import { BaseModalContainerComponent } from './modal-container.directive';
   }
 })
 export class NzModalConfirmContainerComponent extends BaseModalContainerComponent implements OnInit {
+  private readonly themeScopeClasses = nzThemeScopeClasses();
+
   @ViewChild(CdkPortalOutlet, { static: true }) set _portalOutlet(portalOutlet: CdkPortalOutlet) {
     this.portalOutlet = portalOutlet;
   }
@@ -109,6 +116,15 @@ export class NzModalConfirmContainerComponent extends BaseModalContainerComponen
   }
   @Output() override readonly cancelTriggered = new EventEmitter<void>();
   @Output() override readonly okTriggered = new EventEmitter<void>();
+
+  /** See `NzModalContainerComponent.hostClasses` for why the theme scope classes are added here. */
+  protected hostClasses(): string {
+    const classes = ['ant-modal-wrap', ...this.themeScopeClasses()];
+    if (this.config.nzWrapClassName) {
+      classes.push(this.config.nzWrapClassName);
+    }
+    return classes.join(' ');
+  }
 
   ngOnInit(): void {
     this.setupMouseListeners(this.modalElementRef);

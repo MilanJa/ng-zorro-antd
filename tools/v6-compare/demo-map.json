@@ -11,5 +11,13 @@
   "tooltip": { "_antdDir": "tooltip", "color": "colorful", "template": null },
   "popover": { "_antdDir": "popover", "trigger-type": "triggerType", "overlay": null, "template": null },
   "popconfirm": { "_antdDir": "popconfirm", "custom-icon": "icon", "hide-arrow": null },
-  "drawer": { "_antdDir": "drawer", "from-drawer": "form-in-drawer", "service": null }
+  "drawer": { "_antdDir": "drawer", "from-drawer": "form-in-drawer", "service": null },
+  "modal": {
+    "_antdDir": "modal",
+    "footer2": null,
+    "info": "confirm",
+    "service": null,
+    "confirm-promise": null,
+    "draggable": null
+  }
 }

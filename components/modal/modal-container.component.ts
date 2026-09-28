@@ -9,6 +9,7 @@ import { CdkScrollable } from '@angular/cdk/overlay';
 import { CdkPortalOutlet, PortalModule } from '@angular/cdk/portal';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 
+import { nzThemeScopeClasses } from 'ng-zorro-antd/core/theme';
 import { NzPipesModule } from 'ng-zorro-antd/pipes';
 
 import { NzModalCloseComponent } from './modal-close.component';
@@ -42,7 +43,7 @@ import { NzModalTitleComponent } from './modal-title.component';
       [style]="config.nzStyle!"
       [style.width]="config?.nzWidth! | nzToCssUnit"
     >
-      <div class="ant-modal-content">
+      <div class="ant-modal-content ant-modal-container">
         @if (config.nzClosable) {
           <button nz-modal-close (click)="onCloseClick()"></button>
         }
@@ -70,7 +71,7 @@ import { NzModalTitleComponent } from './modal-title.component';
   host: {
     tabindex: '-1',
     role: 'dialog',
-    '[class]': 'config.nzWrapClassName ? "ant-modal-wrap " + config.nzWrapClassName : "ant-modal-wrap"',
+    '[class]': 'hostClasses()',
     '[class.ant-modal-wrap-rtl]': `dir === 'rtl'`,
     '[class.ant-modal-centered]': 'config.nzCentered',
     '[style.zIndex]': 'config.nzZIndex',
@@ -78,6 +79,8 @@ import { NzModalTitleComponent } from './modal-title.component';
   }
 })
 export class NzModalContainerComponent extends BaseModalContainerComponent implements OnInit {
+  private readonly themeScopeClasses = nzThemeScopeClasses();
+
   @ViewChild(CdkPortalOutlet, { static: true }) set _portalOutlet(portalOutlet: CdkPortalOutlet) {
     this.portalOutlet = portalOutlet;
   }
@@ -85,6 +88,19 @@ export class NzModalContainerComponent extends BaseModalContainerComponent imple
     this.modalElementRef = elementRef;
   }
   @ViewChild(NzModalFooterComponent) private modalFooter?: NzModalFooterComponent;
+
+  /**
+   * Root host class list: the base `ant-modal-wrap` class, the caller's `nzWrapClassName` (unchanged
+   * from before), and the scope classes of the enclosing `[nzTheme]` (if any) so a scoped theme reaches
+   * the modal, which is rendered into the CDK overlay container, outside the DOM subtree it scopes.
+   */
+  protected hostClasses(): string {
+    const classes = ['ant-modal-wrap', ...this.themeScopeClasses()];
+    if (this.config.nzWrapClassName) {
+      classes.push(this.config.nzWrapClassName);
+    }
+    return classes.join(' ');
+  }
 
   override markForCheck(): void {
     super.markForCheck();

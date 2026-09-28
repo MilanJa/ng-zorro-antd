@@ -1,0 +1,34 @@
+/* Mirrors antd v6's `.ant-modal-root .ant-modal-mask` rule (antd/es/modal/style/index.js,
+   `genModalStyle` -> `${componentCls}-root { ${componentCls}-mask: {...} }`) onto ng-zorro's mask
+   element. ng-zorro's mask is the CDK overlay backdrop, which carries the `ant-modal-mask` class
+   directly (`MODAL_MASK_CLASS_NAME` in modal-config.ts) with no `.ant-modal-root` ancestor anywhere in
+   the DOM, so v6's own rule -- scoped under that ancestor -- never matches it; without this mirror the
+   backdrop would only ever get v4's static `.modal-mask()` mixin values, never the scoped/dark `--ant-*`
+   token values. */
+.ant-modal-mask {
+  position: fixed;
+  inset: 0;
+  z-index: var(--ant-z-index-popup-base);
+  height: 100%;
+  background-color: var(--ant-color-bg-mask);
+}
+
+/* antd v6 wraps confirm title/content in a flex-column `.ant-modal-confirm-paragraph` container so they
+   stack under the icon (antd/es/modal/style/confirm.js, `${confirmComponentCls}-paragraph: { display:
+   'flex', flexDirection: 'column', ... }`). Adding that wrapper div to ng-zorro's flat
+   `.ant-modal-confirm-body > icon, title, content` structure would break v4's own `confirm.less` rule
+   (`.ant-modal-confirm-body > .anticon + .ant-modal-confirm-title + .ant-modal-confirm-content {
+   margin-inline-start: 38px }`, an adjacent-sibling chain that requires title/content to stay direct
+   siblings of the icon) -- see the task report's "Step 3: Align" for the full analysis -- so ng-zorro
+   keeps the flat structure and reproduces the stacked layout on it instead: `.ant-modal-confirm-body`'s
+   own v6 rule is `display:flex;flex-wrap:nowrap`, so giving title/content a `flex-basis` larger than the
+   row's remaining width (after `flex-wrap: wrap` below) forces each onto its own line after the icon. */
+.ant-modal-confirm .ant-modal-confirm-body {
+  row-gap: var(--ant-margin-xs);
+  flex-wrap: wrap;
+}
+.ant-modal-confirm .ant-modal-confirm-title,
+.ant-modal-confirm .ant-modal-confirm-content {
+  flex: 1 0 100%;
+  max-width: 100%;
+}

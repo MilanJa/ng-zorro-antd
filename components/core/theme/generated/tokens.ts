@@ -643,6 +643,28 @@ export interface NzInputToken {
   warningActiveShadow: string;
 }
 
+export interface NzModalToken {
+  bodyPadding: number;
+  confirmBodyPadding: number;
+  confirmBtnsMarginTop: number;
+  confirmIconMarginInlineEnd: number;
+  contentBg: string;
+  contentPadding: string;
+  footerBg: string;
+  footerBorderRadius: number;
+  footerBorderTop: string;
+  footerMarginTop: number;
+  footerPadding: number;
+  headerBg: string;
+  headerBorderBottom: string;
+  headerMarginBottom: number;
+  headerPadding: number;
+  mask: boolean;
+  titleColor: string;
+  titleFontSize: number;
+  titleLineHeight: number;
+}
+
 export interface NzPopconfirmToken {
   zIndexPopup: number;
 }
@@ -735,6 +757,7 @@ export interface NzComponentTokenMap {
   Button: NzButtonToken;
   Drawer: NzDrawerToken;
   Input: NzInputToken;
+  Modal: NzModalToken;
   Popconfirm: NzPopconfirmToken;
   Popover: NzPopoverToken;
   Result: NzResultToken;

@@ -15,6 +15,7 @@ Only the components below have v6 styles so far. Others keep rendering with the 
 - `button`
 - `drawer`
 - `input`
+- `modal`
 - `result`
 - `select`
 - `skeleton`

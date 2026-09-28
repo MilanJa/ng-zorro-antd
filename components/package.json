@@ -238,6 +238,9 @@
       "less": "./modal/style/*.less",
       "style": "./modal/style/index.min.css"
     },
+    "./modal/style/v6/*": {
+      "style": "./modal/style/v6/*"
+    },
     "./notification/style/*": {
       "less": "./notification/style/*.less",
       "style": "./notification/style/index.min.css"

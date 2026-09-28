@@ -10,7 +10,7 @@ import path from 'node:path';
 
 import { bundleEngine } from '../bundle-engine';
 import { allAntdComponentNames, v6Components, v6ComponentDirs } from '../components';
-import { partitionBlocks, splitBlocks } from '../css-postprocess';
+import { dropForeignCssVarBlocks, joinTemplate, partitionBlocks, splitBlocks } from '../css-postprocess';
 import { extractAntdCss } from '../extract-styles';
 
 const generatedDir = path.resolve(__dirname, '../../../../components/core/theme/generated');
@@ -83,15 +83,23 @@ describe('engine parity with antd extraction', () => {
   it('template CSS is identical across algorithms for every mapped component', () => {
     for (const dir of v6ComponentDirs) {
       const includes = [...v6Components[dir].antd];
-      const light = partitionBlocks(extractAntdCss({ includes, key: KEY }), KEY)
-        .template.map(b => b.raw)
-        .join('\n');
-      const dark = partitionBlocks(
-        extractAntdCss({ includes, key: KEY, theme: { algorithm: antdTheme.darkAlgorithm } }),
-        KEY
-      )
-        .template.map(b => b.raw)
-        .join('\n');
+      // Drop the same foreign `css-var-<reactUseId>` blocks `generate-styles.ts` drops before its own
+      // `assertNoAntdScoping` check (Modal's confirm dialog renders a nested `ConfigProvider` without
+      // our `cssVar.key`, see `dropForeignCssVarBlocks`'s doc comment): they repeat token *values* under
+      // a per-render-random selector, so they are real "vars" content misclassified as "template" by
+      // `partitionBlocks` (whose only signal is whether the selector contains `.${KEY}`), and their
+      // values legitimately differ between the light/dark renders below even though the true template
+      // CSS does not.
+      const light = joinTemplate(
+        dropForeignCssVarBlocks(partitionBlocks(extractAntdCss({ includes, key: KEY }), KEY).template, KEY)
+      );
+      const dark = joinTemplate(
+        dropForeignCssVarBlocks(
+          partitionBlocks(extractAntdCss({ includes, key: KEY, theme: { algorithm: antdTheme.darkAlgorithm } }), KEY)
+            .template,
+          KEY
+        )
+      );
       expect(dark, dir).toBe(light);
     }
   });
