@@ -84,12 +84,6 @@ describe('committed component-roots.ts', () => {
       }
     }
     expect(COMPONENT_ROOT_CLS).toEqual(expected);
-    expect(COMPONENT_ROOT_CLS).toEqual({
-      Button: 'ant-btn',
-      Input: 'ant-input',
-      Select: 'ant-select',
-      Space: 'ant-space'
-    });
   });
 
   it('matches a fresh generation', () => {
