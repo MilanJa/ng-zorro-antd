@@ -105,22 +105,18 @@ export class NzPopoverDirective extends NzTooltipBaseDirective {
         [animate.leave]="zoomAnimationLeave()"
       >
         <div class="ant-popover-arrow"></div>
-        <div class="ant-popover-content">
-          <div class="ant-popover-inner" role="tooltip">
-            <div>
-              @if (nzTitle) {
-                <div class="ant-popover-title">
-                  <ng-container *nzStringTemplateOutlet="nzTitle; context: { $implicit: nzTitleContext }">
-                    {{ nzTitle }}
-                  </ng-container>
-                </div>
-              }
-              <div class="ant-popover-inner-content">
-                <ng-container *nzStringTemplateOutlet="nzContent; context: { $implicit: nzContentContext }">
-                  {{ nzContent }}
-                </ng-container>
-              </div>
+        <div class="ant-popover-inner ant-popover-container" role="tooltip">
+          @if (nzTitle) {
+            <div class="ant-popover-title">
+              <ng-container *nzStringTemplateOutlet="nzTitle; context: { $implicit: nzTitleContext }">
+                {{ nzTitle }}
+              </ng-container>
             </div>
+          }
+          <div class="ant-popover-inner-content ant-popover-content">
+            <ng-container *nzStringTemplateOutlet="nzContent; context: { $implicit: nzContentContext }">
+              {{ nzContent }}
+            </ng-container>
           </div>
         </div>
       </div>

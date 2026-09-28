@@ -636,6 +636,21 @@ export interface NzInputToken {
   warningActiveShadow: string;
 }
 
+export interface NzPopoverToken {
+  arrowOffsetHorizontal: number;
+  arrowOffsetVertical: number;
+  arrowPath: string;
+  arrowPolygon: string;
+  arrowShadowWidth: number;
+  innerContentPadding: number;
+  innerPadding: number;
+  titleBorderBottom: string;
+  titleMarginBottom: number;
+  titleMinWidth: number;
+  titlePadding: number;
+  zIndexPopup: number;
+}
+
 export interface NzResultToken {
   extraMargin: string;
   iconFontSize: number;
@@ -708,6 +723,7 @@ export interface NzComponentTokenMap {
   Alert: NzAlertToken;
   Button: NzButtonToken;
   Input: NzInputToken;
+  Popover: NzPopoverToken;
   Result: NzResultToken;
   Select: NzSelectToken;
   Skeleton: NzSkeletonToken;

@@ -255,6 +255,9 @@
       "less": "./popover/style/*.less",
       "style": "./popover/style/index.min.css"
     },
+    "./popover/style/v6/*": {
+      "style": "./popover/style/v6/*"
+    },
     "./progress/style/*": {
       "less": "./progress/style/*.less",
       "style": "./progress/style/index.min.css"

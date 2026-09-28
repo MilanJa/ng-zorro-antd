@@ -17,6 +17,7 @@ Only the components below have v6 styles so far. Others keep rendering with the 
 - `result`
 - `select`
 - `skeleton`
+- `popover`
 - `space`
 - `spin`
 - `tooltip`
