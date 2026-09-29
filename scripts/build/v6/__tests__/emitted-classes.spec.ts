@@ -22,4 +22,10 @@ describe('emittedClasses', () => {
   it('drops the partial token before a template-literal interpolation', () => {
     expect(emittedClasses('scan-sample', root)).toEqual(['ant-sample', 'ant-sample-inner', 'ant-sample-open']);
   });
+
+  it('yields no token for a camelCase class instead of truncating it', () => {
+    // `ant-sample-topLeft` must not be scanned as `ant-sample-top`; the rendered-class check covers it.
+    expect(emittedClasses('scan-sample', root)).not.toContain('ant-sample-top');
+    expect(emittedClasses('scan-sample', root)).not.toContain('ant-sample-topLeft');
+  });
 });

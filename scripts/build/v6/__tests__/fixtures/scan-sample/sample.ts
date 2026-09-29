@@ -6,3 +6,4 @@
 export const prefix = 'ant-sample';
 export const built = (s: string): string => `ant-sample-status-${s}`;
 export const literal = 'ant-sample-open';
+export const camelCase = 'ant-sample-topLeft';
