@@ -13,12 +13,20 @@
   },
   "include": ["tools/**/*.ts", "tools/**/*.tsx", "scripts/**/*.ts"],
   "exclude": [
+    // Test-fixture helpers only, never real source.
     "**/__tests__/fixtures/**",
+    // Site template source, typed against the doc site's own tsconfig, not this one.
     "scripts/site/template/**",
+    // Doc-authoring scripts, typed against the doc site's own tsconfig, not this one.
     "scripts/site/doc/**",
+    // Upstream prerender tooling, typed against older dependency versions.
     "scripts/prerender/**",
+    // Upstream release tooling, typed against older dependency versions.
     "scripts/release/**",
-    "tools/v6-compare/ssr-check/**",
+    // The SSR check's Angular app source: type-checked by its own project (ssr-check/tsconfig.app.json)
+    // through `ng build`, not by this config; `run.ts`, its plain Node driver, stays included.
+    "tools/v6-compare/ssr-check/src/**",
+    // Build output, not source.
     "tools/v6-compare/out/**"
   ]
 }

@@ -33,7 +33,11 @@ const CLICK_TRIGGERS: Partial<Record<string, string>> = {
   message: '.ant-btn',
   notification: '.ant-btn',
   popconfirm: '.ant-btn',
-  'float-button': '.ant-float-btn-group-trigger, .ant-float-btn'
+  'float-button': '.ant-float-btn-group-trigger, .ant-float-btn',
+  'color-picker': '.ant-color-picker-trigger',
+  'tree-select': '.ant-select-selector',
+  cascader: '.ant-select-selector',
+  upload: '.ant-upload button, .ant-upload-btn'
 };
 
 async function main(): Promise<void> {

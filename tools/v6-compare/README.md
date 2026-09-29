@@ -127,6 +127,11 @@ bundled demo for that component.
 with a differently-named antd demo file stem; `null` marks an ng-zorro-only demo
 with no antd counterpart. Demo keys not listed pair by identical name.
 
+`AutoComplete` and `TimePicker` have their own antd demo directories (`auto-complete`,
+`time-picker`) even though they share `Select`/`DatePicker`'s style module and engine
+registration (`ANTD_STYLE_MODULE_OVERRIDES` in `scripts/build/v6/components.ts`); that
+override does not change `_antdDir`'s default here.
+
 ## Windows note
 
 The Vitest runner used by this fork's own test scripts may need a local patch to

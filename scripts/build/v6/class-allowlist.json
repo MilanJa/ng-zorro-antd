@@ -103,7 +103,7 @@
     "ant-popover-open",
     "ant-zoom-big"
   ],
-  "_popconfirm_comment": "v4-compat: ant-popover-buttons, -inner-content, -message, -message-icon, -message-title (next to their ant-popconfirm-* replacements). antd-emits: ant-popover-open (the trigger's visibility class), ant-popconfirm-inner-content, ant-popconfirm-message-text (antd emits both; v6 styles only their children). scan-artefact: ant-zoom-big (the `_animationPrefix` literal, as for popover).",
+  "_popconfirm_comment": "v4-compat: ant-popover-buttons, ant-popover-inner-content, ant-popover-message, ant-popover-message-icon, ant-popover-message-title (next to their ant-popconfirm-* replacements). antd-emits: ant-popover-open (the trigger's visibility class), ant-popconfirm-inner-content, ant-popconfirm-message-text (antd emits both; v6 styles only their children). scan-artefact: ant-zoom-big (the `_animationPrefix` literal, as for popover).",
   "popconfirm": [
     "ant-popover-buttons",
     "ant-popover-inner-content",

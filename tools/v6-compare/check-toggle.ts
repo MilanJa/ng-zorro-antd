@@ -14,6 +14,22 @@ type Theme = (typeof THEMES)[number];
 /** `--ant-color-primary` on `:root` per theme; the v4 stylesheet defines no `--ant-*` variables. */
 const ROOT_PRIMARY: Record<Theme, string> = { v6: '#1677ff', 'v6-dark': '#1668dc', default: '' };
 
+// Components whose demos render no element carrying their `prefixCls` until a popup is opened (which
+// the generic probe below never does): the generic probe finding no element is expected for these, not
+// a failure.
+const OVERLAY_ONLY: readonly string[] = [
+  'tooltip',
+  'popover',
+  'popconfirm',
+  'modal',
+  'drawer',
+  'message',
+  'notification',
+  'auto-complete',
+  'mention',
+  'color-picker'
+];
+
 type ProbeProperty = 'backgroundColor' | 'borderRadius' | 'columnGap' | 'lineHeight';
 
 interface ExactProbe {
@@ -144,6 +160,13 @@ async function main(): Promise<void> {
       if (isV6 !== state.hasThemeLink) failures.push(`${dir} ${theme}: theme link present=${state.hasThemeLink}`);
       if (state.rootPrimary.toLowerCase() !== ROOT_PRIMARY[theme]) {
         failures.push(`${dir} ${theme}: --ant-color-primary "${state.rootPrimary}", expected "${ROOT_PRIMARY[theme]}"`);
+      }
+      if (isV6 && !exact && state.element === null) {
+        if (OVERLAY_ONLY.includes(dir)) {
+          console.log(`${dir} ${theme}: generic probe found no element (overlay-only, skipped)`);
+        } else {
+          failures.push(`${dir} ${theme}: generic probe found no element carrying .${prefixCls} or .${prefixCls}-*`);
+        }
       }
       if (isV6 && state.matchingV6Rules === 0) failures.push(`${dir} ${theme}: no v6 rule matches ${state.element}`);
       if (isV6 && state.prefixRules === 0) failures.push(`${dir} ${theme}: theme stylesheet has no .${prefixCls} rule`);
