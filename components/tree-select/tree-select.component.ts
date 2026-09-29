@@ -52,6 +52,7 @@ import {
 import { NzStringTemplateOutletDirective } from 'ng-zorro-antd/core/outlet';
 import { NzOverlayModule, POSITION_MAP, POSITION_TYPE, getPlacementName } from 'ng-zorro-antd/core/overlay';
 import { cancelAnimationFrame, requestAnimationFrame } from 'ng-zorro-antd/core/polyfill';
+import { nzThemeScopeClasses } from 'ng-zorro-antd/core/theme';
 import {
   NzFormatEmitEvent,
   NzTreeBase,
@@ -80,7 +81,9 @@ import { NzTreeSelectService } from './tree-select.service';
 
 export type NzPlacementType = 'bottomLeft' | 'bottomRight' | 'topLeft' | 'topRight' | '';
 const NZ_CONFIG_MODULE_NAME: NzConfigKey = 'treeSelect';
-const TREE_SELECT_DEFAULT_CLASS = 'ant-select-dropdown ant-select-tree-dropdown';
+// `ant-tree-select-dropdown` is the real antd v6 class (`getPrefixCls('tree-select')` in
+// `antd/es/tree-select/index.js`); `ant-select-tree-dropdown` is kept alongside it for v4.
+const TREE_SELECT_DEFAULT_CLASS = 'ant-select-dropdown ant-select-tree-dropdown ant-tree-select-dropdown';
 
 @Component({
   selector: 'nz-tree-select',
@@ -109,6 +112,7 @@ const TREE_SELECT_DEFAULT_CLASS = 'ant-select-dropdown ant-select-tree-dropdown'
       cdkConnectedOverlayTransformOriginOn=".ant-select-tree-dropdown"
       [cdkConnectedOverlayMinWidth]="$any(nzDropdownMatchSelectWidth ? null : triggerWidth)"
       [cdkConnectedOverlayWidth]="$any(nzDropdownMatchSelectWidth ? triggerWidth : null)"
+      [cdkConnectedOverlayPanelClass]="dropdownPanelClasses!"
       (overlayOutsideClick)="onClickOutside($event)"
       (detach)="closeDropdown()"
       (positionChange)="onPositionChange($event)"
@@ -176,9 +180,9 @@ const TREE_SELECT_DEFAULT_CLASS = 'ant-select-dropdown ant-select-tree-dropdown'
 
       <span class="ant-select-selection-wrap">
         @if (isMultiple) {
-          <div class="ant-select-selection-overflow">
+          <div class="ant-select-selection-overflow ant-select-content">
             @for (node of selectedNodes | slice: 0 : nzMaxTagCount; track node.key) {
-              <div class="ant-select-selection-overflow-item">
+              <div class="ant-select-selection-overflow-item ant-select-content-item">
                 <nz-select-item
                   deletable
                   [disabled]="node.isDisabled || nzDisabled"
@@ -189,7 +193,7 @@ const TREE_SELECT_DEFAULT_CLASS = 'ant-select-dropdown ant-select-tree-dropdown'
               </div>
             }
             @if (selectedNodes.length > nzMaxTagCount) {
-              <div class="ant-select-selection-overflow-item">
+              <div class="ant-select-selection-overflow-item ant-select-content-item">
                 <nz-select-item
                   [contentTemplateOutlet]="nzMaxTagPlaceholder"
                   [contentTemplateOutletContext]="selectedNodes | slice: nzMaxTagCount"
@@ -197,7 +201,9 @@ const TREE_SELECT_DEFAULT_CLASS = 'ant-select-dropdown ant-select-tree-dropdown'
                 />
               </div>
             }
-            <div class="ant-select-selection-overflow-item ant-select-selection-overflow-item-suffix">
+            <div
+              class="ant-select-selection-overflow-item ant-select-selection-overflow-item-suffix ant-select-content-item ant-select-content-item-suffix"
+            >
               <nz-select-search
                 [nzId]="nzId"
                 [showInput]="nzShowSearch"
@@ -296,6 +302,7 @@ export class NzTreeSelectComponent extends NzTreeBase implements ControlValueAcc
   private readonly focusMonitor = inject(FocusMonitor);
   private readonly destroyRef = inject(DestroyRef);
   private readonly platform = inject(Platform);
+  private readonly themeScopeClasses = nzThemeScopeClasses();
   protected readonly nzFormStatusService = inject(NzFormStatusService, { optional: true });
   protected readonly noAnimation = inject(NzNoAnimationDirective, { host: true, optional: true });
   private requestId: number = -1;
@@ -377,6 +384,12 @@ export class NzTreeSelectComponent extends NzTreeBase implements ControlValueAcc
   hasFeedback: boolean = false;
 
   dropdownClassName = TREE_SELECT_DEFAULT_CLASS;
+  /**
+   * @internal The CDK overlay pane classes: `dropdownClassName` plus the enclosing `[nzTheme]` scope.
+   * Stored rather than derived in a getter, matching select's `updateDropdownPanelClasses` (`CdkConnectedOverlay.ngOnChanges`
+   * rebuilds its position strategy on any input change, so the binding must keep its reference between checks).
+   */
+  dropdownPanelClasses: string[] | string | null = null;
   triggerWidth?: number;
   isComposing = false;
   isNotFound = false;
@@ -423,8 +436,28 @@ export class NzTreeSelectComponent extends NzTreeBase implements ControlValueAcc
     return this.nzMultiple || this.nzCheckable;
   }
 
+  private updateDropdownPanelClasses(): void {
+    // The scope is constant per instance (resolved from the injector at construction). Only
+    // `nzDropdownClassName` (the user's own extra class, if any) plus the scope go on the CDK pane,
+    // exactly as select's `updateDropdownPanelClasses` does: `TREE_SELECT_DEFAULT_CLASS` is never
+    // included here, since it is already applied to the dropdown root itself via `[class]`, and
+    // `OverlayRef` renders `.cdk-overlay-pane` as an ANCESTOR of that root — adding the same
+    // `ant-select-dropdown`/`ant-tree-select-dropdown` classes to the pane would make a bare
+    // `.ant-select-dropdown` lookup match the outer pane (which carries none of the placement/RTL
+    // classes) before the real dropdown root.
+    const scope = this.themeScopeClasses();
+    const user = (this.nzDropdownClassName ?? '').trim().split(/\s+/).filter(Boolean);
+    if (!scope.length) {
+      this.dropdownPanelClasses = user.length ? user : null;
+      return;
+    }
+    this.dropdownPanelClasses = [...user, ...scope];
+  }
+
   constructor() {
     super(inject(NzTreeSelectService));
+
+    this.updateDropdownPanelClasses();
 
     this.destroyRef.onDestroy(() => {
       this.closeDropdown();
@@ -511,6 +544,7 @@ export class NzTreeSelectComponent extends NzTreeBase implements ControlValueAcc
     if (nzDropdownClassName) {
       const className = this.nzDropdownClassName && this.nzDropdownClassName.trim();
       this.dropdownClassName = className ? `${TREE_SELECT_DEFAULT_CLASS} ${className}` : TREE_SELECT_DEFAULT_CLASS;
+      this.updateDropdownPanelClasses();
     }
     if (nzStatus) {
       this.setStatusStyles(this.nzStatus, this.hasFeedback);

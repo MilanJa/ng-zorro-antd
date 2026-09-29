@@ -1,0 +1,23 @@
+/*
+ * CDK overlay pane positioning: v6's bare `.ant-select-dropdown` rule sets `position: absolute; top: -9999px`,
+ * which collapses the CDK-positioned pane to the top-left corner instead of letting the pane's own
+ * position/transform (written by FlexibleConnectedPositionStrategy) place it below the trigger. Port of
+ * `style/patch.less`, which needed no position rule under v4 (v4's own `.ant-select-dropdown` never sets
+ * `position` at all).
+ */
+.ant-select-dropdown.ant-select-tree-dropdown {
+  position: relative;
+  overflow: auto;
+}
+.ant-select-dropdown.ant-select-tree-dropdown .cdk-virtual-scroll-content-wrapper {
+  overflow: auto;
+}
+
+/*
+ * The box (border, radius, height, background, padding, focus ring) select's own `style/v6/patch.css`
+ * mirrors onto `.ant-select-selector` already applies here unmodified: tree-select's host carries the
+ * bare `ant-select` class (`host: { class: 'ant-select ant-tree-select' }`), and every select patch
+ * selector is written generically off `.ant-select`/`.ant-select-selector`/`.ant-select-selection-wrap`/
+ * `.ant-select-arrow`, not off select's own component tag, so it matches tree-select's markup exactly the
+ * same way it matches select's. No box/wrap/arrow rule is duplicated here.
+ */

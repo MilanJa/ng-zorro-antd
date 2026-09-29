@@ -46,5 +46,12 @@
     "custom-tag": null,
     "preview": null
   },
-  "tree": { "_antdDir": "tree", "draggable-confirm": "drag-debug" }
+  "tree": { "_antdDir": "tree", "draggable-confirm": "drag-debug" },
+  "tree-select": {
+    "_antdDir": "tree-select",
+    "customized-icon": "treeLine",
+    "no-data": null,
+    "prefix-and-suffix": "suffix",
+    "virtual-scroll": null
+  }
 }

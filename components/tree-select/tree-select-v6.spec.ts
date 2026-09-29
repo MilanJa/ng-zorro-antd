@@ -1,0 +1,97 @@
+/**
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://github.com/NG-ZORRO/ng-zorro-antd/blob/master/LICENSE
+ */
+
+import { OverlayContainer } from '@angular/cdk/overlay';
+import { Component, signal } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
+
+import { expectMotionSettled } from 'ng-zorro-antd/core/testing';
+import { NzThemeDirective } from 'ng-zorro-antd/core/theme';
+import { V6_PATCH_CSS, V6_TEMPLATE_CSS, V6_TOKENS_DEFAULT_CSS } from 'ng-zorro-antd/core/theme/generated/test-css';
+import { provideNzIconsTesting } from 'ng-zorro-antd/icon/testing';
+
+import { NzTreeSelectModule } from './tree-select.module';
+
+let style: HTMLStyleElement;
+function installV6Css(): void {
+  style = document.createElement('style');
+  style.textContent = [V6_TEMPLATE_CSS, V6_TOKENS_DEFAULT_CSS, V6_PATCH_CSS].join('\n');
+  document.head.appendChild(style);
+}
+
+@Component({
+  imports: [NzTreeSelectModule, FormsModule, NzThemeDirective],
+  template: `
+    <div [nzTheme]="{ token: { colorPrimary: '#00b96b' } }" style="margin: 80px 0 0 200px; width: 200px">
+      <nz-tree-select id="trigger" [nzNodes]="nodes" [nzOpen]="open()" style="width: 100%" />
+    </div>
+  `
+})
+class TestTreeSelectComponent {
+  open = signal(false);
+  nodes = [
+    {
+      title: 'parent 1',
+      key: '0',
+      children: [{ title: 'leaf 1', key: '0-0', isLeaf: true }]
+    }
+  ];
+}
+
+describe('tree-select under antd v6 css', () => {
+  let fixture: ComponentFixture<TestTreeSelectComponent>;
+  let overlay: OverlayContainer;
+
+  beforeEach(() => {
+    installV6Css();
+    TestBed.configureTestingModule({ providers: [provideNzIconsTesting()], animationsEnabled: true });
+    fixture = TestBed.createComponent(TestTreeSelectComponent);
+    overlay = TestBed.inject(OverlayContainer);
+    fixture.detectChanges();
+  });
+
+  afterEach(() => {
+    style.remove();
+    TestBed.inject(OverlayContainer).ngOnDestroy();
+  });
+
+  it('opens a positioned v6 dropdown whose motion settles, scoped to the enclosing theme', async () => {
+    fixture.componentInstance.open.set(true);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const root = overlay.getContainerElement().querySelector('.ant-tree-select-dropdown') as HTMLElement;
+    expect(root).not.toBeNull();
+    expect(root.classList.contains('ant-select-tree-dropdown')).toBe(true);
+    await expectMotionSettled(root);
+    // The scope class lands on `.cdk-overlay-pane` (createOverlayRef's panelClass mechanism); the
+    // popup root inherits the theme's CSS custom properties from it.
+    const pane = root.closest('.cdk-overlay-pane') as HTMLElement;
+    expect(pane.className).toMatch(/\bnz-theme-\d+\b/);
+    expect(getComputedStyle(root).getPropertyValue('--ant-color-primary').trim()).toBe('#00b96b');
+    // Positioned below the trigger (default `bottomLeft` placement).
+    const trigger = document.getElementById('trigger')!.getBoundingClientRect();
+    const rootRect = root.getBoundingClientRect();
+    expect(rootRect.top).toBeGreaterThanOrEqual(trigger.bottom - 1);
+    const node = root.querySelector('.ant-select-tree-node-content-wrapper') as HTMLElement;
+    expect(node).not.toBeNull();
+    expect(getComputedStyle(node).minHeight).toBe('24px');
+  });
+
+  it('is removed after close', async () => {
+    fixture.componentInstance.open.set(true);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    fixture.componentInstance.open.set(false);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    // Leave motion: `.ant-slide-up-leave` runs slideUpOut for --ant-motion-duration-mid (0.2s);
+    // Angular removes the popup on `animationend`. 500 ms leaves room for the frame it starts on.
+    await new Promise(r => setTimeout(r, 500));
+    expect(overlay.getContainerElement().querySelector('.ant-tree-select-dropdown')).toBeNull();
+  });
+});
