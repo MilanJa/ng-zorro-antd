@@ -12,9 +12,40 @@
   background-color: transparent;
   border: none;
   border-radius: 0;
+  outline: none;
 }
 .ant-checkbox::after {
   display: none;
+}
+.ant-checkbox:has(.ant-checkbox-input:focus-visible) {
+  outline: none;
+}
+/*
+ * The base box/tick reset above is a bare `.ant-checkbox` (0,1,0), which ties v6's own bare
+ * `.ant-checkbox`/`.ant-checkbox-checked`/`.ant-checkbox-disabled`/`.ant-checkbox-indeterminate` rules and
+ * wins on source order (this file loads after the generated template). v6's hover rules are compound
+ * (`.ant-checkbox-wrapper:not(...):hover .ant-checkbox`, four classes), which outweighs the bare reset by
+ * specificity regardless of order, so the outer box would still show a coloured border/background on
+ * hover; these repeat the same selectors, and the same `(hover: hover) and (pointer: fine)` media guard,
+ * to match.
+ */
+@media (hover: hover) and (pointer: fine) {
+  .ant-checkbox-wrapper:not(.ant-checkbox-wrapper-disabled):hover .ant-checkbox,
+  .ant-checkbox:not(.ant-checkbox-disabled):hover .ant-checkbox {
+    border-color: transparent;
+  }
+  .ant-checkbox-wrapper:not(.ant-checkbox-wrapper-disabled):hover .ant-checkbox-checked:not(.ant-checkbox-disabled) {
+    background-color: transparent;
+    border-color: transparent;
+  }
+  .ant-checkbox-checked:not(.ant-checkbox-disabled):hover {
+    background-color: transparent;
+    border-color: transparent;
+  }
+  .ant-checkbox-indeterminate:not(.ant-checkbox-disabled):hover {
+    background-color: transparent;
+    border-color: transparent;
+  }
 }
 .ant-checkbox-inner {
   position: relative;
