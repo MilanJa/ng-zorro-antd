@@ -1,0 +1,169 @@
+/* style/patch.less: nz-tree must lay out as a block; ng-zorro renders nz-tree as an inline default. */
+nz-tree {
+  display: block;
+}
+
+/* style/patch.less: the search-match highlight span (NzHighlightPipe), no v6 equivalent class. */
+.font-highlight {
+  color: var(--ant-color-primary);
+}
+
+/*
+ * v6's `.ant-tree .ant-tree-switcher-leaf-line` rule sets `width:100%;height:100%`, equal specificity
+ * to (and, by source order, overriding) the base `.ant-tree .ant-tree-switcher` rule's fixed
+ * `width:var(--ant-tree-switcher-size)`. Combined with `.ant-tree-switcher`'s own `flex:none` (a
+ * flex item's percentage width still resolves against the flex container, flex:none only stops it
+ * growing/shrinking beyond that resolved size), the leaf switcher's flex-basis becomes the full
+ * treenode row width instead of the fixed switcher-size box every other switcher keeps, pushing the
+ * title after it far to the right. No antd Tree code path emits this class in the current build
+ * (absent from @rc-component/tree and antd/es/tree), so the rule was never exercised against real
+ * flex layout upstream; re-assert the switcher's own box size at higher specificity.
+ */
+.ant-tree .ant-tree-switcher.ant-tree-switcher-leaf-line,
+.ant-select-tree .ant-select-tree-switcher.ant-select-tree-switcher-leaf-line {
+  width: var(--ant-tree-switcher-size);
+  height: auto;
+}
+
+/*
+ * antd v6's `.ant-tree`-scoped CSS draws the checkbox box on `.ant-tree-checkbox` itself (rc-tree reuses
+ * rc-checkbox's DOM, no separate inner span). ng-zorro keeps `span.ant-tree-checkbox-inner` /
+ * `span.ant-select-tree-checkbox-inner` for v4 (NzTreeNodeBuiltinCheckboxComponent), so these rules mirror
+ * the v6 box rules from `.ant-tree .ant-tree-checkbox`/`.ant-select-tree .ant-select-tree-checkbox` onto
+ * `-inner`, at the same `.ant-tree `/`.ant-select-tree ` ancestor specificity v6 itself uses, and
+ * neutralise the outer element so the box is not drawn twice. Same pattern as checkbox/radio (Task 4).
+ */
+.ant-tree .ant-tree-checkbox,
+.ant-select-tree .ant-select-tree-checkbox {
+  width: auto;
+  height: auto;
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  outline: none;
+}
+.ant-tree .ant-tree-checkbox::after,
+.ant-select-tree .ant-select-tree-checkbox::after {
+  display: none;
+}
+.ant-tree .ant-tree-checkbox:has(.ant-tree-checkbox-input:focus-visible),
+.ant-select-tree .ant-select-tree-checkbox:has(.ant-select-tree-checkbox-input:focus-visible) {
+  outline: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .ant-tree .ant-tree-checkbox-wrapper:not(.ant-tree-checkbox-wrapper-disabled):hover .ant-tree-checkbox,
+  .ant-tree .ant-tree-checkbox:not(.ant-tree-checkbox-disabled):hover .ant-tree-checkbox,
+  .ant-select-tree .ant-select-tree-checkbox-wrapper:not(.ant-select-tree-checkbox-wrapper-disabled):hover .ant-select-tree-checkbox,
+  .ant-select-tree .ant-select-tree-checkbox:not(.ant-select-tree-checkbox-disabled):hover .ant-select-tree-checkbox {
+    border-color: transparent;
+  }
+  .ant-tree .ant-tree-checkbox-wrapper:not(.ant-tree-checkbox-wrapper-disabled):hover .ant-tree-checkbox-checked:not(.ant-tree-checkbox-disabled),
+  .ant-select-tree .ant-select-tree-checkbox-wrapper:not(.ant-select-tree-checkbox-wrapper-disabled):hover .ant-select-tree-checkbox-checked:not(.ant-select-tree-checkbox-disabled) {
+    background-color: transparent;
+    border-color: transparent;
+  }
+  .ant-tree .ant-tree-checkbox-checked:not(.ant-tree-checkbox-disabled):hover,
+  .ant-select-tree .ant-select-tree-checkbox-checked:not(.ant-select-tree-checkbox-disabled):hover {
+    background-color: transparent;
+    border-color: transparent;
+  }
+  .ant-tree .ant-tree-checkbox-indeterminate:not(.ant-tree-checkbox-disabled):hover,
+  .ant-select-tree .ant-select-tree-checkbox-indeterminate:not(.ant-select-tree-checkbox-disabled):hover {
+    background-color: transparent;
+    border-color: transparent;
+  }
+}
+.ant-tree .ant-tree-checkbox-inner,
+.ant-select-tree .ant-select-tree-checkbox-inner {
+  position: relative;
+  top: 0;
+  left: 0;
+  display: block;
+  width: var(--ant-control-interactive-size);
+  height: var(--ant-control-interactive-size);
+  direction: ltr;
+  background-color: var(--ant-color-bg-container);
+  border: var(--ant-line-width) var(--ant-line-type) var(--ant-color-border);
+  border-radius: var(--ant-border-radius-sm);
+  border-collapse: separate;
+  transition: all var(--ant-motion-duration-slow);
+}
+.ant-tree .ant-tree-checkbox-inner::after,
+.ant-select-tree .ant-select-tree-checkbox-inner::after {
+  box-sizing: border-box;
+  position: absolute;
+  top: calc(var(--ant-control-interactive-size) / 2 - var(--ant-line-width));
+  inset-inline-start: calc(var(--ant-control-interactive-size) / 4 - var(--ant-line-width));
+  display: table;
+  width: calc(var(--ant-control-interactive-size) / 14 * 5);
+  height: calc(var(--ant-control-interactive-size) / 14 * 8);
+  border: var(--ant-line-width-bold) solid var(--ant-color-white);
+  border-top: 0;
+  border-inline-start: 0;
+  transform: rotate(45deg) scale(0) translate(-50%, -50%);
+  opacity: 0;
+  content: '';
+  transition:
+    all var(--ant-motion-duration-fast) var(--ant-motion-ease-in-back),
+    opacity var(--ant-motion-duration-fast);
+}
+.ant-tree .ant-tree-checkbox-wrapper:not(.ant-tree-checkbox-wrapper-disabled):hover .ant-tree-checkbox:not(.ant-tree-checkbox-disabled) .ant-tree-checkbox-inner,
+.ant-tree .ant-tree-checkbox:not(.ant-tree-checkbox-disabled):hover .ant-tree-checkbox-inner,
+.ant-select-tree .ant-select-tree-checkbox-wrapper:not(.ant-select-tree-checkbox-wrapper-disabled):hover .ant-select-tree-checkbox:not(.ant-select-tree-checkbox-disabled) .ant-select-tree-checkbox-inner,
+.ant-select-tree .ant-select-tree-checkbox:not(.ant-select-tree-checkbox-disabled):hover .ant-select-tree-checkbox-inner {
+  border-color: var(--ant-color-primary);
+}
+.ant-tree .ant-tree-checkbox-checked .ant-tree-checkbox-inner,
+.ant-select-tree .ant-select-tree-checkbox-checked .ant-select-tree-checkbox-inner {
+  background-color: var(--ant-color-primary);
+  border-color: var(--ant-color-primary);
+}
+.ant-tree .ant-tree-checkbox-checked .ant-tree-checkbox-inner::after,
+.ant-select-tree .ant-select-tree-checkbox-checked .ant-select-tree-checkbox-inner::after {
+  opacity: 1;
+  transform: rotate(45deg) scale(1) translate(-50%, -50%);
+  transition: all var(--ant-motion-duration-mid) var(--ant-motion-ease-out-back) var(--ant-motion-duration-fast);
+}
+.ant-tree .ant-tree-checkbox-wrapper:not(.ant-tree-checkbox-wrapper-disabled):hover .ant-tree-checkbox-checked:not(.ant-tree-checkbox-disabled) .ant-tree-checkbox-inner,
+.ant-select-tree .ant-select-tree-checkbox-wrapper:not(.ant-select-tree-checkbox-wrapper-disabled):hover .ant-select-tree-checkbox-checked:not(.ant-select-tree-checkbox-disabled) .ant-select-tree-checkbox-inner {
+  background-color: var(--ant-color-primary-hover);
+  border-color: transparent;
+}
+.ant-tree .ant-tree-checkbox-indeterminate .ant-tree-checkbox-inner,
+.ant-select-tree .ant-select-tree-checkbox-indeterminate .ant-select-tree-checkbox-inner {
+  background-color: var(--ant-color-bg-container);
+  border-color: var(--ant-color-border);
+}
+.ant-tree .ant-tree-checkbox-indeterminate .ant-tree-checkbox-inner::after,
+.ant-select-tree .ant-select-tree-checkbox-indeterminate .ant-select-tree-checkbox-inner::after {
+  top: 50%;
+  inset-inline-start: 50%;
+  width: calc(var(--ant-font-size-lg) / 2);
+  height: calc(var(--ant-font-size-lg) / 2);
+  background-color: var(--ant-color-primary);
+  border: 0;
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+  content: '';
+}
+.ant-tree .ant-tree-checkbox-disabled .ant-tree-checkbox-inner,
+.ant-select-tree .ant-select-tree-checkbox-disabled .ant-select-tree-checkbox-inner {
+  background: var(--ant-color-bg-container-disabled);
+  border-color: var(--ant-color-border);
+}
+.ant-tree .ant-tree-checkbox-disabled .ant-tree-checkbox-inner::after,
+.ant-select-tree .ant-select-tree-checkbox-disabled .ant-select-tree-checkbox-inner::after {
+  border-color: var(--ant-color-text-disabled);
+}
+.ant-tree .ant-tree-checkbox-disabled.ant-tree-checkbox-indeterminate .ant-tree-checkbox-inner::after,
+.ant-select-tree .ant-select-tree-checkbox-disabled.ant-select-tree-checkbox-indeterminate .ant-select-tree-checkbox-inner::after {
+  background: var(--ant-color-text-disabled);
+}
+.ant-tree .ant-tree-checkbox:has(.ant-tree-checkbox-input:focus-visible) .ant-tree-checkbox-inner,
+.ant-select-tree .ant-select-tree-checkbox:has(.ant-select-tree-checkbox-input:focus-visible) .ant-select-tree-checkbox-inner {
+  outline: var(--ant-line-width-focus) solid var(--ant-color-primary-border);
+  outline-offset: 1px;
+  transition:
+    outline-offset 0s,
+    outline 0s;
+}

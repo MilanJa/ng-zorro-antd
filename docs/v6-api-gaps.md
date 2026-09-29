@@ -18,3 +18,4 @@ Limitations met while aligning components with antd v6 that cannot be closed wit
 | InputNumber           | `mode="spinner"` prop (`ant-input-number-mode-spinner`)                    | no `nzMode`; always the "input" layout | new input (sub-project 3)               |
 | Slider                | draggable range track (`ant-slider-tracks`, `ant-slider-track-draggable`)  | no drag-to-move-range feature          | new feature (sub-project 3)             |
 | Mentions              | `size` prop (`ant-mentions-sm`/`-lg`, `ant-mentions-affix-wrapper-sm/-lg`) | no `nzSize`                            | new input (sub-project 3)               |
+| Tree                  | `DirectoryTree` (`directory` prop, `ant-tree-directory`)                   | no directory-tree mode                 | new component/mode (sub-project 3)      |

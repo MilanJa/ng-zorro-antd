@@ -413,9 +413,15 @@
       "less": "./tree/style/*.less",
       "style": "./tree/style/index.min.css"
     },
+    "./tree/style/v6/*": {
+      "style": "./tree/style/v6/*"
+    },
     "./tree-select/style/*": {
       "less": "./tree-select/style/*.less",
       "style": "./tree-select/style/index.min.css"
+    },
+    "./tree-select/style/v6/*": {
+      "style": "./tree-select/style/v6/*"
     },
     "./tree-view/style/*": {
       "less": "./tree-view/style/*.less",

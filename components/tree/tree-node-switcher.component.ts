@@ -44,10 +44,12 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
     '[class.ant-select-tree-switcher-noop]': 'nzSelectMode && isLeaf',
     '[class.ant-select-tree-switcher_open]': 'nzSelectMode && isSwitcherOpen',
     '[class.ant-select-tree-switcher_close]': 'nzSelectMode && isSwitcherClose',
+    '[class.ant-select-tree-switcher-leaf-line]': 'nzSelectMode && isLeaf && nzShowLine',
     '[class.ant-tree-switcher]': '!nzSelectMode',
     '[class.ant-tree-switcher-noop]': '!nzSelectMode && isLeaf',
     '[class.ant-tree-switcher_open]': '!nzSelectMode && isSwitcherOpen',
-    '[class.ant-tree-switcher_close]': '!nzSelectMode && isSwitcherClose'
+    '[class.ant-tree-switcher_close]': '!nzSelectMode && isSwitcherClose',
+    '[class.ant-tree-switcher-leaf-line]': '!nzSelectMode && isLeaf && nzShowLine'
   },
   imports: [NzIconModule, NzOutletModule]
 })

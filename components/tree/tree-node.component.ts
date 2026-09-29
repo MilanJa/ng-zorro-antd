@@ -104,6 +104,7 @@ import { NzTreeNodeTitleComponent } from './tree-node-title.component';
     '[class.ant-select-tree-treenode-checkbox-indeterminate]': `nzSelectMode && isHalfChecked`,
     '[class.ant-select-tree-treenode-selected]': `nzSelectMode && isSelected`,
     '[class.ant-select-tree-treenode-loading]': `nzSelectMode && isLoading`,
+    '[class.ant-select-tree-treenode-leaf-last]': `nzSelectMode && isLeaf && isEnd[isEnd.length - 1]`,
     '[class.ant-tree-treenode]': `!nzSelectMode`,
     '[class.ant-tree-treenode-disabled]': `!nzSelectMode && isDisabled`,
     '[class.ant-tree-treenode-switcher-open]': `!nzSelectMode && isSwitcherOpen`,
@@ -112,6 +113,7 @@ import { NzTreeNodeTitleComponent } from './tree-node-title.component';
     '[class.ant-tree-treenode-checkbox-indeterminate]': `!nzSelectMode && isHalfChecked`,
     '[class.ant-tree-treenode-selected]': `!nzSelectMode && isSelected`,
     '[class.ant-tree-treenode-loading]': `!nzSelectMode && isLoading`,
+    '[class.ant-tree-treenode-leaf-last]': `!nzSelectMode && isLeaf && isEnd[isEnd.length - 1]`,
     '[class.dragging]': `draggingKey === nzTreeNode.key`,
     '[style.display]': 'displayStyle'
   },

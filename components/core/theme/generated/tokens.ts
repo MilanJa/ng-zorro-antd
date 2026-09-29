@@ -913,6 +913,28 @@ export interface NzTooltipToken {
   zIndexPopup: number;
 }
 
+export interface NzTreeToken {
+  directoryNodeSelectedBg: string;
+  directoryNodeSelectedColor: string;
+  indentSize: number;
+  nodeHoverBg: string;
+  nodeHoverColor: string;
+  nodeSelectedBg: string;
+  nodeSelectedColor: string;
+  switcherSize: number;
+  titleHeight: number;
+}
+
+export interface NzTreeSelectToken {
+  indentSize: number;
+  nodeHoverBg: string;
+  nodeHoverColor: string;
+  nodeSelectedBg: string;
+  nodeSelectedColor: string;
+  switcherSize: number;
+  titleHeight: number;
+}
+
 export interface NzUploadToken {
   actionsColor: string;
   pictureCardSize: number;
@@ -944,5 +966,7 @@ export interface NzComponentTokenMap {
   Spin: NzSpinToken;
   Switch: NzSwitchToken;
   Tooltip: NzTooltipToken;
+  Tree: NzTreeToken;
+  TreeSelect: NzTreeSelectToken;
   Upload: NzUploadToken;
 }

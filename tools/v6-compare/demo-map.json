@@ -45,5 +45,6 @@
     "avatar": null,
     "custom-tag": null,
     "preview": null
-  }
+  },
+  "tree": { "_antdDir": "tree", "draggable-confirm": "drag-debug" }
 }
