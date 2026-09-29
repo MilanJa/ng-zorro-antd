@@ -8,7 +8,14 @@ import { describe, expect, it } from 'vitest';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 
-import { allAntdComponentNames, v6ComponentDirs, v6Components } from '../components';
+import {
+  allAntdComponentNames,
+  ANTD_STYLE_MODULE_OVERRIDES,
+  antdRegistryName,
+  antdStyleModuleDir,
+  v6ComponentDirs,
+  v6Components
+} from '../components';
 
 const componentsRoot = path.resolve(__dirname, '../../../../components');
 
@@ -29,5 +36,23 @@ describe('v6 component map', () => {
   it('has no duplicate antd names across entries', () => {
     const all = v6ComponentDirs.flatMap(dir => [...v6Components[dir].antd]);
     expect(new Set(all).size).toBe(all.length);
+  });
+
+  it('resolves style-module and registry aliases to a mapped entry with the same prefixCls', () => {
+    for (const [name, dir] of Object.entries(ANTD_STYLE_MODULE_OVERRIDES)) {
+      const target = v6ComponentDirs.find(d =>
+        v6Components[d].antd.some(n => antdStyleModuleDir(n) === dir && n !== name)
+      );
+      const alias = v6ComponentDirs.find(d => (v6Components[d].antd as readonly string[]).includes(name));
+      if (alias) {
+        expect(target, `${name} → ${dir} must alias a mapped component`).toBeDefined();
+        expect(v6Components[alias].prefixCls).toBe(v6Components[target!].prefixCls);
+      }
+    }
+    expect(antdStyleModuleDir('AutoComplete')).toBe('select');
+    expect(antdStyleModuleDir('TimePicker')).toBe('date-picker');
+    expect(antdStyleModuleDir('InputNumber')).toBe('input-number');
+    expect(antdRegistryName('AutoComplete')).toBe('Select');
+    expect(antdRegistryName('TimePicker')).toBe('DatePicker');
   });
 });

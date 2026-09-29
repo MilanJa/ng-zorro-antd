@@ -8,18 +8,16 @@ import * as esbuild from 'esbuild';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 
+import { antdStyleModuleDir } from './components';
+
+// Re-exported for existing importers (`build-demos.ts`, `token-attribution.spec.ts`); the implementation
+// lives in `components.ts`, next to `antdStyleModuleDir`, which needs it.
+export { kebabCase } from './components';
+
 const shimsDir = path.resolve(__dirname, 'shims');
 
-/** `DatePicker` -> `date-picker`, `QRCode` -> `qr-code` (antd directory naming). */
-export function kebabCase(name: string): string {
-  return name
-    .replace(/([A-Z]+)([A-Z][a-z])/g, '$1-$2')
-    .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
-    .toLowerCase();
-}
-
 export function antdStyleModulePath(name: string): string {
-  return `antd/es/${kebabCase(name)}/style/index.js`;
+  return `antd/es/${antdStyleModuleDir(name)}/style/index.js`;
 }
 
 const shimPlugin: esbuild.Plugin = {
@@ -51,7 +49,7 @@ export { unitless, ignore } from 'antd/es/theme/useToken.js';
 export { token2CSSVar, transformToken } from '@ant-design/cssinjs/es/util/css-variables.js';
 `;
 
-function componentsEntry(antdNames: string[]): string {
+export function componentsEntry(antdNames: string[]): string {
   // Import (rather than bare side-effect import) each style module's default so esbuild's real
   // tree-shaking sees it as used and keeps it, while still safely dropping unrelated modules that happen
   // to be reachable transitively (e.g. `antd/es/button/style` pulls in
@@ -71,14 +69,16 @@ function componentsEntry(antdNames: string[]): string {
   // `genStyleHooks`'s own return value (a dummy `(prefixCls, rootCls) => ['', '']` from the shim), so
   // calling it again is a harmless extra no-op; for the lazy case, calling it is what actually runs
   // `genStyleHooks` and records the component.
-  const lines = antdNames.map((n, i) => {
-    const p = antdStyleModulePath(n);
-    return [
+  // Deduped by module path, not by name: `AutoComplete`/`TimePicker` share `Select`/`DatePicker`'s style
+  // module (`ANTD_STYLE_MODULE_OVERRIDES` in `components.ts`), which must be imported only once.
+  const modulePaths = [...new Set(antdNames.map(antdStyleModulePath))];
+  const lines = modulePaths.map((p, i) =>
+    [
       `import { default as _c${i} } from '${p}';`,
       `export { _c${i} };`,
       `try { _c${i}(); } catch (e) { console.warn('v6 engine: calling the default export of ${p} threw', e); }`
-    ].join('\n');
-  });
+    ].join('\n')
+  );
   return `${lines.join('\n')}\nexport { registry } from '${path.join(shimsDir, 'cssinjs-utils.js').replace(/\\/g, '/')}';\n`;
 }
 

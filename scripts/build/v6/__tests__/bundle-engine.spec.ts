@@ -5,12 +5,12 @@
 
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
-import { existsSync, mkdtempSync, rmSync } from 'node:fs';
+import { existsSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-import { antdStyleModulePath, bundleEngine } from '../bundle-engine';
+import { antdStyleModulePath, bundleEngine, componentsEntry } from '../bundle-engine';
 
 describe('bundleEngine', () => {
   const outDir = mkdtempSync(path.join(os.tmpdir(), 'nz-v6-engine-'));
@@ -76,6 +76,46 @@ describe('bundleEngine', () => {
       expect(bundle).not.toMatch(/require\(["']react["']\)/);
       expect(bundle).not.toMatch(/from\s*["']react-dom/);
       expect(bundle).not.toMatch(/require\(["']react-dom/);
+    }
+  });
+
+  it('dedupes a style module shared by two antd names into a single import', () => {
+    const entry = componentsEntry(['Select', 'AutoComplete']);
+    const imports = entry.match(/from 'antd\/es\/select\/style\/index\.js'/g) ?? [];
+    expect(imports).toHaveLength(1);
+  });
+
+  it("calling a lazily-registered style module's default export with no arguments performs its registration", async () => {
+    // Mirrors antd's lazy pattern (e.g. `antd/es/tooltip/style/index.js`): defers the `genStyleHooks` call
+    // to when the component itself renders, instead of calling it eagerly at module scope. `componentsEntry`
+    // calls every style module's default export with no arguments precisely to trigger this deferred case.
+    const dir = mkdtempSync(path.join(os.tmpdir(), 'nz-v6-lazy-'));
+    try {
+      const shimUrl = new URL('../shims/cssinjs-utils.js', import.meta.url);
+      const lazyFile = path.join(dir, 'lazy-style.mjs');
+      writeFileSync(
+        lazyFile,
+        [
+          `import { genStyleUtils } from ${JSON.stringify(shimUrl.href)};`,
+          'const { genStyleHooks } = genStyleUtils({ getCompUnitless: () => ({}) });',
+          'export default function (prefixCls, rootCls, injectStyle) {',
+          "  const useStyle = genStyleHooks('SyntheticLazy', () => [], () => ({ a: 1 }), {});",
+          '  return useStyle(prefixCls, rootCls, injectStyle);',
+          '}'
+        ].join('\n')
+      );
+      const { registry } = await import(shimUrl.href);
+      expect(registry.has('SyntheticLazy')).toBe(false);
+      const lazyModule = await import(pathToFileURL(lazyFile).href);
+      // Same calling convention as the `try { _c0(); } catch (e) { ... }` line `componentsEntry` generates.
+      try {
+        (lazyModule.default as () => void)();
+      } catch {
+        /* ignore */
+      }
+      expect(registry.has('SyntheticLazy')).toBe(true);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
     }
   });
 });

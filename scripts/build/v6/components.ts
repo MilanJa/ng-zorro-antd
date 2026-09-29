@@ -46,6 +46,30 @@ export const v6Components = {
   tooltip: { antd: ['Tooltip'], prefixCls: 'ant-tooltip' }
 } as const satisfies Record<string, V6ComponentEntry>;
 
+/**
+ * antd components that are presets of another component and have no style module of their own
+ * (`antd/es/auto-complete/style` does not exist: AutoComplete is Select with `mode="combobox"`;
+ * TimePicker is DatePicker with `picker="time"`). Their CSS is extracted by rendering them, but the
+ * engine bundles and registers the host component's style module.
+ */
+export const ANTD_STYLE_MODULE_OVERRIDES: Record<string, string> = {
+  AutoComplete: 'select',
+  TimePicker: 'date-picker'
+};
+
+/** `DatePicker` -> `date-picker`, `QRCode` -> `qr-code` (antd directory naming). */
+export function kebabCase(name: string): string {
+  return name
+    .replace(/([A-Z]+)([A-Z][a-z])/g, '$1-$2')
+    .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
+    .toLowerCase();
+}
+
+/** antd export name -> directory under `antd/es/` holding its style module. */
+export function antdStyleModuleDir(name: string): string {
+  return ANTD_STYLE_MODULE_OVERRIDES[name] ?? kebabCase(name);
+}
+
 export type V6ComponentDir = keyof typeof v6Components;
 
 export const v6ComponentDirs = Object.keys(v6Components) as V6ComponentDir[];
@@ -61,10 +85,16 @@ export const v6ComponentDirs = Object.keys(v6Components) as V6ComponentDir[];
  * root class for every component in the engine registry" check) needs that PascalCase registry name,
  * not the lowercase export name. Translate only at those read sites so the map itself keeps the literal
  * antd export name everywhere.
+ *
+ * `AutoComplete`/`TimePicker` need the same translation for a different reason: they have no style
+ * module of their own (`ANTD_STYLE_MODULE_OVERRIDES` above), so the engine only ever registers their
+ * host component (`Select`/`DatePicker`) under the registry.
  */
 const ANTD_REGISTRY_NAME_OVERRIDES: Record<string, string> = {
   message: 'Message',
-  notification: 'Notification'
+  notification: 'Notification',
+  AutoComplete: 'Select',
+  TimePicker: 'DatePicker'
 };
 
 /** antd export name -> the name antd's own cssinjs recorder registers its style hook under. */
