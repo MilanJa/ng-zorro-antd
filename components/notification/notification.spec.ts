@@ -149,6 +149,39 @@ describe('notification', () => {
     expect(overlayContainerElement.querySelector('.ant-notification-notice-icon')).toBeNull();
   });
 
+  it('should keep nzClass given as an object next to the type class', () => {
+    notificationService.success('test-title', 'SUCCESS', { nzClass: { 'custom-a': true, 'custom-off': false } });
+    overlayContainerElement = overlayContainer.getContainerElement();
+    const notice = getMessageElement();
+
+    expect(notice.classList).toContain('custom-a');
+    expect(notice.classList).not.toContain('custom-off');
+    expect(notice.classList).toContain('ant-notification-notice-success');
+    expect(notice.classList).toContain('ant-notification-notice');
+    expect(notice.classList).toContain('ant-notification-notice-closable');
+  });
+
+  it('should keep every class of a multi-class nzClass string next to the type class', () => {
+    notificationService.warning('test-title', 'WARNING', { nzClass: 'custom-a custom-b' });
+    overlayContainerElement = overlayContainer.getContainerElement();
+    const notice = getMessageElement();
+
+    expect(notice.classList).toContain('custom-a');
+    expect(notice.classList).toContain('custom-b');
+    expect(notice.classList).toContain('ant-notification-notice-warning');
+    expect(notice.classList).not.toContain('ant-notification-notice-success');
+  });
+
+  it('should keep a single-class nzClass string on a blank notification without a type class', () => {
+    notificationService.blank('test-title', 'BLANK', { nzClass: 'custom-a' });
+    overlayContainerElement = overlayContainer.getContainerElement();
+    const notice = getMessageElement();
+
+    expect(notice.classList).toContain('custom-a');
+    expect(notice.classList).toContain('ant-notification-notice');
+    expect(notice.className).not.toMatch(/ant-notification-notice-(success|info|warning|error)/);
+  });
+
   it('should auto closed by 1s', async () => {
     notificationService.create('', '', 'EXISTS', { nzDuration: 1000 });
     await stabilize();

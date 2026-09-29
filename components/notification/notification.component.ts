@@ -20,10 +20,11 @@ import { NzNotificationData } from './typings';
     <div
       #animationElement
       class="ant-notification-notice ant-notification-notice-closable"
-      [class]="[
-        instance.options?.nzClass || '',
-        instance.type !== 'blank' ? 'ant-notification-notice-' + instance.type : ''
-      ]"
+      [class]="instance.options?.nzClass || ''"
+      [class.ant-notification-notice-success]="instance.type === 'success'"
+      [class.ant-notification-notice-info]="instance.type === 'info'"
+      [class.ant-notification-notice-warning]="instance.type === 'warning'"
+      [class.ant-notification-notice-error]="instance.type === 'error'"
       [style]="instance.options?.nzStyle || null"
       (click)="onClick($event)"
       (mouseenter)="onEnter()"
