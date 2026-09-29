@@ -1,5 +1,5 @@
 {
-  "_comment": "Classes used in ng-zorro templates that antd v6 CSS does not style. `input`/`select`/`space` entries are temporary: remove each one once the component's template is aligned with antd v6. Categories: antd-emits (antd's own component emits it, v6 CSS never styles it); patch-motion (ng-zorro motion class styled by the component's style/v6/patch.css); nz-only (ng-zorro-only class with no antd counterpart); v4-compat (v4 class kept next to its v6 replacement while v4 is the default; removable then); v4-compat (patch hook) (v4 class that style/v6/patch.css selects, so removing it needs a patch rewrite); scan-artefact (a literal the static scan picks up but that is never rendered as a class).",
+  "_comment": "Classes used in ng-zorro templates that antd v6 CSS does not style. `input`/`select`/`space` entries are temporary: remove each one once the component's template is aligned with antd v6. Categories: antd-emits (antd's own component emits it, v6 CSS never styles it); patch-motion (ng-zorro motion class styled by the component's style/v6/patch.css); nz-only (ng-zorro-only class with no antd counterpart: styled by the component's style/v6/patch.css, or an unstyled runtime state hook that no stylesheet targets — the component's own comment says which); v4-compat (v4 class kept next to its v6 replacement while v4 is the default; removable then); v4-compat (patch hook) (v4 class that style/v6/patch.css selects, so removing it needs a patch rewrite); scan-artefact (a literal the static scan picks up but that is never rendered as a class).",
   "_button_comment": "button's entries are permanent, not pending alignment: antd v6's own React Button emits ant-btn-color-link and the legacy ant-btn-{default,dashed,link,text,dangerous,rtl} type/danger/rtl classes for backward compatibility, but its v6 CSS never styles them (verified against node_modules/antd/es/button/style). class-coverage.spec.ts pins this exact set so it can't silently grow.",
   "button": [
     "ant-btn-color-link",
@@ -76,8 +76,8 @@
     "ant-spin-show-text",
     "ant-spin-text"
   ],
-  "_rate_comment": "nz-only: -star-active, -star-zero (state-tracking classes for the hovered/unfilled star; antd's own Rate never renders them and neither v4 nor v6 CSS styles them).",
-  "rate": ["ant-rate-star-active", "ant-rate-star-zero"],
+  "_rate_comment": "nz-only: -star-active, -star-focused, -star-zero (runtime state hooks on the hovered/focused/unfilled star from `updateStarStyle`; no stylesheet, v4 or v6, styles them — kept because removing them from the rendered DOM is a consumer-visible change, and `rate-v6.spec.ts` asserts `-star-zero`).",
+  "rate": ["ant-rate-star-active", "ant-rate-star-focused", "ant-rate-star-zero"],
   "_result_comment": "v4-compat: -content (next to -body). antd-emits: -403, -404, -500 (exception-status root classes; v6 renders the SVG illustration without styling them).",
   "result": [
     "ant-result-content",
