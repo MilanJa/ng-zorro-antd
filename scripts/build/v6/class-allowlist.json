@@ -1,5 +1,5 @@
 {
-  "_comment": "Classes used in ng-zorro templates that antd v6 CSS does not style. `input`/`select`/`space` entries are temporary: remove each one once the component's template is aligned with antd v6.",
+  "_comment": "Classes used in ng-zorro templates that antd v6 CSS does not style. `input`/`select`/`space` entries are temporary: remove each one once the component's template is aligned with antd v6. Categories: antd-emits (antd's own component emits it, v6 CSS never styles it); patch-motion (ng-zorro motion class styled by the component's style/v6/patch.css); nz-only (ng-zorro-only class with no antd counterpart); v4-compat (v4 class kept next to its v6 replacement while v4 is the default; removable then); v4-compat (patch hook) (v4 class that style/v6/patch.css selects, so removing it needs a patch rewrite); scan-artefact (a literal the static scan picks up but that is never rendered as a class).",
   "_button_comment": "button's entries are permanent, not pending alignment: antd v6's own React Button emits ant-btn-color-link and the legacy ant-btn-{default,dashed,link,text,dangerous,rtl} type/danger/rtl classes for backward compatibility, but its v6 CSS never styles them (verified against node_modules/antd/es/button/style). class-coverage.spec.ts pins this exact set so it can't silently grow.",
   "button": [
     "ant-btn-color-link",
@@ -10,7 +10,7 @@
     "ant-btn-rtl",
     "ant-btn-text"
   ],
-  "_notification_comment": "antd-emits: ant-notification-close-icon (antd emits this class on the close anticon itself, PurePanel.js:33; v6 CSS never styles `.ant-notification-close-icon`, only the `.ant-notification-notice-close` button it sits inside). v4-compat (dropped once v6 becomes the default): ant-notification-notice-with-icon (kept next to the new v6 -notice-section class on the same div), ant-notification-notice-content (kept on the outer div, alongside its new -notice-wrapper class -- notification.component.ts:38; the inner div loses its own -notice-content class and stays bare; v6 CSS has no rule for the bare -notice-content name), ant-notification-notice-message (kept next to the new v6 -notice-title class), ant-notification-notice-btn (kept next to the new v6 -notice-actions class), ant-notification-notice-close-x (the inner close-icon wrapper span; antd's PurePanel keeps an equivalent internal span too, but v6 CSS never styles the bare class, only -notice-close). patch-motion: ant-notification-fade-enter, ant-notification-fade-leave (styled only by notification/style/v6/patch.css, ported from style/placement.less; v6's own CSS is transition-based and defines no such classes/keyframes).",
+  "_notification_comment": "antd-emits: -close-icon (on the close anticon, PurePanel.js; v6 styles only -notice-close). v4-compat: -notice-content (next to -notice-wrapper), -notice-message (next to -notice-title), -notice-btn (next to -notice-actions), -notice-close-x (inner close span). v4-compat (patch hook): -notice-with-icon (next to -notice-section; the patch indents the text of notices with an icon). patch-motion: -fade-enter, -fade-leave.",
   "notification": [
     "ant-notification-close-icon",
     "ant-notification-fade-enter",
@@ -21,7 +21,7 @@
     "ant-notification-notice-message",
     "ant-notification-notice-with-icon"
   ],
-  "_message_comment": "v4-compat: ant-message-custom-content (kept as the icon/title's direct parent alongside the new v6 .ant-message-notice-wrapper class on its own ancestor div, so v4's descendant `.ant-message .anticon`/`.ant-message-success .anticon` colour rules keep matching; v6 CSS never styles the bare class), ant-message-notice-content (kept alongside the new v6 .ant-message-notice-wrapper class on the same div; v6 CSS has no rule for the bare .ant-message-notice-content name), ant-message-{success,info,warning,error,loading} (the runtime `[class]=\"'ant-message-' + instance.type\"` binding on .ant-message-custom-content -- a template-literal, so the static scan never sees it, but the rendered-coverage check captures the real strings; v6 puts type colour on .ant-message-notice-icon-{type} instead, so this class is unstyled under v6 CSS). patch-motion: ant-message-move-up-enter, ant-message-move-up-leave (styled only by message/style/v6/patch.css, ported from style/animation.less; v6's own CSS is transition-based and defines no such classes/keyframes).",
+  "_message_comment": "v4-compat: -notice-content (next to -notice-wrapper), -{success,info,warning,error,loading} (runtime type class on -custom-content; v6 colours -notice-icon-{type} instead). v4-compat (patch hook): -custom-content (parent of icon and title; v4's `.ant-message .anticon` colour rules need it and the patch gives it v6's flex row). patch-motion: -move-up-enter, -move-up-leave.",
   "message": [
     "ant-message-custom-content",
     "ant-message-error",
@@ -61,27 +61,27 @@
     "ant-space-horizontal",
     "ant-space-split"
   ],
-  "_skeleton_comment": "antd-emits: -avatar-square, -button-square (shape classes v6 CSS never styles). v4-compat: -content (kept next to -section)",
+  "_skeleton_comment": "antd-emits: -avatar-square, -button-square (shape classes v6 CSS never styles). v4-compat: -content (next to -section).",
   "skeleton": [
     "ant-skeleton-avatar-square",
     "ant-skeleton-button-square",
     "ant-skeleton-content"
   ],
-  "_spin_comment": "v4-compat, all four styled by style/v6/patch.css mirrors until v6 is default",
+  "_spin_comment": "v4-compat: -show-text (root flag when nzTip is set), -text (next to -description). v4-compat (patch hook): -nested-loading, -blur (the patch mirrors v6's -section and -spinning rules onto them).",
   "spin": [
     "ant-spin-blur",
     "ant-spin-nested-loading",
     "ant-spin-show-text",
     "ant-spin-text"
   ],
-  "_result_comment": "v4-compat: -content kept next to -body. antd-emits: -403/-404/-500 (exception-status root classes antd's own React component emits; v6 CSS never styles them, the icon renders as an SVG illustration instead)",
+  "_result_comment": "v4-compat: -content (next to -body). antd-emits: -403, -404, -500 (exception-status root classes; v6 renders the SVG illustration without styling them).",
   "result": [
     "ant-result-content",
     "ant-result-403",
     "ant-result-404",
     "ant-result-500"
   ],
-  "_alert_comment": "v4-compat: -action (kept next to -actions), -content (kept next to -section), -message (kept next to -title), -closable (kept as-is; v6 CSS has no rule for it at all, no v6 replacement exists) -- all four dropped once v6 becomes the default. nz-only: -marquee, -marquee-pause-on-hover, -marquee-track (ng-zorro's looping-banner feature, styled by style/v6/patch.css). antd-emits: -no-icon (antd's own React Alert emits it; v6 CSS never styles it)",
+  "_alert_comment": "v4-compat: -action (next to -actions), -content (next to -section), -message (next to -title), -closable (no v6 rule or replacement). nz-only: -marquee, -marquee-pause-on-hover, -marquee-track (ng-zorro's looping banner, styled by the patch). antd-emits: -no-icon.",
   "alert": [
     "ant-alert-action",
     "ant-alert-closable",
@@ -92,18 +92,18 @@
     "ant-alert-message",
     "ant-alert-no-icon"
   ],
-  "_tooltip_comment": "antd-emits: -open (the trigger host's own visibility class; antd's React Tooltip toggles it too, but v6 CSS never styles it). patch-motion: ant-zoom-big-fast (the literal animation-class prefix token; the emitted -enter/-leave/-enter-active/-leave-active variants it builds are styled by v6 CSS's own antZoomBigIn/Out keyframes, not by a patch)",
+  "_tooltip_comment": "antd-emits: -open (the trigger's visibility class). scan-artefact: ant-zoom-big-fast (the `_animationPrefix` literal; only the -enter/-leave variants built from it are rendered, and v6's motion CSS styles those).",
   "tooltip": [
     "ant-tooltip-open",
     "ant-zoom-big-fast"
   ],
-  "_popover_comment": "v4-compat: -inner-content (kept next to -content until v6 becomes the default). antd-emits: -open (the trigger host's own visibility class; antd's React Popover toggles it too, but v6 CSS never styles it). patch-motion: ant-zoom-big (the literal animation-class prefix token; the emitted -enter/-leave/-enter-active/-leave-active variants it builds are styled by v6 CSS's own antZoomBigIn/Out keyframes, not by a patch)",
+  "_popover_comment": "v4-compat: -inner-content (next to -content). antd-emits: -open (the trigger's visibility class). scan-artefact: ant-zoom-big (the `_animationPrefix` literal; only the -enter/-leave variants built from it are rendered, and v6's motion CSS styles those).",
   "popover": [
     "ant-popover-inner-content",
     "ant-popover-open",
     "ant-zoom-big"
   ],
-  "_popconfirm_comment": "v4-compat: the five ant-popover-* body classes (-buttons, -inner-content, -message, -message-icon, -message-title), kept next to their ant-popconfirm-* replacements until v6 becomes the default. antd-emits: -open (the trigger host's own visibility class), -inner-content (antd's own React Popconfirm/PurePanel emits ant-popconfirm-inner-content itself; v6 CSS never styles it, only .ant-popconfirm-message/-buttons etc.), -message-text (antd emits it too; unstyled by v6 CSS, only .ant-popconfirm-title within it is styled). patch-motion: ant-zoom-big (the literal animation-class prefix token; the emitted -enter/-leave/-enter-active/-leave-active variants it builds are styled by v6 CSS's own antZoomBigIn/Out keyframes, not by a patch).",
+  "_popconfirm_comment": "v4-compat: ant-popover-buttons, -inner-content, -message, -message-icon, -message-title (next to their ant-popconfirm-* replacements). antd-emits: ant-popover-open (the trigger's visibility class), ant-popconfirm-inner-content, ant-popconfirm-message-text (antd emits both; v6 styles only their children). scan-artefact: ant-zoom-big (the `_animationPrefix` literal, as for popover).",
   "popconfirm": [
     "ant-popover-buttons",
     "ant-popover-inner-content",
@@ -115,19 +115,19 @@
     "ant-popconfirm-inner-content",
     "ant-popconfirm-message-text"
   ],
-  "_drawer_comment": "v4-compat: -wrapper-body (kept as the flex container; style/v6/patch.css mirrors v6's -section flex layout onto it since v6 lays header/body/footer out directly under -section, no wrapper). antd-emits: -header-close-only, -open (both emitted by antd's own React DrawerPanel/DrawerPopup; v6 CSS never styles either -- verified no rule for them in node_modules/antd/es/drawer/style/index.js). -content needs no entry: v6 CSS already styles it (`.ant-drawer-content-wrapper-dragging .ant-drawer-content{pointer-events:none}`, the resizable feature's dragging state), so it is not stale/unstyled even though ng-zorro keeps it only as the v4 wrapper class.",
+  "_drawer_comment": "v4-compat (patch hook): -wrapper-body (kept as the flex container; the patch mirrors v6's -section layout onto it). antd-emits: -header-close-only, -open (the patch uses -open only in `:not(.ant-drawer-open)` for the closed-panel shadow).",
   "drawer": [
     "ant-drawer-header-close-only",
     "ant-drawer-open",
     "ant-drawer-wrapper-body"
   ],
-  "_modal_comment": "antd-emits: -close-icon (the anticon's own class inside `nz-modal-close`, `antd/es/modal/shared.js` `renderCloseIcon`; v6 CSS never styles `.ant-modal-close-icon` itself, only `.ant-modal-close`/`.ant-modal-close-x`), -confirm-content (`antd/es/modal/ConfirmDialog.js`'s own `${confirmPrefixCls}-content` class; v6 CSS styles `.ant-modal-confirm-content` only via the descendant rule under the `.ant-modal-confirm-paragraph` wrapper ng-zorro does not add -- see below -- so the bare class is unstyled). v4-compat: -content (kept alongside the new v6 `.ant-modal-container` class on the same div; v6 CSS has no rule for the bare `.ant-modal-content` name). Deliberately NOT added despite the brief's mapping: `.ant-modal-confirm-paragraph` wrapping `.ant-modal-confirm-title`/`.ant-modal-confirm-content` -- adding that wrapper div would break v4's `confirm.less` rule `.ant-modal-confirm-body > .anticon + .ant-modal-confirm-title + .ant-modal-confirm-content { margin-inline-start: 38px }` (an adjacent-sibling chain requiring title/content to stay direct siblings of the icon), a real DOM-structure break independent of which stylesheet loads. See the task report's Step 3 for the full analysis; `.ant-modal-confirm-body-has-title`/`-body-no-icon` are still added (safe, no wrapper needed).",
+  "_modal_comment": "antd-emits: -close-icon (the anticon inside -close; v6 styles only -close and -close-x), -confirm-content (ConfirmDialog.js; v6 styles it only under the -confirm-paragraph wrapper ng-zorro does not render, and the patch places it in the confirm grid). v4-compat: -content (next to -container). No -confirm-paragraph wrapper is added: v4's confirm.less adjacent-sibling rule needs the title and content to stay siblings of the icon.",
   "modal": [
     "ant-modal-close-icon",
     "ant-modal-confirm-content",
     "ant-modal-content"
   ],
-  "_progress_comment": "v4-compat: -bg (kept next to -track), -success-bg (kept next to -track/-track-success), -outer (kept next to -body), -steps-outer (kept next to -steps-body), -text (kept next to -indicator), -default (kept as-is; v6 CSS has no rule for it, no v6 replacement exists) -- dropped once v6 becomes the default. antd-emits: -circle-trail (v6 renamed this to -circle-rail; the bare -trail class antd's own path element also carries stays unstyled by v6 CSS), -show-info (antd's own React Progress emits it on the root; v6 CSS never styles it), -status-normal (the runtime-built `'ant-progress-status-' + status` literal for the default status; antd's own React Progress emits it too, but v6 CSS only styles the exception/active/success variants, never `normal`) -- neither -show-info nor -status-normal is in the brief's mapping table, both confirmed unstyled via publish/ng-zorro-antd.v6.css and added here so class-coverage.spec.ts (static and rendered) passes.",
+  "_progress_comment": "v4-compat: -bg (next to -track), -success-bg (next to -track-success), -outer (next to -body), -steps-outer (next to -steps-body), -text (next to -indicator), -default (no v6 rule or replacement). antd-emits: -circle-trail (v6 styles the renamed -circle-rail), -show-info (root flag), -status-normal (runtime status class; v6 styles only the other statuses).",
   "progress": [
     "ant-progress-bg",
     "ant-progress-circle-trail",
@@ -139,7 +139,7 @@
     "ant-progress-success-bg",
     "ant-progress-text"
   ],
-  "_float-button_comment": "antd-emits: ant-float-btn-group-trigger (antd's own FloatButtonGroup.js:190 emits this class on the trigger button too; v6 CSS never styles the bare class on its own, only in compound selectors this task's own patch.css adds for the square-group corner-radius mirror), ant-float-btn-primary (the runtime `this.generateClass(this.nzType())` literal for non-default types; real antd DOM carries the same -{type} class, but v6 CSS never styles the bare type name -- colouring comes solely from nz-button's own ant-btn-color-primary/ant-btn-variant-solid classes), ant-float-btn-default (real antd DOM also carries the -{type} class for the default type -- confirmed in the Step 1 dump -- but v6 CSS never styles the bare type name here either, same reasoning as -primary; additionally kept as v4-compat below since it is now also on ng-zorro's host, alongside the inner nz-button element, per fix round 1's item 4 check). v4-compat (dropped once v6 becomes the default): ant-float-btn-body (kept as -content's parent, styled only by style/v6/patch.css), ant-float-btn-default (kept on both the host and the inner nz-button element; colouring comes from the real ant-btn-color-default/ant-btn-variant-outlined classes nz-button already emits, not from this class), ant-float-btn-description (kept on the description div, styled only by patch.css), ant-float-btn-group-wrap (kept alongside the new v6 ant-float-btn-group-list class on the menu-mode wrap div), ant-float-btn-inner (kept on the inner button/anchor, resized by patch.css), ant-float-btn-group-circle, ant-float-btn-group-square (ng-zorro's own shape class on the GROUP root; real antd FloatButtonGroup.js never adds a shape class to its root, shape is only passed through GroupContext), ant-float-btn-group-circle-shadow, ant-float-btn-group-square-shadow (ng-zorro-only shadow-toggle classes with no v6 equivalent), ant-float-btn-top (BackTop's own legacy class, styled only by v4 Less `.ant-float-btn-top{padding:0!important}`). patch-motion: ant-float-btn-enter-{top,bottom,left,right}, ant-float-btn-leave-{top,bottom,left,right} (styled only by float-button/style/v6/patch.css, ported from style/animation.less; v6's own CSS is transition-based for the group list (-group-list-motion-*) and defines no such classes/keyframes). The last six entries (ant-float-btn-primary/-top/-group-circle/-group-square/-group-circle-shadow/-group-square-shadow) surfaced only from the rendered-coverage check (collect-classes.ts), not the static scan, since they are runtime template literals or were not exercised by every static file. Fix round 1 added ant-float-btn-group-individual to the group's own template-literal class array (styled by real v6 CSS unconditionally, `.ant-float-btn-group:not(.ant-float-btn-group-individual)...`) -- no new allowlist entry needed since it is styled, not unstyled.",
+  "_float-button_comment": "antd-emits: -group-trigger (patch styles it only in a square-group compound selector), -primary, -default (the host's -{type} class; colours come from nz-button's ant-btn-color-* classes). v4-compat: -group-circle-shadow, -group-square-shadow (v4 shadow toggles), -top (BackTop's v4 class). v4-compat (patch hook): -body, -description, -group-wrap (next to -group-list), -inner. nz-only: -group-circle, -group-square (shape class on the group root; antd passes the shape through context and has no such class). patch-motion: -enter-{top,bottom,left,right}, -leave-{top,bottom,left,right}.",
   "float-button": [
     "ant-float-btn-body",
     "ant-float-btn-default",
