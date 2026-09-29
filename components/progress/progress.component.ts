@@ -85,7 +85,7 @@ const defaultFormatter: NzProgressFormatter = (p: number): string => `${p}%`;
       [class.ant-progress-rtl]="dir() === 'rtl'"
     >
       @if (nzType === 'line') {
-        <div style="display: contents">
+        <div [style.display]="'contents'">
           <!-- normal line style; antd v6's root is a flex container with no wrapper around
                ant-progress-body, so this v4-only structural div must not take part in that
                flex layout (display: contents removes its own box, matching the flat v6 DOM) -->
