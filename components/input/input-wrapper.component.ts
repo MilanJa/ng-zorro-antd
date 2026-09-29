@@ -38,6 +38,8 @@ import { NzInputSearchDirective, NzInputSearchEnterButtonDirective } from './inp
 import { NzInputDirective } from './input.directive';
 import { NZ_INPUT_WRAPPER } from './tokens';
 
+const PREFIX_CLS = 'ant-input';
+
 export interface NzCountConfig {
   max?: number;
   strategy?: (value: string) => number;
@@ -82,7 +84,7 @@ export interface NzCountConfig {
                 [nzSize]="size()"
                 [nzLoading]="inputSearchDir.nzLoading()"
                 type="button"
-                class="ant-input-search-button"
+                class="ant-input-search-button ant-input-search-btn"
                 (click)="inputSearchDir.search($event)"
               >
                 <ng-content select="[nzInputSearchEnterButton]">
@@ -204,7 +206,9 @@ export class NzInputWrapperComponent {
   readonly nzClear = output<void>();
 
   readonly size = computed(() => this.inputDir().nzSize());
-  readonly variant = computed(() => this.inputDir().nzVariant());
+  // The resolved variant, not the raw `nzVariant` input: antd v6's `useVariant` result (which
+  // falls back to `outlined`) is what flows onto the affix and group wrapper elements.
+  readonly variant = computed(() => this.inputDir().finalVariant());
   readonly disabled = computed(() => this.inputDir().finalDisabled());
   readonly readOnly = computed(() => this.inputDir().readonly());
   readonly status = computed(() => this.inputDir().status());
@@ -257,8 +261,17 @@ export class NzInputWrapperComponent {
       'ant-input-affix-wrapper-readonly': this.readOnly(),
       'ant-input-affix-wrapper-focused': this.focused(),
       'ant-input-affix-wrapper-rtl': this.dir() === 'rtl',
+      'ant-input-textarea-affix-wrapper': this.isTextarea(),
+      // v4-compat: kept for the default (v4) stylesheet, which still keys its border/status/
+      // variant rules for the affix wrapper off the `-affix-wrapper-*` prefixed classes.
       ...getStatusClassNames('ant-input-affix-wrapper', this.status(), this.hasFeedback()),
-      ...getVariantClassNames('ant-input-affix-wrapper', this.variant())
+      ...getVariantClassNames('ant-input-affix-wrapper', this.variant()),
+      // antd v6 puts the resolved variant and validation status directly on whichever element
+      // is the visual input boundary (`BaseInput`'s `variant` classNames slot lands on the
+      // affix wrapper once there is an affix, not on the inner `<input>`), so the bare
+      // `ant-input` prefix is used here rather than `ant-input-affix-wrapper`.
+      ...getVariantClassNames(PREFIX_CLS, this.variant()),
+      ...getStatusClassNames(PREFIX_CLS, this.status())
     };
   });
   protected readonly groupWrapperClass = computed(() => {

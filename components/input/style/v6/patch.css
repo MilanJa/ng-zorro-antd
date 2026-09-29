@@ -4,10 +4,6 @@ textarea.nz-textarea-autosize-measuring {
   overflow: hidden !important;
 }
 
-.ant-input-affix-wrapper-textarea-with-clear-btn .ant-input-suffix {
-  margin-inline-start: 0;
-}
-
 nz-form-item-feedback-icon.ant-input-suffix {
   position: absolute;
   top: 0;

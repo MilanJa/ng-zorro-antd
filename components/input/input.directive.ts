@@ -134,7 +134,9 @@ export class NzInputDirective implements OnInit {
     return this.size();
   });
 
-  protected readonly finalVariant = computed(() => this.nzVariant() || this.formVariant?.() || 'outlined');
+  // Exposed for NzInputWrapperComponent, which mirrors this resolved variant onto the affix and
+  // group wrapper elements the way antd v6's `useVariant` result flows onto every wrapper slot.
+  readonly finalVariant = computed(() => this.nzVariant() || this.formVariant?.() || 'outlined');
 
   feedbackRef: ComponentRef<NzFormItemFeedbackIconComponent> | null = null;
   // TODO: When the input group is removed, we can remove this.
