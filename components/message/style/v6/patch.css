@@ -1,8 +1,6 @@
-/* Ported from components/message/style/animation.less: v6's message CSS is transition-based
-   and defines no keyframes, but ng-zorro's NzMNComponent (message/base.ts:273-300) drives motion
-   by adding ant-message-move-up-enter/-leave and waiting for `animationend` on the MessageMoveIn/
-   MessageMoveOut keyframes below. Without this file the leave animation never fires and a toast
-   never gets removed (message-v6.spec.ts "is removed after its duration under v6 CSS" pins this). */
+/* Motion, ported from components/message/style/animation.less. v6's message CSS is transition-based
+   and defines no keyframes, but NzMNComponent adds ant-message-move-up-enter/-leave and removes the
+   toast on `animationend`, so without these keyframes a toast is never removed. */
 .ant-message .ant-message-move-up-enter,
 .ant-message .ant-message-move-up-leave {
   animation-duration: var(--ant-motion-duration-slow);
@@ -22,9 +20,8 @@
     opacity: 0;
   }
   100% {
-    /* v6's actual notice padding (--ant-message-content-padding, e.g. 9px 12px) rather than the
-       brief's --ant-padding-xs (8px): ending here means the enter motion settles the toast at its
-       real rest padding instead of overshooting past it and snapping to the wider value. */
+    /* Ends at v6's rest padding (--ant-message-content-padding), so the toast does not snap to a
+       different padding when the enter class is removed. */
     padding: var(--ant-message-content-padding);
     transform: translateY(0);
     opacity: 1;
@@ -33,8 +30,7 @@
 @keyframes MessageMoveOut {
   0% {
     max-height: 150px;
-    /* Starts from the same real rest padding MessageMoveIn ends at (see above), so the leave
-       motion doesn't visibly snap the toast to a different padding before it starts shrinking. */
+    /* Starts from the same rest padding, so the leave motion does not snap first. */
     padding: var(--ant-message-content-padding);
     opacity: 1;
   }
@@ -45,60 +41,35 @@
   }
 }
 
-/* Mirrors `.ant-message .ant-message-list-content { gap: var(--ant-margin); }` (antd/es/notification/
-   style/index.js's genNotificationListContentStyle, shared by Message) -- ng-zorro never renders the
-   `.ant-message-list-content` holder (see the position:relative comment below for why: rc-virtual-list
-   stacking isn't reproduced), so the inter-toast gap it would provide is mirrored directly onto the
-   list root instead. Also zeroes the list's own top padding: v6's `.ant-message.ant-message-list`
-   sets `padding: var(--notification-margin-edge)` (a variable ng-zorro never defines, so it padded
-   with a stale/inherited value), which stacked on top of the container's own `[style.top]` (nzTop,
-   24px by default) pushed the first toast to y=48 instead of the antd's y=8-from-list-edge. Zeroing
-   block-start padding here leaves nzTop as the only vertical offset, matching antd's own single
-   `--notification-top` positioning source. */
+/* Mirrors `.ant-message .ant-message-list-content { gap: var(--ant-margin) }` onto the list root, since
+   ng-zorro renders the toasts without the `-list-content` holder. v6's
+   `.ant-message.ant-message-list { padding: var(--notification-margin-edge) }` (24px) would add to the
+   container's inline top (nzTop), which in ng-zorro is the only vertical offset, as antd's
+   `--notification-top` is, so the block-start padding is dropped. */
 .ant-message.ant-message-list {
   gap: var(--ant-margin);
   padding-block-start: 0;
 }
 
-/* v6's own template CSS sets `.ant-message .ant-message-notice { position: absolute; ... }`
-   unconditionally (antd/es/message/style/index.js genMessageStyle) -- it assumes rc-notification's
-   virtual-list stacking model, where every notice is absolutely positioned and offset with a
-   per-notice `--notification-y` custom property the JS layer maintains. ng-zorro's container
-   instead renders `*ngFor` siblings in normal block flow and never sets `--notification-y`.
-   Without this override every toast collapses onto the same absolute position (out of flow, so
-   later siblings don't reserve space for earlier ones) as soon as more than one message is
-   showing at once. Mirrored back to `position: relative` (same selector, so it wins on source
-   order) keeps ng-zorro's simple flow-based stacking intact while still picking up every other
-   v6-declared property (background, radius, shadow, padding, colours) on the same element. */
+/* v6 `.ant-message .ant-message-notice { position: absolute }` assumes rc-notification's stacking,
+   where JS offsets each toast with --notification-y. ng-zorro stacks the toasts in normal flow, so
+   they stay relative (same selector, wins on source order). */
 .ant-message .ant-message-notice {
   position: relative;
 }
 
-/* Mirrors `.ant-message.ant-message-top .ant-message-notice { left: 50%; transform: translate3d(-50%, 0, 0) }`
-   (antd/es/message/style/index.js via the shared notification placement styles) using a technique that
-   doesn't touch the *keyframes*: MessageMoveIn/-Out are ng-zorro's own ported v4 keyframes (see above)
-   and only ever set `transform: translateY(...)`, so for the ~300ms the enter/leave animation classes
-   are applied, v6's `translate3d(-50%, 0, 0)` centring transform is overridden by the animation's own
-   `transform: translateY(...)` -- the toast enters off-centre (still offset by v6's `left: 50%` with no
-   compensating negative margin) and only snaps to centred once the animation class is removed. Centring
-   via `margin-inline: auto` (needs `left: auto` since v6's own `left: 50%` would otherwise still apply)
-   works throughout the animation because it's independent of `transform`. Deliberately NOT folding
-   `translateX(-50%)` into the keyframes themselves: the keyframes are shared, unscoped `@keyframes`
-   (only nameable once per document), so if v4's own CSS is ever loaded alongside this patch, baking a
-   v6-only horizontal offset into them would visibly shift v4 toasts too. */
+/* Mirrors `.ant-message.ant-message-top .ant-message-notice { left: 50%; transform: translate3d(-50%,
+   0, 0) }` with `margin-inline: auto`: the MessageMoveIn/-Out keyframes set their own `transform`, which
+   would override the v6 centring while they run. The shared keyframes stay free of a v6-only offset. */
 .ant-message.ant-message-top .ant-message-notice {
   left: auto;
   transform: none;
   margin-inline: auto;
 }
 
-/* v6 declares the icon/title flex row and gap on `.ant-message-notice-wrapper` (antd/es/message/
-   style/index.js: `.ant-message-notice-wrapper{display:flex;align-items:center;gap:...}`). ng-zorro
-   adds that class to the existing `.ant-message-notice-content` div (see the mapping in
-   message-v6.spec.ts / task-14-report.md), but keeps `.ant-message-custom-content` as the direct
-   parent of the icon and title for v4-compat, one level deeper than v6's real DOM -- so the flex/gap
-   never reaches the icon+title pair. Mirrored onto the actual ancestor so the two align the way v6
-   intends. Inert under v4 (v4's `.ant-message-custom-content` has no `display` rule of its own). */
+/* v6 lays out icon and title with `.ant-message-notice-wrapper { display: flex; align-items: center;
+   gap }`. ng-zorro keeps v4's `.ant-message-custom-content` between the wrapper and the icon and title,
+   so the flex row is mirrored onto it. Inert under v4, which gives it no `display`. */
 .ant-message-notice-wrapper .ant-message-custom-content {
   display: flex;
   align-items: center;

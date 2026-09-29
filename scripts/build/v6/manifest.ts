@@ -7,8 +7,8 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 
 export const ENGINE_CORE_BUDGET = 50 * 1024;
-// Raised from 150 KiB to 256 KiB in Task 13 (Progress) once the components bundle (151,480 B
-// before Progress) crossed the old budget after adding Progress's line/circle/steps CSS.
+// Raised from 150 KiB to 256 KiB when the components bundle (151,480 B before Progress) crossed the
+// old budget with Progress's line, circle and steps CSS.
 export const ENGINE_COMPONENTS_BUDGET = 256 * 1024;
 const SIZE_TOLERANCE = 1024;
 

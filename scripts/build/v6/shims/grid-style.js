@@ -12,14 +12,10 @@
 // component here needs its generated styles), so shimming out the two `genStyleHooks` calls entirely
 // and keeping only the helper Modal actually needs is safe.
 //
-// TODO(wave 2): if a future task adds `grid` (Row/Col) to `v6Components`, this shim's dodge stops
-// working -- the real module's two `genStyleHooks('Grid', ...)` calls will need to run for real, and
-// they still hit the exact same "conflicting default-token factories for Grid" guard in
-// `cssinjs-utils.js`'s `record()`, because `prepareRowComponentToken`/`prepareColComponentToken` are two
-// different (reference-unequal) function objects even though both just return `{}`. The recorder
-// (`scripts/build/v6/shims/cssinjs-utils.js`) will need to merge per-name factories -- e.g. accept a
-// second registration whose `getDefaultToken` produces the same *shape* (or is structurally a no-op)
-// instead of requiring reference equality -- rather than assuming one factory per recorded name.
+// TODO: mapping `grid` (Row/Col) in `v6Components` needs the real module's two `genStyleHooks('Grid', ...)`
+// calls, which hit the same guard: `prepareRowComponentToken` and `prepareColComponentToken` are
+// different function objects. The recorder in `cssinjs-utils.js` will then have to accept a second
+// factory for a name when it yields the same token shape instead of requiring reference equality.
 export const getMediaSize = token => ({
   xs: token.screenXSMin,
   sm: token.screenSMMin,

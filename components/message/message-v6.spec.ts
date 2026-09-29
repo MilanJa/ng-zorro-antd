@@ -40,12 +40,8 @@ describe('message under antd v6 css', () => {
     const notice = overlay.getContainerElement().querySelector('.ant-message .ant-message-notice') as HTMLElement;
     expect(notice).not.toBeNull();
     await expectMotionSettled(notice);
-    // Deviation from the brief: v6's own template CSS (antd/es/message/style/index.js) puts
-    // background/border-radius/box-shadow on `.ant-message-notice` itself, not on the nested
-    // `.ant-message-notice-wrapper` the brief's assertion targeted -- `.ant-message-notice-wrapper`
-    // only ever gets `display:flex;align-items:center;gap`. Asserting against `notice` (the real
-    // v6 rule target) instead, per component-dispatch-context.md's "use the CSS value" rule.
-    // See task-14-report.md Step 3.
+    // v6 puts background, radius and shadow on `.ant-message-notice` itself; `-notice-wrapper` only
+    // gets the flex row.
     expect(getComputedStyle(notice).backgroundColor).toBe('rgb(255, 255, 255)'); // colorBgElevated
     expect(getComputedStyle(notice).borderRadius).toBe('8px');
     expect(getComputedStyle(notice.querySelector('.ant-message-notice-icon') as HTMLElement).color).toBe(
