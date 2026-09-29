@@ -295,6 +295,9 @@
       "less": "./rate/style/*.less",
       "style": "./rate/style/index.min.css"
     },
+    "./rate/style/v6/*": {
+      "style": "./rate/style/v6/*"
+    },
     "./resizable/style/*": {
       "less": "./resizable/style/*.less",
       "style": "./resizable/style/index.min.css"

@@ -1,7 +1,7 @@
 {
   "antdVersion": "6.6.5",
   "engineCoreBytes": 42701,
-  "engineComponentsBytes": 169615,
+  "engineComponentsBytes": 171169,
   "components": {
     "alert": {
       "classes": [
@@ -832,6 +832,29 @@
         "--ant-progress-default-color",
         "--ant-progress-line-border-radius",
         "--ant-progress-remaining-color"
+      ]
+    },
+    "rate": {
+      "classes": [
+        "ant-rate",
+        "ant-rate-disabled",
+        "ant-rate-large",
+        "ant-rate-rtl",
+        "ant-rate-small",
+        "ant-rate-star",
+        "ant-rate-star-first",
+        "ant-rate-star-full",
+        "ant-rate-star-half",
+        "ant-rate-star-second"
+      ],
+      "tokens": [
+        "--ant-rate-line-width-focus",
+        "--ant-rate-star-bg",
+        "--ant-rate-star-color",
+        "--ant-rate-star-hover-scale",
+        "--ant-rate-star-size",
+        "--ant-rate-star-size-lg",
+        "--ant-rate-star-size-sm"
       ]
     },
     "result": {

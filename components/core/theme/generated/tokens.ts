@@ -708,6 +708,16 @@ export interface NzProgressToken {
   remainingColor: string;
 }
 
+export interface NzRateToken {
+  lineWidthFocus: number;
+  starBg: string;
+  starColor: string;
+  starHoverScale: string;
+  starSize: number;
+  starSizeLG: number;
+  starSizeSM: number;
+}
+
 export interface NzResultToken {
   extraMargin: string;
   iconFontSize: number;
@@ -788,6 +798,7 @@ export interface NzComponentTokenMap {
   Popconfirm: NzPopconfirmToken;
   Popover: NzPopoverToken;
   Progress: NzProgressToken;
+  Rate: NzRateToken;
   Result: NzResultToken;
   Select: NzSelectToken;
   Skeleton: NzSkeletonToken;

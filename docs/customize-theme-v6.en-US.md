@@ -22,6 +22,7 @@ Only the components below have v6 styles so far. Others keep rendering with the 
 - `popconfirm`
 - `popover`
 - `progress`
+- `rate`
 - `result`
 - `select`
 - `skeleton`

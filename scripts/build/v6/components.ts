@@ -38,6 +38,7 @@ export const v6Components = {
   popconfirm: { antd: ['Popconfirm'], prefixCls: 'ant-popconfirm', renderedPrefixes: ['ant-popover'] },
   popover: { antd: ['Popover'], prefixCls: 'ant-popover' },
   progress: { antd: ['Progress'], prefixCls: 'ant-progress' },
+  rate: { antd: ['Rate'], prefixCls: 'ant-rate' },
   result: { antd: ['Result'], prefixCls: 'ant-result' },
   select: { antd: ['Select'], prefixCls: 'ant-select' },
   skeleton: { antd: ['Skeleton'], prefixCls: 'ant-skeleton' },

@@ -74,6 +74,8 @@
     "ant-spin-show-text",
     "ant-spin-text"
   ],
+  "_rate_comment": "nz-only: -star-active, -star-zero (state-tracking classes for the hovered/unfilled star; antd's own Rate never renders them and neither v4 nor v6 CSS styles them).",
+  "rate": ["ant-rate-star-active", "ant-rate-star-zero"],
   "_result_comment": "v4-compat: -content (next to -body). antd-emits: -403, -404, -500 (exception-status root classes; v6 renders the SVG illustration without styling them).",
   "result": [
     "ant-result-content",
