@@ -216,6 +216,8 @@
     "ant-upload-span",
     "ant-upload-text-icon"
   ],
+  "_slider_comment": "antd-emits: -rtl (Slider's own root className builder in `antd/es/slider/index.js` sets `${prefixCls}-rtl`; v6 CSS has no rule for it). v4-compat: -mark-active (kept next to its v6 replacement, -mark-text-active, added alongside it on the same mark-text span).",
+  "slider": ["ant-slider-mark-active", "ant-slider-rtl"],
   "float-button": [
     "ant-float-btn-body",
     "ant-float-btn-default",

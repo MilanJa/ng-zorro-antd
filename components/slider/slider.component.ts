@@ -118,6 +118,7 @@ import { NzExtendedMark, NzMarks, NzSliderHandler, NzSliderShowTooltip, NzSlider
     '[class.ant-slider-rtl]': `dir() === 'rtl'`,
     '[class.ant-slider-disabled]': 'nzDisabled',
     '[class.ant-slider-vertical]': 'nzVertical',
+    '[class.ant-slider-horizontal]': '!nzVertical',
     '[class.ant-slider-with-marks]': 'marksArray',
     '(keydown)': 'onKeyDown($event)'
   }

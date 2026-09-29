@@ -30,6 +30,7 @@ Only the components below have v6 styles so far. Others keep rendering with the 
 - `segmented`
 - `select`
 - `skeleton`
+- `slider`
 - `space`
 - `spin`
 - `switch`

@@ -329,6 +329,9 @@
       "less": "./slider/style/*.less",
       "style": "./slider/style/index.min.css"
     },
+    "./slider/style/v6/*": {
+      "style": "./slider/style/v6/*"
+    },
     "./segmented/style/*": {
       "less": "./segmented/style/*.less",
       "style": "./segmented/style/index.min.css"

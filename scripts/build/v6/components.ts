@@ -46,6 +46,7 @@ export const v6Components = {
   segmented: { antd: ['Segmented'], prefixCls: 'ant-segmented' },
   select: { antd: ['Select'], prefixCls: 'ant-select' },
   skeleton: { antd: ['Skeleton'], prefixCls: 'ant-skeleton' },
+  slider: { antd: ['Slider'], prefixCls: 'ant-slider', renderedPrefixes: ['ant-tooltip'] },
   space: { antd: ['Space'], prefixCls: 'ant-space' },
   spin: { antd: ['Spin'], prefixCls: 'ant-spin' },
   switch: { antd: ['Switch'], prefixCls: 'ant-switch' },

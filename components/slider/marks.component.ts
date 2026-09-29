@@ -25,6 +25,7 @@ import { NzDisplayedMark, NzExtendedMark, NzMark, NzMarkObj } from './typings';
       <span
         class="ant-slider-mark-text"
         [class.ant-slider-mark-active]="attr.active"
+        [class.ant-slider-mark-text-active]="attr.active"
         [style]="attr.style"
         [innerHTML]="attr.label"
       ></span>

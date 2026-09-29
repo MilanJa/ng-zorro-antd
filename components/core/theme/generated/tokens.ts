@@ -831,6 +831,27 @@ export interface NzSkeletonToken {
   titleHeight: number;
 }
 
+export interface NzSliderToken {
+  controlSize: number;
+  dotActiveBorderColor: string;
+  dotBorderColor: string;
+  dotSize: number;
+  handleActiveColor: string;
+  handleActiveOutlineColor: string;
+  handleColor: string;
+  handleColorDisabled: string;
+  handleLineWidth: number;
+  handleLineWidthHover: number;
+  handleSize: number;
+  handleSizeHover: number;
+  railBg: string;
+  railHoverBg: string;
+  railSize: number;
+  trackBg: string;
+  trackBgDisabled: string;
+  trackHoverBg: string;
+}
+
 export interface NzSpaceToken {
 }
 
@@ -892,6 +913,7 @@ export interface NzComponentTokenMap {
   Segmented: NzSegmentedToken;
   Select: NzSelectToken;
   Skeleton: NzSkeletonToken;
+  Slider: NzSliderToken;
   Space: NzSpaceToken;
   Spin: NzSpinToken;
   Switch: NzSwitchToken;

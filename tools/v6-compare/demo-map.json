@@ -36,5 +36,6 @@
     "confirm-promise": null,
     "draggable": null
   },
-  "upload": { "_antdDir": "upload" }
+  "upload": { "_antdDir": "upload" },
+  "slider": { "_antdDir": "slider", "tip-formatter": "show-tooltip", "tooltip": "show-tooltip" }
 }
