@@ -49,7 +49,8 @@ export const v6Components = {
   space: { antd: ['Space'], prefixCls: 'ant-space' },
   spin: { antd: ['Spin'], prefixCls: 'ant-spin' },
   switch: { antd: ['Switch'], prefixCls: 'ant-switch' },
-  tooltip: { antd: ['Tooltip'], prefixCls: 'ant-tooltip' }
+  tooltip: { antd: ['Tooltip'], prefixCls: 'ant-tooltip' },
+  upload: { antd: ['Upload'], prefixCls: 'ant-upload' }
 } as const satisfies Record<string, V6ComponentEntry>;
 
 /**

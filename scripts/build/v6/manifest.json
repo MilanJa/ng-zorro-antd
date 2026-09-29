@@ -1,7 +1,7 @@
 {
   "antdVersion": "6.6.5",
   "engineCoreBytes": 42701,
-  "engineComponentsBytes": 195965,
+  "engineComponentsBytes": 204021,
   "components": {
     "alert": {
       "classes": [
@@ -1419,6 +1419,56 @@
         "--ant-tooltip-arrow-shadow-width",
         "--ant-tooltip-max-width",
         "--ant-tooltip-z-index-popup"
+      ]
+    },
+    "upload": {
+      "classes": [
+        "ant-fade-appear",
+        "ant-fade-appear-active",
+        "ant-fade-enter",
+        "ant-fade-enter-active",
+        "ant-fade-leave",
+        "ant-fade-leave-active",
+        "ant-motion-collapse",
+        "ant-motion-collapse-legacy",
+        "ant-motion-collapse-legacy-active",
+        "ant-upload",
+        "ant-upload-animate-inline-appear",
+        "ant-upload-animate-inline-enter",
+        "ant-upload-animate-inline-leave",
+        "ant-upload-btn",
+        "ant-upload-disabled",
+        "ant-upload-drag",
+        "ant-upload-drag-container",
+        "ant-upload-drag-hover",
+        "ant-upload-drag-icon",
+        "ant-upload-hidden",
+        "ant-upload-hint",
+        "ant-upload-icon",
+        "ant-upload-list",
+        "ant-upload-list-item",
+        "ant-upload-list-item-action",
+        "ant-upload-list-item-actions",
+        "ant-upload-list-item-container",
+        "ant-upload-list-item-error",
+        "ant-upload-list-item-file",
+        "ant-upload-list-item-name",
+        "ant-upload-list-item-progress",
+        "ant-upload-list-item-thumbnail",
+        "ant-upload-list-item-uploading",
+        "ant-upload-list-picture",
+        "ant-upload-list-picture-card",
+        "ant-upload-list-picture-circle",
+        "ant-upload-picture-card-wrapper",
+        "ant-upload-picture-circle-wrapper",
+        "ant-upload-rtl",
+        "ant-upload-select",
+        "ant-upload-text",
+        "ant-upload-wrapper"
+      ],
+      "tokens": [
+        "--ant-upload-actions-color",
+        "--ant-upload-picture-card-size"
       ]
     }
   }

@@ -867,6 +867,11 @@ export interface NzTooltipToken {
   zIndexPopup: number;
 }
 
+export interface NzUploadToken {
+  actionsColor: string;
+  pictureCardSize: number;
+}
+
 export interface NzComponentTokenMap {
   Alert: NzAlertToken;
   Button: NzButtonToken;
@@ -891,4 +896,5 @@ export interface NzComponentTokenMap {
   Spin: NzSpinToken;
   Switch: NzSwitchToken;
   Tooltip: NzTooltipToken;
+  Upload: NzUploadToken;
 }

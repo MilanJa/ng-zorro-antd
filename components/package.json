@@ -422,6 +422,9 @@
     "./upload/style/*": {
       "less": "./upload/style/*.less",
       "style": "./upload/style/index.min.css"
+    },
+    "./upload/style/v6/*": {
+      "style": "./upload/style/v6/*"
     }
   }
 }

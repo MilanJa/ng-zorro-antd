@@ -35,5 +35,6 @@
     "service": null,
     "confirm-promise": null,
     "draggable": null
-  }
+  },
+  "upload": { "_antdDir": "upload" }
 }

@@ -29,5 +29,6 @@ export const COMPONENT_ROOT_CLS: Record<string, string> = {
   Space: 'ant-space',
   Spin: 'ant-spin',
   Switch: 'ant-switch',
-  Tooltip: 'ant-tooltip'
+  Tooltip: 'ant-tooltip',
+  Upload: 'ant-upload'
 };

@@ -1,0 +1,59 @@
+/*
+ * antd v6 never wraps a list item's icon and name in ng-zorro's `.ant-upload-list-item-info` /
+ * `.ant-upload-span` elements: `UploadList/ListItem.js` renders the icon, the name (and its
+ * download/delete actions span) as direct children of `.ant-upload-list-item`, which the generated
+ * v6 CSS makes a flex row (`display:flex;align-items:center`) so the name's own `flex:auto` rule
+ * fills the remaining width and the actions span stays put at the end. ng-zorro keeps both wrapper
+ * elements for the default (v4) stylesheet, and v6 CSS carries no rule for either class, so under
+ * the v6 theme they would sit as unstyled, non-flex boxes between the flex container and its real
+ * flex items. `display: contents` removes each wrapper from the layout box tree while leaving its
+ * children in the DOM, so the icon/name/actions become direct flex children of
+ * `.ant-upload-list-item` exactly as in the real v6 markup.
+ */
+.ant-upload-list-item-info,
+.ant-upload-span {
+  display: contents;
+}
+
+/*
+ * antd v6 drives the plain (non-`-inline`) list motion — used for the text and picture list types,
+ * see `UploadList/index.js`'s `isPictureCardOrCirle ? 'animate-inline' : 'animate'` — entirely
+ * through rc-motion's generic collapse motion (`initCollapseMotion` in `antd/es/_util/motion.js`):
+ * the height/opacity values are computed in JS and applied as inline styles on the
+ * `-list-item-container` element, animated by that element's own permanent
+ * `transition: opacity, height` rule (v6's `.ant-upload-list-item-container` rule). No stylesheet
+ * rule ever targets the plain `ant-upload-animate-{appear,enter,leave}` class name itself.
+ * ng-zorro instead toggles that plain class directly on `.ant-upload-list-item` through Angular's
+ * `animate.enter`/`animate.leave` bindings, which need a real CSS animation or transition on the
+ * classed element to resolve (otherwise the binding falls back to the framework's several-second
+ * max animation timeout instead of completing with the item's motion). Unlike antd's own
+ * `-animate-inline` keyframes (which collapse width/height/margin/padding to animate a picture-card
+ * slot's own box away), this only fades opacity: the plain list types size their item from the
+ * fixed `.ant-upload-list-item` height/margin rule (asserted by `upload-v6.spec.ts` on the
+ * just-rendered, not-yet-animated item), so animating height here would fight that rule for the
+ * whole `motionDurationSlow` the animation is applied.
+ */
+@keyframes uploadAnimateIn {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes uploadAnimateOut {
+  to {
+    opacity: 0;
+  }
+}
+.ant-upload-animate-appear,
+.ant-upload-animate-enter,
+.ant-upload-animate-leave {
+  animation-duration: var(--ant-motion-duration-slow);
+  animation-timing-function: var(--ant-motion-ease-in-out-circ);
+  animation-fill-mode: forwards;
+}
+.ant-upload-animate-appear,
+.ant-upload-animate-enter {
+  animation-name: uploadAnimateIn;
+}
+.ant-upload-animate-leave {
+  animation-name: uploadAnimateOut;
+}

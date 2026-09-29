@@ -34,6 +34,7 @@ Only the components below have v6 styles so far. Others keep rendering with the 
 - `spin`
 - `switch`
 - `tooltip`
+- `upload`
 <!-- v6-components:end -->
 <!-- prettier-ignore-end -->
 

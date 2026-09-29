@@ -57,6 +57,7 @@ const CLASS_NAME = 'ant-upload';
   templateUrl: './upload.component.html',
   encapsulation: ViewEncapsulation.None,
   host: {
+    class: 'ant-upload-wrapper',
     '[class.ant-upload-picture-card-wrapper]': 'nzListType === "picture-card"'
   },
   imports: [NzUploadListComponent, NgTemplateOutlet, NzUploadBtnComponent]
