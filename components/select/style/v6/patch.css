@@ -43,6 +43,56 @@
 }
 
 /*
+ * `.ant-select-disabled` paints its background as a real `background` property directly (not
+ * through `--ant-select-background-color`, which the box mirror above reads) — it is not
+ * reachable through the generic mirror at all, and it is also masked on the (already-neutralised)
+ * root by the unconditional `.ant-select { background: transparent }` above. Mirror it explicitly.
+ */
+.ant-select.ant-select-disabled .ant-select-selector {
+  background: var(--ant-color-bg-container-disabled);
+}
+
+/*
+ * antd v6 draws the focus ring as a real `box-shadow` on the root, only for the outlined variant
+ * (default, -status-error, -status-warning): `.ant-select.ant-select-outlined:not(.ant-select-disabled).ant-select-focused`
+ * and its status siblings. The equivalent filled/borderless/underlined focused rules also set a
+ * real `box-shadow` on the root, but always to `transparent` — a no-op regardless of the root's
+ * shape, so they need no neutralising or mirroring. Borderless's focus ring is a native `outline`
+ * on `:has(input:focus-visible)`, which already draws correctly on the root here: with the root's
+ * own border/background/padding neutralised above and the select-clear/-arrow siblings taken out
+ * of flow (`position: absolute`), the root's `inline-flex` box is exactly the size of
+ * `.ant-select-selector`, so the outline needs no separate mirror either. Only the three outlined
+ * rules paint a real, non-transparent shadow that would otherwise land on the invisible root.
+ */
+.ant-select.ant-select-outlined:not(.ant-select-disabled).ant-select-focused,
+.ant-select.ant-select-outlined.ant-select-status-error:not(.ant-select-disabled).ant-select-focused,
+.ant-select.ant-select-outlined.ant-select-status-warning:not(.ant-select-disabled).ant-select-focused {
+  box-shadow: none;
+}
+.ant-select.ant-select-outlined:not(.ant-select-disabled).ant-select-focused .ant-select-selector {
+  box-shadow: 0 0 0 var(--ant-control-outline-width) var(--ant-select-active-outline-color);
+}
+.ant-select.ant-select-outlined.ant-select-status-error:not(.ant-select-disabled).ant-select-focused
+  .ant-select-selector {
+  box-shadow: 0 0 0 var(--ant-control-outline-width) var(--ant-color-error-outline);
+}
+.ant-select.ant-select-outlined.ant-select-status-warning:not(.ant-select-disabled).ant-select-focused
+  .ant-select-selector {
+  box-shadow: 0 0 0 var(--ant-control-outline-width) var(--ant-color-warning-outline);
+}
+
+/*
+ * `.ant-select-underlined` removes the top/side borders and the corner radius as real properties
+ * (not through the `--ant-select-border-radius`/`-border-color` variables the box mirror reads),
+ * always, not only when focused. Mirror them.
+ */
+.ant-select-underlined .ant-select-selector {
+  border-radius: 0;
+  border-top-color: transparent;
+  border-inline-color: transparent;
+}
+
+/*
  * antd v6 has no equivalent of the `.ant-select-selection-wrap` span (its `.ant-select-prefix`,
  * `.ant-select-content` and `.ant-select-suffix` sit directly under the select root); port the
  * positioning v4's own mixin gives it (`components/select/style/index.less` `.select-selector()`

@@ -135,6 +135,14 @@ class ScopedSelectHostComponent {
       <nz-option nzValue="jack" nzLabel="Jack" />
       <nz-option nzValue="lucy" nzLabel="Lucy" />
     </nz-select>
+    <nz-select id="focused" [ngModel]="value()" [nzOpen]="true" style="width: 160px; margin-top: 40px">
+      <nz-option nzValue="jack" nzLabel="Jack" />
+      <nz-option nzValue="lucy" nzLabel="Lucy" />
+    </nz-select>
+    <nz-select id="disabled" [ngModel]="value()" [nzDisabled]="true" style="width: 160px; margin-top: 40px">
+      <nz-option nzValue="jack" nzLabel="Jack" />
+      <nz-option nzValue="lucy" nzLabel="Lucy" />
+    </nz-select>
   `
 })
 class BoxTestSelectComponent {
@@ -180,6 +188,24 @@ describe('select box under antd v6 css', () => {
     // multipleItemBg = colorFillSecondary (default token), read as its rendered rgba.
     expect(getComputedStyle(tag).backgroundColor).toBe('rgba(0, 0, 0, 0.06)');
     expect(getComputedStyle(tag).height).toBe('24px');
+  });
+
+  it('mirrors the outlined focus ring onto the selector box, not the (invisible) root', () => {
+    const root = document.getElementById('focused') as HTMLElement;
+    expect(root.classList.contains('ant-select-focused')).toBe(true);
+    expect(root.classList.contains('ant-select-outlined')).toBe(true);
+    expect(getComputedStyle(root).boxShadow).toBe('none');
+    const box = root.querySelector('.ant-select-selector') as HTMLElement;
+    // activeOutlineColor (default token: colorPrimary at reduced opacity), read as its rendered rgba.
+    expect(getComputedStyle(box).boxShadow).toBe('rgba(5, 145, 255, 0.1) 0px 0px 0px 2px');
+  });
+
+  it('mirrors the v6 disabled background onto the selector box', () => {
+    const root = document.getElementById('disabled') as HTMLElement;
+    expect(root.classList.contains('ant-select-disabled')).toBe(true);
+    const box = root.querySelector('.ant-select-selector') as HTMLElement;
+    // colorBgContainerDisabled (default token), read as its rendered rgba.
+    expect(getComputedStyle(box).backgroundColor).toBe('rgba(0, 0, 0, 0.04)');
   });
 });
 
