@@ -89,7 +89,7 @@
     "ant-checkbox-wrapper-checked",
     "ant-checkbox-wrapper-in-form-item"
   ],
-  "_radio_comment": "antd-emits: -button-checked, -button-disabled, -button-inner, -button-input (rc-checkbox renders these with the `ant-radio-button` prefixCls in button mode; v6 CSS hides the button variant's dot through the wrapper background and the `.ant-radio-button` overlay box instead, and never styles these four), -button-wrapper-rtl, -wrapper-checked, -wrapper-in-form-item (antd's own component emits them; v6 CSS never styles them). v4-compat (patch hook): -inner (v6 draws the dot on `.ant-radio` itself; style/v6/patch.css mirrors those rules onto -inner, so removing it needs a patch rewrite).",
+  "_radio_comment": "antd-emits: -button-checked, -button-disabled, -button-input (rc-checkbox's Checkbox.js renders `span.{prefixCls}[-checked][-disabled] > input.{prefixCls}-input` with prefixCls `ant-radio-button` in button mode, so these three are genuinely emitted unstyled), -button-wrapper-rtl, -wrapper-checked, -wrapper-in-form-item (antd's own component emits them; v6 CSS never styles them). v4-compat (patch hook): -inner, -button-inner (rc-checkbox never renders an inner span for either prefixCls; both are ng-zorro-only structural elements. v6 draws the dot on `.ant-radio` itself for the plain variant, so style/v6/patch.css mirrors those rules onto -inner, and removing either needs a patch rewrite).",
   "radio": [
     "ant-radio-button-checked",
     "ant-radio-button-disabled",
