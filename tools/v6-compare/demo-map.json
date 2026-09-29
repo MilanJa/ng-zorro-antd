@@ -5,7 +5,7 @@
   "notification": { "_antdDir": "notification", "custom-style": "style-class", "template": null },
   "select": { "_antdDir": "select" },
   "skeleton": { "_antdDir": "skeleton" },
-  "space": { "_antdDir": "space" },
+  "space": { "_antdDir": "space", "basic": "base", "split": "separator" },
   "rate": { "_antdDir": "rate", "customize": "character-function" },
   "segmented": { "_antdDir": "segmented" },
   "button": { "_antdDir": "button" },

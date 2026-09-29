@@ -45,7 +45,7 @@ const SPACE_SIZE: Record<NzSpaceType, number> = {
         <ng-container [ngTemplateOutlet]="item" />
       </div>
       @if (nzSplit && !$last) {
-        <span class="ant-space-split">
+        <span class="ant-space-split ant-space-item-separator">
           <ng-template [nzStringTemplateOutlet]="nzSplit" [nzStringTemplateOutletContext]="{ $implicit: $index }">{{
             nzSplit
           }}</ng-template>

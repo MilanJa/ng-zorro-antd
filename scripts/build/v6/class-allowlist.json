@@ -57,8 +57,10 @@
     "ant-select-selection-wrap",
     "ant-select-selector"
   ],
+  "_space_comment": "antd-emits: -horizontal (antd's own Space still renders `${prefixCls}-${orientation}` for the horizontal default, verified against a live antd render; v6 CSS has no rule for it since horizontal needs no styling), -item-separator (Space.Item's own hook class; v6 CSS defines no rule for it either, since the separator's appearance comes from the ReactNode passed in, not from CSS). v4-compat: -split (superseded by -item-separator, the antd v6 name for the separator element, kept next to it for v4 rendering).",
   "space": [
     "ant-space-horizontal",
+    "ant-space-item-separator",
     "ant-space-split"
   ],
   "_skeleton_comment": "antd-emits: -avatar-square, -button-square (shape classes v6 CSS never styles). v4-compat: -content (next to -section).",
