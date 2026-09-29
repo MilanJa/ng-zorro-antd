@@ -1,0 +1,209 @@
+/*
+ * antd v6's InputNumber never wraps prefix/suffix in an affix-wrapper element (rc-input-number
+ * renders `-prefix`/`-suffix` as siblings of the input inside the single root div), so the
+ * generated v6 CSS carries no display/width/border rule for `.ant-input-number-affix-wrapper`
+ * beyond its `-lg`/`-sm` padding variants. ng-zorro keeps a real affix-wrapper element around the
+ * `.ant-input-number` root for the default (v4) stylesheet, so it needs its own v6 layout: this
+ * mirrors antd's `.ant-input-affix-wrapper` base rule (Input's own affix wrapper) onto it.
+ */
+.ant-input-number-affix-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: var(--ant-input-number-control-width);
+  min-width: 0;
+  transition: all var(--ant-motion-duration-mid);
+}
+
+/* Only applies the default (medium) padding/radius: the real v6 `-affix-wrapper-lg`/`-sm` rules
+   already set both at the same (single-class) specificity, so this is guarded to avoid winning
+   ties against them by source order. */
+.ant-input-number-affix-wrapper:not(.ant-input-number-affix-wrapper-lg):not(.ant-input-number-affix-wrapper-sm) {
+  padding: var(--ant-input-number-padding-block) var(--ant-input-number-padding-inline);
+  border-radius: var(--ant-border-radius);
+}
+
+/*
+ * Mirrors antd v6's `.ant-input-outlined` border/background states (Input's own outlined rule)
+ * onto the affix wrapper: v6 never applies an outlined rule to a wrapper prefix, because Input's
+ * `.ant-input-affix-wrapper` carries the border itself and InputNumber's inner root has no
+ * second, separate wrapper element to draw it on in real v6 markup.
+ */
+.ant-input-number-affix-wrapper-outlined {
+  background: var(--ant-color-bg-container);
+  border-width: var(--ant-line-width);
+  border-style: var(--ant-line-type);
+  border-color: var(--ant-color-border);
+}
+.ant-input-number-affix-wrapper-outlined:hover {
+  border-color: var(--ant-input-number-hover-border-color);
+  background-color: var(--ant-input-number-hover-bg);
+}
+.ant-input-number-affix-wrapper-outlined:focus-within,
+.ant-input-number-affix-wrapper-outlined.ant-input-number-affix-wrapper-focused {
+  border-color: var(--ant-input-number-active-border-color);
+  box-shadow: var(--ant-input-number-active-shadow);
+  background-color: var(--ant-input-number-active-bg);
+}
+.ant-input-number-affix-wrapper-outlined.ant-input-number-affix-wrapper-disabled {
+  color: var(--ant-color-text-disabled);
+  background-color: var(--ant-color-bg-container-disabled);
+  border-color: var(--ant-color-border-disabled);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+.ant-input-number-affix-wrapper-outlined.ant-input-number-affix-wrapper-status-error {
+  border-color: var(--ant-color-error);
+}
+.ant-input-number-affix-wrapper-outlined.ant-input-number-affix-wrapper-status-error:hover {
+  border-color: var(--ant-color-error-border-hover);
+}
+.ant-input-number-affix-wrapper-outlined.ant-input-number-affix-wrapper-status-error:focus-within {
+  border-color: var(--ant-color-error);
+  box-shadow: var(--ant-input-number-error-active-shadow);
+}
+.ant-input-number-affix-wrapper-outlined.ant-input-number-affix-wrapper-status-warning {
+  border-color: var(--ant-color-warning);
+}
+.ant-input-number-affix-wrapper-outlined.ant-input-number-affix-wrapper-status-warning:hover {
+  border-color: var(--ant-color-warning-border-hover);
+}
+.ant-input-number-affix-wrapper-outlined.ant-input-number-affix-wrapper-status-warning:focus-within {
+  border-color: var(--ant-color-warning);
+  box-shadow: var(--ant-input-number-warning-active-shadow);
+}
+
+.ant-input-number-affix-wrapper-rtl {
+  direction: rtl;
+}
+
+/*
+ * Neutralises the inner root's own border/background/shadow so it is not drawn a second time
+ * inside the wrapper's border box, mirroring v4's `affix.less` "> div.ant-input-number
+ * { border: none; outline: none; }" rule for the v6 stylesheet. Each selector repeats the state
+ * (`:hover`/`:focus-within`/disabled/status) of the v6 rule it neutralises with one extra class
+ * (the wrapper ancestor), so it always outranks that rule's specificity regardless of source
+ * order, per the specificity-matching rule used for the checkbox/radio box patches.
+ */
+.ant-input-number-affix-wrapper > .ant-input-number {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+}
+.ant-input-number-affix-wrapper > .ant-input-number-outlined,
+.ant-input-number-affix-wrapper > .ant-input-number-outlined:hover,
+.ant-input-number-affix-wrapper > .ant-input-number-outlined:focus,
+.ant-input-number-affix-wrapper > .ant-input-number-outlined:focus-within,
+.ant-input-number-affix-wrapper > .ant-input-number-outlined.ant-input-number-disabled,
+.ant-input-number-affix-wrapper > .ant-input-number-outlined.ant-input-number-status-error,
+.ant-input-number-affix-wrapper > .ant-input-number-outlined.ant-input-number-status-error:hover,
+.ant-input-number-affix-wrapper > .ant-input-number-outlined.ant-input-number-status-error:focus,
+.ant-input-number-affix-wrapper > .ant-input-number-outlined.ant-input-number-status-error:focus-within,
+.ant-input-number-affix-wrapper > .ant-input-number-outlined.ant-input-number-status-warning,
+.ant-input-number-affix-wrapper > .ant-input-number-outlined.ant-input-number-status-warning:hover,
+.ant-input-number-affix-wrapper > .ant-input-number-outlined.ant-input-number-status-warning:focus,
+.ant-input-number-affix-wrapper > .ant-input-number-outlined.ant-input-number-status-warning:focus-within {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+.ant-input-number-affix-wrapper > .ant-input-number-outlined:focus,
+.ant-input-number-affix-wrapper > .ant-input-number-outlined:focus-within {
+  outline: 0;
+}
+
+/* Mirrors antd v6's `.ant-input-affix-wrapper .ant-input-prefix/-suffix` spacing. */
+.ant-input-number-affix-wrapper .ant-input-number-prefix,
+.ant-input-number-affix-wrapper .ant-input-number-suffix {
+  display: flex;
+  flex: none;
+  align-items: center;
+}
+.ant-input-number-affix-wrapper .ant-input-number-prefix {
+  margin-inline-end: var(--ant-padding-xxs);
+}
+.ant-input-number-affix-wrapper .ant-input-number-suffix {
+  margin-inline-start: var(--ant-padding-xxs);
+}
+
+/*
+ * antd v6 keeps its legacy `Input.Group` table/table-cell layout for back-compat (`.ant-input-group`,
+ * `.ant-input-group-addon`, `.ant-input-group-wrapper*` in the generated v6 CSS), because
+ * `addonBefore`/`addonAfter` are deprecated-but-supported props rendered through `Space.Compact` +
+ * bare `-addon` spans, not through that legacy markup. ng-zorro's InputNumber still renders the
+ * legacy `-group`/`-group-addon`/`-group-wrapper`/`-wrapper` DOM for the default (v4) stylesheet
+ * (see the v6-api-gaps/allowlist notes), which has no v6 rule at all under its own
+ * `ant-input-number-*` names. This mirrors that same legacy Input.Group table layout onto the
+ * `ant-input-number-*` names, one property set at a time, so the addon renders as one row
+ * (like `Input`'s own legacy addon demos still do in v6) instead of stacking as block-level divs.
+ */
+.ant-input-number-group {
+  position: relative;
+  display: table;
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+.ant-input-number-group > .ant-input-number {
+  display: table-cell;
+}
+.ant-input-number-group > .ant-input-number:not(:first-child):not(:last-child) {
+  border-radius: 0;
+}
+.ant-input-number-group .ant-input-number-group-addon {
+  position: relative;
+  display: table-cell;
+  width: 1px;
+  padding: 0 var(--ant-input-number-padding-inline);
+  color: var(--ant-color-text);
+  font-weight: normal;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  border-radius: var(--ant-border-radius);
+  transition: all var(--ant-motion-duration-slow);
+  line-height: 1;
+}
+.ant-input-number-group .ant-input-number-group-addon:not(:first-child):not(:last-child) {
+  border-radius: 0;
+}
+.ant-input-number-group > .ant-input-number:first-child,
+.ant-input-number-group .ant-input-number-group-addon:first-child {
+  border-start-end-radius: 0;
+  border-end-end-radius: 0;
+}
+.ant-input-number-group > .ant-input-number:last-child,
+.ant-input-number-group .ant-input-number-group-addon:last-child {
+  border-start-start-radius: 0;
+  border-end-start-radius: 0;
+}
+
+.ant-input-number-group-wrapper {
+  display: inline-block;
+  width: 100%;
+  text-align: start;
+  vertical-align: top;
+}
+.ant-input-number-group-wrapper-rtl {
+  direction: rtl;
+}
+.ant-input-number-group-wrapper-outlined .ant-input-number-group-addon {
+  background: var(--ant-input-number-addon-bg);
+  border: var(--ant-line-width) var(--ant-line-type) var(--ant-color-border);
+}
+.ant-input-number-group-wrapper-outlined .ant-input-number-group-addon:first-child {
+  border-inline-end: 0;
+}
+.ant-input-number-group-wrapper-outlined .ant-input-number-group-addon:last-child {
+  border-inline-start: 0;
+}
+.ant-input-number-group-wrapper-outlined.ant-input-number-group-wrapper-status-error .ant-input-number-group-addon {
+  border-color: var(--ant-color-error);
+  color: var(--ant-color-error-text);
+}
+.ant-input-number-group-wrapper-outlined.ant-input-number-group-wrapper-status-warning
+  .ant-input-number-group-addon {
+  border-color: var(--ant-color-warning);
+  color: var(--ant-color-warning-text);
+}

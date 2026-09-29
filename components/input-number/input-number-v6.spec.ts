@@ -28,6 +28,7 @@ function installV6Css(): void {
     <nz-input-number id="no-controls" [nzControls]="false" [ngModel]="1" />
     <nz-input-number id="addon" nzAddonBefore="before" nzAddonAfter="after" [ngModel]="1" />
     <nz-input-number id="prefix" nzPrefix="$" [ngModel]="1" />
+    <nz-input-number id="prefix-err" nzPrefix="$" nzStatus="error" [ngModel]="1" />
   `
 })
 class TestInputNumberComponent {}
@@ -109,14 +110,57 @@ describe('input-number under antd v6 css', () => {
   it('renders the v6 prefix class inside the affix wrapper', () => {
     const prefix = document.querySelector('#prefix .ant-input-number-prefix');
     expect(prefix).not.toBeNull();
-    // With an affix and no addon, the affix-wrapper classes land on the host element itself. v6's
-    // own `.ant-input-number-affix-wrapper` rule only applies inside a `.ant-input-group-compact`
-    // ancestor (the legacy Input.Group compact-item mixin, shared with input-number for
-    // back-compat); outside of that it carries no v6 CSS of its own, so only the class is
-    // asserted here (the inner `.ant-input-number` div is what carries the v6 root styling).
+    // With an affix and no addon, the affix-wrapper classes land on the host element itself.
     const wrapper = document.getElementById('prefix') as HTMLElement;
     expect(wrapper.classList.contains('ant-input-number-affix-wrapper')).toBe(true);
     const inner = wrapper.querySelector('.ant-input-number') as HTMLElement;
     expect(inner.classList.contains('ant-input-number-outlined')).toBe(true);
+  });
+
+  it('lays the affix wrapper out as a bordered, inline-flex box with the prefix inside its border box', () => {
+    // v6's InputNumber never wraps prefix/suffix in an affix-wrapper element at all (no CSS rule
+    // of its own exists for `.ant-input-number-affix-wrapper` beyond the -lg/-sm padding
+    // variants), so style/v6/patch.css mirrors antd's `.ant-input-affix-wrapper` layout and
+    // `.ant-input-outlined` border/background states onto it, and neutralises the inner
+    // `.ant-input-number`'s own border so it is not drawn a second time.
+    const wrapper = document.getElementById('prefix') as HTMLElement;
+    expect(getComputedStyle(wrapper).display).toBe('inline-flex');
+    const wrapperRect = wrapper.getBoundingClientRect();
+    expect(wrapperRect.width).toBeGreaterThanOrEqual(90);
+    expect(getComputedStyle(wrapper).borderColor).toBe('rgb(217, 217, 217)');
+
+    const prefix = wrapper.querySelector('.ant-input-number-prefix') as HTMLElement;
+    const prefixRect = prefix.getBoundingClientRect();
+    expect(prefixRect.left).toBeGreaterThanOrEqual(wrapperRect.left);
+    expect(prefixRect.right).toBeLessThanOrEqual(wrapperRect.right);
+
+    const inner = wrapper.querySelector('.ant-input-number') as HTMLElement;
+    const innerStyle = getComputedStyle(inner);
+    expect(innerStyle.borderStyle === 'none' || innerStyle.borderWidth === '0px').toBe(true);
+  });
+
+  it('colours the affix wrapper border by status, not just the plain root', () => {
+    // `#err` has no affix (the class lands on the inner root directly, unchanged by this fix
+    // round); `#prefix-err` has both a prefix and an error status, exercising the new
+    // wrapper-level `-affix-wrapper-outlined.-affix-wrapper-status-error` border colour rule.
+    const errRoot = document.getElementById('err') as HTMLElement;
+    expect(getComputedStyle(errRoot).borderColor).toBe('rgb(255, 77, 79)');
+    const errWrapper = document.getElementById('prefix-err') as HTMLElement;
+    expect(getComputedStyle(errWrapper).borderColor).toBe('rgb(255, 77, 79)');
+  });
+
+  it('lays the addon row out inline, like antd v6 keeps for its own legacy Input.Group addons', () => {
+    // v6 has no CSS at all for `ant-input-number-group`/`-group-addon`/`-group-wrapper`/`-wrapper`
+    // (InputNumber's own deprecated addonBefore/After render through Space.Compact + bare
+    // `-addon` spans in real v6 markup, not this nested structure), so style/v6/patch.css mirrors
+    // the table/table-cell layout antd v6 itself still keeps for `Input`'s legacy `Input.Group`
+    // addons (`.ant-input-group`/`.ant-input-group-addon`/`.ant-input-group-wrapper*`) onto the
+    // `ant-input-number-*` names, so the row renders inline instead of stacking as block divs.
+    const addon = document.querySelector('#addon .ant-input-number-group-addon') as HTMLElement;
+    const inner = document.querySelector('#addon .ant-input-number') as HTMLElement;
+    const addonRect = addon.getBoundingClientRect();
+    const innerRect = inner.getBoundingClientRect();
+    expect(Math.abs(addonRect.top - innerRect.top)).toBeLessThanOrEqual(1);
+    expect(addonRect.left).toBeLessThan(innerRect.left);
   });
 });
