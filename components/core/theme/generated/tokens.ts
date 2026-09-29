@@ -649,6 +649,38 @@ export interface NzInputToken {
   warningActiveShadow: string;
 }
 
+export interface NzInputNumberToken {
+  activeBg: string;
+  activeBorderColor: string;
+  activeShadow: string;
+  addonBg: string;
+  controlWidth: number;
+  errorActiveShadow: string;
+  filledHandleBg: string;
+  handleActiveBg: string;
+  handleBg: string;
+  handleBorderColor: string;
+  handleFontSize: number;
+  handleHoverColor: string;
+  handleOpacity: number;
+  handleVisible: string;
+  handleVisibleWidth: number;
+  handleWidth: number;
+  hoverBg: string;
+  hoverBorderColor: string;
+  inputFontSize: number;
+  inputFontSizeLG: number;
+  inputFontSizeSM: number;
+  lineWidthFocus: number;
+  paddingBlock: number;
+  paddingBlockLG: number;
+  paddingBlockSM: number;
+  paddingInline: number;
+  paddingInlineLG: number;
+  paddingInlineSM: number;
+  warningActiveShadow: string;
+}
+
 export interface NzMessageToken {
   contentBg: string;
   contentPadding: string;
@@ -842,6 +874,7 @@ export interface NzComponentTokenMap {
   Drawer: NzDrawerToken;
   FloatButton: NzFloatButtonToken;
   Input: NzInputToken;
+  InputNumber: NzInputNumberToken;
   Message: NzMessageToken;
   Modal: NzModalToken;
   Notification: NzNotificationToken;

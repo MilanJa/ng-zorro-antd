@@ -15,3 +15,4 @@ Limitations met while aligning components with antd v6 that cannot be closed wit
 | Radio.Group           | `vertical` prop (`ant-radio-group-vertical`)                               | not available                          | new input (sub-project 3)               |
 | Radio.Group           | `block` prop (`ant-radio-group-block`)                                     | not available                          | new input (sub-project 3)               |
 | Radio, Radio.Button   | `block` prop (`ant-radio-wrapper-block`, `ant-radio-button-wrapper-block`) | not available                          | new input (sub-project 3)               |
+| InputNumber           | `mode="spinner"` prop (`ant-input-number-mode-spinner`)                    | no `nzMode`; always the "input" layout | new input (sub-project 3)               |

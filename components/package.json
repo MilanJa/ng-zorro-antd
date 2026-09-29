@@ -220,6 +220,9 @@
       "less": "./input-number/style/*.less",
       "style": "./input-number/style/index.min.css"
     },
+    "./input-number/style/v6/*": {
+      "style": "./input-number/style/v6/*"
+    },
     "./layout/style/*": {
       "less": "./layout/style/*.less",
       "style": "./layout/style/index.min.css"

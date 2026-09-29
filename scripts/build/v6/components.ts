@@ -33,6 +33,7 @@ export const v6Components = {
   // ng-zorro's back-top mirrors `FloatButton.BackTop`, which is a plain FloatButton.
   'float-button': { antd: ['FloatButton'], prefixCls: 'ant-float-btn' },
   input: { antd: ['Input'], prefixCls: 'ant-input' },
+  'input-number': { antd: ['InputNumber'], prefixCls: 'ant-input-number' },
   message: { antd: ['message'], prefixCls: 'ant-message' },
   modal: { antd: ['Modal'], prefixCls: 'ant-modal' },
   notification: { antd: ['notification'], prefixCls: 'ant-notification' },

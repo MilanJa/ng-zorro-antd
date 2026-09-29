@@ -13,6 +13,7 @@ export const COMPONENT_ROOT_CLS: Record<string, string> = {
   Drawer: 'ant-drawer',
   FloatButton: 'ant-float-btn',
   Input: 'ant-input',
+  InputNumber: 'ant-input-number',
   Message: 'ant-message',
   Modal: 'ant-modal',
   Notification: 'ant-notification',

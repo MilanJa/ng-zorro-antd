@@ -86,7 +86,7 @@ export interface NzInputNumberStepEvent {
     <ng-template #inputNumberWithAddonInner>
       <div class="ant-input-number-wrapper ant-input-number-group">
         @if (hasAddonBefore()) {
-          <div class="ant-input-number-group-addon">
+          <div class="ant-input-number-group-addon ant-input-number-addon">
             <ng-content select="[nzInputAddonBefore]">{{ nzAddonBefore() }}</ng-content>
           </div>
         }
@@ -98,7 +98,7 @@ export interface NzInputNumberStepEvent {
         }
 
         @if (hasAddonAfter()) {
-          <div class="ant-input-number-group-addon">
+          <div class="ant-input-number-group-addon ant-input-number-addon">
             <ng-content select="[nzInputAddonAfter]">{{ nzAddonAfter() }}</ng-content>
           </div>
         }
@@ -136,12 +136,18 @@ export interface NzInputNumberStepEvent {
 
     <ng-template #inputNumberInner>
       @if (nzControls()) {
-        <div #handlers class="ant-input-number-handler-wrap" (mouseup)="stopAutoStep()" (mouseleave)="stopAutoStep()">
+        <div
+          #handlers
+          class="ant-input-number-handler-wrap ant-input-number-actions"
+          (mouseup)="stopAutoStep()"
+          (mouseleave)="stopAutoStep()"
+        >
           <span
             role="button"
             unselectable="on"
-            class="ant-input-number-handler ant-input-number-handler-up"
+            class="ant-input-number-handler ant-input-number-handler-up ant-input-number-action ant-input-number-action-up"
             [class.ant-input-number-handler-up-disabled]="upDisabled()"
+            [class.ant-input-number-action-up-disabled]="upDisabled()"
             [attr.aria-disabled]="upDisabled()"
             (mousedown)="onStepMouseDown($event, true)"
           >
@@ -152,8 +158,9 @@ export interface NzInputNumberStepEvent {
           <span
             role="button"
             unselectable="on"
-            class="ant-input-number-handler ant-input-number-handler-down"
+            class="ant-input-number-handler ant-input-number-handler-down ant-input-number-action ant-input-number-action-down"
             [class.ant-input-number-handler-down-disabled]="downDisabled()"
+            [class.ant-input-number-action-down-disabled]="downDisabled()"
             [attr.aria-disabled]="downDisabled()"
             (mousedown)="onStepMouseDown($event, false)"
           >
@@ -284,6 +291,10 @@ export class NzInputNumberComponent implements OnInit, ControlValueAccessor {
   protected readonly inputNumberClass = computed(() => {
     return {
       'ant-input-number': true,
+      // antd v6 renders `${prefixCls}-mode-input` unconditionally: ng-zorro only implements the
+      // "input" layout (a right-hand stacked handler pair), never the "spinner" layout, so the
+      // class is never conditional here (see docs/v6-api-gaps.md).
+      'ant-input-number-mode-input': true,
       'ant-input-number-lg': this.finalSize() === 'large',
       'ant-input-number-sm': this.finalSize() === 'small',
       'ant-input-number-disabled': this.finalDisabled(),
@@ -291,6 +302,7 @@ export class NzInputNumberComponent implements OnInit, ControlValueAccessor {
       'ant-input-number-focused': this.focused(),
       'ant-input-number-rtl': this.dir() === 'rtl',
       'ant-input-number-in-form-item': !!this.nzFormStatusService,
+      'ant-input-number-without-controls': !this.nzControls(),
       'ant-input-number-out-of-range': this.value() !== null && !isInRange(this.value()!, this.nzMin(), this.nzMax()),
       ...getVariantClassNames('ant-input-number', this.finalVariant()),
       ...getStatusClassNames('ant-input-number', this.finalStatus(), this.hasFeedback())
