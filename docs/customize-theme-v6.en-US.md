@@ -19,12 +19,12 @@ Only the components below have v6 styles so far. Others keep rendering with the 
 - `message`
 - `modal`
 - `notification`
-- `result`
-- `select`
-- `skeleton`
 - `popconfirm`
 - `popover`
 - `progress`
+- `result`
+- `select`
+- `skeleton`
 - `space`
 - `spin`
 - `tooltip`

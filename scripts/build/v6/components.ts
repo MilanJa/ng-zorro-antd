@@ -27,30 +27,20 @@ export const v6Components = {
   alert: { antd: ['Alert'], prefixCls: 'ant-alert' },
   button: { antd: ['Button'], prefixCls: 'ant-btn' },
   drawer: { antd: ['Drawer'], prefixCls: 'ant-drawer' },
-  // `BackTop` is a real top-level antd export (per the task brief), but it resolves to the
-  // *deprecated* `antd/es/back-top` component ("@deprecated Please use `FloatButton.BackTop`
-  // instead."), which registers its own separate style hook (`genStyleHooks('BackTop', ...)` in
-  // `back-top/style/index.js`) targeting `.ant-back-top*` classes and a `--ant-back-top-*` token
-  // namespace -- ng-zorro's `NzFloatButtonTopComponent` never renders any `.ant-back-top*` class; it
-  // mirrors `FloatButton.BackTop` (`float-button/BackTop.js`), which renders a plain `FloatButton`
-  // and owns no style hook of its own (only `float-button/style/index.js` does, keyed
-  // `genStyleHooks('FloatButton', ...)`). Including the top-level `'BackTop'` name here therefore
-  // pulled in an irrelevant `--ant-back-top-z-index-popup` token our component never consumes,
-  // breaking `render-parity.spec.ts`'s byte-equality check against antd's real extraction (antd's own
-  // per-request `extractStyle` never emits that token unless `.ant-back-top*` markup is actually
-  // rendered). `FloatButton` alone already supplies 100% of `FloatButton.BackTop`'s rendered CSS
-  // (BackTop is pure composition), so only it is listed.
+  // Only `FloatButton`: the top-level `BackTop` export is antd's deprecated `back-top` component, with
+  // its own `.ant-back-top*` style hook and `--ant-back-top-*` tokens that ng-zorro never renders.
+  // ng-zorro's back-top mirrors `FloatButton.BackTop`, which is a plain FloatButton.
   'float-button': { antd: ['FloatButton'], prefixCls: 'ant-float-btn' },
   input: { antd: ['Input'], prefixCls: 'ant-input' },
   message: { antd: ['message'], prefixCls: 'ant-message' },
   modal: { antd: ['Modal'], prefixCls: 'ant-modal' },
   notification: { antd: ['notification'], prefixCls: 'ant-notification' },
-  result: { antd: ['Result'], prefixCls: 'ant-result' },
-  select: { antd: ['Select'], prefixCls: 'ant-select' },
-  skeleton: { antd: ['Skeleton'], prefixCls: 'ant-skeleton' },
   popconfirm: { antd: ['Popconfirm'], prefixCls: 'ant-popconfirm', renderedPrefixes: ['ant-popover'] },
   popover: { antd: ['Popover'], prefixCls: 'ant-popover' },
   progress: { antd: ['Progress'], prefixCls: 'ant-progress' },
+  result: { antd: ['Result'], prefixCls: 'ant-result' },
+  select: { antd: ['Select'], prefixCls: 'ant-select' },
+  skeleton: { antd: ['Skeleton'], prefixCls: 'ant-skeleton' },
   space: { antd: ['Space'], prefixCls: 'ant-space' },
   spin: { antd: ['Spin'], prefixCls: 'ant-spin' },
   tooltip: { antd: ['Tooltip'], prefixCls: 'ant-tooltip' }
