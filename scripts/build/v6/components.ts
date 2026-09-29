@@ -25,6 +25,9 @@ export interface V6ComponentEntry {
 
 export const v6Components = {
   alert: { antd: ['Alert'], prefixCls: 'ant-alert' },
+  // AutoComplete has no style module of its own (`ANTD_STYLE_MODULE_OVERRIDES` below); it renders
+  // Select's DOM in combobox mode, so its CSS is Select's class set under Select's `prefixCls`.
+  'auto-complete': { antd: ['AutoComplete'], prefixCls: 'ant-select' },
   button: { antd: ['Button'], prefixCls: 'ant-btn' },
   checkbox: { antd: ['Checkbox'], prefixCls: 'ant-checkbox' },
   drawer: { antd: ['Drawer'], prefixCls: 'ant-drawer' },

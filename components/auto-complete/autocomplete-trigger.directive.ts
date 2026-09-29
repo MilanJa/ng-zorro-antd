@@ -32,6 +32,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { delay, filter, tap } from 'rxjs/operators';
 
+import { nzThemeScopeClasses } from 'ng-zorro-antd/core/theme';
 import { NzSafeAny, OnChangeType, OnTouchedType } from 'ng-zorro-antd/core/types';
 
 import { NzAutocompleteOptionComponent } from './autocomplete-option.component';
@@ -66,6 +67,10 @@ export class NzAutocompleteTriggerDirective implements AfterViewInit, ControlVal
   private readonly viewContainerRef = inject(ViewContainerRef);
   private readonly destroyRef = inject(DestroyRef);
   private readonly document = inject(DOCUMENT);
+  // Read once, like Mention: this directive's `overlayRef` is created once and reused for its
+  // lifetime, and `NzThemeDirective`'s scope class is a per-instance constant fixed at construction,
+  // so there is nothing for a later read to pick up on each open.
+  private readonly themeScopeClasses = nzThemeScopeClasses();
 
   /** Bind nzAutocomplete component */
   @Input() nzAutocomplete!: NzAutocompleteComponent;
@@ -281,7 +286,8 @@ export class NzAutocompleteTriggerDirective implements AfterViewInit, ControlVal
         disposeOnNavigation: true,
         scrollStrategy: createRepositionScrollStrategy(this.injector),
         minWidth: dropdownMatchSelectWidth ? undefined : width,
-        width: dropdownMatchSelectWidth ? width : undefined
+        width: dropdownMatchSelectWidth ? width : undefined,
+        panelClass: [...this.themeScopeClasses()]
       });
     }
 

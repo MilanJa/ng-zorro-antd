@@ -8,6 +8,7 @@
 /** antd component name -> root class of its elements (antd `prefixCls`). */
 export const COMPONENT_ROOT_CLS: Record<string, string> = {
   Alert: 'ant-alert',
+  Select: 'ant-select',
   Button: 'ant-btn',
   Checkbox: 'ant-checkbox',
   Drawer: 'ant-drawer',
@@ -25,7 +26,6 @@ export const COMPONENT_ROOT_CLS: Record<string, string> = {
   Rate: 'ant-rate',
   Result: 'ant-result',
   Segmented: 'ant-segmented',
-  Select: 'ant-select',
   Skeleton: 'ant-skeleton',
   Slider: 'ant-slider',
   Space: 'ant-space',

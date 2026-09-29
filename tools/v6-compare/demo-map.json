@@ -46,6 +46,7 @@
     "custom-tag": null,
     "preview": null
   },
+  "auto-complete": { "_antdDir": "auto-complete", "custom-origin": "custom", "object-value": "custom" },
   "tree": { "_antdDir": "tree", "draggable-confirm": "drag-debug" },
   "tree-select": {
     "_antdDir": "tree-select",

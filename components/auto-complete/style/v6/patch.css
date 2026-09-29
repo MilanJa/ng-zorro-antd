@@ -1,0 +1,26 @@
+/*
+ * AutoComplete has no style module of its own: `ANTD_STYLE_MODULE_OVERRIDES` (scripts/build/v6/components.ts)
+ * routes extraction to Select's style module, so this component's v6 CSS is exactly Select's class
+ * set under the shared `ant-select` prefix. The overlay-positioning rule this dropdown needs
+ * (`.ant-select-dropdown { position: relative; … }`, v6 sets `position: absolute`, which collapses
+ * the CDK pane) is select's own `style/v6/patch.css` rule, not repeated here — this stylesheet only
+ * ships correctly alongside select's in the same v6 bundle.
+ */
+
+/*
+ * v4-only dropdown-content wrapping: v6's dropdown renders `.ant-select-item*` rows directly under
+ * the dropdown root (@rc-component/select's OptionList has no such wrapper), so no v6 CSS rule
+ * targets these two classes. ng-zorro keeps them in `autocomplete.component.ts`'s template for the
+ * default (v4) stylesheet; port the v4 `style/patch.less` layout for the v6 theme too, since the v4
+ * Less rules are not loaded under it. (`.ant-select-dropdown-hidden { display: none }` is dropped:
+ * v6 CSS already has this exact rule.)
+ */
+.ant-select-dropdown-content-wrapper {
+  max-height: 256px;
+  overflow-y: auto;
+  overflow-anchor: none;
+}
+.ant-select-dropdown-content {
+  display: flex;
+  flex-direction: column;
+}

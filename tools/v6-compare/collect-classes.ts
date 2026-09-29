@@ -22,7 +22,11 @@ const TRIGGERS = [
   '[nz-popconfirm]',
   '.ant-picker-input input',
   '.ant-dropdown-trigger',
-  '.ant-cascader .ant-select-selector'
+  '.ant-cascader .ant-select-selector',
+  // Auto-complete's trigger directive opens its overlay on `(click)` (`handleClick`), same as on
+  // focus; `[nzAutocomplete]` is a property binding with no reflected DOM attribute, so the
+  // directive's own static host attribute is the selector that actually matches the rendered input.
+  'input[aria-autocomplete="list"]'
 ];
 
 // Components whose popup only opens on click (not hover), scoped to the component's own demo
