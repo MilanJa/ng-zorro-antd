@@ -40,6 +40,7 @@ export const v6Components = {
   progress: { antd: ['Progress'], prefixCls: 'ant-progress' },
   rate: { antd: ['Rate'], prefixCls: 'ant-rate' },
   result: { antd: ['Result'], prefixCls: 'ant-result' },
+  segmented: { antd: ['Segmented'], prefixCls: 'ant-segmented' },
   select: { antd: ['Select'], prefixCls: 'ant-select' },
   skeleton: { antd: ['Skeleton'], prefixCls: 'ant-skeleton' },
   space: { antd: ['Space'], prefixCls: 'ant-space' },

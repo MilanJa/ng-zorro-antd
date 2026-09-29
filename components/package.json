@@ -324,6 +324,9 @@
       "less": "./segmented/style/*.less",
       "style": "./segmented/style/index.min.css"
     },
+    "./segmented/style/v6/*": {
+      "style": "./segmented/style/v6/*"
+    },
     "./select/style/*": {
       "less": "./select/style/*.less",
       "style": "./select/style/index.min.css"

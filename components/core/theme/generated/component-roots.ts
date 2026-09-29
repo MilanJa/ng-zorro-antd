@@ -20,6 +20,7 @@ export const COMPONENT_ROOT_CLS: Record<string, string> = {
   Progress: 'ant-progress',
   Rate: 'ant-rate',
   Result: 'ant-result',
+  Segmented: 'ant-segmented',
   Select: 'ant-select',
   Skeleton: 'ant-skeleton',
   Space: 'ant-space',

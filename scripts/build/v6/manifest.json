@@ -1,7 +1,7 @@
 {
   "antdVersion": "6.6.5",
   "engineCoreBytes": 42701,
-  "engineComponentsBytes": 171169,
+  "engineComponentsBytes": 174942,
   "components": {
     "alert": {
       "classes": [
@@ -877,6 +877,39 @@
         "--ant-result-icon-font-size",
         "--ant-result-subtitle-font-size",
         "--ant-result-title-font-size"
+      ]
+    },
+    "segmented": {
+      "classes": [
+        "ant-segmented",
+        "ant-segmented-block",
+        "ant-segmented-disabled",
+        "ant-segmented-group",
+        "ant-segmented-item",
+        "ant-segmented-item-disabled",
+        "ant-segmented-item-focused",
+        "ant-segmented-item-icon",
+        "ant-segmented-item-input",
+        "ant-segmented-item-label",
+        "ant-segmented-item-selected",
+        "ant-segmented-item-selected-text",
+        "ant-segmented-lg",
+        "ant-segmented-rtl",
+        "ant-segmented-shape-round",
+        "ant-segmented-sm",
+        "ant-segmented-thumb",
+        "ant-segmented-thumb-motion-appear-active",
+        "ant-segmented-vertical"
+      ],
+      "tokens": [
+        "--ant-segmented-item-active-bg",
+        "--ant-segmented-item-color",
+        "--ant-segmented-item-hover-bg",
+        "--ant-segmented-item-hover-color",
+        "--ant-segmented-item-selected-bg",
+        "--ant-segmented-item-selected-color",
+        "--ant-segmented-track-bg",
+        "--ant-segmented-track-padding"
       ]
     },
     "select": {

@@ -725,6 +725,17 @@ export interface NzResultToken {
   titleFontSize: number;
 }
 
+export interface NzSegmentedToken {
+  itemActiveBg: string;
+  itemColor: string;
+  itemHoverBg: string;
+  itemHoverColor: string;
+  itemSelectedBg: string;
+  itemSelectedColor: string;
+  trackBg: string;
+  trackPadding: number;
+}
+
 export interface NzSelectToken {
   INTERNAL_FIXED_ITEM_MARGIN: number;
   activeBorderColor: string;
@@ -800,6 +811,7 @@ export interface NzComponentTokenMap {
   Progress: NzProgressToken;
   Rate: NzRateToken;
   Result: NzResultToken;
+  Segmented: NzSegmentedToken;
   Select: NzSelectToken;
   Skeleton: NzSkeletonToken;
   Space: NzSpaceToken;
