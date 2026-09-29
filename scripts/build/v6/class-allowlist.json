@@ -1,5 +1,5 @@
 {
-  "_comment": "Classes used in ng-zorro templates that antd v6 CSS does not style. `select`/`space` entries are temporary: remove each one once the component's template is aligned with antd v6. Categories: antd-emits (antd's own component emits it, v6 CSS never styles it); patch-motion (ng-zorro motion class styled by the component's style/v6/patch.css); nz-only (ng-zorro-only class with no antd counterpart: styled by the component's style/v6/patch.css, or an unstyled runtime state hook that no stylesheet targets — the component's own comment says which); v4-compat (v4 class kept next to its v6 replacement while v4 is the default; removable then); v4-compat (patch hook) (v4 class that style/v6/patch.css selects, so removing it needs a patch rewrite); scan-artefact (a literal the static scan picks up but that is never rendered as a class).",
+  "_comment": "Classes used in ng-zorro templates that antd v6 CSS does not style. `space` entries are temporary: remove each one once the component's template is aligned with antd v6. Categories: antd-emits (antd's own component emits it, v6 CSS never styles it); patch-motion (ng-zorro motion class styled by the component's style/v6/patch.css); nz-only (ng-zorro-only class with no antd counterpart: styled by the component's style/v6/patch.css, or an unstyled runtime state hook that no stylesheet targets — the component's own comment says which); v4-compat (v4 class kept next to its v6 replacement while v4 is the default; removable then); v4-compat (patch hook) (v4 class that style/v6/patch.css selects, so removing it needs a patch rewrite); scan-artefact (a literal the static scan picks up but that is never rendered as a class).",
   "_button_comment": "button's entries are permanent, not pending alignment: antd v6's own React Button emits ant-btn-color-link and the legacy ant-btn-{default,dashed,link,text,dangerous,rtl} type/danger/rtl classes for backward compatibility, but its v6 CSS never styles them (verified against node_modules/antd/es/button/style). class-coverage.spec.ts pins this exact set so it can't silently grow.",
   "button": [
     "ant-btn-color-link",
@@ -106,9 +106,15 @@
     "ant-spin-text"
   ],
   "_rate_comment": "nz-only: -star-active, -star-focused, -star-zero (runtime state hooks on the hovered/focused/unfilled star from `updateStarStyle`; no stylesheet, v4 or v6, styles them — kept because removing them from the rendered DOM is a consumer-visible change, and `rate-v6.spec.ts` asserts `-star-zero`).",
-  "rate": ["ant-rate-star-active", "ant-rate-star-focused", "ant-rate-star-zero"],
+  "rate": [
+    "ant-rate-star-active",
+    "ant-rate-star-focused",
+    "ant-rate-star-zero"
+  ],
   "_switch_comment": "nz-only: -click-animating-node (the wave-effect node `nz-wave` renders on click; a v4-only ripple, no v6 stylesheet targets it since v6 Switch has no click ripple).",
-  "switch": ["ant-click-animating-node"],
+  "switch": [
+    "ant-click-animating-node"
+  ],
   "_checkbox_comment": "antd-emits: -group-rtl, -rtl (antd's own component emits the -rtl variants), -wrapper-checked, -wrapper-in-form-item (antd adds these inside Form.Item / when checked; v6 CSS never styles them). v4-compat: -group-item (v4-only structural hook on a grouped checkbox; no v6 counterpart). v4-compat (patch hook): -inner (v6 draws the box on `.ant-checkbox` itself; style/v6/patch.css mirrors those rules onto -inner, so removing it needs a patch rewrite).",
   "checkbox": [
     "ant-checkbox-group-item",
@@ -217,9 +223,14 @@
     "ant-upload-text-icon"
   ],
   "_mention_comment": "antd-emits: -focused (Mentions.js's own `classNames.mentions` builder sets `${prefixCls}-focused` on the root from React state; v6 CSS never styles it, keying focus visuals off `:focus-within` instead).",
-  "mention": ["ant-mentions-focused"],
+  "mention": [
+    "ant-mentions-focused"
+  ],
   "_slider_comment": "antd-emits: -rtl (Slider's own root className builder in `antd/es/slider/index.js` sets `${prefixCls}-rtl`; v6 CSS has no rule for it). v4-compat: -mark-active (kept next to its v6 replacement, -mark-text-active, added alongside it on the same mark-text span).",
-  "slider": ["ant-slider-mark-active", "ant-slider-rtl"],
+  "slider": [
+    "ant-slider-mark-active",
+    "ant-slider-rtl"
+  ],
   "float-button": [
     "ant-float-btn-body",
     "ant-float-btn-default",
@@ -241,5 +252,6 @@
     "ant-float-btn-leave-top",
     "ant-float-btn-primary",
     "ant-float-btn-top"
-  ]
+  ],
+  "_select_comment": "antd-emits: -selection-item-disabled (@rc-component/select MultipleContent.js emits `${selectionItemPrefixCls}-disabled` on a disabled tag; v6 CSS never styles this exact class, only the bare .ant-select-selection-item it decorates). nz-only: -arrow-loading (ng-zorro's own hook on nz-select-arrow; antd's loading swap is a bare LoadingOutlined icon with no such class, and no v6 CSS rule targets it), -close-icon (ng-zorro's own hook on the default clear icon; antd's default clearIcon is a bare CloseCircleFilled with no wrapper class), -selected-icon (ng-zorro's own hook on the option check icon; antd's default menuItemSelectedIcon is a bare CheckOutlined inside .ant-select-item-option-state, no such class, and no v6 CSS rule targets it). v4-compat (patch hook): -selection-search (v6 has no wrapper for the search input at all in single mode, and in multiple mode the role is played by .ant-select-content-item-suffix, added alongside; style/v6/patch.css selects this class to size the multi-mode input/mirror with v6 tokens, so removing it needs a patch rewrite), -selection-search-mirror (v6 sizes its search input via a CSS custom property written by its own JS; ng-zorro has no code path that writes it and keeps the old mirror-measurement technique instead, so style/v6/patch.css selects this class), -selection-wrap (v6 has no wrapper at all around .ant-select-content/-prefix/-suffix — they are flat children of the select root; style/v6/patch.css selects this class to give it the position/layout v4's own mixin gave it, so .ant-select-selection-placeholder still has a sized, positioned ancestor), -selector (v6 draws the select's box directly on the root .ant-select; style/v6/patch.css mirrors that box onto this class and neutralises the root's, so removing it needs a patch rewrite). v4-compat: -selection-overflow (replacement: ant-select-content, added alongside on the same element), -selection-overflow-item (replacement: ant-select-content-item, added alongside), -selection-overflow-item-suffix (replacement: ant-select-content-item-suffix, added alongside), -selection-placeholder (replacement: ant-select-placeholder, added alongside on nz-select-placeholder's host), -selection-search-input (replacement: ant-select-input, added alongside on the input element)."
 }

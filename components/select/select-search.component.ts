@@ -28,7 +28,7 @@ import { COMPOSITION_BUFFER_MODE, FormsModule } from '@angular/forms';
       #inputElement
       [attr.id]="nzId"
       autocomplete="off"
-      class="ant-select-selection-search-input"
+      class="ant-select-selection-search-input ant-select-input"
       [ngModel]="value"
       [ngModelOptions]="{ standalone: true }"
       [attr.autofocus]="autofocus ? 'autofocus' : null"

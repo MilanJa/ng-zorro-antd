@@ -16,7 +16,7 @@ import { NzSafeAny } from 'ng-zorro-antd/core/types';
       {{ placeholder }}
     </ng-container>
   `,
-  host: { class: 'ant-select-selection-placeholder' },
+  host: { class: 'ant-select-selection-placeholder ant-select-placeholder' },
   imports: [NzOutletModule]
 })
 export class NzSelectPlaceholderComponent {

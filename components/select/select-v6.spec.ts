@@ -124,6 +124,65 @@ class ScopedSelectHostComponent {
   plainDropdownClassName = signal<string[] | string | null>(null);
 }
 
+@Component({
+  imports: [FormsModule, NzSelectModule],
+  template: `
+    <nz-select id="host" [ngModel]="value()" style="width: 160px; margin-top: 40px">
+      <nz-option nzValue="jack" nzLabel="Jack" />
+      <nz-option nzValue="lucy" nzLabel="Lucy" />
+    </nz-select>
+    <nz-select id="multi" nzMode="multiple" [ngModel]="multiValue()" style="width: 220px; margin-top: 40px">
+      <nz-option nzValue="jack" nzLabel="Jack" />
+      <nz-option nzValue="lucy" nzLabel="Lucy" />
+    </nz-select>
+  `
+})
+class BoxTestSelectComponent {
+  value = signal('lucy');
+  multiValue = signal(['lucy']);
+}
+
+describe('select box under antd v6 css', () => {
+  let fixture: ComponentFixture<BoxTestSelectComponent>;
+  let style: HTMLStyleElement;
+
+  beforeEach(() => {
+    style = document.createElement('style');
+    style.textContent = [V6_TEMPLATE_CSS, V6_TOKENS_DEFAULT_CSS, V6_PATCH_CSS].join('\n');
+    document.head.appendChild(style);
+    TestBed.configureTestingModule({ providers: [provideNzIconsTesting()] });
+    fixture = TestBed.createComponent(BoxTestSelectComponent);
+    fixture.detectChanges();
+  });
+
+  afterEach(() => {
+    style.remove();
+    TestBed.inject(OverlayContainer).ngOnDestroy();
+  });
+
+  it('renders the outlined single select box with the v6 height, radius and border', () => {
+    const root = document.getElementById('host') as HTMLElement;
+    expect(root.classList.contains('ant-select-outlined')).toBe(true);
+    expect(root.classList.contains('ant-select-single')).toBe(true);
+    const box = root.querySelector('.ant-select-selector') as HTMLElement; // or the v6 box element from the dump
+    expect(getComputedStyle(box).height).toBe('32px');
+    expect(getComputedStyle(box).borderRadius).toBe('6px');
+    expect(getComputedStyle(box).borderColor).toBe('rgb(217, 217, 217)');
+  });
+
+  it('renders a multiple select whose selected tag has the v6 multi-item background and height', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const root = document.getElementById('multi') as HTMLElement;
+    expect(root.classList.contains('ant-select-multiple')).toBe(true);
+    const tag = root.querySelector('.ant-select-selection-item') as HTMLElement;
+    expect(tag).not.toBeNull();
+    // multipleItemBg = colorFillSecondary (default token), read as its rendered rgba.
+    expect(getComputedStyle(tag).backgroundColor).toBe('rgba(0, 0, 0, 0.06)');
+    expect(getComputedStyle(tag).height).toBe('24px');
+  });
+});
+
 describe('select dropdown panel picks up the enclosing theme scope', () => {
   let fixture: ComponentFixture<ScopedSelectHostComponent>;
   let overlay: OverlayContainer;

@@ -1,3 +1,117 @@
+/*
+ * antd v6's rc-select no longer renders a separate selector box: `SelectInput`'s root *is* the
+ * select root, and the box (border, radius, height, background, padding — antd's bare `.ant-select`
+ * rule) is drawn on it directly. ng-zorro keeps `nz-select-top-control` (`.ant-select-selector`) as
+ * a nested box, matching v4's own architecture where `.ant-select` never carries a border and
+ * `.ant-select-selector` does. Mirror the box onto `.ant-select-selector`, reading the same custom
+ * properties antd's `.ant-select` rule sets (they inherit from the root ancestor), and neutralise
+ * the paint (not layout) properties that would otherwise double the box on the root.
+ */
+.ant-select {
+  border: none;
+  background: transparent;
+  padding-inline: 0;
+  padding-block: 0;
+  border-radius: 0;
+}
+.ant-select .ant-select-selector {
+  position: relative;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  width: 100%;
+  height: var(--ant-select-height);
+  padding-inline: var(--ant-select-padding-horizontal);
+  padding-block: var(--ant-select-padding-vertical);
+  border-width: var(--ant-select-border-size);
+  border-style: var(--ant-line-type);
+  border-color: var(--ant-select-border-color);
+  border-radius: var(--ant-select-border-radius);
+  background: var(--ant-select-background-color);
+  transition: all var(--ant-motion-duration-slow);
+  cursor: pointer;
+}
+.ant-select .ant-select-selector input {
+  cursor: pointer;
+}
+.ant-select-show-search .ant-select-selector,
+.ant-select-show-search .ant-select-selector input {
+  cursor: text;
+}
+.ant-select-disabled .ant-select-selector {
+  cursor: not-allowed;
+}
+
+/*
+ * antd v6 has no equivalent of the `.ant-select-selection-wrap` span (its `.ant-select-prefix`,
+ * `.ant-select-content` and `.ant-select-suffix` sit directly under the select root); port the
+ * positioning v4's own mixin gives it (`components/select/style/index.less` `.select-selector()`
+ * `-selection-wrap` block) so `.ant-select-selection-placeholder`, which positions itself relative
+ * to its nearest positioned ancestor, still has a sized, positioned one under the v6 theme.
+ */
+.ant-select-selector .ant-select-selection-wrap {
+  position: relative;
+  display: flex;
+  width: 100%;
+  min-width: 0;
+}
+
+/*
+ * antd v6 folds the trailing icon into `.ant-select-suffix`, an `Affix` that is a flex sibling of
+ * `.ant-select-content` under the select root; ng-zorro keeps `nz-select-arrow` as its own
+ * absolutely positioned sibling of `.ant-select-selector`, as v4's own `&-arrow` rule does. Port
+ * that positioning with v6 tokens, since no v6 CSS rule targets `.ant-select-arrow` at all.
+ */
+.ant-select .ant-select-arrow {
+  position: absolute;
+  top: 50%;
+  inset-inline-end: var(--ant-select-padding-horizontal);
+  display: flex;
+  align-items: center;
+  height: var(--ant-font-size-icon);
+  margin-top: calc(var(--ant-font-size-icon) * -1 / 2);
+  color: var(--ant-color-text-quaternary);
+  font-size: var(--ant-font-size-icon);
+  line-height: 1;
+  pointer-events: none;
+}
+.ant-select-disabled .ant-select-arrow {
+  cursor: not-allowed;
+}
+
+/*
+ * antd v6 sizes the multiple-mode search input via a `--select-input-width` custom property that
+ * its own JS writes as an inline style on the input; ng-zorro measures width with a hidden mirror
+ * element instead (`NzSelectSearchComponent.syncMirrorWidth`) and has no code path that writes
+ * `--select-input-width`. Port the mirror-driven sizing v4's own `multiple.less`
+ * `.@{select-prefix-cls}-selection-search` block gives it, with v6 tokens, so the input has a
+ * width at all under the v6 theme.
+ */
+.ant-select-multiple .ant-select-content .ant-select-selection-search {
+  position: relative;
+  display: inline-flex;
+  max-width: 100%;
+}
+.ant-select-multiple .ant-select-content .ant-select-selection-search-input,
+.ant-select-multiple .ant-select-content .ant-select-selection-search-mirror {
+  height: var(--ant-select-multi-item-height);
+  line-height: var(--ant-select-multi-item-height);
+  transition: all var(--ant-motion-duration-slow);
+}
+.ant-select-multiple .ant-select-content .ant-select-selection-search-input {
+  width: 100%;
+  min-width: 4.1px;
+}
+.ant-select-multiple .ant-select-content .ant-select-selection-search-mirror {
+  position: absolute;
+  top: 0;
+  z-index: 999;
+  white-space: pre;
+  visibility: hidden;
+  inset-inline-start: 0;
+  inset-inline-end: auto;
+}
+
 /* antd positions popups with inline styles from rc-trigger; ng-zorro positions the CDK overlay pane instead. */
 .ant-select-dropdown {
   position: relative;

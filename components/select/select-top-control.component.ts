@@ -49,7 +49,7 @@ import { NzSelectItemInterface, NzSelectModeType, NzSelectTopControlItemType } f
         <ng-container *nzStringTemplateOutlet="prefix">{{ prefix }}</ng-container>
       </div>
     }
-    <span class="ant-select-selection-wrap">
+    <span class="ant-select-selection-wrap" [class.ant-select-content]="mode === 'default'">
       <!--single mode-->
       @switch (mode) {
         @case ('default') {
@@ -74,10 +74,10 @@ import { NzSelectItemInterface, NzSelectModeType, NzSelectTopControlItemType } f
           }
         }
         @default {
-          <div class="ant-select-selection-overflow">
+          <div class="ant-select-selection-overflow ant-select-content">
             <!--multiple or tags mode-->
             @for (item of listOfSlicedItem; track item.nzValue) {
-              <div class="ant-select-selection-overflow-item">
+              <div class="ant-select-selection-overflow-item ant-select-content-item">
                 <nz-select-item
                   [removeIcon]="removeIcon"
                   [label]="item.nzLabel"
@@ -89,7 +89,9 @@ import { NzSelectItemInterface, NzSelectModeType, NzSelectTopControlItemType } f
                 />
               </div>
             }
-            <div class="ant-select-selection-overflow-item ant-select-selection-overflow-item-suffix">
+            <div
+              class="ant-select-selection-overflow-item ant-select-selection-overflow-item-suffix ant-select-content-item ant-select-content-item-suffix"
+            >
               <nz-select-search
                 [nzId]="nzId"
                 [disabled]="disabled"
