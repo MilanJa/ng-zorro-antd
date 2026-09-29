@@ -23,6 +23,7 @@ function installV6Css(): void {
   imports: [NzFloatButtonModule],
   template: `
     <nz-float-button id="host" nzIcon="question-circle" />
+    <nz-float-button id="square-host" nzShape="square" nzIcon="question-circle" />
     <nz-float-button-group id="group" nzShape="square" nzTrigger="click" [nzOpen]="open()">
       <nz-float-button nzIcon="file-text" />
     </nz-float-button-group>
@@ -55,6 +56,18 @@ describe('float-button under antd v6 css', () => {
     expect(cs.width).toBe('40px');
     expect(cs.height).toBe('40px');
     expect(cs.borderRadius).toBe('50%');
+  });
+
+  it('fills the host with a 40x40 inner button box for both circle and square (fix round 1)', () => {
+    const circleInner = document.querySelector('#host .ant-float-btn-inner') as HTMLElement;
+    const circleRect = circleInner.getBoundingClientRect();
+    expect(Math.round(circleRect.width)).toBe(40);
+    expect(Math.round(circleRect.height)).toBe(40);
+
+    const squareInner = document.querySelector('#square-host .ant-float-btn-inner') as HTMLElement;
+    const squareRect = squareInner.getBoundingClientRect();
+    expect(Math.round(squareRect.width)).toBe(40);
+    expect(Math.round(squareRect.height)).toBe(40);
   });
 
   it('opens a square group list', async () => {

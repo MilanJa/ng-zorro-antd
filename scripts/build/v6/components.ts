@@ -27,15 +27,19 @@ export const v6Components = {
   alert: { antd: ['Alert'], prefixCls: 'ant-alert' },
   button: { antd: ['Button'], prefixCls: 'ant-btn' },
   drawer: { antd: ['Drawer'], prefixCls: 'ant-drawer' },
-  // `BackTop` is a real top-level antd export (per the task brief), but it renders `FloatButton`
-  // directly and registers no style hook of its own (node_modules/antd/es/float-button/BackTop.js
-  // never calls `useStyle`/`genStyleHooks`; only float-button/style/index.js does, keyed
-  // `genStyleHooks('FloatButton', ...)`). Including 'BackTop' here added a spurious
-  // `--ant-back-top-z-index-popup` default-token declaration our own engine emits for any included
-  // name (antd's real per-request `extractStyle` never emits it, since no CSS rule of BackTop's own
-  // ever consumes it), breaking `render-parity.spec.ts`'s byte-equality check against antd's real
-  // extraction. `FloatButton` alone already supplies 100% of BackTop's rendered CSS (BackTop is pure
-  // composition, no v6 `-progress` support omitted by this), so only it is listed.
+  // `BackTop` is a real top-level antd export (per the task brief), but it resolves to the
+  // *deprecated* `antd/es/back-top` component ("@deprecated Please use `FloatButton.BackTop`
+  // instead."), which registers its own separate style hook (`genStyleHooks('BackTop', ...)` in
+  // `back-top/style/index.js`) targeting `.ant-back-top*` classes and a `--ant-back-top-*` token
+  // namespace -- ng-zorro's `NzFloatButtonTopComponent` never renders any `.ant-back-top*` class; it
+  // mirrors `FloatButton.BackTop` (`float-button/BackTop.js`), which renders a plain `FloatButton`
+  // and owns no style hook of its own (only `float-button/style/index.js` does, keyed
+  // `genStyleHooks('FloatButton', ...)`). Including the top-level `'BackTop'` name here therefore
+  // pulled in an irrelevant `--ant-back-top-z-index-popup` token our component never consumes,
+  // breaking `render-parity.spec.ts`'s byte-equality check against antd's real extraction (antd's own
+  // per-request `extractStyle` never emits that token unless `.ant-back-top*` markup is actually
+  // rendered). `FloatButton` alone already supplies 100% of `FloatButton.BackTop`'s rendered CSS
+  // (BackTop is pure composition), so only it is listed.
   'float-button': { antd: ['FloatButton'], prefixCls: 'ant-float-btn' },
   input: { antd: ['Input'], prefixCls: 'ant-input' },
   message: { antd: ['message'], prefixCls: 'ant-message' },

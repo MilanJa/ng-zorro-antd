@@ -20,6 +20,16 @@
   inset-inline-end: var(--ant-margin-lg);
   bottom: var(--ant-margin-xxl);
   box-shadow: var(--ant-box-shadow-secondary);
+  /* Fix round 1, item 1: real v6's `.ant-float-btn{padding:var(--ant-padding-xxs) 0;gap:calc(...)}`
+     is meant for antd's own Button-based root (border-box, `display:inline-flex`), where the inner
+     icon/content sit directly in that padded, gapped flex box. ng-zorro's host is a plain block
+     wrapping the kept v4-compat `.ant-float-btn-inner` button, which this patch already fills to
+     100% of the host -- the real rule's vertical padding shrinks that 100% to a shorter box (an
+     oval for circle, taller-than-40px for square), and its `gap` has no flex children of the host to
+     act on. Neutralised so the inner element fills the full 40px box antd's own `.ant-btn-lg` would
+     have given it had the `ant-btn` layer been reproduced (task-16's ruling). */
+  padding: 0;
+  gap: 0;
 }
 
 /* `.ant-float-btn{width:var(--ant-float-btn-size);height:auto}` is already real v6 CSS; circle
@@ -44,6 +54,16 @@
   height: 100%;
   min-width: 0;
   padding: 0;
+  /* Fix round 1, item 1 (root cause found while chasing the 40x40 measurement): real v6's
+     `.ant-btn{border:var(--ant-btn-border-width) var(--ant-btn-border-style) var(--ant-btn-border-color)}`
+     gives every `.ant-btn` a real (non-zero) border, which v4's own `.ant-float-btn-inner{border:none}`
+     rule (style/index.less) already neutralises for the v4 theme -- not yet ported here. Without it,
+     whenever the host's own height is `auto` (square shape, or any shape before this patch's height
+     mirror above resolves), CSS falls back to content-driven sizing for `height:100%`'s percentage
+     (an `auto`-height ancestor can't satisfy a percentage height), and the border then adds on top of
+     the content height instead of being absorbed inside a border-box percentage box, overshooting by
+     2 x border-width. */
+  border: none;
   border-radius: inherit;
 }
 
@@ -52,6 +72,18 @@
    `.ant-float-btn .ant-float-btn-content` (font-size) / `.ant-float-btn .ant-float-btn-icon`
    (line-height) plus v4's own `-body`/`-content`/`-icon` flex-centring (`style/index.less`) onto the
    wrapper -- without it the body wrapper collapses centring under the v6 theme. */
+/* `nz-float-button-content` (the content-projection host between the inner button and `-body`) is
+   an unstyled custom element, which browsers default to `display:inline` -- an inline box cannot act
+   as the block containing block a percentage `height` on `-body` resolves against, so the chain
+   above it (`.ant-float-btn-inner{height:100%}`) silently falls through to `auto`, and the exact
+   pixel outcome then depends on font-metric/anonymous-block-wrapping details that differ between the
+   fixed-height circle case (works by luck) and the auto-height square case (came out 2px tall in
+   testing). Made an explicit block box so the percentage-height chain resolves deterministically. */
+nz-float-button-content {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
 .ant-float-btn-body {
   display: flex;
   align-items: center;
@@ -73,11 +105,18 @@
   font-size: var(--ant-font-size-sm);
 }
 .ant-float-btn-icon {
-  width: calc(var(--ant-font-size-sm) * 1.5);
   margin: auto;
-  font-size: calc(var(--ant-font-size-sm) * 1.5);
   line-height: 1;
   text-align: center;
+}
+/* Fix round 1, item 4: real v6 only bumps the icon to 1.5x size when icon-only
+   (`.ant-float-btn.ant-float-btn-icon-only .anticon{font-size:calc(var(--ant-font-size-icon) * 1.5)}`);
+   when a description is also shown, the icon inherits `.ant-float-btn-content`'s own
+   `font-size:var(--ant-font-size-sm)`. Ported the same conditional and token (`--ant-font-size-icon`,
+   not `--ant-font-size-sm`) onto the kept `-icon` wrapper instead of a hard-coded 18px literal. */
+.ant-float-btn-icon-only .ant-float-btn-icon {
+  width: calc(var(--ant-font-size-icon) * 1.5);
+  font-size: calc(var(--ant-font-size-icon) * 1.5);
 }
 .ant-float-btn-description {
   display: flex;
@@ -105,9 +144,12 @@
 /* Group members: real v6's `.ant-float-btn-group .ant-float-btn{position:relative;inset:auto}`
    already cancels the base rule's fixed position above, but not its z-index/box-shadow. Circle
    groups keep antd's real per-item shadow (`individual` is true for circle groups in antd's own
-   FloatButtonGroup.js:122); square groups render one shadow around the whole list instead (mirrors
-   v4's own `&-square-shadow .ant-float-btn-square{box-shadow:none}`), so z-index/shadow/radius are
-   reset only for square list items, with square-list-specific corner rounding ported from v4. */
+   FloatButtonGroup.js:122, mirrored onto the host in float-button-group.component.ts's `class()` --
+   see the real v6 `:not(.ant-float-btn-group-individual) .ant-float-btn-group-list{box-shadow:...}`
+   rule this now correctly excludes circle from); square groups render one shadow around the whole
+   list instead (mirrors v4's own `&-square-shadow .ant-float-btn-square{box-shadow:none}`), so
+   z-index/shadow/radius are reset only for square list items, with square-list-specific corner
+   rounding ported from v4. */
 .ant-float-btn-group-square .ant-float-btn-square {
   z-index: auto;
   box-shadow: none;
@@ -121,11 +163,45 @@
   border-end-start-radius: var(--ant-border-radius-lg);
   border-end-end-radius: var(--ant-border-radius-lg);
 }
-.ant-float-btn-group-square .ant-float-btn-square:not(:last-child) {
-  border-bottom: 1px solid var(--ant-color-split);
-}
 .ant-float-btn-group-square .ant-float-btn-group-trigger {
   border-radius: var(--ant-border-radius-lg);
+}
+
+/* Fix round 1, item 2: ng-zorro's non-menu-mode square group renders its items as direct children of
+   the group root (no `Space.Compact`/`-group-list` wrapper, same reasoning as the group-root
+   `display:flex` rule below), so the root's own real-v6 `gap` separated the items into spaced tiles
+   instead of one connected list, and the per-item `box-shadow:none` reset above then left the whole
+   thing shadow-less. Mirrors v4's own `&-square-shadow{box-shadow:@shadow-2}` (shadow on the group,
+   none per item) by putting the list's single shadow on the root and zeroing its gap; the
+   menu-mode list wrap gets the same treatment for consistency (real v6's own
+   `:not(.ant-float-btn-group-individual) .ant-float-btn-group-list{box-shadow:...}` rule already
+   covers it once `-individual` is correctly limited to circle groups, above, but this makes the
+   non-shadow-in-that-path-broken case explicit rather than relying only on that rule firing). Divider
+   between items is direction-aware: a vertical list (top/bottom placement, or the always-vertical
+   non-menu-mode default) divides with `border-bottom`; a horizontal list (left/right placement)
+   divides with `border-inline-end`, mirroring v4's own per-placement border rules
+   (`style/index.less` lines 322-357). */
+.ant-float-btn-group-square:not(.ant-float-btn-group-menu-mode) {
+  gap: 0;
+  box-shadow: var(--ant-box-shadow-secondary);
+}
+.ant-float-btn-group-square.ant-float-btn-group-menu-mode .ant-float-btn-group-wrap {
+  gap: 0;
+  box-shadow: var(--ant-box-shadow-secondary);
+}
+.ant-float-btn-group-square:not(.ant-float-btn-group-menu-mode) .ant-float-btn-square:not(:last-child),
+.ant-float-btn-group-square.ant-float-btn-group-top .ant-float-btn-group-wrap .ant-float-btn-square:not(:last-child),
+.ant-float-btn-group-square.ant-float-btn-group-bottom
+  .ant-float-btn-group-wrap
+  .ant-float-btn-square:not(:last-child) {
+  border-bottom: 1px solid var(--ant-color-split);
+}
+.ant-float-btn-group-square.ant-float-btn-group-left .ant-float-btn-group-wrap .ant-float-btn-square:not(:last-child),
+.ant-float-btn-group-square.ant-float-btn-group-right
+  .ant-float-btn-group-wrap
+  .ant-float-btn-square:not(:last-child) {
+  border-inline-end: 1px solid var(--ant-color-split);
+  border-bottom: none;
 }
 
 /* Menu-mode list wrap (`.ant-float-btn-group-wrap.ant-float-btn-group-list`, mapping table row 19):

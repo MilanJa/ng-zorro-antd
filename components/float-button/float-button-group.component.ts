@@ -95,6 +95,14 @@ export class NzFloatButtonGroupComponent {
     const shape = this.nzShape();
     const dir = this.dir();
     const classes = [CLASS_NAME, this.generateClass(shape)];
+    // Fix round 1, item 3: real antd sets `individual = shape === 'circle'` on the group's own root
+    // class list too (FloatButtonGroup.js:122,193), which real v6 CSS's
+    // `.ant-float-btn-group:not(.ant-float-btn-group-individual) .ant-float-btn-group-list{box-shadow:...}`
+    // rule uses to exclude circle-shaped (per-item-shadowed) groups from an additional card shadow on
+    // the list itself. Inert under v4 (no `.ant-float-btn-group-individual` rule in style/*.less).
+    if (shape === 'circle') {
+      classes.push(`${CLASS_NAME}-individual`);
+    }
     if (!this.isMenuMode()) {
       classes.push(this.generateClass(`${shape}-shadow`));
     } else {
