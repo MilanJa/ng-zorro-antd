@@ -68,13 +68,35 @@ describe('notification under antd v6 css', () => {
     expect(overlay.getContainerElement().querySelector('.ant-notification-notice')).toBeNull();
   });
 
-  it('does not block clicks on the page while a notification is showing (fix round 1)', async () => {
-    // Regression pin for the critical defect: v6's `.ant-notification { position: fixed; ...;
-    // height: 100vh }` root, rendered unconditionally on all six placement roots even when empty,
-    // intercepted pointer events everywhere it overlapped the page (see style/v6/patch.css's
-    // `pointer-events: none` mirror). A button placed near the bottom-left corner -- far from the
-    // topRight notice this test opens, but still within one of the other five (empty) fixed roots
-    // before the patch -- pins that the whole page stays clickable.
+  it('indents the text of a notice with an icon by the icon size plus the wrapper gap', async () => {
+    TestBed.inject(NzNotificationService).success('Title', 'Body', { nzDuration: 0 });
+    await Promise.resolve();
+    await Promise.resolve();
+    const notice = overlay.getContainerElement().querySelector('.ant-notification-notice') as HTMLElement;
+    await expectMotionSettled(notice);
+    const iconEl = notice.querySelector('.ant-notification-notice-icon') as HTMLElement;
+    const iconSize = parseFloat(getComputedStyle(iconEl).fontSize); // --ant-notification-icon-font-size
+    const icon = iconEl.getBoundingClientRect();
+    const title = notice.querySelector('.ant-notification-notice-title')!.getBoundingClientRect();
+    expect(iconSize).toBe(24); // antd's iconSize: fontSizeLG x lineHeightLG
+    expect(icon.width).toBe(iconSize);
+    expect(title.left - icon.left).toBe(iconSize + 12); // icon size + --ant-margin-sm, as v6's flex gap
+  });
+
+  it('does not indent the text of a blank notice', async () => {
+    TestBed.inject(NzNotificationService).blank('Title', 'Body', { nzDuration: 0 });
+    await Promise.resolve();
+    await Promise.resolve();
+    const notice = overlay.getContainerElement().querySelector('.ant-notification-notice') as HTMLElement;
+    await expectMotionSettled(notice);
+    const title = notice.querySelector('.ant-notification-notice-title') as HTMLElement;
+    expect(getComputedStyle(title).marginInlineStart).toBe('0px');
+  });
+
+  it('does not block clicks on the page while a notification is showing', async () => {
+    // v6's `.ant-notification` root is a fixed 100vh box and ng-zorro renders all six placement roots
+    // even when empty; the patch's `pointer-events: none` keeps the page under them clickable. The
+    // hit test at the bottom-left corner, far from the topRight notice, must reach the page button.
     const button = document.createElement('button');
     document.body.appendChild(button);
     button.style.position = 'fixed';
@@ -82,8 +104,6 @@ describe('notification under antd v6 css', () => {
     button.style.bottom = '0px';
     button.style.width = '10px';
     button.style.height = '10px';
-    let clicked = false;
-    button.addEventListener('click', () => (clicked = true));
     try {
       TestBed.inject(NzNotificationService).success('Title', 'Body', { nzDuration: 0 });
       await Promise.resolve();
@@ -91,10 +111,7 @@ describe('notification under antd v6 css', () => {
       const notice = overlay.getContainerElement().querySelector('.ant-notification-notice') as HTMLElement;
       expect(notice).not.toBeNull();
       await expectMotionSettled(notice);
-      const probe = document.elementFromPoint(20, window.innerHeight - 20);
-      expect(probe?.closest('.ant-notification')).toBeNull();
-      button.click();
-      expect(clicked).toBe(true);
+      expect(document.elementFromPoint(5, window.innerHeight - 5)).toBe(button);
     } finally {
       button.remove();
     }
