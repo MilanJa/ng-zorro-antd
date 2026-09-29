@@ -513,6 +513,10 @@ export class NzMentionComponent implements OnInit, AfterViewInit, OnChanges {
   private attachOverlay(): void {
     if (!this.overlayRef) {
       this.portal = new TemplatePortal(this.suggestionsTemp!, this.viewContainerRef);
+      // Read once here, unlike Select's `updateDropdownPanelClasses` (which re-reads on every open to
+      // also track `nzDropdownClassName` changes): this `overlayRef` is created once and reused for the
+      // component's lifetime, and `NzThemeDirective`'s scope class is a per-instance constant that never
+      // changes after construction, so there is nothing for a later read to pick up.
       this.overlayRef = createOverlayRef(this.injector, {
         positionStrategy: this.getOverlayPosition(),
         scrollStrategy: createRepositionScrollStrategy(this.injector),

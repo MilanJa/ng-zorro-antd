@@ -71,13 +71,19 @@ describe('mention under antd v6 css', () => {
     // the `OverlayConfig` (mention.component.ts's `attachOverlay`) lands on the CDK-generated
     // `.cdk-overlay-pane` wrapper, not on `.ant-mentions-dropdown` itself (the template's own root node,
     // one level below the pane) — there is no per-render class-binding hook on the pane the way
-    // `cdkConnectedOverlayPanelClass` gives select. `.ant-mentions-dropdown` still picks up the scope's
-    // CSS custom properties by inheriting them from its scoped ancestor, which the token assertions below
-    // confirm.
+    // `cdkConnectedOverlayPanelClass` gives select. The `backgroundColor`/`borderRadius` assertions below
+    // are default-token values that would pass even if the scope never reached the dropdown at all, so
+    // they are NOT proof of inheritance; the `--ant-color-primary` custom-property read right after is —
+    // it is the scoped override value (`#00b96b`), which only a scoped ancestor can supply. v6's own
+    // mention-dropdown CSS never keys any rule off `colorPrimary` (the active/selected item's
+    // `.ant-mentions-dropdown-menu-item-active`/`-selected` both use `--ant-control-item-bg-hover`, i.e.
+    // `colorFillTertiary`, not a primary-derived token — checked in `antd/es/theme/util/alias.js` and the
+    // generated CSS), so there is no visible-effect assertion to add on top of the custom-property read.
     const pane = dropdown.closest('.cdk-overlay-pane') as HTMLElement;
     expect(pane).not.toBeNull();
     expect(pane.className).toMatch(/\bnz-theme-\d+\b/);
     expect(pane.className).toContain(enclosingScopeClass());
+    expect(getComputedStyle(dropdown).getPropertyValue('--ant-color-primary').trim()).toBe('#00b96b');
 
     const cs = getComputedStyle(dropdown);
     expect(cs.position).toBe('relative');
