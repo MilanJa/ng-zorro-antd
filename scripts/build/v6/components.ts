@@ -34,6 +34,7 @@ export const v6Components = {
   'float-button': { antd: ['FloatButton'], prefixCls: 'ant-float-btn' },
   input: { antd: ['Input'], prefixCls: 'ant-input' },
   'input-number': { antd: ['InputNumber'], prefixCls: 'ant-input-number' },
+  mention: { antd: ['Mentions'], prefixCls: 'ant-mentions' },
   message: { antd: ['message'], prefixCls: 'ant-message' },
   modal: { antd: ['Modal'], prefixCls: 'ant-modal' },
   notification: { antd: ['notification'], prefixCls: 'ant-notification' },

@@ -37,5 +37,13 @@
     "draggable": null
   },
   "upload": { "_antdDir": "upload" },
-  "slider": { "_antdDir": "slider", "tip-formatter": "show-tooltip", "tooltip": "show-tooltip" }
+  "slider": { "_antdDir": "slider", "tip-formatter": "show-tooltip", "tooltip": "show-tooltip" },
+  "mention": {
+    "_antdDir": "mentions",
+    "auto-size": "autoSize",
+    "clear": "allowClear",
+    "avatar": null,
+    "custom-tag": null,
+    "preview": null
+  }
 }

@@ -1,0 +1,14 @@
+/* antd positions the dropdown with inline styles from rc-trigger (and hides it off-screen at
+   `top:-9999px` before that); ng-zorro positions the CDK overlay pane itself instead, so the pane's own
+   child needs a normal position in the flow. Port of `style/patch.less`'s `&-dropdown` rule; `margin-top`
+   offsets the fixed `- 6` fudge factor `NzMentionComponent.updatePositions()` subtracts from the caret's
+   line-bottom offset (so the two together clear the caret line the connected overlay is anchored to).
+   `left`/`margin-bottom`/`width` tuned the box for the old (pre-CDK) inline layout and are dropped in
+   favour of v6's own `padding`/`border-radius-lg` on the same element. */
+.ant-mentions-dropdown {
+  position: relative;
+  top: 0;
+  left: 0;
+  inset-inline-start: 0;
+  margin-top: 8px;
+}

@@ -1,7 +1,7 @@
 {
   "antdVersion": "6.6.5",
   "engineCoreBytes": 42701,
-  "engineComponentsBytes": 209833,
+  "engineComponentsBytes": 213526,
   "components": {
     "alert": {
       "classes": [
@@ -566,6 +566,62 @@
         "--ant-input-number-padding-inline-lg",
         "--ant-input-number-padding-inline-sm",
         "--ant-input-number-warning-active-shadow"
+      ]
+    },
+    "mention": {
+      "classes": [
+        "ant-form-item-feedback-icon",
+        "ant-mentions",
+        "ant-mentions-affix-wrapper-lg",
+        "ant-mentions-affix-wrapper-sm",
+        "ant-mentions-borderless",
+        "ant-mentions-clear-icon",
+        "ant-mentions-clear-icon-hidden",
+        "ant-mentions-disabled",
+        "ant-mentions-dropdown",
+        "ant-mentions-dropdown-hidden",
+        "ant-mentions-dropdown-menu",
+        "ant-mentions-dropdown-menu-item",
+        "ant-mentions-dropdown-menu-item-active",
+        "ant-mentions-dropdown-menu-item-disabled",
+        "ant-mentions-dropdown-menu-item-selected",
+        "ant-mentions-filled",
+        "ant-mentions-has-suffix",
+        "ant-mentions-lg",
+        "ant-mentions-measure",
+        "ant-mentions-outlined",
+        "ant-mentions-prefix",
+        "ant-mentions-rtl",
+        "ant-mentions-sm",
+        "ant-mentions-status-error",
+        "ant-mentions-status-warning",
+        "ant-mentions-suffix",
+        "ant-mentions-textarea-rtl",
+        "ant-mentions-underlined"
+      ],
+      "tokens": [
+        "--ant-mentions-active-bg",
+        "--ant-mentions-active-border-color",
+        "--ant-mentions-active-shadow",
+        "--ant-mentions-addon-bg",
+        "--ant-mentions-control-item-width",
+        "--ant-mentions-dropdown-height",
+        "--ant-mentions-error-active-shadow",
+        "--ant-mentions-hover-bg",
+        "--ant-mentions-hover-border-color",
+        "--ant-mentions-input-font-size",
+        "--ant-mentions-input-font-size-lg",
+        "--ant-mentions-input-font-size-sm",
+        "--ant-mentions-item-padding-vertical",
+        "--ant-mentions-line-width-focus",
+        "--ant-mentions-padding-block",
+        "--ant-mentions-padding-block-lg",
+        "--ant-mentions-padding-block-sm",
+        "--ant-mentions-padding-inline",
+        "--ant-mentions-padding-inline-lg",
+        "--ant-mentions-padding-inline-sm",
+        "--ant-mentions-warning-active-shadow",
+        "--ant-mentions-z-index-popup"
       ]
     },
     "message": {

@@ -52,6 +52,7 @@ import { distinctUntilChanged, startWith, switchMap } from 'rxjs/operators';
 import { NZ_FORM_VARIANT, NzFormItemFeedbackIconComponent, NzFormStatusService } from 'ng-zorro-antd/core/form';
 import { NzStringTemplateOutletDirective } from 'ng-zorro-antd/core/outlet';
 import { DEFAULT_MENTION_BOTTOM_POSITIONS, DEFAULT_MENTION_TOP_POSITIONS } from 'ng-zorro-antd/core/overlay';
+import { nzThemeScopeClasses } from 'ng-zorro-antd/core/theme';
 import { NgClassInterface, NzSafeAny, NzStatus, NzValidateStatus, NzVariant } from 'ng-zorro-antd/core/types';
 import {
   fromEventOutsideAngular,
@@ -158,6 +159,13 @@ export class NzMentionComponent implements OnInit, AfterViewInit, OnChanges {
   private readonly renderer = inject(Renderer2);
   private readonly destroyRef = inject(DestroyRef);
   private readonly nzFormStatusService = inject(NzFormStatusService, { optional: true });
+  /**
+   * Classes the enclosing `[nzTheme]` scope adds to the dropdown root so a scoped theme reaches
+   * content rendered in the CDK overlay container (resolved from the injector at construction; see
+   * Select's `updateDropdownPanelClasses`). The dropdown is created with `createOverlayRef`, so these
+   * classes go into the `OverlayConfig`'s `panelClass` instead of a bound `cdkConnectedOverlayPanelClass`.
+   */
+  private readonly themeScopeClasses = nzThemeScopeClasses();
 
   @Input() nzValueWith: (value: NzSafeAny) => string = value => value;
   @Input() nzPrefix: string | string[] = '@';
@@ -508,7 +516,8 @@ export class NzMentionComponent implements OnInit, AfterViewInit, OnChanges {
       this.overlayRef = createOverlayRef(this.injector, {
         positionStrategy: this.getOverlayPosition(),
         scrollStrategy: createRepositionScrollStrategy(this.injector),
-        disposeOnNavigation: true
+        disposeOnNavigation: true,
+        panelClass: [...this.themeScopeClasses()]
       });
     }
     if (this.overlayRef && !this.overlayRef.hasAttached()) {

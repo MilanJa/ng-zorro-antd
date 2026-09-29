@@ -18,6 +18,7 @@ Only the components below have v6 styles so far. Others keep rendering with the 
 - `float-button`
 - `input`
 - `input-number`
+- `mention`
 - `message`
 - `modal`
 - `notification`

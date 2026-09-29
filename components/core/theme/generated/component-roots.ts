@@ -14,6 +14,7 @@ export const COMPONENT_ROOT_CLS: Record<string, string> = {
   FloatButton: 'ant-float-btn',
   Input: 'ant-input',
   InputNumber: 'ant-input-number',
+  Mentions: 'ant-mentions',
   Message: 'ant-message',
   Modal: 'ant-modal',
   Notification: 'ant-notification',
