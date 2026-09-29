@@ -3,6 +3,7 @@
  * found in the LICENSE file at https://github.com/NG-ZORRO/ng-zorro-antd/blob/master/LICENSE
  */
 
+import { OverlayContainer } from '@angular/cdk/overlay';
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
@@ -30,7 +31,7 @@ describe('rate under antd v6 css', () => {
 
   beforeEach(async () => {
     installV6Css();
-    TestBed.configureTestingModule({ providers: [provideNzIconsTesting()] });
+    TestBed.configureTestingModule({ providers: [provideNzIconsTesting()], animationsEnabled: true });
     fixture = TestBed.createComponent(TestRateComponent);
     fixture.detectChanges();
     // NgModel writes the initial value one microtask after the first change detection.
@@ -40,6 +41,7 @@ describe('rate under antd v6 css', () => {
 
   afterEach(() => {
     style.remove();
+    TestBed.inject(OverlayContainer).ngOnDestroy();
   });
 
   it('renders five stars with the v6 rate colour on the full ones', () => {

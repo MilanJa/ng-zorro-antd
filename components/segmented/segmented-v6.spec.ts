@@ -3,6 +3,7 @@
  * found in the LICENSE file at https://github.com/NG-ZORRO/ng-zorro-antd/blob/master/LICENSE
  */
 
+import { OverlayContainer } from '@angular/cdk/overlay';
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
@@ -37,6 +38,7 @@ describe('segmented under antd v6 css', () => {
 
   afterEach(() => {
     style.remove();
+    TestBed.inject(OverlayContainer).ngOnDestroy();
   });
 
   it('renders the v6 segmented track and highlights the selected item', async () => {

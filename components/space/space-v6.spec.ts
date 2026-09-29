@@ -3,6 +3,7 @@
  * found in the LICENSE file at https://github.com/NG-ZORRO/ng-zorro-antd/blob/master/LICENSE
  */
 
+import { OverlayContainer } from '@angular/cdk/overlay';
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
@@ -34,13 +35,14 @@ describe('space under antd v6 css', () => {
 
   beforeEach(() => {
     installV6Css();
-    TestBed.configureTestingModule({ providers: [provideNzIconsTesting()] });
+    TestBed.configureTestingModule({ providers: [provideNzIconsTesting()], animationsEnabled: true });
     fixture = TestBed.createComponent(TestSpaceComponent);
     fixture.detectChanges();
   });
 
   afterEach(() => {
     style.remove();
+    TestBed.inject(OverlayContainer).ngOnDestroy();
   });
 
   it('renders the v6 separator class next to the v4 split class', () => {
