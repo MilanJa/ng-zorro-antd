@@ -38,7 +38,7 @@ describe('float-button under antd v6 css', () => {
 
   beforeEach(() => {
     installV6Css();
-    TestBed.configureTestingModule({ providers: [provideNzIconsTesting()] });
+    TestBed.configureTestingModule({ providers: [provideNzIconsTesting()], animationsEnabled: true });
     fixture = TestBed.createComponent(TestFloatButtonComponent);
     fixture.detectChanges();
   });
@@ -58,7 +58,7 @@ describe('float-button under antd v6 css', () => {
     expect(cs.borderRadius).toBe('50%');
   });
 
-  it('fills the host with a 40x40 inner button box for both circle and square (fix round 1)', () => {
+  it('fills the host with a 40x40 inner button box for both circle and square', () => {
     const circleInner = document.querySelector('#host .ant-float-btn-inner') as HTMLElement;
     const circleRect = circleInner.getBoundingClientRect();
     expect(Math.round(circleRect.width)).toBe(40);
@@ -78,5 +78,22 @@ describe('float-button under antd v6 css', () => {
     expect(list).not.toBeNull();
     await expectMotionSettled(list);
     expect(document.getElementById('group')!.classList.contains('ant-float-btn-group-square')).toBe(true);
+  });
+
+  it('removes the group list after its leave keyframes when closed', async () => {
+    fixture.componentInstance.open.set(true);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    await expectMotionSettled(document.querySelector('#group .ant-float-btn-group-list') as HTMLElement);
+
+    fixture.componentInstance.open.set(false);
+    fixture.detectChanges();
+    const leaving = document.querySelector('#group .ant-float-btn-group-list') as HTMLElement;
+    // The list stays in the DOM while the patch's leave keyframes run; Angular removes it on `animationend`.
+    expect(leaving).not.toBeNull();
+    expect(leaving.classList).toContain('ant-float-btn-leave-top');
+    expect(getComputedStyle(leaving).animationName).toBe('ant-float-btn-leave-top-keyframes');
+    await new Promise(r => setTimeout(r, 300 + 200)); // --ant-motion-duration-slow (0.3s) + slack
+    expect(document.querySelector('#group .ant-float-btn-group-list')).toBeNull();
   });
 });
