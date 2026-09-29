@@ -1,10 +1,9 @@
-/* Mirrors antd v6's `.ant-modal-root .ant-modal-mask` rule (antd/es/modal/style/index.js,
-   `genModalStyle` -> `${componentCls}-root { ${componentCls}-mask: {...} }`) onto ng-zorro's mask
-   element. ng-zorro's mask is the CDK overlay backdrop, which carries the `ant-modal-mask` class
-   directly (`MODAL_MASK_CLASS_NAME` in modal-config.ts) with no `.ant-modal-root` ancestor anywhere in
-   the DOM, so v6's own rule -- scoped under that ancestor -- never matches it; without this mirror the
-   backdrop would only ever get v4's static `.modal-mask()` mixin values, never the scoped/dark `--ant-*`
-   token values. */
+/* antd v6 scopes most modal rules under `.ant-modal-root`, an element rc-dialog renders and ng-zorro
+   does not: ng-zorro's containers carry `.ant-modal-wrap`/`.ant-modal` directly and the mask is the
+   CDK backdrop. The `.ant-modal-root <selector>` rules are mirrored onto the bare selectors, except the
+   min-width breakpoint `width` rules, which serve antd's responsive `width` object (no ng-zorro API).
+
+   Mirrors `.ant-modal-root .ant-modal-mask`. */
 .ant-modal-mask {
   position: fixed;
   inset: 0;
@@ -13,20 +12,8 @@
   background-color: var(--ant-color-bg-mask);
 }
 
-/* --- Fix round 1, item 1: almost all of v6's modal *positioning* CSS is scoped under
-   `.ant-modal-root`, an ancestor React's `<Dialog>` always renders (`@rc-component/dialog`) but
-   ng-zorro never does (its container components' own host elements carry `.ant-modal-wrap`/`.ant-modal`
-   directly). Every `.ant-modal-root <selector>` rule below is mirrored onto the bare selector so it
-   fires without that ancestor; ng-zorro's own `.ant-modal{width:auto;margin:0 auto;...}` rule (v6's
-   generated CSS, unscoped) already centres the modal horizontally once `.ant-modal-wrap` actually
-   spans the viewport, which is what the first mirror below restores. */
-
-/* Mirrors `.ant-modal-root .ant-modal-wrap{position:fixed;inset:0;z-index:...;overflow:auto;outline:0;
-   -webkit-overflow-scrolling:touch;}` (antd/es/modal/style/index.js). Without this, `.ant-modal-wrap`
-   (the container component's own host, `NzModalContainerComponent`/`NzModalConfirmContainerComponent`)
-   is not fixed/full-viewport, so the modal's own `margin:0 auto` (present, unscoped, in v6 CSS) has no
-   viewport width to centre within and the dialog renders pinned to the left edge of whatever box the
-   CDK overlay pane gives it. */
+/* Mirrors `.ant-modal-root .ant-modal-wrap`: the fixed, full-viewport box the modal's `margin: 0 auto`
+   centres in. */
 .ant-modal-wrap {
   position: fixed;
   inset: 0;
@@ -45,10 +32,7 @@
   direction: rtl;
 }
 
-/* Mirrors the `.ant-modal-root .ant-modal-centered*` family (antd/es/modal/style/index.js,
-   `genModalStyle`'s `${componentCls}-centered` block): `nzCentered` toggles this exact class
-   (`[class.ant-modal-centered]` on both containers' host, unchanged by this task) to vertically centre
-   the dialog with the classic `text-align:center` + `::before` + `inline-block` trick. */
+/* Mirrors the `.ant-modal-root .ant-modal-centered*` family (`nzCentered`). */
 .ant-modal-centered {
   text-align: center;
 }
@@ -67,11 +51,8 @@
   vertical-align: middle;
 }
 
-/* Mirrors `.ant-modal-root .ant-modal.ant-zoom-enter,.ant-modal-root .ant-modal.ant-zoom-appear{...}`
-   and `.ant-modal-root .ant-modal.ant-zoom-leave .ant-modal-container{pointer-events:none}`: modal's
-   own zoom-enter override (no scale, just an opacity fade-in) and disabling pointer events on the
-   panel while it zooms out. The generic, unscoped `.ant-zoom-enter{transform:scale(0);...}` rule
-   (shared zoom-motion CSS, always present) would otherwise apply its `scale(0)` to the modal panel too. */
+/* Mirrors `.ant-modal-root .ant-modal.ant-zoom-enter/-appear` (fade in without the generic
+   `.ant-zoom-enter` scale) and `.ant-modal-root .ant-modal.ant-zoom-leave .ant-modal-container`. */
 .ant-modal.ant-zoom-enter,
 .ant-modal.ant-zoom-appear {
   transform: none;
@@ -83,11 +64,8 @@
   pointer-events: none;
 }
 
-/* Mirrors the `.ant-modal-root .ant-fade-*` family for the backdrop's fade motion (the CDK backdrop
-   carries `ant-modal-mask` plus the `FADE_CLASS_NAME_MAP` classes directly -- `modal-container.directive.ts`
-   -- with no `.ant-modal-root` ancestor either). Scoped to `.ant-modal-mask` (rather than the fully
-   bare `.ant-fade-*` antd itself uses) so this does not also match an unrelated component's own
-   `.ant-fade-*` backdrop. */
+/* Mirrors the `.ant-modal-root .ant-fade-*` family for the backdrop, scoped to `.ant-modal-mask` so it
+   does not reach other components' fade classes. */
 .ant-modal-mask.ant-fade-enter,
 .ant-modal-mask.ant-fade-appear {
   animation-duration: var(--ant-motion-duration-mid);
@@ -113,18 +91,11 @@
   pointer-events: none;
 }
 
-/* --- Fix round 1, item 2: antd v6 wraps confirm title/content in a flex-column
-   `.ant-modal-confirm-paragraph` container laid out *beside* the icon (`.ant-modal-confirm-body{display:
-   flex;flex-wrap:nowrap;align-items:start}`, antd/es/modal/style/confirm.js). Adding that wrapper div to
-   ng-zorro's flat `.ant-modal-confirm-body > icon, title, content` structure would break v4's own
-   `confirm.less` rule (`.ant-modal-confirm-body > .anticon + .ant-modal-confirm-title +
-   .ant-modal-confirm-content { margin-inline-start: 38px }`, an adjacent-sibling chain that requires
-   title/content to stay direct siblings of the icon) -- see the task report's "Step 3: Align" for the
-   full analysis -- so ng-zorro keeps the flat structure and reproduces the *side-by-side* layout with
-   CSS grid instead of flex: the icon occupies column 1 across both rows, title/content occupy column 2,
-   each on its own row. The icon's own horizontal spacing (`margin-inline-end`) and size (`font-size`)
-   already come from v6's own unscoped `.ant-modal-confirm .ant-modal-confirm-body > .anticon` rule
-   (not scoped under `.ant-modal-root`, so no mirror needed for that part). */
+/* antd v6 puts the confirm title and content in a flex-column `.ant-modal-confirm-paragraph` beside
+   the icon. ng-zorro keeps them as direct siblings of the icon, which v4's adjacent-sibling rule in
+   confirm.less needs, and reproduces the side-by-side layout with a grid: icon in column 1 across
+   both rows, title and content in column 2. The icon's size and spacing come from v6's unscoped
+   `.ant-modal-confirm .ant-modal-confirm-body > .anticon` rule. */
 .ant-modal-confirm .ant-modal-confirm-body {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
@@ -140,16 +111,24 @@
   grid-column: 2;
   max-width: 100%;
 }
-/* No-icon variant (mirrors `.ant-modal-root .ant-modal-confirm-body-no-icon .ant-modal-confirm-paragraph
-   {max-width:100%}`'s intent -- a single column, since there is no icon column to share with). Not
-   reachable today: `.ant-modal-confirm-body-no-icon` is not emitted by the confirm container's template
-   (see the task report's Fix round 1 notes -- `<nz-icon>` renders unconditionally, so the class binding
-   was removed rather than bound to a state that never differs). Kept for parity with v6's own selector
-   set and in case a future change makes the icon conditional. */
+/* Single-column variant, mirroring `.ant-modal-confirm-body-no-icon .ant-modal-confirm-paragraph
+   { max-width: 100% }`. The confirm template always renders the icon today, so this is unused. */
 .ant-modal-confirm .ant-modal-confirm-body-no-icon {
   grid-template-columns: minmax(0, 1fr);
 }
 .ant-modal-confirm .ant-modal-confirm-body-no-icon .ant-modal-confirm-title,
 .ant-modal-confirm .ant-modal-confirm-body-no-icon .ant-modal-confirm-content {
   grid-column: 1;
+}
+
+/* Mirrors v6 `@media (max-width: 767px) { .ant-modal-root .ant-modal { max-width; margin }
+   .ant-modal-root .ant-modal-centered .ant-modal { flex: 1 } }`: a narrow gutter on small screens. */
+@media (max-width: 767px) {
+  .ant-modal {
+    max-width: calc(100vw - 16px);
+    margin: var(--ant-margin-xs) auto;
+  }
+  .ant-modal-centered .ant-modal {
+    flex: 1;
+  }
 }

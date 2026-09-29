@@ -68,9 +68,9 @@ describe('modal under antd v6 css', () => {
     expect(getComputedStyle(container).borderRadius).toBe('8px');
     expect(getComputedStyle(container).padding).toBe('20px 24px');
     expect(wrap.className).toMatch(/\bnz-theme-\d+\b/);
-    // Fix round 1, item 1: `.ant-modal-wrap` must be the fixed, full-viewport positioning context (v6's
-    // own rule for it is scoped under `.ant-modal-root`, which ng-zorro never renders -- mirrored in
-    // `style/v6/patch.css`); without it the modal renders pinned to the left edge instead of centred.
+    // `.ant-modal-wrap` must be the fixed, full-viewport positioning context (v6's own rule for it is
+    // scoped under `.ant-modal-root`, which ng-zorro never renders, and mirrored in `style/v6/patch.css`);
+    // without it the modal renders pinned to the left edge instead of centred.
     expect(getComputedStyle(wrap).position).toBe('fixed');
     const rect = modal.getBoundingClientRect();
     const centre = rect.left + rect.width / 2;
@@ -105,6 +105,30 @@ describe('modal under antd v6 css', () => {
     expect(Math.abs(centreY - window.innerHeight / 2)).toBeLessThanOrEqual(2);
   });
 
+  it('narrows the modal gutter on small viewports', async () => {
+    // The browser viewport is 1000px wide, so the `max-width: 767px` mirror is checked in a 500px iframe
+    // holding ng-zorro's wrap > modal structure with the v6 CSS.
+    const frame = document.createElement('iframe');
+    frame.style.width = '500px';
+    frame.style.height = '400px';
+    document.body.appendChild(frame);
+    try {
+      const doc = frame.contentDocument!;
+      doc.open();
+      doc.write(
+        `<style>${style.textContent}</style>` +
+          '<div class="ant-modal-wrap"><div class="ant-modal" style="width: 520px"></div></div>'
+      );
+      doc.close();
+      const modal = doc.querySelector('.ant-modal') as HTMLElement;
+      const cs = frame.contentWindow!.getComputedStyle(modal);
+      expect(cs.marginTop).toBe('8px'); // --ant-margin-xs
+      expect(modal.getBoundingClientRect().width).toBe(500 - 16); // max-width: calc(100vw - 16px)
+    } finally {
+      frame.remove();
+    }
+  });
+
   it('colours the confirm icon per type', async () => {
     const fixture: ComponentFixture<DeclarativeModalHostComponent> =
       TestBed.createComponent(DeclarativeModalHostComponent);
@@ -119,15 +143,13 @@ describe('modal under antd v6 css', () => {
       .getContainerElement()
       .querySelector('.ant-modal-confirm-confirm .ant-modal-confirm-body') as HTMLElement;
     expect(body.classList.contains('ant-modal-confirm-body-has-title')).toBe(true);
-    // Substitution: the brief's assertion looks for `.ant-modal-confirm-paragraph
-    // .ant-modal-confirm-title`. ng-zorro does not wrap title/content in an `.ant-modal-confirm-paragraph`
-    // div -- see the task report ("Step 3: Align") for why that wrapper would break a v4 `confirm.less`
-    // rule (`.ant-modal-confirm-body > .anticon + .ant-modal-confirm-title + .ant-modal-confirm-content`,
-    // an adjacent-sibling chain that requires title/content to remain direct siblings of the icon).
+    // ng-zorro does not wrap title/content in v6's `.ant-modal-confirm-paragraph`: v4's `confirm.less`
+    // rule `.ant-modal-confirm-body > .anticon + .ant-modal-confirm-title + .ant-modal-confirm-content`
+    // needs them to stay direct siblings of the icon.
     expect(body.querySelector('.ant-modal-confirm-title')?.textContent?.trim()).toBe('Delete?');
     expect(getComputedStyle(body.querySelector(':scope > .anticon') as HTMLElement).color).toBe('rgb(250, 173, 20)');
-    // Fix round 1, item 3: pin the grid layout (`style/v6/patch.css`) rather than only the icon's
-    // colour -- title/content sit beside the icon (not below it), stacked on top of each other.
+    // The patch's grid layout: title/content sit beside the icon (not below it), stacked on top of each
+    // other.
     const icon = body.querySelector(':scope > .anticon') as HTMLElement;
     const title = body.querySelector('.ant-modal-confirm-title') as HTMLElement;
     const content = body.querySelector('.ant-modal-confirm-content') as HTMLElement;
