@@ -13,19 +13,42 @@
   background-color: transparent;
   border: none;
   border-radius: 0;
+  outline: none;
 }
 .ant-radio::after {
   display: none;
 }
 /*
- * v6 also colours the box through `.ant-radio-wrapper .ant-radio-checked` and
- * `.ant-radio-wrapper .ant-radio-disabled` (two classes of specificity, matched here so the reset above
- * is not outweighed on a checked/disabled radio).
+ * Every rule above is a bare `.ant-radio` reset, but v6 paints the box through selectors scoped under
+ * `.ant-radio-wrapper` (two classes: 0,2,0), which outweighs a bare `.ant-radio` reset (0,1,0) regardless
+ * of source order. Each reset below repeats the ancestor scope so it matches v6's specificity exactly
+ * and wins on source order instead.
  */
+.ant-radio-wrapper .ant-radio {
+  width: auto;
+  height: auto;
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  outline: none;
+}
+.ant-radio-wrapper .ant-radio::after {
+  display: none;
+}
+.ant-radio-wrapper .ant-radio:has(.ant-radio-input:focus-visible) {
+  outline: none;
+}
+.ant-radio-wrapper:hover:not(.ant-radio-wrapper-disabled) .ant-radio {
+  border-color: transparent;
+}
 .ant-radio-wrapper .ant-radio-checked,
 .ant-radio-wrapper .ant-radio-disabled {
   background: transparent;
   border: none;
+}
+.ant-radio-wrapper:hover .ant-radio-checked:not(.ant-radio-disabled) {
+  background-color: transparent;
+  border-color: transparent;
 }
 .ant-radio-inner {
   position: relative;

@@ -80,14 +80,30 @@ describe('radio under antd v6 css', () => {
     expect(getComputedStyle(inner).borderColor).toBe('rgb(217, 217, 217)');
   });
 
-  it('does not draw a second control on the outer .ant-radio element', async () => {
+  it('does not draw a second control on the outer .ant-radio element, checked or unchecked', async () => {
     const outer = document.querySelector('#host .ant-radio') as HTMLElement;
+    const inner = document.querySelector('#host .ant-radio-inner') as HTMLElement;
     await expectMotionSettled(outer);
     const cs = getComputedStyle(outer);
-    // v6's own .ant-radio rule sets a background colour and a border; the patch neutralises both so
-    // the dot drawn on .ant-radio-inner (checked above) is not doubled by the outer element.
+    // v6's own .ant-radio rule sets a background colour and a border (scoped under .ant-radio-wrapper,
+    // which the patch's neutralisers must match in specificity); the patch neutralises both so the dot
+    // drawn on .ant-radio-inner (checked above) is not doubled by the outer element.
     expect(cs.backgroundColor).toBe('rgba(0, 0, 0, 0)');
     expect(cs.borderStyle).toBe('none');
+
+    fixture.componentInstance.checked.set(false);
+    fixture.detectChanges();
+    // NgModel writes the value one microtask after ngOnChanges; a second detectChanges applies it to the DOM.
+    await new Promise(r => setTimeout(r, 0));
+    fixture.detectChanges();
+    await expectMotionSettled(outer);
+    await expectMotionSettled(inner);
+    const outerUnchecked = getComputedStyle(outer);
+    expect(outerUnchecked.backgroundColor).toBe('rgba(0, 0, 0, 0)');
+    expect(outerUnchecked.borderStyle).toBe('none');
+    const innerUnchecked = getComputedStyle(inner);
+    expect(innerUnchecked.borderWidth).toBe('1px');
+    expect(innerUnchecked.borderColor).toBe('rgb(217, 217, 217)');
   });
 });
 
