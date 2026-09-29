@@ -787,6 +787,22 @@ export interface NzSpinToken {
   dotSizeSM: number;
 }
 
+export interface NzSwitchToken {
+  handleBg: string;
+  handleShadow: string;
+  handleSize: number;
+  handleSizeSM: number;
+  innerMaxMargin: number;
+  innerMaxMarginSM: number;
+  innerMinMargin: number;
+  innerMinMarginSM: number;
+  trackHeight: number;
+  trackHeightSM: number;
+  trackMinWidth: number;
+  trackMinWidthSM: number;
+  trackPadding: number;
+}
+
 export interface NzTooltipToken {
   arrowOffsetHorizontal: number;
   arrowOffsetVertical: number;
@@ -816,5 +832,6 @@ export interface NzComponentTokenMap {
   Skeleton: NzSkeletonToken;
   Space: NzSpaceToken;
   Spin: NzSpinToken;
+  Switch: NzSwitchToken;
   Tooltip: NzTooltipToken;
 }

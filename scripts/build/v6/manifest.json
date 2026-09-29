@@ -1,7 +1,7 @@
 {
   "antdVersion": "6.6.5",
   "engineCoreBytes": 42701,
-  "engineComponentsBytes": 174942,
+  "engineComponentsBytes": 180437,
   "components": {
     "alert": {
       "classes": [
@@ -1200,6 +1200,37 @@
         "--ant-spin-dot-size",
         "--ant-spin-dot-size-lg",
         "--ant-spin-dot-size-sm"
+      ]
+    },
+    "switch": {
+      "classes": [
+        "ant-switch",
+        "ant-switch-checked",
+        "ant-switch-disabled",
+        "ant-switch-handle",
+        "ant-switch-inner",
+        "ant-switch-inner-checked",
+        "ant-switch-inner-unchecked",
+        "ant-switch-loading",
+        "ant-switch-loading-icon",
+        "ant-switch-rtl",
+        "ant-switch-small",
+        "ant-wave"
+      ],
+      "tokens": [
+        "--ant-switch-handle-bg",
+        "--ant-switch-handle-shadow",
+        "--ant-switch-handle-size",
+        "--ant-switch-handle-size-sm",
+        "--ant-switch-inner-max-margin",
+        "--ant-switch-inner-max-margin-sm",
+        "--ant-switch-inner-min-margin",
+        "--ant-switch-inner-min-margin-sm",
+        "--ant-switch-track-height",
+        "--ant-switch-track-height-sm",
+        "--ant-switch-track-min-width",
+        "--ant-switch-track-min-width-sm",
+        "--ant-switch-track-padding"
       ]
     },
     "tooltip": {

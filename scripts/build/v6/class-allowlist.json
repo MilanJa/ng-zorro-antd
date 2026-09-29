@@ -78,6 +78,8 @@
   ],
   "_rate_comment": "nz-only: -star-active, -star-focused, -star-zero (runtime state hooks on the hovered/focused/unfilled star from `updateStarStyle`; no stylesheet, v4 or v6, styles them — kept because removing them from the rendered DOM is a consumer-visible change, and `rate-v6.spec.ts` asserts `-star-zero`).",
   "rate": ["ant-rate-star-active", "ant-rate-star-focused", "ant-rate-star-zero"],
+  "_switch_comment": "nz-only: -click-animating-node (the wave-effect node `nz-wave` renders on click; a v4-only ripple, no v6 stylesheet targets it since v6 Switch has no click ripple).",
+  "switch": ["ant-click-animating-node"],
   "_result_comment": "v4-compat: -content (next to -body). antd-emits: -403, -404, -500 (exception-status root classes; v6 renders the SVG illustration without styling them).",
   "result": [
     "ant-result-content",

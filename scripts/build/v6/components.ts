@@ -45,6 +45,7 @@ export const v6Components = {
   skeleton: { antd: ['Skeleton'], prefixCls: 'ant-skeleton' },
   space: { antd: ['Space'], prefixCls: 'ant-space' },
   spin: { antd: ['Spin'], prefixCls: 'ant-spin' },
+  switch: { antd: ['Switch'], prefixCls: 'ant-switch' },
   tooltip: { antd: ['Tooltip'], prefixCls: 'ant-tooltip' }
 } as const satisfies Record<string, V6ComponentEntry>;
 

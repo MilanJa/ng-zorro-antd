@@ -360,6 +360,9 @@
       "less": "./switch/style/*.less",
       "style": "./switch/style/index.min.css"
     },
+    "./switch/style/v6/*": {
+      "style": "./switch/style/v6/*"
+    },
     "./table/style/*": {
       "less": "./table/style/*.less",
       "style": "./table/style/index.min.css"

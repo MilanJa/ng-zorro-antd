@@ -72,9 +72,13 @@ const NZ_CONFIG_MODULE_NAME: NzConfigKey = 'switch';
       </span>
       <span class="ant-switch-inner">
         @if (isChecked) {
-          <ng-container *nzStringTemplateOutlet="nzCheckedChildren">{{ nzCheckedChildren }}</ng-container>
+          <span class="ant-switch-inner-checked">
+            <ng-container *nzStringTemplateOutlet="nzCheckedChildren">{{ nzCheckedChildren }}</ng-container>
+          </span>
         } @else {
-          <ng-container *nzStringTemplateOutlet="nzUnCheckedChildren">{{ nzUnCheckedChildren }}</ng-container>
+          <span class="ant-switch-inner-unchecked">
+            <ng-container *nzStringTemplateOutlet="nzUnCheckedChildren">{{ nzUnCheckedChildren }}</ng-container>
+          </span>
         }
       </span>
       <div class="ant-click-animating-node"></div>

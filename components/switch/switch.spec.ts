@@ -245,12 +245,12 @@ describe('switch', () => {
 
     it('should children template work', () => {
       fixture.detectChanges();
-      expect(switchElement.nativeElement.querySelector('.ant-switch-inner').firstElementChild!.classList).toContain(
+      expect(switchElement.nativeElement.querySelector('.ant-switch-inner-unchecked .anticon')!.classList).toContain(
         'anticon-close'
       );
       (switchElement.nativeElement.firstElementChild! as HTMLButtonElement).click();
       fixture.detectChanges();
-      expect(switchElement.nativeElement.querySelector('.ant-switch-inner').firstElementChild!.classList).toContain(
+      expect(switchElement.nativeElement.querySelector('.ant-switch-inner-checked .anticon')!.classList).toContain(
         'anticon-check'
       );
     });
