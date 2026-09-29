@@ -67,15 +67,23 @@ describe('tree under antd v6 css', () => {
     expect(getComputedStyle(selected).backgroundColor).toBe('rgb(230, 244, 255)');
   });
 
-  it('gives leaf switchers the v6 line-mode class and marks the last leaf of a level', () => {
+  it('marks the last leaf of a level, and never puts the v6 leaf-line class on the switcher host', () => {
     const host = document.getElementById('host') as HTMLElement;
-    const leafSwitchers = host.querySelectorAll('.ant-tree-switcher-noop');
-    expect(leafSwitchers.length).toBe(2);
-    leafSwitchers.forEach(switcher => expect(switcher.classList.contains('ant-tree-switcher-leaf-line')).toBe(true));
     const treenodes = host.querySelectorAll('.ant-tree-treenode');
     const lastLeaf = treenodes[treenodes.length - 1] as HTMLElement;
     expect(lastLeaf.classList.contains('ant-tree-treenode-leaf-last')).toBe(true);
     expect(treenodes[treenodes.length - 2].classList.contains('ant-tree-treenode-leaf-last')).toBe(false);
+    // antd renders `-switcher-leaf-line` as an empty CHILD span of the switcher, only when no leaf
+    // icon is shown (node_modules/antd/es/tree/utils/iconUtil.js's `SwitcherIconCom`); ng-zorro's
+    // line-mode leaf switcher always renders a `file` icon instead (no `nzShowLeafIcon`-equivalent
+    // toggle exists), so this class must never appear on the switcher itself (see docs/v6-api-gaps.md).
+    const leafSwitchers = host.querySelectorAll('.ant-tree-switcher-noop');
+    expect(leafSwitchers.length).toBe(2);
+    leafSwitchers.forEach(switcher => {
+      expect(switcher.classList.contains('ant-tree-switcher-leaf-line')).toBe(false);
+      expect(switcher.querySelector('.ant-tree-switcher-leaf-line')).toBeNull();
+      expect(switcher.querySelector('.ant-tree-switcher-line-icon')).not.toBeNull();
+    });
   });
 
   it('sizes the indent unit at the v6 indent size', () => {

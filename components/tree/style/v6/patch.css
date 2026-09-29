@@ -9,23 +9,6 @@ nz-tree {
 }
 
 /*
- * v6's `.ant-tree .ant-tree-switcher-leaf-line` rule sets `width:100%;height:100%`, equal specificity
- * to (and, by source order, overriding) the base `.ant-tree .ant-tree-switcher` rule's fixed
- * `width:var(--ant-tree-switcher-size)`. Combined with `.ant-tree-switcher`'s own `flex:none` (a
- * flex item's percentage width still resolves against the flex container, flex:none only stops it
- * growing/shrinking beyond that resolved size), the leaf switcher's flex-basis becomes the full
- * treenode row width instead of the fixed switcher-size box every other switcher keeps, pushing the
- * title after it far to the right. No antd Tree code path emits this class in the current build
- * (absent from @rc-component/tree and antd/es/tree), so the rule was never exercised against real
- * flex layout upstream; re-assert the switcher's own box size at higher specificity.
- */
-.ant-tree .ant-tree-switcher.ant-tree-switcher-leaf-line,
-.ant-select-tree .ant-select-tree-switcher.ant-select-tree-switcher-leaf-line {
-  width: var(--ant-tree-switcher-size);
-  height: auto;
-}
-
-/*
  * antd v6's `.ant-tree`-scoped CSS draws the checkbox box on `.ant-tree-checkbox` itself (rc-tree reuses
  * rc-checkbox's DOM, no separate inner span). ng-zorro keeps `span.ant-tree-checkbox-inner` /
  * `span.ant-select-tree-checkbox-inner` for v4 (NzTreeNodeBuiltinCheckboxComponent), so these rules mirror
