@@ -1,0 +1,104 @@
+/*
+ * antd v6's `.ant-checkbox` CSS draws the box itself (size, background, border, the tick as `::after`)
+ * because rc-checkbox no longer renders a separate inner span; ng-zorro keeps that span as
+ * `.ant-checkbox-inner` for the default v4 stylesheet. The box rules below mirror `.ant-checkbox` /
+ * `.ant-checkbox-checked` / `.ant-checkbox-indeterminate` / `.ant-checkbox-disabled` from the extracted
+ * v6 CSS onto `.ant-checkbox-inner`, and the outer `.ant-checkbox` box is neutralised so it is not drawn
+ * twice.
+ */
+.ant-checkbox {
+  width: auto;
+  height: auto;
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+}
+.ant-checkbox::after {
+  display: none;
+}
+.ant-checkbox-inner {
+  position: relative;
+  top: 0;
+  left: 0;
+  display: block;
+  width: var(--ant-control-interactive-size);
+  height: var(--ant-control-interactive-size);
+  direction: ltr;
+  background-color: var(--ant-color-bg-container);
+  border: var(--ant-line-width) var(--ant-line-type) var(--ant-color-border);
+  border-radius: var(--ant-border-radius-sm);
+  border-collapse: separate;
+  transition: all var(--ant-motion-duration-slow);
+}
+.ant-checkbox-inner::after {
+  box-sizing: border-box;
+  position: absolute;
+  top: calc(var(--ant-control-interactive-size) / 2 - var(--ant-line-width));
+  inset-inline-start: calc(var(--ant-control-interactive-size) / 4 - var(--ant-line-width));
+  display: table;
+  width: calc(var(--ant-control-interactive-size) / 14 * 5);
+  height: calc(var(--ant-control-interactive-size) / 14 * 8);
+  border: var(--ant-line-width-bold) solid var(--ant-color-white);
+  border-top: 0;
+  border-inline-start: 0;
+  transform: rotate(45deg) scale(0) translate(-50%, -50%);
+  opacity: 0;
+  content: '';
+  transition:
+    all var(--ant-motion-duration-fast) var(--ant-motion-ease-in-back),
+    opacity var(--ant-motion-duration-fast);
+}
+.ant-checkbox-wrapper:not(.ant-checkbox-wrapper-disabled):hover .ant-checkbox:not(.ant-checkbox-disabled) .ant-checkbox-inner,
+.ant-checkbox:not(.ant-checkbox-disabled):hover .ant-checkbox-inner {
+  border-color: var(--ant-color-primary);
+}
+.ant-checkbox-checked .ant-checkbox-inner {
+  background-color: var(--ant-color-primary);
+  border-color: var(--ant-color-primary);
+}
+.ant-checkbox-checked .ant-checkbox-inner::after {
+  opacity: 1;
+  transform: rotate(45deg) scale(1) translate(-50%, -50%);
+  transition: all var(--ant-motion-duration-mid) var(--ant-motion-ease-out-back) var(--ant-motion-duration-fast);
+}
+.ant-checkbox-wrapper:not(.ant-checkbox-wrapper-disabled):hover .ant-checkbox-checked:not(.ant-checkbox-disabled) .ant-checkbox-inner {
+  background-color: var(--ant-color-primary-hover);
+  border-color: transparent;
+}
+.ant-checkbox-indeterminate .ant-checkbox-inner {
+  background-color: var(--ant-color-bg-container);
+  border-color: var(--ant-color-border);
+}
+.ant-checkbox-indeterminate .ant-checkbox-inner::after {
+  top: 50%;
+  inset-inline-start: 50%;
+  width: calc(var(--ant-font-size-lg) / 2);
+  height: calc(var(--ant-font-size-lg) / 2);
+  background-color: var(--ant-color-primary);
+  border: 0;
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+  content: '';
+}
+.ant-checkbox-disabled .ant-checkbox-inner {
+  background: var(--ant-color-bg-container-disabled);
+  border-color: var(--ant-color-border);
+}
+.ant-checkbox-disabled .ant-checkbox-inner::after {
+  border-color: var(--ant-color-text-disabled);
+}
+.ant-checkbox-disabled.ant-checkbox-indeterminate .ant-checkbox-inner::after {
+  background: var(--ant-color-text-disabled);
+}
+.ant-checkbox:has(.ant-checkbox-input:focus-visible) .ant-checkbox-inner {
+  outline: var(--ant-line-width-focus) solid var(--ant-color-primary-border);
+  outline-offset: 1px;
+  transition:
+    outline-offset 0s,
+    outline 0s;
+}
+
+/* style/patch.less: hides the trailing label span when the projected content is empty. */
+.ant-checkbox + span:empty {
+  display: none;
+}

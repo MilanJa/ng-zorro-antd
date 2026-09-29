@@ -26,6 +26,7 @@ export interface V6ComponentEntry {
 export const v6Components = {
   alert: { antd: ['Alert'], prefixCls: 'ant-alert' },
   button: { antd: ['Button'], prefixCls: 'ant-btn' },
+  checkbox: { antd: ['Checkbox'], prefixCls: 'ant-checkbox' },
   drawer: { antd: ['Drawer'], prefixCls: 'ant-drawer' },
   // Only `FloatButton`: the top-level `BackTop` export is antd's deprecated `back-top` component, with
   // its own `.ant-back-top*` style hook and `--ant-back-top-*` tokens that ng-zorro never renders.

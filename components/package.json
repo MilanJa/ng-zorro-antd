@@ -144,6 +144,9 @@
       "less": "./checkbox/style/*.less",
       "style": "./checkbox/style/index.min.css"
     },
+    "./checkbox/style/v6/*": {
+      "style": "./checkbox/style/v6/*"
+    },
     "./collapse/style/*": {
       "less": "./collapse/style/*.less",
       "style": "./collapse/style/index.min.css"

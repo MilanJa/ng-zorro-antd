@@ -615,6 +615,9 @@ export interface NzButtonToken {
   yellowShadowColor: string;
 }
 
+export interface NzCheckboxToken {
+}
+
 export interface NzDrawerToken {
   draggerSize: number;
   footerPaddingBlock: number;
@@ -816,6 +819,7 @@ export interface NzTooltipToken {
 export interface NzComponentTokenMap {
   Alert: NzAlertToken;
   Button: NzButtonToken;
+  Checkbox: NzCheckboxToken;
   Drawer: NzDrawerToken;
   FloatButton: NzFloatButtonToken;
   Input: NzInputToken;

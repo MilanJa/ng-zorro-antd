@@ -80,6 +80,15 @@
   "rate": ["ant-rate-star-active", "ant-rate-star-focused", "ant-rate-star-zero"],
   "_switch_comment": "nz-only: -click-animating-node (the wave-effect node `nz-wave` renders on click; a v4-only ripple, no v6 stylesheet targets it since v6 Switch has no click ripple).",
   "switch": ["ant-click-animating-node"],
+  "_checkbox_comment": "antd-emits: -group-rtl, -rtl (antd's own component emits the -rtl variants), -wrapper-checked, -wrapper-in-form-item (antd adds these inside Form.Item / when checked; v6 CSS never styles them). v4-compat: -group-item (v4-only structural hook on a grouped checkbox; no v6 counterpart). v4-compat (patch hook): -inner (v6 draws the box on `.ant-checkbox` itself; style/v6/patch.css mirrors those rules onto -inner, so removing it needs a patch rewrite).",
+  "checkbox": [
+    "ant-checkbox-group-item",
+    "ant-checkbox-group-rtl",
+    "ant-checkbox-inner",
+    "ant-checkbox-rtl",
+    "ant-checkbox-wrapper-checked",
+    "ant-checkbox-wrapper-in-form-item"
+  ],
   "_result_comment": "v4-compat: -content (next to -body). antd-emits: -403, -404, -500 (exception-status root classes; v6 renders the SVG illustration without styling them).",
   "result": [
     "ant-result-content",

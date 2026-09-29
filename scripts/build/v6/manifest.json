@@ -1,7 +1,7 @@
 {
   "antdVersion": "6.6.5",
   "engineCoreBytes": 42701,
-  "engineComponentsBytes": 180437,
+  "engineComponentsBytes": 183627,
   "components": {
     "alert": {
       "classes": [
@@ -143,6 +143,21 @@
         "--ant-button-volcano-shadow-color",
         "--ant-button-yellow-shadow-color"
       ]
+    },
+    "checkbox": {
+      "classes": [
+        "ant-checkbox",
+        "ant-checkbox-checked",
+        "ant-checkbox-disabled",
+        "ant-checkbox-group",
+        "ant-checkbox-indeterminate",
+        "ant-checkbox-input",
+        "ant-checkbox-wrapper",
+        "ant-checkbox-wrapper-disabled",
+        "ant-row",
+        "ant-wave"
+      ],
+      "tokens": []
     },
     "drawer": {
       "classes": [
