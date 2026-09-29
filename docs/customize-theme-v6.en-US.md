@@ -97,7 +97,7 @@ chart.color = token.colorPrimary;
 
 `nzThemeInherit` (default `true`) merges over the nearest ancestor `[nzTheme]`, or, when there is none, over the global theme applied through `NzConfig.theme`. As in antd, `token` merges key by key and `components` merges per component.
 
-Popups rendered by the CDK overlay sit outside the section in the DOM. Select's dropdown carries the scope of the nearest enclosing `[nzTheme]`, so it is themed like the select itself; other overlays (tooltips, popovers, date pickers, ...) follow the global theme until they are migrated. The scope is resolved from Angular's _injector_ tree, not from the DOM, and, as with any CDK overlay, the dropdown's classes are applied when the overlay is first created: a later `nzDropdownClassName` change does not reach a dropdown that was already opened once.
+Popups rendered by the CDK overlay sit outside the section in the DOM. Popups that carry the scope of the nearest enclosing `[nzTheme]`: Select dropdown, Tooltip, Popover, Popconfirm, Drawer (declarative), Modal (declarative, or created with `nzViewContainerRef` inside the scope). Message and Notification are application-wide singletons and always follow the global theme. The scope is resolved from Angular's _injector_ tree, not from the DOM, and, as with any CDK overlay, the dropdown's classes are applied when the overlay is first created: a later `nzDropdownClassName` change does not reach a dropdown that was already opened once.
 
 ## Server-side rendering
 
