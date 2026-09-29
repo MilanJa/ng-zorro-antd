@@ -26,9 +26,10 @@ function hasFlag(name: string): boolean {
 // or portal to `document.body` level (message/notification/tooltip-like overlays).
 const CLICK_DEFAULT_SELECTOR = '.ant-message, .ant-notification, [class^="ant-"][class*="-wrap"], [role="tooltip"]';
 
-// Any popup trigger inside a demo container, mirroring `collect-classes.ts`'s `TRIGGERS` set: a plain
-// `.ant-btn` (modal/drawer/message/notification/…) or a directive-driven overlay trigger
-// (popconfirm/popover/tooltip/dropdown) that may render on a non-button element (e.g. `<a nz-popconfirm>`).
+// Any click-opened popup trigger inside a demo container: a plain `.ant-btn` (modal/drawer/message/
+// notification/…) or a directive-driven overlay trigger (popconfirm/popover/tooltip/dropdown) that may
+// render on a non-button element (e.g. `<a nz-popconfirm>`). Narrower than `collect-classes.ts`, which
+// also opens select and picker popups.
 const CLICK_TARGET_SELECTOR = '.ant-btn, [nz-popconfirm], [nz-popover], [nz-tooltip], [nz-dropdown]';
 
 // Scopes each comma-branch of `CLICK_TARGET_SELECTOR` to `containerSelector` individually -- a bare

@@ -1,0 +1,24 @@
+// Type-checks the Node-side build scripts and the v6 compare harness (`npm run typecheck:tools`).
+// tsx runs these files without type-checking, so this is the only gate for them. `allowJs` lets the
+// specs import the engine's JavaScript shims; the release and prerender scripts are upstream tooling
+// typed against older dependency versions and stay out of this check.
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "skipLibCheck": true,
+    "jsx": "react-jsx",
+    "allowJs": true,
+    "types": ["node"]
+  },
+  "include": ["tools/**/*.ts", "tools/**/*.tsx", "scripts/**/*.ts"],
+  "exclude": [
+    "**/__tests__/fixtures/**",
+    "scripts/site/template/**",
+    "scripts/site/doc/**",
+    "scripts/prerender/**",
+    "scripts/release/**",
+    "tools/v6-compare/ssr-check/**",
+    "tools/v6-compare/out/**"
+  ]
+}

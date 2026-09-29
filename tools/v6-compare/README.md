@@ -54,48 +54,48 @@ whether a migrated ng-zorro component matches antd v6's visuals.
   `127.0.0.1` (loopback only, confined to `out/`), on the port of `HARNESS_URL`
   (default `http://localhost:4301`).
 - `npx tsx tools/v6-compare/capture.ts [--component <dir>] [--theme v6]` —
-  screenshots antd/ng-zorro demo pairs and regenerates `out/index.html`. Starts
-  `serve-out` itself on `HARNESS_URL`'s port (or reuses a running one) and
-  reads the doc site from `SITE_URL`. `--theme default` captures the plain
-  v4 ng-zorro page only (no antd pane) for a component task's before/after
-  diff; copy `out/<dir>/default/` to `out/<dir>/default-before/` by hand
-  before the template change.
+  screenshots antd/ng-zorro demo pairs into `out/<dir>/<theme>/<key>.{antd,nz}.png`,
+  then rebuilds `out/index.html` from every image on disk (all components and
+  themes, `default` and `default-before` included), so a run limited by
+  `--component` or `--theme` keeps the rest of the index. Starts `serve-out`
+  itself on `HARNESS_URL`'s port (or reuses a running one) and reads the doc
+  site from `SITE_URL`. `--theme default` captures the plain v4 ng-zorro page
+  only (no antd pane) for a component task's before/after diff; copy
+  `out/<dir>/default/` to `out/<dir>/default-before/` by hand before the
+  template change.
 - `npx tsx tools/v6-compare/dump-dom.ts --component <dir> --demo <stem> [--side antd|nz] [--theme v6] [--selector <css>] [--click]` —
-  prints a demo's rendered DOM (text stripped, `style`/`id`/`aria-*`/
-  `data-*` stripped, indented by depth), for comparing the antd side against
-  the ng-zorro side before editing templates. `--side antd` (default) reads
-  the bundled antd demo from the out server it starts itself, same as
-  before. `--side nz` reads the live doc site instead (`SITE_URL`, default
-  `http://localhost:4200`; `<dir>`'s demo key must match a demo on that
-  page) and starts no out server. `--selector` defaults from the component's
-  `prefixCls` on the antd side, or (with `--click`, which first clicks the
-  demo's `.ant-btn`) from a popup-selector set (`.ant-message`,
-  `.ant-notification`, `[class*="-wrap"]`, `[role="tooltip"]`); on the `nz`
-  side it defaults to `[id="components-<dir>-demo-<demo>"] [class^="ant-"]`
-  (the doc site wraps every demo in a `<section>` with that id), plus
-  `.cdk-overlay-container [class^="ant-"]` when `--click` is given (for
-  overlay-based demos: modal, drawer, message, notification, popconfirm,
-  …), first clicking the first element inside `#components-<dir>-demo-<demo>`
-  matching `.ant-btn, [nz-popconfirm], [nz-popover], [nz-tooltip],
-[nz-dropdown]` (mirroring `collect-classes.ts`'s trigger set, so a
-  non-button trigger like `<a nz-popconfirm>` is still clicked) and printing
-  a note naming that selector set if nothing matches. Either
-  default selector only dumps top-most matches (a broad `[class^="ant-"]`
-  match nested under another match is skipped; its subtree is already
-  printed via the depth-first walk from the outer match). Exits non-zero on
-  no match.
+  prints a demo's rendered DOM (text, `style`, `id`, `aria-*` and `data-*`
+  stripped, indented by depth). `--side antd` (default) reads the bundled antd
+  demo from the out server it starts; `--side nz` reads the doc site
+  (`SITE_URL`; the demo key must exist on that page). `--click` first clicks
+  the first trigger inside the demo (`.cmp-demo-body` on the antd side,
+  `#components-<dir>-demo-<demo>` on the nz side) matching `.ant-btn`,
+  `[nz-popconfirm]`, `[nz-popover]`, `[nz-tooltip]` or `[nz-dropdown]`, and
+  says so if none matches. `--selector` defaults to the component's
+  `prefixCls` on the antd side (with `--click`: `.ant-message`,
+  `.ant-notification`, `-wrap` roots, `[role="tooltip"]`), and to the demo
+  section's `[class^="ant-"]` descendants on the nz side (plus the CDK
+  overlay container's with `--click`). Only top-most matches are printed; a
+  root whose class attribute starts with a non-`ant-` class is missed, so
+  pass `--selector` then. Exits non-zero on no match.
 - `npx tsx tools/v6-compare/collect-classes.ts [--component <dir>]` — records
   `ant-*` classes rendered on the doc-site page (`SITE_URL`) into
   `out/rendered-classes.json` for the style-coverage tests, with the popup
-  triggers it managed to open per component (hover `TRIGGERS` first, then
-  click-only popups via `CLICK_TRIGGERS`, e.g. modal/drawer/message/
-  notification/popconfirm/float-button). Classes are attributed by
+  triggers that opened something per component (hover `TRIGGERS` first, then
+  click-only popups via `CLICK_TRIGGERS`). Classes are attributed by
   `prefixCls` plus `renderedPrefixes` (see `scripts/build/v6/components.ts`).
-- `npx tsx tools/v6-compare/check-toggle.ts` — asserts the doc site's
-  `?theme=v6|v6-dark|default` toggle swaps stylesheets and tokens correctly on
-  every mapped component's page (`SITE_URL`).
+- `npx tsx tools/v6-compare/check-toggle.ts` — on every mapped component's
+  page (`SITE_URL`) and each of `?theme=v6|v6-dark|default`, asserts the base
+  stylesheet is disabled only under v6, the theme stylesheet and
+  `--ant-color-primary` match the theme, and v6 rules reach the first element
+  carrying the component's `prefixCls` (overlay pages, which render nothing
+  until opened, only need `prefixCls` rules in the theme stylesheet). Button,
+  input, select and space also check exact computed values.
 - `npx tsx tools/v6-compare/ssr-check/run.ts` — builds and asserts on the
   standalone SSR check app.
+- `npm run typecheck:tools` — `tsc` over `tools/` and `scripts/`
+  (`tsconfig.tools.json`); tsx runs these files without type-checking, so run
+  it after editing the harness or the build scripts.
 
 ## Doc-site v6 toggle
 
@@ -131,5 +131,4 @@ with no antd counterpart. Demo keys not listed pair by identical name.
 
 The Vitest runner used by this fork's own test scripts may need a local patch to
 `node_modules/@angular/build`'s vitest executor to run browser specs on Windows;
-this is unrelated to the harness itself. See the sub-project 1 ledger for details
-if `test-scripts` fails to launch browser tests.
+this is unrelated to the harness itself.

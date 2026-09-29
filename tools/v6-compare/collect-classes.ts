@@ -59,8 +59,8 @@ async function main(): Promise<void> {
       .filter(c => /^ant-[a-z0-9-]+$/.test(c));
   };
   const components: Record<string, string[]> = { ...previous.components };
-  // Best effort, recorded (spec 4.2): which trigger selectors matched and were activated per component,
-  // so a reviewer can tell "no popup classes because none opened" from "no popup classes rendered".
+  // Best effort, recorded: which trigger selectors opened something per component, so "no popup classes
+  // because none opened" can be told apart from "no popup classes rendered".
   const triggers: Record<string, string[]> = { ...previous.triggers };
   for (const dir of v6ComponentDirs) {
     if (only && dir !== only) continue;
@@ -88,7 +88,9 @@ async function main(): Promise<void> {
     }
     if (CLICK_TRIGGERS[dir]) {
       const clickable = await page.$$(`[id^="components-${dir}-demo-"] ${CLICK_TRIGGERS[dir]}`);
+      let activated = 0;
       for (const button of clickable.slice(0, 4)) {
+        const before = new Set(await page.evaluate(collect, dir));
         try {
           await button.scrollIntoViewIfNeeded();
           await button.click({ timeout: 1000 });
@@ -96,14 +98,17 @@ async function main(): Promise<void> {
           continue; // disabled or covered button: skip
         }
         await page.waitForTimeout(600); // open motion (--ant-motion-duration-slow is 0.3s)
-        (await page.evaluate(collect, dir)).forEach(c => seen.add(c));
+        const after = await page.evaluate(collect, dir);
+        after.forEach(c => seen.add(c));
+        // Counted only when the click rendered a class that was not there before (a popup opened).
+        if (after.some(c => !before.has(c))) activated++;
         await page.keyboard.press('Escape');
         for (const closer of await page.$$('.ant-modal-close, .ant-drawer-close, .ant-notification-notice-close')) {
           await closer.click({ timeout: 500 }).catch(() => undefined);
         }
         await page.waitForTimeout(400);
-        opened.push(CLICK_TRIGGERS[dir]!);
       }
+      if (activated > 0) opened.push(`${CLICK_TRIGGERS[dir]} (${activated}/${clickable.length})`);
     }
     triggers[dir] = opened;
     // Keep only classes owned by this component (its prefixCls, its `renderedPrefixes`, minus classes of a
