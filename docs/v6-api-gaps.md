@@ -3,12 +3,15 @@
 Limitations met while aligning components with antd v6 that cannot be closed without a public API change
 (new input/output, rename, removed feature). Sub-project 3 (API alignment) consumes this list.
 
-| Component             | antd v6 behaviour                    | ng-zorro today                         | Gap                                     |
-| --------------------- | ------------------------------------ | -------------------------------------- | --------------------------------------- |
-| Popconfirm            | `description` prop                   | no `nzPopconfirmDescription`           | new input (sub-project 3)               |
-| Progress              | `percentPosition`/`size` object      | not available                          | inputs (sub-project 3)                  |
-| Message               | message stacking (`stack`)           | not available                          | new config                              |
-| Notification          | notification stacking (`stack`)      | not available                          | new config                              |
-| Message, Notification | global singletons                    | scoped `[nzTheme]` does not reach them | documented limit                        |
-| FloatButton           | `badge` prop                         | `nz-badge` wrapping                    | badge inside the button (sub-project 3) |
-| FloatButton, BackTop  | drag, `content` slot, `showProgress` | not available                          | new inputs                              |
+| Component             | antd v6 behaviour                                                          | ng-zorro today                         | Gap                                     |
+| --------------------- | -------------------------------------------------------------------------- | -------------------------------------- | --------------------------------------- |
+| Popconfirm            | `description` prop                                                         | no `nzPopconfirmDescription`           | new input (sub-project 3)               |
+| Progress              | `percentPosition`/`size` object                                            | not available                          | inputs (sub-project 3)                  |
+| Message               | message stacking (`stack`)                                                 | not available                          | new config                              |
+| Notification          | notification stacking (`stack`)                                            | not available                          | new config                              |
+| Message, Notification | global singletons                                                          | scoped `[nzTheme]` does not reach them | documented limit                        |
+| FloatButton           | `badge` prop                                                               | `nz-badge` wrapping                    | badge inside the button (sub-project 3) |
+| FloatButton, BackTop  | drag, `content` slot, `showProgress`                                       | not available                          | new inputs                              |
+| Radio.Group           | `vertical` prop (`ant-radio-group-vertical`)                               | not available                          | new input (sub-project 3)               |
+| Radio.Group           | `block` prop (`ant-radio-group-block`)                                     | not available                          | new input (sub-project 3)               |
+| Radio, Radio.Button   | `block` prop (`ant-radio-wrapper-block`, `ant-radio-button-wrapper-block`) | not available                          | new input (sub-project 3)               |

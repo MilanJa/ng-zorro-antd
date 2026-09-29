@@ -294,6 +294,9 @@
       "less": "./radio/style/*.less",
       "style": "./radio/style/index.min.css"
     },
+    "./radio/style/v6/*": {
+      "style": "./radio/style/v6/*"
+    },
     "./rate/style/*": {
       "less": "./rate/style/*.less",
       "style": "./rate/style/index.min.css"

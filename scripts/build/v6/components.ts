@@ -39,6 +39,7 @@ export const v6Components = {
   popconfirm: { antd: ['Popconfirm'], prefixCls: 'ant-popconfirm', renderedPrefixes: ['ant-popover'] },
   popover: { antd: ['Popover'], prefixCls: 'ant-popover' },
   progress: { antd: ['Progress'], prefixCls: 'ant-progress' },
+  radio: { antd: ['Radio'], prefixCls: 'ant-radio' },
   rate: { antd: ['Rate'], prefixCls: 'ant-rate' },
   result: { antd: ['Result'], prefixCls: 'ant-result' },
   segmented: { antd: ['Segmented'], prefixCls: 'ant-segmented' },

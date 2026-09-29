@@ -711,6 +711,25 @@ export interface NzProgressToken {
   remainingColor: string;
 }
 
+export interface NzRadioToken {
+  buttonBg: string;
+  buttonCheckedBg: string;
+  buttonCheckedBgDisabled: string;
+  buttonCheckedColorDisabled: string;
+  buttonColor: string;
+  buttonPaddingInline: number;
+  buttonSolidCheckedActiveBg: string;
+  buttonSolidCheckedBg: string;
+  buttonSolidCheckedColor: string;
+  buttonSolidCheckedHoverBg: string;
+  dotColorDisabled: string;
+  dotSize: number;
+  radioBgColor: string;
+  radioColor: string;
+  radioSize: number;
+  wrapperMarginInlineEnd: number;
+}
+
 export interface NzRateToken {
   lineWidthFocus: number;
   starBg: string;
@@ -829,6 +848,7 @@ export interface NzComponentTokenMap {
   Popconfirm: NzPopconfirmToken;
   Popover: NzPopoverToken;
   Progress: NzProgressToken;
+  Radio: NzRadioToken;
   Rate: NzRateToken;
   Result: NzResultToken;
   Segmented: NzSegmentedToken;

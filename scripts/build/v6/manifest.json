@@ -1,7 +1,7 @@
 {
   "antdVersion": "6.6.5",
   "engineCoreBytes": 42701,
-  "engineComponentsBytes": 183627,
+  "engineComponentsBytes": 191273,
   "components": {
     "alert": {
       "classes": [
@@ -847,6 +847,52 @@
         "--ant-progress-default-color",
         "--ant-progress-line-border-radius",
         "--ant-progress-remaining-color"
+      ]
+    },
+    "radio": {
+      "classes": [
+        "ant-badge",
+        "ant-badge-count",
+        "ant-button-wrapper",
+        "ant-radio",
+        "ant-radio-button",
+        "ant-radio-button-wrapper",
+        "ant-radio-button-wrapper-block",
+        "ant-radio-button-wrapper-checked",
+        "ant-radio-button-wrapper-disabled",
+        "ant-radio-checked",
+        "ant-radio-disabled",
+        "ant-radio-group",
+        "ant-radio-group-block",
+        "ant-radio-group-large",
+        "ant-radio-group-rtl",
+        "ant-radio-group-small",
+        "ant-radio-group-solid",
+        "ant-radio-group-vertical",
+        "ant-radio-input",
+        "ant-radio-wrapper",
+        "ant-radio-wrapper-block",
+        "ant-radio-wrapper-disabled",
+        "ant-radio-wrapper-rtl",
+        "ant-wave"
+      ],
+      "tokens": [
+        "--ant-radio-button-bg",
+        "--ant-radio-button-checked-bg",
+        "--ant-radio-button-checked-bg-disabled",
+        "--ant-radio-button-checked-color-disabled",
+        "--ant-radio-button-color",
+        "--ant-radio-button-padding-inline",
+        "--ant-radio-button-solid-checked-active-bg",
+        "--ant-radio-button-solid-checked-bg",
+        "--ant-radio-button-solid-checked-color",
+        "--ant-radio-button-solid-checked-hover-bg",
+        "--ant-radio-dot-color-disabled",
+        "--ant-radio-dot-size",
+        "--ant-radio-radio-bg-color",
+        "--ant-radio-radio-color",
+        "--ant-radio-radio-size",
+        "--ant-radio-wrapper-margin-inline-end"
       ]
     },
     "rate": {

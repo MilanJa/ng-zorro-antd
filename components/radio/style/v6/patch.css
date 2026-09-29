@@ -1,0 +1,89 @@
+/*
+ * antd v6's `.ant-radio` CSS draws the dot control itself (size, border, background, the dot as
+ * `::after`) because rc-checkbox no longer renders a separate inner span; ng-zorro keeps that span as
+ * `.ant-radio-inner` for the default v4 stylesheet. The rules below mirror `.ant-radio` /
+ * `.ant-radio-checked` / `.ant-radio-disabled` from the extracted v6 CSS onto `.ant-radio-inner`, and the
+ * outer `.ant-radio` box is neutralised so it is not drawn twice. The radio-button variant renders
+ * `.ant-radio-button-inner` instead (see class-allowlist.json: v6 leaves it unstyled and relies on the
+ * `.ant-radio-button-wrapper` background/border for the pill's appearance), so it is unaffected here.
+ */
+.ant-radio {
+  width: auto;
+  height: auto;
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+}
+.ant-radio::after {
+  display: none;
+}
+/*
+ * v6 also colours the box through `.ant-radio-wrapper .ant-radio-checked` and
+ * `.ant-radio-wrapper .ant-radio-disabled` (two classes of specificity, matched here so the reset above
+ * is not outweighed on a checked/disabled radio).
+ */
+.ant-radio-wrapper .ant-radio-checked,
+.ant-radio-wrapper .ant-radio-disabled {
+  background: transparent;
+  border: none;
+}
+.ant-radio-inner {
+  position: relative;
+  top: 0;
+  left: 0;
+  display: block;
+  width: calc(var(--ant-radio-radio-size) * 1px);
+  height: calc(var(--ant-radio-radio-size) * 1px);
+  background-color: var(--ant-color-bg-container);
+  border: var(--ant-line-width) var(--ant-line-type) var(--ant-color-border);
+  border-radius: 50%;
+  transition: all var(--ant-motion-duration-mid);
+}
+.ant-radio-inner::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  width: calc(var(--ant-radio-dot-size) * 1px);
+  height: calc(var(--ant-radio-dot-size) * 1px);
+  background-color: var(--ant-radio-radio-color);
+  border-radius: 50%;
+  transform-origin: 50% 50%;
+  opacity: 0;
+  transition: all var(--ant-motion-duration-slow) var(--ant-motion-ease-in-out-circ);
+}
+.ant-radio-wrapper:hover:not(.ant-radio-wrapper-disabled) .ant-radio:not(.ant-radio-disabled) .ant-radio-inner {
+  border-color: var(--ant-color-primary);
+}
+.ant-radio-checked .ant-radio-inner {
+  background-color: var(--ant-radio-radio-bg-color);
+  border-color: var(--ant-color-primary);
+}
+.ant-radio-checked .ant-radio-inner::after {
+  transform: translate(-50%, -50%);
+  opacity: 1;
+}
+.ant-radio-wrapper:hover .ant-radio-checked:not(.ant-radio-disabled) .ant-radio-inner {
+  background-color: var(--ant-color-primary-hover);
+  border-color: transparent;
+}
+.ant-radio-disabled .ant-radio-inner {
+  background: var(--ant-color-bg-container-disabled);
+  border-color: var(--ant-color-border);
+}
+.ant-radio-disabled .ant-radio-inner::after {
+  background-color: var(--ant-radio-dot-color-disabled);
+}
+.ant-radio:has(.ant-radio-input:focus-visible) .ant-radio-inner {
+  outline: var(--ant-line-width-focus) solid var(--ant-color-primary-border);
+  outline-offset: 1px;
+  transition:
+    outline-offset 0s,
+    outline 0s;
+}
+
+/* style/patch.less: hides the trailing label span when the projected content is empty. */
+.ant-radio + span:empty {
+  display: none;
+}

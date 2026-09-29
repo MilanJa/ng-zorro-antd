@@ -19,6 +19,7 @@ export const COMPONENT_ROOT_CLS: Record<string, string> = {
   Popconfirm: 'ant-popconfirm',
   Popover: 'ant-popover',
   Progress: 'ant-progress',
+  Radio: 'ant-radio',
   Rate: 'ant-rate',
   Result: 'ant-result',
   Segmented: 'ant-segmented',
