@@ -39,7 +39,7 @@ describe('popconfirm under antd v6 css', () => {
 
   beforeEach(() => {
     installV6Css();
-    TestBed.configureTestingModule({ providers: [provideNzIconsTesting()] });
+    TestBed.configureTestingModule({ providers: [provideNzIconsTesting()], animationsEnabled: true });
     fixture = TestBed.createComponent(TestPopconfirmComponent);
     overlay = TestBed.inject(OverlayContainer);
     fixture.detectChanges();
@@ -62,6 +62,10 @@ describe('popconfirm under antd v6 css', () => {
     ).toBe('Sure?');
     const icon = root.querySelector('.ant-popconfirm-message-icon .anticon') as HTMLElement;
     expect(getComputedStyle(icon).color).toBe('rgb(250, 173, 20)'); // colorWarning
+    // The body carries `ant-popover-content`, so Popover's content padding token reaches popconfirm too.
+    const body = root.querySelector('.ant-popconfirm-inner-content.ant-popover-content') as HTMLElement;
+    expect(body).not.toBeNull();
+    expect(getComputedStyle(body).padding).toBe('0px'); // --ant-popover-inner-content-padding
     const buttons = root.querySelectorAll('.ant-popconfirm-buttons button');
     expect(buttons.length).toBe(2);
     expect(getComputedStyle(root.querySelector('.ant-popconfirm-buttons') as HTMLElement).textAlign).toBe('end');
@@ -79,10 +83,9 @@ describe('popconfirm under antd v6 css', () => {
     await new Promise(r => setTimeout(r, 300));
     expect(getComputedStyle(buttons[1]).backgroundColor).toBe('rgb(0, 185, 107)'); // scoped primary reaches the OK button
 
-    // Positioned above the trigger (default `top` placement, `@Input('nzPopconfirmTitle') ...`, and
-    // `@Input('nzPopconfirmPlacement') ... = 'top'`, popconfirm.ts, same default as Tooltip/Popover). As
-    // with Tooltip (Task 8) and Popover (Task 9), CDK's FlexibleConnectedPositionStrategy writes the
-    // offsets that place the bubble onto `.ant-popover` itself (not onto `.cdk-overlay-pane`); without
+    // Positioned above the trigger (default `top` placement, as for Tooltip and Popover). CDK's
+    // FlexibleConnectedPositionStrategy writes the offsets that place the bubble onto `.ant-popover`
+    // itself (not onto `.cdk-overlay-pane`); without
     // `style/v6/patch.css`'s `.ant-popconfirm.ant-popover { position: relative; }`, v6's own
     // `position: absolute` on that same element misinterprets those offsets and the bubble is
     // mispositioned. The host fixture's inline margin gives the (title+buttons) box enough headroom
@@ -102,6 +105,8 @@ describe('popconfirm under antd v6 css', () => {
     fixture.componentInstance.visible.set(false);
     fixture.detectChanges();
     await fixture.whenStable();
+    // Leave motion: `.ant-zoom-big-leave` runs antZoomBigOut for --ant-motion-duration-mid (0.2s);
+    // Angular removes the popup on `animationend`. 400 ms leaves room for the frame it starts on.
     await new Promise(r => setTimeout(r, 400));
     expect(overlay.getContainerElement().querySelector('.ant-popconfirm')).toBeNull();
   });

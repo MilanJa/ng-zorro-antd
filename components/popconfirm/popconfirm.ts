@@ -177,7 +177,7 @@ export class NzPopconfirmDirective extends NzTooltipBaseDirective {
           <div class="ant-popover-arrow"></div>
         }
         <div class="ant-popover-inner ant-popover-container">
-          <div class="ant-popover-inner-content ant-popconfirm-inner-content">
+          <div class="ant-popover-inner-content ant-popover-content ant-popconfirm-inner-content">
             <div class="ant-popover-message ant-popconfirm-message">
               @if (nzIcon !== null) {
                 <span class="ant-popover-message-icon ant-popconfirm-message-icon">
