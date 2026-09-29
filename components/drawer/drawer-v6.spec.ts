@@ -86,13 +86,12 @@ describe('drawer under antd v6 css', () => {
     fixture.componentInstance.open.set(false);
     fixture.detectChanges();
     await fixture.whenStable();
-    await new Promise(r => setTimeout(r, 400));
-    // ng-zorro keeps the drawer DOM in the overlay (transform-driven close, not removal), so the wrapper
-    // is still present after close; the closed-state shadow assertion below is the one that applies.
+    await new Promise(r => setTimeout(r, 400)); // the panel's close transition (--ant-motion-duration-slow, 0.3s)
+    // ng-zorro keeps the drawer DOM in the overlay (transform-driven close, not removal), so the closed
+    // panel's shadow must be dropped or it shows at the viewport edge.
     const wrapper = overlay.getContainerElement().querySelector('.ant-drawer-content-wrapper') as HTMLElement | null;
-    if (wrapper) {
-      expect(getComputedStyle(wrapper).boxShadow).toBe('none');
-    }
+    expect(wrapper).not.toBeNull();
+    expect(getComputedStyle(wrapper!).boxShadow).toBe('none');
   });
 });
 

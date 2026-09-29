@@ -41,7 +41,7 @@ describe('tooltip under antd v6 css', () => {
 
   beforeEach(() => {
     installV6Css();
-    TestBed.configureTestingModule({ providers: [provideNzIconsTesting()] });
+    TestBed.configureTestingModule({ providers: [provideNzIconsTesting()], animationsEnabled: true });
     fixture = TestBed.createComponent(TestTooltipComponent);
     overlay = TestBed.inject(OverlayContainer);
     fixture.detectChanges();
@@ -59,9 +59,8 @@ describe('tooltip under antd v6 css', () => {
     const root = overlay.getContainerElement().querySelector('.ant-tooltip') as HTMLElement;
     expect(root).not.toBeNull();
     await expectMotionSettled(root);
-    // The brief's verbatim assertion used a descendant selector (`.ant-tooltip-container .ant-tooltip-inner`),
-    // but the mapping table merges both classes onto the same div (no separate `-content`/`-container`
-    // wrapper), so the compound (no-space) selector is the one that actually matches; substituted here.
+    // v6's `-container` and v4's `-inner` are the same element in ng-zorro (antd nests them), hence the
+    // compound selector.
     expect(root.querySelector('.ant-tooltip-container.ant-tooltip-inner')?.textContent?.trim()).toBe('Hello');
     const inner = root.querySelector('.ant-tooltip-inner') as HTMLElement;
     expect(getComputedStyle(inner).backgroundColor).toBe('rgba(0, 0, 0, 0.85)'); // colorBgSpotlight
@@ -72,10 +71,8 @@ describe('tooltip under antd v6 css', () => {
     // Positioned above the trigger (default `top` placement) and horizontally centred on it. CDK's
     // FlexibleConnectedPositionStrategy writes the offsets that produce this onto `.ant-tooltip` itself
     // (not onto `.cdk-overlay-pane`); without `style/v6/patch.css`'s `.ant-tooltip { position: relative; }`,
-    // v6's own `position: absolute` on that same element misinterprets those offsets and the bubble is
-    // mispositioned (verified directly: without the patch this element measures `left: 209.86` / `top: 68`
-    // against a trigger at `left: 200` / `top: 80` -- overlapping the trigger instead of sitting centred
-    // above it; see fix round 1).
+    // v6's own `position: absolute` on that same element misinterprets those offsets and the bubble
+    // overlaps the trigger instead of sitting centred above it.
     const trigger = document.getElementById('trigger')!.getBoundingClientRect();
     const rootRect = root.getBoundingClientRect();
     expect(rootRect.bottom).toBeLessThanOrEqual(trigger.top + 1);
@@ -91,6 +88,8 @@ describe('tooltip under antd v6 css', () => {
     fixture.componentInstance.visible.set(false);
     fixture.detectChanges();
     await fixture.whenStable();
+    // Leave motion: `.ant-zoom-big-fast-leave` runs antZoomBigOut for --ant-motion-duration-fast (0.1s);
+    // Angular removes the popup on `animationend`. 400 ms leaves room for the frame it starts on.
     await new Promise(r => setTimeout(r, 400));
     expect(overlay.getContainerElement().querySelector('.ant-tooltip')).toBeNull();
   });
