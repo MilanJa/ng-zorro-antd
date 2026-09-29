@@ -86,6 +86,75 @@ async function assertNoAntdRuntimeStyles(page: Page, what: string): Promise<void
   }
 }
 
+const INDEX_STYLE =
+  'body{font-family:sans-serif;margin:24px}figure{display:inline-block;margin:8px;vertical-align:top}' +
+  'img{max-width:420px;border:1px solid #ddd}.pair{display:flex;gap:8px;align-items:flex-start;margin-bottom:12px}' +
+  'h3{margin-top:32px}nav a{margin-right:12px}';
+
+/** Theme folders in display order; any other folder under `out/<dir>/` follows alphabetically. */
+const THEME_ORDER = ['v6', 'v6-dark', 'v6-compact', 'default', 'default-before'];
+
+/**
+ * Writes `out/index.html` from the screenshots on disk (`out/<dir>/<theme>/<key>.{nz,antd}.png`), so a
+ * run limited by `--component` or `--theme` still leaves an index of every capture made so far. The
+ * pairing notes come from `build-report.json` and `demo-map.json`.
+ */
+function writeIndex(
+  report: Record<string, { demos: string[]; skipped: unknown[] }>,
+  map: Record<string, Record<string, string | null>>
+): string {
+  const body: string[] = [];
+  const nav: string[] = [];
+  for (const dir of [...v6ComponentDirs].sort()) {
+    const dirPath = path.join(outDir, dir);
+    if (!existsSync(dirPath)) continue;
+    const themes = readdirSync(dirPath, { withFileTypes: true })
+      .filter(d => d.isDirectory())
+      .map(d => d.name)
+      .sort((a, b) => {
+        const ia = THEME_ORDER.indexOf(a);
+        const ib = THEME_ORDER.indexOf(b);
+        return (ia < 0 ? THEME_ORDER.length : ia) - (ib < 0 ? THEME_ORDER.length : ib) || a.localeCompare(b);
+      });
+    if (!themes.length) continue;
+    const pairing = pairDemos(dir, ngDemoKeys(dir), report[dir]?.demos ?? [], map);
+    const antdName = new Map(pairing.pairs.map(p => [p.key, p.antd]));
+    nav.push(`<a href="#${dir}">${dir}</a>`);
+    body.push(`<h2 id="${dir}">${dir}</h2>`);
+    if (pairing.ngOnly.length) body.push(`<p>ng-zorro only: ${pairing.ngOnly.join(', ')}</p>`);
+    if (pairing.antdOnly.length) body.push(`<p>antd only: ${pairing.antdOnly.join(', ')}</p>`);
+    if (report[dir]?.skipped?.length) {
+      body.push(`<p>antd demos that failed to bundle: ${report[dir].skipped.length} (see build-report.json)</p>`);
+    }
+    for (const theme of themes) {
+      const files = readdirSync(path.join(dirPath, theme)).filter(f => /\.(nz|antd)\.png$/.test(f));
+      const keys = [...new Set(files.map(f => f.replace(/\.(nz|antd)\.png$/, '')))].sort();
+      if (!keys.length) continue;
+      body.push(`<h3 id="${dir}-${theme}">${theme}</h3>`);
+      const v4 = theme.startsWith('default');
+      for (const key of keys) {
+        const figure = (side: 'nz' | 'antd', caption: string): string =>
+          files.includes(`${key}.${side}.png`)
+            ? `<figure><figcaption>${caption}</figcaption><img src="${dir}/${theme}/${key}.${side}.png"></figure>`
+            : `<figure><figcaption>${caption}</figcaption><em>not captured</em></figure>`;
+        const nz = figure('nz', `ng-zorro · ${key}${v4 ? ` (v4 ${theme})` : ''}`);
+        const antd = v4 ? '' : figure('antd', `antd · ${antdName.get(key) ?? key}`);
+        body.push(`<div class="pair">${antd}${nz}</div>`);
+      }
+    }
+  }
+  const file = path.join(outDir, 'index.html');
+  writeFileSync(
+    file,
+    [
+      `<!doctype html><meta charset="utf-8"><title>v6 compare</title><style>${INDEX_STYLE}</style>`,
+      `<nav>${nav.join('')}</nav>`,
+      ...body
+    ].join('\n')
+  );
+  return file;
+}
+
 async function main(): Promise<void> {
   const only = arg('component');
   const themes = arg('theme') ? [arg('theme')!] : [...THEMES];
@@ -101,53 +170,32 @@ async function main(): Promise<void> {
   const stopServer = await startOutServer(outDir, harnessPort);
   const browser = await chromium.launch();
   const page = await browser.newPage({ viewport: { width: 900, height: 800 } });
-  const index: string[] = [
-    '<!doctype html><meta charset="utf-8"><title>v6 compare</title><style>body{font-family:sans-serif;margin:24px}figure{display:inline-block;margin:8px;vertical-align:top}img{max-width:420px;border:1px solid #ddd}.pair{display:flex;gap:8px;align-items:flex-start;margin-bottom:12px}h3{margin-top:32px}</style>'
-  ];
 
   for (const dir of v6ComponentDirs) {
     if (only && dir !== only) continue;
     const pairing = pairDemos(dir, ngDemoKeys(dir), report[dir]?.demos ?? [], map);
-    index.push(`<h2 id="${dir}">${dir}</h2>`);
     for (const theme of themes) {
-      index.push(`<h3>${theme}</h3>`);
       const folder = path.join(outDir, dir, theme);
       mkdirSync(folder, { recursive: true });
       await page.goto(`${siteUrl}/components/${dir}/en?theme=${theme}`, { waitUntil: 'networkidle' });
       for (const { key, antd } of pairing.pairs) {
-        const nzFile = path.join(folder, `${key}.nz.png`);
-        const okNz = await shotElement(page, `#components-${dir}-demo-${key}`, nzFile);
-        const rel = (f: string): string => path.relative(outDir, f).replace(/\\/g, '/');
+        await shotElement(page, `#components-${dir}-demo-${key}`, path.join(folder, `${key}.nz.png`));
         // `default` is the plain v4 theme, captured for the before/after diff a component task keeps
         // under `out/<dir>/default(-before)/`; there is no antd v6 pane to compare it against.
-        if (theme === 'default') {
-          index.push(
-            `<div class="pair"><figure><figcaption>ng-zorro · ${key} (v4 default)</figcaption>${okNz ? `<img src="${rel(nzFile)}">` : '<em>not found on page</em>'}</figure></div>`
-          );
-          continue;
-        }
+        if (theme === 'default') continue;
         const antdPage = await browser.newPage({ viewport: { width: 900, height: 800 } });
         await antdPage.goto(`${harnessUrl}/compare.html?component=${dir}&demo=${antd}&theme=${theme}`, {
           waitUntil: 'networkidle'
         });
         await assertNoAntdRuntimeStyles(antdPage, `${dir}/${antd} (${theme})`);
-        const antdFile = path.join(folder, `${key}.antd.png`);
-        const okAntd = await shotElement(antdPage, `.cmp-demo[data-demo="${antd}"]`, antdFile);
+        await shotElement(antdPage, `.cmp-demo[data-demo="${antd}"]`, path.join(folder, `${key}.antd.png`));
         await antdPage.close();
-        index.push(
-          `<div class="pair"><figure><figcaption>antd · ${antd}</figcaption>${okAntd ? `<img src="${rel(antdFile)}">` : '<em>not rendered</em>'}</figure><figure><figcaption>ng-zorro · ${key}</figcaption>${okNz ? `<img src="${rel(nzFile)}">` : '<em>not found on page</em>'}</figure></div>`
-        );
       }
-      if (pairing.ngOnly.length) index.push(`<p>ng-zorro only: ${pairing.ngOnly.join(', ')}</p>`);
-      if (pairing.antdOnly.length) index.push(`<p>antd only: ${pairing.antdOnly.join(', ')}</p>`);
-      if (report[dir]?.skipped?.length)
-        index.push(`<p>antd demos that failed to bundle: ${report[dir].skipped.length} (see build-report.json)</p>`);
     }
   }
   await browser.close();
   await stopServer();
-  writeFileSync(path.join(outDir, 'index.html'), index.join('\n'));
-  console.log(`wrote ${path.join(outDir, 'index.html')}`);
+  console.log(`wrote ${writeIndex(report, map)}`);
 }
 
 main().catch(error => {
