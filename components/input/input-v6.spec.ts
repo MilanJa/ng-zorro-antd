@@ -10,6 +10,7 @@ import { FormsModule } from '@angular/forms';
 
 import { V6_PATCH_CSS, V6_TEMPLATE_CSS, V6_TOKENS_DEFAULT_CSS } from 'ng-zorro-antd/core/theme/generated/test-css';
 import { provideNzIconsTesting } from 'ng-zorro-antd/icon/testing';
+import { NzSelectModule } from 'ng-zorro-antd/select';
 
 import { NzInputModule } from './input.module';
 
@@ -102,5 +103,39 @@ describe('input under antd v6 css', () => {
     const wrapper = document.getElementById('textarea')!;
     expect(wrapper.classList.contains('ant-input-textarea-affix-wrapper')).toBe(true);
     expect(wrapper.classList.contains('ant-input-affix-wrapper-textarea-with-clear-btn')).toBe(true);
+  });
+});
+
+@Component({
+  imports: [FormsModule, NzInputModule, NzSelectModule],
+  template: `
+    <nz-input-wrapper>
+      <nz-select id="addon-select" nzInputAddonBefore ngModel="a">
+        <nz-option nzLabel="a" nzValue="a" />
+      </nz-select>
+      <input nz-input />
+    </nz-input-wrapper>
+  `
+})
+class TestInputAddonSelectComponent {}
+
+describe('select inside an input addon under antd v6 css', () => {
+  beforeEach(() => installV6Css());
+  afterEach(() => style.remove());
+
+  it('draws no box of its own: the selector and the root have no visible border or background', async () => {
+    TestBed.configureTestingModule({ providers: [provideNzIconsTesting()] });
+    const fixture = TestBed.createComponent(TestInputAddonSelectComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const root = fixture.nativeElement.querySelector('#addon-select') as HTMLElement;
+    expect(root.closest('.ant-input-group-addon')).not.toBeNull();
+    const selector = root.querySelector('.ant-select-selector') as HTMLElement;
+    const selectorCs = getComputedStyle(selector);
+    expect(selectorCs.borderTopColor).toBe('rgba(0, 0, 0, 0)');
+    expect(selectorCs.borderTopWidth).toBe('1px');
+    expect(selectorCs.backgroundColor).toBe('rgba(0, 0, 0, 0)');
+    expect(selectorCs.boxShadow).toBe('none');
+    expect(getComputedStyle(root).borderTopStyle).toBe('none');
   });
 });

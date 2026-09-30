@@ -34,6 +34,29 @@
 .ant-select .ant-select-selector input {
   cursor: pointer;
 }
+
+/*
+ * A select (or cascader, which carries the same `ant-select ant-select-single` root classes) inside an input
+ * addon: antd's `.ant-input-group .ant-input-group-addon .ant-select.ant-select-single:not(.ant-select-customize-input):not(.ant-pagination-size-changer)`
+ * rule (`background-color: inherit; border: 1px transparent; box-shadow: none`) removes the box from the
+ * root, where antd draws it. Here the box is `.ant-select-selector`, so the same rule is mirrored onto it,
+ * and the root's transparent border, which outranks `.ant-select { border: none }` above, is removed at
+ * the same specificity so the control keeps the height of one border, not two. The root keeps antd's
+ * inherited background. Input's own addon demo relies on this rule, shipped with select's styles.
+ */
+.ant-input-group
+  .ant-input-group-addon
+  .ant-select.ant-select-single:not(.ant-select-customize-input):not(.ant-pagination-size-changer) {
+  border: none;
+}
+.ant-input-group
+  .ant-input-group-addon
+  .ant-select.ant-select-single:not(.ant-select-customize-input):not(.ant-pagination-size-changer)
+  .ant-select-selector {
+  background-color: transparent;
+  border: var(--ant-line-width) var(--ant-line-type) transparent;
+  box-shadow: none;
+}
 .ant-select-show-search .ant-select-selector,
 .ant-select-show-search .ant-select-selector input {
   cursor: text;
@@ -112,6 +135,15 @@
  * absolutely positioned sibling of `.ant-select-selector`, as v4's own `&-arrow` rule does. Port
  * that positioning with v6 tokens, since no v6 CSS rule targets `.ant-select-arrow` at all.
  */
+/*
+ * In antd the suffix is an in-flow flex item (`flex: none`, `font-size: var(--ant-font-size-icon)`) after
+ * `.ant-select-content`, whose `margin-inline-end` (show-arrow padding minus the icon size) is only the gap
+ * before it. With the arrow taken out of flow here, reserve the icon's width at the end of the content, or a
+ * content-sized select (e.g. in an input addon) draws its arrow over the selected text.
+ */
+.ant-select-show-arrow .ant-select-selector .ant-select-selection-wrap {
+  padding-inline-end: var(--ant-font-size-icon);
+}
 .ant-select .ant-select-arrow {
   position: absolute;
   top: 50%;
