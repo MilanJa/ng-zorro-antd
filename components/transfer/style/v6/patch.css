@@ -1,0 +1,35 @@
+/*
+ * antd v6 marks a checked row with `.ant-transfer-list-content-item-checked` and a one-way target list
+ * with `.ant-transfer-list-content-show-remove`. The v4 stylesheet styles both classes as well (a blue
+ * checked row, a transparent hover in one-way lists), so ng-zorro does not emit them. The rules below are
+ * antd's, keyed onto structure the rows already have instead:
+ * - a checked row is one whose checkbox is checked (`label.ant-checkbox-wrapper > .ant-checkbox-checked`);
+ *   the `:not(-disabled)` guard matches antd, which never marks a disabled row as checked;
+ * - a one-way row is one with no checkbox (`nzOneWay` renders the item text and a remove button instead).
+ */
+
+/* antd: `.ant-transfer .ant-transfer-section .ant-transfer-list-content-item-checked` */
+.ant-transfer
+  .ant-transfer-section
+  .ant-transfer-list-content-item:not(.ant-transfer-list-content-item-disabled):has(
+    > .ant-checkbox-wrapper > .ant-checkbox-checked
+  ) {
+  background-color: var(--ant-control-item-bg-active);
+}
+
+/* antd: `… .ant-transfer-list-content-item:not(.ant-transfer-list-content-item-disabled).ant-transfer-list-content-item-checked:hover` */
+.ant-transfer
+  .ant-transfer-section
+  .ant-transfer-list-content-item:not(.ant-transfer-list-content-item-disabled):has(
+    > .ant-checkbox-wrapper > .ant-checkbox-checked
+  ):hover {
+  background-color: var(--ant-control-item-bg-active-hover);
+}
+
+/* antd: `… .ant-transfer-list-content-show-remove .ant-transfer-list-content-item:not(.ant-transfer-list-content-item-disabled):hover` */
+.ant-transfer
+  .ant-transfer-section
+  .ant-transfer-list-content-item:not(.ant-transfer-list-content-item-disabled):not(:has(> .ant-checkbox-wrapper)):hover {
+  background: transparent;
+  cursor: default;
+}

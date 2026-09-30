@@ -69,11 +69,14 @@ describe('transfer under antd v6 css', () => {
   });
 
   it('gives a checked item the v6 active background', () => {
-    const item = fixture.nativeElement.querySelector(
-      '.ant-transfer-section .ant-transfer-list-content-item-checked'
-    ) as HTMLElement;
-    expect(item).not.toBeNull();
-    expect(getComputedStyle(item).backgroundColor).toBe('rgb(230, 244, 255)');
+    const items = [...fixture.nativeElement.querySelectorAll('.ant-transfer-section .ant-transfer-list-content-item')];
+    const checked = items.find(item => item.querySelector('.ant-checkbox-checked')) as HTMLElement;
+    const unchecked = items.find(item => !item.querySelector('.ant-checkbox-checked')) as HTMLElement;
+    expect(checked).toBeDefined();
+    // The v4 stylesheet styles `-content-item-checked` too; the patch keys v6's rule onto the checked checkbox.
+    expect(checked.classList.contains('ant-transfer-list-content-item-checked')).toBe(false);
+    expect(getComputedStyle(checked).backgroundColor).toBe('rgb(230, 244, 255)');
+    expect(getComputedStyle(unchecked).backgroundColor).toBe('rgba(0, 0, 0, 0)');
   });
 
   it('renders the middle operation column as v6 actions with small buttons', () => {
@@ -84,7 +87,7 @@ describe('transfer under antd v6 css', () => {
     buttons.forEach(button => expect(button.classList.contains('ant-btn-sm')).toBe(true));
   });
 
-  it('marks the target list content as show-remove when nzOneWay is set', async () => {
+  it('keys the one-way hover rule onto rows without a checkbox when nzOneWay is set', async () => {
     fixture.componentInstance.oneWay.set(true);
     fixture.detectChanges();
     await fixture.whenStable();
@@ -95,7 +98,19 @@ describe('transfer under antd v6 css', () => {
       'nz-transfer-list[data-direction="right"].ant-transfer-section'
     ) as HTMLElement;
     expect(rightSection).not.toBeNull();
-    const content = rightSection.querySelector('.ant-transfer-list-content-show-remove');
-    expect(content).not.toBeNull();
+    // v4 styles `-content-show-remove` too, so it is not emitted.
+    expect(rightSection.querySelector('.ant-transfer-list-content-show-remove')).toBeNull();
+    // The patch's copy of antd's show-remove hover rule, minus `:hover`, selects exactly the one-way rows.
+    const rule = [...document.styleSheets]
+      .flatMap(sheet => [...sheet.cssRules])
+      .find(r => r instanceof CSSStyleRule && r.selectorText.includes(':not(:has(> .ant-checkbox-wrapper)):hover'));
+    expect(rule).toBeDefined();
+    const selector = (rule as CSSStyleRule).selectorText.replace(/:hover$/, '');
+    const oneWayRow = rightSection.querySelector('.ant-transfer-list-content-item') as HTMLElement;
+    expect(oneWayRow.matches(selector)).toBe(true);
+    const leftRow = fixture.nativeElement.querySelector(
+      'nz-transfer-list[data-direction="left"] .ant-transfer-list-content-item'
+    ) as HTMLElement;
+    expect(leftRow.matches(selector)).toBe(false);
   });
 });
