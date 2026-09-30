@@ -1062,6 +1062,11 @@ export interface NzSpinToken {
   dotSizeSM: number;
 }
 
+export interface NzStatisticToken {
+  contentFontSize: number;
+  titleFontSize: number;
+}
+
 export interface NzSwitchToken {
   handleBg: string;
   handleShadow: string;
@@ -1171,6 +1176,7 @@ export interface NzComponentTokenMap {
   Slider: NzSliderToken;
   Space: NzSpaceToken;
   Spin: NzSpinToken;
+  Statistic: NzStatisticToken;
   Switch: NzSwitchToken;
   Tag: NzTagToken;
   Tooltip: NzTooltipToken;

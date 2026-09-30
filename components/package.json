@@ -407,6 +407,9 @@
       "less": "./statistic/style/*.less",
       "style": "./statistic/style/index.min.css"
     },
+    "./statistic/style/v6/*": {
+      "style": "./statistic/style/v6/*"
+    },
     "./steps/style/*": {
       "less": "./steps/style/*.less",
       "style": "./steps/style/index.min.css"

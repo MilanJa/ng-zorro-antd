@@ -70,6 +70,7 @@ describe('v6PatchDependencies', () => {
       pagination: ['select'],
       popconfirm: ['popover'],
       slider: ['tooltip'],
+      statistic: ['skeleton'],
       'time-picker': ['date-picker'],
       transfer: ['button', 'checkbox', 'input'],
       'tree-select': ['select', 'tree']

@@ -82,6 +82,9 @@ export const v6Components = {
   slider: { antd: ['Slider'], prefixCls: 'ant-slider', renderedPrefixes: ['ant-tooltip'] },
   space: { antd: ['Space'], prefixCls: 'ant-space' },
   spin: { antd: ['Spin'], prefixCls: 'ant-spin' },
+  // The loading state renders a real `nz-skeleton` (`statistic.component.ts`), so statistic's own
+  // v6 bundle carries skeleton's patch (`v6PatchDependencies`).
+  statistic: { antd: ['Statistic'], prefixCls: 'ant-statistic', renderedPrefixes: ['ant-skeleton'] },
   switch: { antd: ['Switch'], prefixCls: 'ant-switch' },
   tag: { antd: ['Tag'], prefixCls: 'ant-tag' },
   'time-picker': { antd: ['TimePicker'], prefixCls: 'ant-picker' },

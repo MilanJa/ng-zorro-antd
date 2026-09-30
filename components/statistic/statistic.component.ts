@@ -19,9 +19,13 @@ import { NzStatisticValueType } from './typings';
   encapsulation: ViewEncapsulation.None,
   imports: [NzSkeletonModule, NzStatisticContentValueComponent, NzOutletModule],
   template: `
-    <div class="ant-statistic-title">
-      <ng-container *nzStringTemplateOutlet="nzTitle">{{ nzTitle }}</ng-container>
-    </div>
+    @if (nzTitle) {
+      <div class="ant-statistic-header">
+        <div class="ant-statistic-title">
+          <ng-container *nzStringTemplateOutlet="nzTitle">{{ nzTitle }}</ng-container>
+        </div>
+      </div>
+    }
     @if (nzLoading) {
       <nz-skeleton class="ant-statistic-skeleton" [nzParagraph]="false" />
     } @else {

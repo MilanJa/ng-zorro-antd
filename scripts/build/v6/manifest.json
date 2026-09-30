@@ -1,7 +1,7 @@
 {
   "antdVersion": "6.6.5",
   "engineCoreBytes": 42701,
-  "engineComponentsBytes": 312328,
+  "engineComponentsBytes": 313140,
   "components": {
     "alert": {
       "classes": [
@@ -2469,6 +2469,50 @@
         "--ant-spin-dot-size",
         "--ant-spin-dot-size-lg",
         "--ant-spin-dot-size-sm"
+      ]
+    },
+    "statistic": {
+      "classes": [
+        "ant-skeleton",
+        "ant-skeleton-active",
+        "ant-skeleton-avatar",
+        "ant-skeleton-avatar-circle",
+        "ant-skeleton-avatar-lg",
+        "ant-skeleton-avatar-sm",
+        "ant-skeleton-block",
+        "ant-skeleton-button",
+        "ant-skeleton-button-circle",
+        "ant-skeleton-button-lg",
+        "ant-skeleton-button-round",
+        "ant-skeleton-button-sm",
+        "ant-skeleton-element",
+        "ant-skeleton-header",
+        "ant-skeleton-image",
+        "ant-skeleton-image-circle",
+        "ant-skeleton-image-path",
+        "ant-skeleton-image-svg",
+        "ant-skeleton-image-svg-circle",
+        "ant-skeleton-input",
+        "ant-skeleton-input-lg",
+        "ant-skeleton-input-sm",
+        "ant-skeleton-node",
+        "ant-skeleton-paragraph",
+        "ant-skeleton-round",
+        "ant-skeleton-section",
+        "ant-skeleton-title",
+        "ant-skeleton-with-avatar",
+        "ant-statistic",
+        "ant-statistic-content",
+        "ant-statistic-content-prefix",
+        "ant-statistic-content-suffix",
+        "ant-statistic-content-value",
+        "ant-statistic-header",
+        "ant-statistic-skeleton",
+        "ant-statistic-title"
+      ],
+      "tokens": [
+        "--ant-statistic-content-font-size",
+        "--ant-statistic-title-font-size"
       ]
     },
     "switch": {
