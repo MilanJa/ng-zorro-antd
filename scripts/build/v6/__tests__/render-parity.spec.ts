@@ -9,12 +9,25 @@ import { beforeAll, describe, expect, it } from 'vitest';
 import path from 'node:path';
 
 import { bundleEngine } from '../bundle-engine';
-import { allAntdComponentNames, v6Components, v6ComponentDirs } from '../components';
-import { dropForeignCssVarBlocks, joinTemplate, partitionBlocks, splitBlocks } from '../css-postprocess';
+import { allAntdComponentNames, antdRegistryName, v6Components, v6ComponentDirs } from '../components';
+import {
+  dropForeignComponentVarBlocks,
+  dropForeignCssVarBlocks,
+  joinTemplate,
+  partitionBlocks,
+  splitBlocks
+} from '../css-postprocess';
 import { extractAntdCss } from '../extract-styles';
 
 const generatedDir = path.resolve(__dirname, '../../../../components/core/theme/generated');
 const KEY = 'nz-root';
+// The registry names of every mapped component, in the vocabulary `dropForeignComponentVarBlocks`
+// expects: real antd extraction across `allAntdComponentNames()` also mounts components that are
+// merely nested children of a mapped one (Transfer's header always renders a `Dropdown` trigger) and
+// registers their own component-token variable blocks alongside it, which the static engine bundle
+// never does (it only imports the style module of a name actually listed in some entry's `antd`
+// array) — dropping those foreign blocks from the antd-extracted side is what real parity compares.
+const OWN_COMPONENTS = allAntdComponentNames().map(antdRegistryName);
 
 type Renderer = typeof import('../../../../components/core/theme/render-theme-css');
 
@@ -71,7 +84,9 @@ describe('engine parity with antd extraction', () => {
   for (const c of cases) {
     it(`renders byte-equal variable declarations for ${c.name}`, async () => {
       const raw = extractAntdCss({ includes: allAntdComponentNames(), key: KEY, theme: c.antd });
-      const expected = declarations(partitionBlocks(raw, KEY).vars.map(b => b.body));
+      const expected = declarations(
+        dropForeignComponentVarBlocks(partitionBlocks(raw, KEY).vars, OWN_COMPONENTS).map(b => b.body)
+      );
       // Split on brace balance, not `\n`: antd's real seed tokens (fontFamily, boxShadow*) legitimately
       // contain embedded newlines inside a single block.
       const mine = declarations(splitBlocks(await renderer.renderThemeCss(c.nz() as never, ':root')).map(b => b.body));

@@ -1,7 +1,7 @@
 {
   "antdVersion": "6.6.5",
   "engineCoreBytes": 42701,
-  "engineComponentsBytes": 256099,
+  "engineComponentsBytes": 248698,
   "components": {
     "alert": {
       "classes": [
@@ -2384,13 +2384,6 @@
         "ant-zoom-big-leave-active"
       ],
       "tokens": [
-        "--ant-dropdown-arrow-offset-horizontal",
-        "--ant-dropdown-arrow-offset-vertical",
-        "--ant-dropdown-arrow-path",
-        "--ant-dropdown-arrow-polygon",
-        "--ant-dropdown-arrow-shadow-width",
-        "--ant-dropdown-padding-block",
-        "--ant-dropdown-z-index-popup",
         "--ant-transfer-header-height",
         "--ant-transfer-item-height",
         "--ant-transfer-item-padding-block",

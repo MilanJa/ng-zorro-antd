@@ -3,6 +3,10 @@
  * found in the LICENSE file at https://github.com/NG-ZORRO/ng-zorro-antd/blob/master/LICENSE
  */
 
+import * as antdExports from 'antd';
+
+import { kebabCase } from './components';
+
 export interface CssBlock {
   selector: string;
   body: string;
@@ -65,6 +69,68 @@ export function dropForeignCssVarBlocks(blocks: CssBlock[], key: string): CssBlo
       throw new Error(`foreign css-var block with non-variable declarations: ${block.selector}`);
     }
     return false;
+  });
+}
+
+/**
+ * Every real antd export name (`Dropdown`, `Transfer`, `InputNumber`, …), kebab-cased once. antd's
+ * component-token variables are namespaced by the kebab-case of the component's *registry* name
+ * (`--ant-dropdown-*`, `--ant-button-*` for `Button` — not its `prefixCls`, which for `Button` is
+ * `ant-btn`), so this is the same vocabulary a variable declaration's name is drawn from, independent
+ * of which components this build happens to map.
+ */
+const ANTD_COMPONENT_SEGMENTS = new Set(
+  Object.keys(antdExports)
+    .filter(name => /^[A-Z]/.test(name))
+    .map(kebabCase)
+);
+
+/**
+ * A component that antd genuinely mounts as a child of another (Transfer's header always renders a
+ * `Dropdown` trigger, `Section.js`) registers its own component-token variable block next to the
+ * parent's when both share the same `cssVar.key` — real antd extraction for `Transfer` alone always
+ * carries `--ant-dropdown-*` declarations as a result, even though `Dropdown` is never named in that
+ * extraction's `includes`. Such a block is FOREIGN to an entry that does not itself map the nested
+ * component: dropped here, before both the static engine bundle (which only ever registers a
+ * component's tokens by importing its own style module directly) and any byte-parity comparison
+ * against it, the same way `dropForeignCssVarBlocks` drops a differently-shaped foreign block.
+ *
+ * A block is dropped only when every one of its declarations names the SAME single component segment
+ * (checked against the real universe of antd export names, longest word-run first, so a multi-word
+ * name like `input-number` is matched whole) and that segment is not one of `ownComponents`. A global
+ * alias-level declaration (`--ant-color-primary`, no recognizable component segment) or a mix of
+ * segments keeps the whole block, matching `dropForeignCssVarBlocks`'s "when in doubt, keep it" default.
+ * A non-variable declaration is a real style about to be lost, hence the throw.
+ */
+export function dropForeignComponentVarBlocks(blocks: CssBlock[], ownComponents: string[]): CssBlock[] {
+  const own = new Set(ownComponents.map(kebabCase));
+  const segmentOf = (declaration: string): string | null => {
+    const words = declaration
+      .slice(0, declaration.indexOf(':'))
+      .replace(/^--ant-/, '')
+      .split('-');
+    for (let len = words.length; len >= 1; len--) {
+      const candidate = words.slice(0, len).join('-');
+      if (ANTD_COMPONENT_SEGMENTS.has(candidate)) {
+        return candidate;
+      }
+    }
+    return null;
+  };
+  return blocks.filter(block => {
+    const declarations = block.body
+      .split(';')
+      .map(d => d.trim())
+      .filter(Boolean);
+    if (declarations.some(d => !d.startsWith('--'))) {
+      throw new Error(`component var block with a non-variable declaration: ${block.selector}`);
+    }
+    const segments = new Set(declarations.map(segmentOf));
+    if (segments.size !== 1) {
+      return true; // no declarations, a global token, or a mix of segments -> keep
+    }
+    const [segment] = segments;
+    return segment === null || own.has(segment);
   });
 }
 

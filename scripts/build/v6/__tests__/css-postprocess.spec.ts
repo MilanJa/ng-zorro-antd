@@ -7,6 +7,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   assertNoAntdScoping,
+  dropForeignComponentVarBlocks,
   dropForeignCssVarBlocks,
   extractClassNames,
   extractTokenNames,
@@ -125,6 +126,48 @@ describe('dropForeignCssVarBlocks', () => {
     const blocks = splitBlocks('.css-var-_R_2a_.ant-x{--ant-a:1;color:red}');
     expect(() => dropForeignCssVarBlocks(blocks, 'nz-root')).toThrow(
       /non-variable declarations: \.css-var-_R_2a_\.ant-x/
+    );
+  });
+});
+
+describe('dropForeignComponentVarBlocks', () => {
+  // Shaped like real antd extraction: Transfer's own component-token block carries no `-css-var`
+  // marker on its root class, while Dropdown's does (it calls `useCSSVarCls`) — the helper does not
+  // rely on that difference, only on the variable names themselves.
+  const dropdownBlock = '.x.ant-dropdown-css-var{--ant-dropdown-z-index-popup:1050;--ant-dropdown-padding-block:5px;}';
+  const transferBlock = '.x.ant-transfer{--ant-transfer-list-width:180px;--ant-transfer-list-height:200px;}';
+
+  it('drops a block whose declarations are all for a component absent from ownComponents', () => {
+    const kept = dropForeignComponentVarBlocks(splitBlocks(dropdownBlock + transferBlock), ['Transfer']).map(
+      b => b.selector
+    );
+    expect(kept).toEqual(['.x.ant-transfer']);
+  });
+
+  it('keeps a block whose component is in ownComponents', () => {
+    const kept = dropForeignComponentVarBlocks(splitBlocks(dropdownBlock), ['Dropdown']).map(b => b.selector);
+    expect(kept).toEqual(['.x.ant-dropdown-css-var']);
+  });
+
+  it('keeps a block mixing a foreign component segment with another declaration', () => {
+    const mixed = '.x{--ant-dropdown-padding-block:5px;--ant-transfer-list-width:180px;}';
+    expect(dropForeignComponentVarBlocks(splitBlocks(mixed), ['Transfer']).map(b => b.selector)).toEqual(['.x']);
+    // A foreign segment mixed with an unrecognized (global) declaration is kept the same way.
+    const mixedWithGlobal = '.x{--ant-dropdown-padding-block:5px;--ant-color-primary:#1677ff;}';
+    expect(dropForeignComponentVarBlocks(splitBlocks(mixedWithGlobal), ['Transfer']).map(b => b.selector)).toEqual([
+      '.x'
+    ]);
+  });
+
+  it('keeps a block of unrecognized global alias tokens regardless of ownComponents', () => {
+    const global = '.x{--ant-color-primary:#1677ff;--ant-control-item-bg-active:#e6f4ff;}';
+    expect(dropForeignComponentVarBlocks(splitBlocks(global), ['Transfer']).map(b => b.selector)).toEqual(['.x']);
+  });
+
+  it('throws when a foreign-component block carries a non-variable declaration', () => {
+    const blocks = splitBlocks('.x.ant-dropdown-css-var{--ant-dropdown-padding-block:5px;color:red}');
+    expect(() => dropForeignComponentVarBlocks(blocks, ['Transfer'])).toThrow(
+      /non-variable declaration: \.x\.ant-dropdown-css-var/
     );
   });
 });

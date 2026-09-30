@@ -684,16 +684,6 @@ export interface NzDrawerToken {
   zIndexPopup: number;
 }
 
-export interface NzDropdownToken {
-  arrowOffsetHorizontal: number;
-  arrowOffsetVertical: number;
-  arrowPath: string;
-  arrowPolygon: string;
-  arrowShadowWidth: number;
-  paddingBlock: number;
-  zIndexPopup: number;
-}
-
 export interface NzFloatButtonToken {
 }
 
@@ -1026,7 +1016,6 @@ export interface NzComponentTokenMap {
   Checkbox: NzCheckboxToken;
   DatePicker: NzDatePickerToken;
   Drawer: NzDrawerToken;
-  Dropdown: NzDropdownToken;
   FloatButton: NzFloatButtonToken;
   Input: NzInputToken;
   InputNumber: NzInputNumberToken;
