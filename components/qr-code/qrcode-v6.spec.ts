@@ -57,7 +57,8 @@ describe('qrcode under antd v6 css', () => {
     const root = document.querySelector('#host') as HTMLElement;
     const cs = getComputedStyle(root);
     expect(cs.borderRadius).toBe('8px'); // borderRadiusLG
-    // colorSplit's default token value, not the colorBorderSecondary rgb(240, 240, 240) the brief named.
+    // colorSplit's actual default token value, not the colorBorderSecondary rgb(240, 240, 240)
+    // that the CSS rule name alone would suggest.
     expect(cs.borderColor).toBe('rgba(5, 5, 5, 0.06)');
     expect(cs.borderWidth).toBe('1px');
     expect(cs.padding).toBe('12px'); // paddingSM
