@@ -105,6 +105,8 @@ const NZ_CONFIG_MODULE_NAME: NzConfigKey = 'carousel';
           [class.slick-dots-bottom]="nzDotPosition === 'bottom'"
           [class.slick-dots-left]="nzDotPosition === 'left'"
           [class.slick-dots-right]="nzDotPosition === 'right'"
+          [class.slick-dots-start]="nzDotPosition === 'left'"
+          [class.slick-dots-end]="nzDotPosition === 'right'"
         >
           @for (content of carouselContents; track content) {
             <li [class.slick-active]="$index === activeIndex" (click)="goTo($index)">

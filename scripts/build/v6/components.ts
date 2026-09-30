@@ -28,7 +28,9 @@ export const v6Components = {
   // AutoComplete has no style module of its own (`ANTD_STYLE_MODULE_OVERRIDES` below); it renders
   // Select's DOM in combobox mode, so its CSS is Select's class set under Select's `prefixCls`.
   'auto-complete': { antd: ['AutoComplete'], prefixCls: 'ant-select' },
+  badge: { antd: ['Badge'], prefixCls: 'ant-badge' },
   button: { antd: ['Button'], prefixCls: 'ant-btn' },
+  carousel: { antd: ['Carousel'], prefixCls: 'ant-carousel' },
   // `ant-empty` is included because cascader's own v6 CSS styles `.ant-cascader-menu-empty .ant-empty-*`
   // (the empty-state cell inside the dropdown), unlike a component with no such nested rule.
   cascader: { antd: ['Cascader'], prefixCls: 'ant-cascader', renderedPrefixes: ['ant-select', 'ant-empty'] },
@@ -67,6 +69,8 @@ export const v6Components = {
   popconfirm: { antd: ['Popconfirm'], prefixCls: 'ant-popconfirm', renderedPrefixes: ['ant-popover'] },
   popover: { antd: ['Popover'], prefixCls: 'ant-popover' },
   progress: { antd: ['Progress'], prefixCls: 'ant-progress' },
+  // antd's own `getPrefixCls('qrcode')` (no hyphen), unlike the `qr-code` directory name.
+  'qr-code': { antd: ['QRCode'], prefixCls: 'ant-qrcode' },
   radio: { antd: ['Radio'], prefixCls: 'ant-radio' },
   rate: { antd: ['Rate'], prefixCls: 'ant-rate' },
   result: { antd: ['Result'], prefixCls: 'ant-result' },
@@ -77,6 +81,7 @@ export const v6Components = {
   space: { antd: ['Space'], prefixCls: 'ant-space' },
   spin: { antd: ['Spin'], prefixCls: 'ant-spin' },
   switch: { antd: ['Switch'], prefixCls: 'ant-switch' },
+  tag: { antd: ['Tag'], prefixCls: 'ant-tag' },
   'time-picker': { antd: ['TimePicker'], prefixCls: 'ant-picker' },
   tooltip: { antd: ['Tooltip'], prefixCls: 'ant-tooltip' },
   // `ant-btn`, `ant-checkbox` and `ant-input` are listed because Transfer's own extracted CSS

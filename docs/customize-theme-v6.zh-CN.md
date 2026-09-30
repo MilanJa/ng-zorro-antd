@@ -13,7 +13,9 @@ NG-ZORRO 提供了一份基于 Ant Design v6 生成的可选样式表。它将 v
 <!-- v6-components:start -->
 - `alert`
 - `auto-complete`
+- `badge`
 - `button`
+- `carousel`
 - `cascader`
 - `checkbox`
 - `color-picker`
@@ -32,6 +34,7 @@ NG-ZORRO 提供了一份基于 Ant Design v6 生成的可选样式表。它将 v
 - `popconfirm`
 - `popover`
 - `progress`
+- `qr-code`
 - `radio`
 - `rate`
 - `result`
@@ -42,6 +45,7 @@ NG-ZORRO 提供了一份基于 Ant Design v6 生成的可选样式表。它将 v
 - `space`
 - `spin`
 - `switch`
+- `tag`
 - `time-picker`
 - `tooltip`
 - `transfer`

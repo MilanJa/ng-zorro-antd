@@ -1,7 +1,7 @@
 {
   "antdVersion": "6.6.5",
   "engineCoreBytes": 42701,
-  "engineComponentsBytes": 283038,
+  "engineComponentsBytes": 297850,
   "components": {
     "alert": {
       "classes": [
@@ -154,6 +154,77 @@
         "--ant-select-z-index-popup"
       ]
     },
+    "badge": {
+      "classes": [
+        "ant-badge",
+        "ant-badge-color-blue",
+        "ant-badge-color-cyan",
+        "ant-badge-color-geekblue",
+        "ant-badge-color-gold",
+        "ant-badge-color-green",
+        "ant-badge-color-lime",
+        "ant-badge-color-magenta",
+        "ant-badge-color-orange",
+        "ant-badge-color-pink",
+        "ant-badge-color-purple",
+        "ant-badge-color-red",
+        "ant-badge-color-volcano",
+        "ant-badge-color-yellow",
+        "ant-badge-count",
+        "ant-badge-count-sm",
+        "ant-badge-dot",
+        "ant-badge-multiple-words",
+        "ant-badge-not-a-wrapper",
+        "ant-badge-rtl",
+        "ant-badge-status",
+        "ant-badge-status-default",
+        "ant-badge-status-dot",
+        "ant-badge-status-error",
+        "ant-badge-status-processing",
+        "ant-badge-status-success",
+        "ant-badge-status-text",
+        "ant-badge-status-warning",
+        "ant-badge-zoom-appear",
+        "ant-badge-zoom-enter",
+        "ant-badge-zoom-leave",
+        "ant-ribbon",
+        "ant-ribbon-color-blue",
+        "ant-ribbon-color-cyan",
+        "ant-ribbon-color-geekblue",
+        "ant-ribbon-color-gold",
+        "ant-ribbon-color-green",
+        "ant-ribbon-color-lime",
+        "ant-ribbon-color-magenta",
+        "ant-ribbon-color-orange",
+        "ant-ribbon-color-pink",
+        "ant-ribbon-color-purple",
+        "ant-ribbon-color-red",
+        "ant-ribbon-color-volcano",
+        "ant-ribbon-color-yellow",
+        "ant-ribbon-content",
+        "ant-ribbon-corner",
+        "ant-ribbon-placement-end",
+        "ant-ribbon-placement-start",
+        "ant-ribbon-rtl",
+        "ant-ribbon-wrapper",
+        "ant-scroll-number",
+        "ant-scroll-number-custom-component",
+        "ant-scroll-number-only",
+        "ant-scroll-number-only-unit",
+        "ant-scroll-number-symbol"
+      ],
+      "tokens": [
+        "--ant-badge-dot-size",
+        "--ant-badge-indicator-height",
+        "--ant-badge-indicator-height-sm",
+        "--ant-badge-indicator-z-index",
+        "--ant-badge-padding-inline",
+        "--ant-badge-status-size",
+        "--ant-badge-text-font-size",
+        "--ant-badge-text-font-size-sm",
+        "--ant-badge-text-font-weight"
+      ]
+    },
     "button": {
       "classes": [
         "ant-btn",
@@ -265,6 +336,25 @@
         "--ant-button-text-text-hover-color",
         "--ant-button-volcano-shadow-color",
         "--ant-button-yellow-shadow-color"
+      ]
+    },
+    "carousel": {
+      "classes": [
+        "ant-carousel",
+        "ant-carousel-rtl",
+        "ant-carousel-vertical",
+        "ant-checkbox-input",
+        "ant-radio-input"
+      ],
+      "tokens": [
+        "--ant-carousel-arrow-offset",
+        "--ant-carousel-arrow-size",
+        "--ant-carousel-dot-active-width",
+        "--ant-carousel-dot-gap",
+        "--ant-carousel-dot-height",
+        "--ant-carousel-dot-offset",
+        "--ant-carousel-dot-width",
+        "--ant-carousel-dot-width-active"
       ]
     },
     "cascader": {
@@ -1789,6 +1879,19 @@
         "--ant-progress-remaining-color"
       ]
     },
+    "qr-code": {
+      "classes": [
+        "ant-qrcode",
+        "ant-qrcode-borderless",
+        "ant-qrcode-cover",
+        "ant-qrcode-expired",
+        "ant-qrcode-icon",
+        "ant-qrcode-scanned"
+      ],
+      "tokens": [
+        "--ant-qr-code-qr-code-cover-background-color"
+      ]
+    },
     "radio": {
       "classes": [
         "ant-badge",
@@ -2318,6 +2421,45 @@
         "--ant-switch-track-min-width",
         "--ant-switch-track-min-width-sm",
         "--ant-switch-track-padding"
+      ]
+    },
+    "tag": {
+      "classes": [
+        "ant-tag",
+        "ant-tag-blue",
+        "ant-tag-checkable",
+        "ant-tag-checkable-checked",
+        "ant-tag-checkable-disabled",
+        "ant-tag-checkable-group",
+        "ant-tag-close-icon",
+        "ant-tag-cyan",
+        "ant-tag-default",
+        "ant-tag-disabled",
+        "ant-tag-error",
+        "ant-tag-filled",
+        "ant-tag-geekblue",
+        "ant-tag-gold",
+        "ant-tag-green",
+        "ant-tag-hidden",
+        "ant-tag-lime",
+        "ant-tag-magenta",
+        "ant-tag-orange",
+        "ant-tag-outlined",
+        "ant-tag-pink",
+        "ant-tag-processing",
+        "ant-tag-purple",
+        "ant-tag-red",
+        "ant-tag-rtl",
+        "ant-tag-solid",
+        "ant-tag-success",
+        "ant-tag-volcano",
+        "ant-tag-warning",
+        "ant-tag-yellow"
+      ],
+      "tokens": [
+        "--ant-tag-default-bg",
+        "--ant-tag-default-color",
+        "--ant-tag-solid-text-color"
       ]
     },
     "time-picker": {

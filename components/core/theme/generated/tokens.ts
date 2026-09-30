@@ -554,6 +554,18 @@ export interface NzAlertToken {
   withDescriptionPadding: string;
 }
 
+export interface NzBadgeToken {
+  dotSize: number;
+  indicatorHeight: number;
+  indicatorHeightSM: number;
+  indicatorZIndex: string;
+  paddingInline: number;
+  statusSize: number;
+  textFontSize: number;
+  textFontSizeSM: number;
+  textFontWeight: string;
+}
+
 export interface NzButtonToken {
   blueShadowColor: string;
   borderColorDisabled: string;
@@ -613,6 +625,17 @@ export interface NzButtonToken {
   textTextHoverColor: string;
   volcanoShadowColor: string;
   yellowShadowColor: string;
+}
+
+export interface NzCarouselToken {
+  arrowOffset: number;
+  arrowSize: number;
+  dotActiveWidth: number;
+  dotGap: number;
+  dotHeight: number;
+  dotOffset: number;
+  dotWidth: number;
+  dotWidthActive: number;
 }
 
 export interface NzCascaderToken {
@@ -887,6 +910,10 @@ export interface NzProgressToken {
   remainingColor: string;
 }
 
+export interface NzQRCodeToken {
+  QRCodeCoverBackgroundColor: string;
+}
+
 export interface NzRadioToken {
   buttonBg: string;
   buttonCheckedBg: string;
@@ -1022,6 +1049,12 @@ export interface NzSwitchToken {
   trackPadding: number;
 }
 
+export interface NzTagToken {
+  defaultBg: string;
+  defaultColor: string;
+  solidTextColor: string;
+}
+
 export interface NzTooltipToken {
   arrowOffsetHorizontal: number;
   arrowOffsetVertical: number;
@@ -1071,7 +1104,9 @@ export interface NzUploadToken {
 
 export interface NzComponentTokenMap {
   Alert: NzAlertToken;
+  Badge: NzBadgeToken;
   Button: NzButtonToken;
+  Carousel: NzCarouselToken;
   Cascader: NzCascaderToken;
   Checkbox: NzCheckboxToken;
   ColorPicker: NzColorPickerToken;
@@ -1090,6 +1125,7 @@ export interface NzComponentTokenMap {
   Popconfirm: NzPopconfirmToken;
   Popover: NzPopoverToken;
   Progress: NzProgressToken;
+  QRCode: NzQRCodeToken;
   Radio: NzRadioToken;
   Rate: NzRateToken;
   Result: NzResultToken;
@@ -1100,6 +1136,7 @@ export interface NzComponentTokenMap {
   Space: NzSpaceToken;
   Spin: NzSpinToken;
   Switch: NzSwitchToken;
+  Tag: NzTagToken;
   Tooltip: NzTooltipToken;
   Transfer: NzTransferToken;
   Tree: NzTreeToken;

@@ -13,7 +13,9 @@ Only the components below have v6 styles so far. Others keep rendering with the 
 <!-- v6-components:start -->
 - `alert`
 - `auto-complete`
+- `badge`
 - `button`
+- `carousel`
 - `cascader`
 - `checkbox`
 - `color-picker`
@@ -32,6 +34,7 @@ Only the components below have v6 styles so far. Others keep rendering with the 
 - `popconfirm`
 - `popover`
 - `progress`
+- `qr-code`
 - `radio`
 - `rate`
 - `result`
@@ -42,6 +45,7 @@ Only the components below have v6 styles so far. Others keep rendering with the 
 - `space`
 - `spin`
 - `switch`
+- `tag`
 - `time-picker`
 - `tooltip`
 - `transfer`

@@ -112,6 +112,9 @@
       "less": "./badge/style/*.less",
       "style": "./badge/style/index.min.css"
     },
+    "./badge/style/v6/*": {
+      "style": "./badge/style/v6/*"
+    },
     "./breadcrumb/style/*": {
       "less": "./breadcrumb/style/*.less",
       "style": "./breadcrumb/style/index.min.css"
@@ -134,6 +137,9 @@
     "./carousel/style/*": {
       "less": "./carousel/style/*.less",
       "style": "./carousel/style/index.min.css"
+    },
+    "./carousel/style/v6/*": {
+      "style": "./carousel/style/v6/*"
     },
     "./cascader/style/*": {
       "less": "./cascader/style/*.less",
@@ -321,6 +327,9 @@
       "less": "./qr-code/style/*.less",
       "style": "./qr-code/style/index.min.css"
     },
+    "./qr-code/style/v6/*": {
+      "style": "./qr-code/style/v6/*"
+    },
     "./radio/style/*": {
       "less": "./radio/style/*.less",
       "style": "./radio/style/index.min.css"
@@ -414,6 +423,9 @@
     "./tag/style/*": {
       "less": "./tag/style/*.less",
       "style": "./tag/style/index.min.css"
+    },
+    "./tag/style/v6/*": {
+      "style": "./tag/style/v6/*"
     },
     "./time-picker/style/*": {
       "less": "./time-picker/style/*.less",
