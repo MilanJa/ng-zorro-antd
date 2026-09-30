@@ -33,22 +33,21 @@ import { NzTagColor } from './typings';
     }
   `,
   encapsulation: ViewEncapsulation.None,
+  // `ant-tag-filled` is static, not conditioned on `nzBordered`: antd v6's own resolution
+  // (node_modules/antd/es/tag/hooks/useColor.js:14-28) gives a Tag with no `variant` prop
+  // 'filled' regardless of `bordered` -- `bordered` is deprecated in favour of `variant` and,
+  // even when explicitly `false`, still resolves to 'filled', never 'outlined'. `nz-tag` has no
+  // `nzVariant` input, so every tag renders v6's actual default unconditionally; 'outlined' and
+  // 'solid' (the `-inverse` colour path) are unreachable under the current API
+  // (docs/v6-api-gaps.md).
   host: {
-    class: 'ant-tag',
+    class: 'ant-tag ant-tag-filled',
     '[style.background-color]': `isPresetColor ? '' : nzColor`,
     '[class.ant-tag-has-color]': `nzColor && !isPresetColor`,
     '[class.ant-tag-checkable]': `nzMode === 'checkable'`,
     '[class.ant-tag-checkable-checked]': `nzChecked`,
     '[class.ant-tag-rtl]': `dir() === 'rtl'`,
     '[class.ant-tag-borderless]': `!nzBordered`,
-    // antd v6 always carries a variant class (node_modules/antd/es/tag/hooks/useColor.js): no
-    // explicit `variant` and `bordered !== false` resolves to 'outlined' here (kept closest to the
-    // v4 bordered look: a visible border and the preset-colour background/border/text rules,
-    // which are all gated `:not(.ant-tag-disabled).ant-tag-outlined` in the v6 CSS); `bordered ===
-    // false` resolves to 'filled' the same way v4's `ant-tag-borderless` does, so the classes sit
-    // next to their v4 counterparts on the same `nzBordered` condition.
-    '[class.ant-tag-outlined]': `nzBordered`,
-    '[class.ant-tag-filled]': `!nzBordered`,
     '(click)': 'updateCheckedStatus()'
   },
   imports: [NzIconModule]

@@ -45,26 +45,29 @@ describe('tag under antd v6 css', () => {
     TestBed.inject(OverlayContainer).ngOnDestroy();
   });
 
-  it('draws the default tag from the v6 tokens with the outlined variant class', () => {
+  it('draws the default tag from the v6 tokens with the filled variant class', () => {
+    // antd v6 resolves a Tag with no `variant` prop to 'filled' unconditionally
+    // (node_modules/antd/es/tag/hooks/useColor.js:14-28) -- `nzBordered` has no effect on it.
     const t1 = document.querySelector('#t1') as HTMLElement;
-    expect(t1.classList.contains('ant-tag-outlined')).toBe(true);
+    expect(t1.classList.contains('ant-tag-filled')).toBe(true);
     const cs = getComputedStyle(t1);
     expect(cs.fontSize).toBe('12px');
     expect(cs.borderRadius).toBe('4px'); // borderRadiusSM
-    // v6's --ant-tag-default-bg is #f5f5f5 (rgb(245, 245, 245)), not the colorFillQuaternary
-    // rgba(0, 0, 0, 0.02) the brief named.
+    // --ant-tag-default-bg is #f5f5f5 (rgb(245, 245, 245)); the CSS-derived value, not the
+    // colorFillQuaternary rgba(0, 0, 0, 0.02) computed from the token formula.
     expect(cs.backgroundColor).toBe('rgb(245, 245, 245)');
-    expect(cs.borderColor).toBe('rgb(217, 217, 217)'); // colorBorder
+    // `.ant-tag-filled` zeroes the base rule's border colour (`border-color: transparent`).
+    expect(cs.borderColor).toBe('rgba(0, 0, 0, 0)');
   });
 
-  it('applies the v6 outlined-variant preset colour rule to a coloured tag', () => {
+  it('applies the v6 filled-variant preset colour rule to a coloured tag', () => {
     const t2 = document.querySelector('#t2') as HTMLElement;
     expect(t2.classList.contains('ant-tag-blue')).toBe(true);
-    expect(t2.classList.contains('ant-tag-outlined')).toBe(true);
+    expect(t2.classList.contains('ant-tag-filled')).toBe(true);
     const cs = getComputedStyle(t2);
     expect(cs.backgroundColor).toBe('rgb(230, 244, 255)'); // blue-1
-    expect(cs.borderColor).toBe('rgb(145, 202, 255)'); // blue-3
-    // blue-7 (#0958d9), not the colorPrimary/blue-6 rgb(22, 119, 255) the brief named.
+    // The CSS-derived value (--ant-blue-7, #0958d9), not the colorPrimary/blue-6
+    // rgb(22, 119, 255) that the token formula alone would suggest.
     expect(cs.color).toBe('rgb(9, 88, 217)');
   });
 
