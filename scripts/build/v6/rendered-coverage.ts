@@ -3,27 +3,57 @@
  * found in the LICENSE file at https://github.com/NG-ZORRO/ng-zorro-antd/blob/master/LICENSE
  */
 
+import {
+  renderedPrefixStyleOwner,
+  v6Components,
+  v6PatchDependencies,
+  type V6ComponentDir,
+  type V6ComponentEntry
+} from './components';
 import type { V6Manifest } from './manifest';
 
+const matchesPrefixOrEqual = (cls: string, prefix: string): boolean => cls === prefix || cls.startsWith(`${prefix}-`);
+
 /**
- * The classes that style `dir`'s own emitted/rendered DOM: `dir`'s own manifest classes plus those
- * of every directory `patchDependencies(dir)` names (its alias host and its mapped `renderedPrefixes`
- * owners -- the same dependency graph `publish/<dir>/style/v6/index.css` bundles, so "styled for this
- * directory" tracks exactly what that directory's own published bundle carries). This replaces the flat
- * union of every migrated component's classes (`Object.values(manifest.components).flatMap(...)`),
- * which made an unrelated component's CSS count towards a class it merely happens to select somewhere:
- * color-picker's own v6 CSS mentions `.ant-select-selector` in a rule scoped to its format-select row,
- * which is not select's own dependency and must not clear `ant-select-selector` off select's,
- * cascader's or tree-select's allowlist (plan C finding M8).
+ * The classes that style `dir`'s own emitted/rendered DOM, scoped to what `dir` itself actually
+ * renders -- never a flat union of every migrated component's classes
+ * (`Object.values(manifest.components).flatMap(...)`), which let an unrelated component's CSS count
+ * towards a class it merely happens to select somewhere (color-picker's own v6 CSS mentions
+ * `.ant-select-selector` in a rule scoped to its own format-select row; that is not a real dependency
+ * of `select`, `cascader` or `tree-select` and must not clear the class off their allowlists). The set
+ * is the union of:
+ * - `dir`'s own manifest classes;
+ * - the classes of every directory `v6PatchDependencies(dir)` names (its alias host and its mapped
+ *   `renderedPrefixes` owners for BUNDLING -- the same dependency graph `publish/<dir>/style/v6/index.css`
+ *   carries);
+ * - for each of `dir`'s `renderedPrefixes` entries `P`, the classes starting with `P-` (or equal to `P`)
+ *   from `renderedPrefixStyleOwner(P)`'s manifest -- the directory whose antd extraction actually
+ *   generates CSS under `P`, which is not always the same as `P`'s bundling owner (`ant-select-tree`'s
+ *   structural classes are only ever extracted by rendering TreeSelect, so `tree`'s own coverage credits
+ *   `tree-select`'s manifest for them, even though `tree`'s *bundle* does not carry `tree-select`'s patch);
+ * - `dir`'s own compact-item classes (`<prefixCls>-compact-*`), which antd generates once, in Space's
+ *   extraction (`node_modules/antd/es/style/compact-item.js`'s `genCompactItemStyle`, invoked by every
+ *   component that supports `Space.Compact`, including `dir`'s own), never in `dir`'s own manifest entry.
  */
-export function styledClassesFor<D extends string>(
-  dir: D,
-  manifest: V6Manifest,
-  patchDependencies: (dir: D) => D[]
-): Set<string> {
+export function styledClassesFor(dir: V6ComponentDir, manifest: V6Manifest): Set<string> {
+  const entry: V6ComponentEntry = v6Components[dir];
   const styled = new Set(manifest.components[dir]?.classes ?? []);
-  for (const dep of patchDependencies(dir)) {
+  for (const dep of v6PatchDependencies(dir)) {
     for (const cls of manifest.components[dep]?.classes ?? []) {
+      styled.add(cls);
+    }
+  }
+  for (const prefix of entry.renderedPrefixes ?? []) {
+    const owner = renderedPrefixStyleOwner(prefix);
+    for (const cls of manifest.components[owner ?? '']?.classes ?? []) {
+      if (matchesPrefixOrEqual(cls, prefix)) {
+        styled.add(cls);
+      }
+    }
+  }
+  const compactPrefix = `${entry.prefixCls}-compact-`;
+  for (const cls of manifest.components['space']?.classes ?? []) {
+    if (cls.startsWith(compactPrefix)) {
       styled.add(cls);
     }
   }
