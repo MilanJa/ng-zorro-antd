@@ -115,7 +115,7 @@ chart.color = token.colorPrimary;
 
 `nzThemeInherit`（默认 `true`）会合并最近的祖先 `[nzTheme]` 的主题；若没有祖先指令，则合并通过 `NzConfig.theme` 应用的全局主题。与 antd 一致，`token` 按键合并，`components` 按组件合并。
 
-由 CDK 浮层渲染的弹出内容在 DOM 中位于该区域之外。会带上最近的外层 `[nzTheme]` 作用域的浮层：Select 下拉菜单、Tooltip、Popover、Popconfirm、Drawer（声明式）、Modal（声明式，或在作用域内通过 `nzViewContainerRef` 创建）。Message 和 Notification 是应用级单例，始终遵循全局主题。作用域依据 Angular 的*注入器*树而不是 DOM 确定，并且与所有 CDK 浮层一样，下拉菜单的类名在浮层首次创建时应用：之后对 `nzDropdownClassName` 的修改不会作用于已经打开过的下拉菜单。
+由 CDK 浮层渲染的弹出内容在 DOM 中位于该区域之外。会带上最近的外层 `[nzTheme]` 作用域的浮层：Select 下拉菜单、Tooltip、Popover、Popconfirm、Drawer（声明式）、Modal（声明式，或在作用域内通过 `nzViewContainerRef` 创建），此外还有 AutoComplete、TreeSelect、Cascader、DatePicker、TimePicker、Mention 的浮层面板，基于 Popover 构建的 ColorPicker 拾色面板，以及 Slider 的滑块提示气泡。Message 和 Notification 是应用级单例，始终遵循全局主题。作用域依据 Angular 的*注入器*树而不是 DOM 确定，并且与所有 CDK 浮层一样，下拉菜单的类名在浮层首次创建时应用：之后对 `nzDropdownClassName` 的修改不会作用于已经打开过的下拉菜单。
 
 ## 服务端渲染
 
@@ -124,7 +124,7 @@ chart.color = token.colorPrimary;
 ## 预览版的限制
 
 - 未在上方列出的组件仍会回退到 v4 规则。
-- 在基于浮层的组件中，Select 下拉菜单、Tooltip、Popover、Popconfirm、Drawer（声明式）以及 Modal（声明式，或在作用域内通过 `nzViewContainerRef` 创建）会带上局部主题；Message 和 Notification 是应用级单例，始终遵循全局主题；其余浮层组件在迁移之前仍遵循全局主题。
+- 在基于浮层的组件中，Select 下拉菜单、Tooltip、Popover、Popconfirm、Drawer（声明式）以及 Modal（声明式，或在作用域内通过 `nzViewContainerRef` 创建）会带上局部主题，AutoComplete、TreeSelect、Cascader、DatePicker、TimePicker、Mention 的浮层面板，基于 Popover 构建的 ColorPicker 拾色面板，以及 Slider 的滑块提示气泡同样如此；Message 和 Notification 是应用级单例，始终遵循全局主题；其余浮层组件在迁移之前仍遵循全局主题。
 - 如果 Select 通过 `<ng-content>` 投影到一个自身模板中包含 `[nzTheme]` 的组件里，或者通过 `ngTemplateOutlet` 渲染一个在作用域之外声明的模板，那么它的内联部分会获得局部主题（CSS 变量沿 DOM 继承），但下拉菜单不会带上作用域，因为作用域取决于 Select 声明位置的注入器树。此时请把 `[nzTheme]` 放在声明 Select 的位置。
 - 全局设置的组件级别名覆盖，即使在不继承主题的局部作用域内也仍然生效：它以类作用域规则的形式写在 `:root` 上，而 CSS 变量的继承不受 `nzThemeInherit` 影响，会沿 DOM 正常传递。
 - 生成的 CSS 引用的是 `--ant-*` 变量，因此不支持 `ant` 以外的 `cssVar.prefix` 取值。
