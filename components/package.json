@@ -220,6 +220,9 @@
       "less": "./empty/style/*.less",
       "style": "./empty/style/index.min.css"
     },
+    "./empty/style/v6/*": {
+      "style": "./empty/style/v6/*"
+    },
     "./float-button/style/v6/*": {
       "style": "./float-button/style/v6/*"
     },

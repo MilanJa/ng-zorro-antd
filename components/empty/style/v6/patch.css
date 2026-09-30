@@ -1,0 +1,60 @@
+/* patch.less: nz-empty { display: block } */
+nz-empty {
+  display: block;
+}
+
+/* antd 6's empty/empty.js and empty/simple.js colour the illustration SVGs
+   via inline styles resolved from theme tokens at render time; the v6
+   stylesheet has no class rule for any ant-empty-img-* selector. ng-zorro's
+   inline SVG partials (partial/default.ts, partial/simple.ts) still carry
+   the v4-era static class names, so mirror antd's token mapping here
+   (empty.js's shadowColor/borderColor/panelBgColor/detailColor/iconColor;
+   simple.js's shadowColor/borderColor/contentColor) to keep both
+   illustrations visible under the v6 theme. */
+.ant-empty-img-default-ellipse {
+  fill: var(--ant-color-fill-secondary);
+  fill-opacity: 0.8;
+}
+
+.ant-empty-img-default-path-1,
+.ant-empty-img-default-path-2 {
+  fill: var(--ant-color-text-quaternary);
+}
+
+.ant-empty-img-default-path-3 {
+  fill: var(--ant-color-fill-tertiary);
+}
+
+.ant-empty-img-default-path-4,
+.ant-empty-img-default-path-5 {
+  fill: var(--ant-color-fill);
+}
+
+.ant-empty-img-default-g {
+  fill: var(--ant-color-bg-container);
+}
+
+.ant-empty-img-simple-ellipse {
+  fill: var(--ant-color-fill-tertiary);
+}
+
+.ant-empty-img-simple-g {
+  stroke: var(--ant-color-fill);
+}
+
+.ant-empty-img-simple-path {
+  fill: var(--ant-color-fill-quaternary);
+}
+
+/* Mirrors antd's ant-empty-normal rule (Empty/index.js: mergedImage === simpleEmptyImg) onto a
+   v4-inert hook for the public nz-empty API: compiled v4 CSS already styles the literal
+   ant-empty-normal class, and emitting it directly here would newly apply v4's look (bigger
+   margin, dimmer text, 40px image) to every existing direct nzNotFoundImage="simple" caller. */
+.nz-empty-simple {
+  margin-block: var(--ant-margin-xl);
+  color: var(--ant-color-text-description);
+}
+
+.nz-empty-simple .ant-empty-image {
+  height: var(--ant-control-height-lg);
+}

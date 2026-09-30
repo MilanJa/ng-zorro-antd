@@ -1,7 +1,7 @@
 {
   "antdVersion": "6.6.5",
   "engineCoreBytes": 42701,
-  "engineComponentsBytes": 317075,
+  "engineComponentsBytes": 318046,
   "components": {
     "alert": {
       "classes": [
@@ -1114,6 +1114,17 @@
         "--ant-dropdown-padding-block",
         "--ant-dropdown-z-index-popup"
       ]
+    },
+    "empty": {
+      "classes": [
+        "ant-empty",
+        "ant-empty-description",
+        "ant-empty-footer",
+        "ant-empty-image",
+        "ant-empty-normal",
+        "ant-empty-small"
+      ],
+      "tokens": []
     },
     "float-button": {
       "classes": [

@@ -304,7 +304,9 @@
     "ant-popconfirm-message-text"
   ],
   "_descriptions_comment": "v4-compat: ant-descriptions-middle (replacement: ant-descriptions-medium, added alongside on the same nzSize === 'middle' condition — antd v6's Descriptions/index.js clsx map keys `${prefixCls}-medium` off `mergedSize === 'medium' || mergedSize === 'middle'`, so v6 CSS never has a rule for the literal `-middle` class; compiled v4 CSS still styles .ant-descriptions-middle).",
-  "descriptions": ["ant-descriptions-middle"],
+  "descriptions": [
+    "ant-descriptions-middle"
+  ],
   "_drawer_comment": "v4-compat (patch hook): -wrapper-body (kept as the flex container; the patch mirrors v6's -section layout onto it). antd-emits: -header-close-only, -open (the patch uses -open only in `:not(.ant-drawer-open)` for the closed-panel shadow).",
   "drawer": [
     "ant-drawer-header-close-only",
@@ -484,7 +486,9 @@
     "ant-tag-has-color"
   ],
   "_typography_comment": "v4-compat: ant-typography-single-line (no v6 counterpart: v6's Base/index.js signals single-line ellipsis entirely through `ant-typography-ellipsis-single-line` plus the `-webkit-line-clamp`/`text-overflow` inline styles it already emits; grepping node_modules/antd/es/typography/*.js and .../style/*.js for \"single-line\" finds no such class, and v6 CSS never styles the literal `.ant-typography-single-line` selector; compiled v4 CSS still styles it).",
-  "typography": ["ant-typography-single-line"],
+  "typography": [
+    "ant-typography-single-line"
+  ],
   "_tag_comment": "v4-compat: -borderless (replacement: ant-tag-filled, added alongside on the same !nzBordered condition; compiled v4 CSS still styles .ant-tag-borderless, no v6 CSS rule for that literal class name — v6 only styles the variant classes). -has-color (no v6 counterpart: v6's custom-colour path (useColor.js) never emits a class at all, only the inline tagStyle; compiled v4 CSS still styles .ant-tag-has-color).",
   "badge": [
     "ant-ribbon-text",
@@ -507,5 +511,22 @@
     "ant-qrcode-border",
     "ant-qrcode-mask"
   ],
-  "_qr-code_comment": "v4-compat: ant-qrcode-border (replacement: ant-qrcode-borderless, added alongside on the inverted !nzBordered() condition; node_modules/antd/es/qr-code/index.js flips the default to bordered and opts OUT with -borderless, while v4's -border opts IN to the same border; compiled v4 CSS still styles .ant-qrcode-border). ant-qrcode-mask (replacement: ant-qrcode-cover, added alongside on the same element; antd v6's QrcodeStatus.js/index.js wrap the status content in `${prefixCls}-cover`, not `-mask`; compiled v4 CSS still styles .ant-qrcode-mask). ant-qrcode-icon is left alone, unmapped to any category: grepping node_modules/antd/es/qr-code/*.js and @rc-component/qrcode shows antd's real QRCode component never emits this class itself (the v6 CSS rule for it is an unrelated leak from the extraction), so it is neither emitted nor added."
+  "_qr-code_comment": "v4-compat: ant-qrcode-border (replacement: ant-qrcode-borderless, added alongside on the inverted !nzBordered() condition; node_modules/antd/es/qr-code/index.js flips the default to bordered and opts OUT with -borderless, while v4's -border opts IN to the same border; compiled v4 CSS still styles .ant-qrcode-border). ant-qrcode-mask (replacement: ant-qrcode-cover, added alongside on the same element; antd v6's QrcodeStatus.js/index.js wrap the status content in `${prefixCls}-cover`, not `-mask`; compiled v4 CSS still styles .ant-qrcode-mask). ant-qrcode-icon is left alone, unmapped to any category: grepping node_modules/antd/es/qr-code/*.js and @rc-component/qrcode shows antd's real QRCode component never emits this class itself (the v6 CSS rule for it is an unrelated leak from the extraction), so it is neither emitted nor added.",
+  "empty": [
+    "ant-empty-img-default",
+    "ant-empty-img-default-ellipse",
+    "ant-empty-img-default-g",
+    "ant-empty-img-default-path-1",
+    "ant-empty-img-default-path-2",
+    "ant-empty-img-default-path-3",
+    "ant-empty-img-default-path-4",
+    "ant-empty-img-default-path-5",
+    "ant-empty-img-simple",
+    "ant-empty-img-simple-ellipse",
+    "ant-empty-img-simple-g",
+    "ant-empty-img-simple-path",
+    "nz-empty-rtl",
+    "nz-empty-simple"
+  ],
+  "_empty_comment": "v4-compat (patch hook): the 12 ant-empty-img-* classes (empty.js/simple.js element+condition: the 12 static class names on partial/default.ts and partial/simple.ts svg shapes) have no v6 CSS rule at all (antd 6 colours these shapes via inline styles resolved from theme tokens in React, not CSS classes); compiled v4 CSS still styles every one of them (hex fills), so style/v6/patch.css re-targets the same literal class names with the equivalent v6 token mapping (empty.js/simple.js shadowColor/borderColor/panelBgColor/detailColor/iconColor/contentColor) to keep the illustrations visible under the v6 theme. nz-only: nz-empty-rtl is a marker class (empty.component.ts host binding on Directionality) mirroring antd 6 own ant-empty-rtl state hook (Empty/index.js clsx condition direction === rtl) which v6 CSS itself does not style (ant-empty uses only logical properties); the literal antd class name ant-empty-rtl is not emitted because compiled v4 CSS already has a .ant-empty-rtl{direction:rtl} rule ng-zorro never previously reached (v4-rule-guard would flag it), so a differently-named, unstyled-under-v6 marker is used instead with no patch rule (matching its null visual effect in real antd 6). nz-only: nz-empty-simple (empty.component.ts host binding, nzNotFoundImage === 'simple') is a v4-inert hook standing in for antd's literal ant-empty-normal class on the public API path -- compiled v4 CSS already styles ant-empty-normal and ng-zorro never emitted it for a bare nzNotFoundImage=\"simple\" caller before, so emitting the literal class now would newly change v4's existing rendering there (confirmed by a default-theme capture of the simple demo); style/v6/patch.css mirrors the same v6 sizing/colour onto this hook instead."
 }

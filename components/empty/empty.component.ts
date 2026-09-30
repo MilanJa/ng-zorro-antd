@@ -3,6 +3,7 @@
  * found in the LICENSE file at https://github.com/NG-ZORRO/ng-zorro-antd/blob/master/LICENSE
  */
 
+import { Directionality } from '@angular/cdk/bidi';
 import {
   ChangeDetectorRef,
   Component,
@@ -61,7 +62,16 @@ type NzEmptyNotFoundImageType = (typeof NzEmptyDefaultImages)[number] | null | s
     }
   `,
   host: {
-    class: 'ant-empty'
+    class: 'ant-empty',
+    // antd's Empty/index.js adds `${prefixCls}-normal` whenever the SIMPLE built-in image is used,
+    // regardless of caller (`mergedImage === simpleEmptyImg`). Compiled v4 CSS already styles the
+    // literal `ant-empty-normal` (`margin: 32px 0`, dimmer text, a 40px image), so emitting it here
+    // unconditionally would newly apply that v4 look to every direct `nzNotFoundImage="simple"` caller
+    // that never opted into it before (confirmed by a default-theme capture of the `simple` demo).
+    // `nz-empty-simple` is a v4-inert hook: style/v6/patch.css mirrors the same v6 rule onto it so the
+    // v6 theme gets the antd-correct sizing/colour without touching v4's existing rendering.
+    '[class.nz-empty-simple]': "nzNotFoundImage === 'simple'",
+    '[class.nz-empty-rtl]': "dir() === 'rtl'"
   },
   imports: [NzOutletModule, NzEmptyDefaultComponent, NzEmptySimpleComponent]
 })
@@ -69,6 +79,7 @@ export class NzEmptyComponent implements OnChanges, OnInit {
   private i18n = inject(NzI18nService);
   private cdr = inject(ChangeDetectorRef);
   private destroyRef = inject(DestroyRef);
+  protected readonly dir = inject(Directionality).valueSignal;
 
   @Input() nzNotFoundImage: NzEmptyNotFoundImageType = 'default';
   @Input() nzNotFoundContent?: string | TemplateRef<void> | null;

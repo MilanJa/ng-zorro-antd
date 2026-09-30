@@ -65,7 +65,7 @@ describe('v6PatchDependencies', () => {
     );
     expect(deps).toEqual({
       'auto-complete': ['select'],
-      cascader: ['select'],
+      cascader: ['empty', 'select'],
       'color-picker': ['collapse', 'input-number', 'popover', 'select'],
       pagination: ['select'],
       popconfirm: ['popover'],
@@ -87,6 +87,6 @@ describe('v6PatchDependencies', () => {
 
   it('resolves a shared prefix to its non-alias owner (ant-select -> select, not auto-complete)', () => {
     expect(v6Components['auto-complete'].prefixCls).toBe(v6Components.select.prefixCls);
-    expect(v6PatchDependencies('cascader')).toEqual(['select']);
+    expect(v6PatchDependencies('cascader')).toEqual(['empty', 'select']);
   });
 });

@@ -25,6 +25,7 @@ Only the components below have v6 styles so far. Others keep rendering with the 
 - `descriptions`
 - `drawer`
 - `dropdown`
+- `empty`
 - `float-button`
 - `form`
 - `input`

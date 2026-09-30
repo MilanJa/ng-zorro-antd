@@ -54,6 +54,7 @@ export const v6Components = {
   descriptions: { antd: ['Descriptions'], prefixCls: 'ant-descriptions' },
   drawer: { antd: ['Drawer'], prefixCls: 'ant-drawer' },
   dropdown: { antd: ['Dropdown'], prefixCls: 'ant-dropdown' },
+  empty: { antd: ['Empty'], prefixCls: 'ant-empty' },
   // Only `FloatButton`: the top-level `BackTop` export is antd's deprecated `back-top` component, with
   // its own `.ant-back-top*` style hook and `--ant-back-top-*` tokens that ng-zorro never renders.
   // ng-zorro's back-top mirrors `FloatButton.BackTop`, which is a plain FloatButton.

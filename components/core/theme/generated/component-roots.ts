@@ -21,6 +21,7 @@ export const COMPONENT_ROOT_CLS: Record<string, string> = {
   Descriptions: 'ant-descriptions',
   Drawer: 'ant-drawer',
   Dropdown: 'ant-dropdown',
+  Empty: 'ant-empty',
   FloatButton: 'ant-float-btn',
   Form: 'ant-form',
   Input: 'ant-input',

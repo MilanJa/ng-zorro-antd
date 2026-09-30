@@ -762,6 +762,9 @@ export interface NzDropdownToken {
   zIndexPopup: number;
 }
 
+export interface NzEmptyToken {
+}
+
 export interface NzFloatButtonToken {
 }
 
@@ -1168,6 +1171,7 @@ export interface NzComponentTokenMap {
   Descriptions: NzDescriptionsToken;
   Drawer: NzDrawerToken;
   Dropdown: NzDropdownToken;
+  Empty: NzEmptyToken;
   FloatButton: NzFloatButtonToken;
   Form: NzFormToken;
   Input: NzInputToken;

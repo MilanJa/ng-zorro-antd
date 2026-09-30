@@ -63,7 +63,13 @@ type NzEmptyContentType = 'component' | 'template' | 'string';
             <nz-empty class="ant-empty-normal" nzNotFoundImage="simple" />
           }
           @case ('small') {
-            <nz-empty class="ant-empty-small" nzNotFoundImage="simple" />
+            <!-- antd's config-provider/defaultRenderEmpty.js gives Select/TreeSelect/Cascader/Transfer/
+                 Mentions BOTH classes together (image={PRESENTED_IMAGE_SIMPLE}, className="ant-empty-small"),
+                 since its clsx condition for -normal (mergedImage === simpleEmptyImg) is also true here;
+                 the compiled v4 Less defines -small after -normal, so -small's overlapping declarations
+                 already win by source order and adding -normal changes nothing under v4 (confirmed by a
+                 default-theme capture of the config demo's Select/TreeSelect/Cascader/Transfer panels). -->
+            <nz-empty class="ant-empty-normal ant-empty-small" nzNotFoundImage="simple" />
           }
           @default {
             <nz-empty />
