@@ -125,5 +125,6 @@
     "padding": null
   },
   "card": { "_antdDir": "card" },
-  "descriptions": { "_antdDir": "descriptions", "custom-size": "size" }
+  "descriptions": { "_antdDir": "descriptions", "custom-size": "size" },
+  "typography": { "_antdDir": "typography", "interactive": "copyable" }
 }

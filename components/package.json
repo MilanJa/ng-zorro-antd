@@ -480,6 +480,9 @@
       "less": "./typography/style/*.less",
       "style": "./typography/style/index.min.css"
     },
+    "./typography/style/v6/*": {
+      "style": "./typography/style/v6/*"
+    },
     "./upload/style/*": {
       "less": "./upload/style/*.less",
       "style": "./upload/style/index.min.css"

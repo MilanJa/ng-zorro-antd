@@ -468,6 +468,8 @@
     "ant-tag-borderless",
     "ant-tag-has-color"
   ],
+  "_typography_comment": "v4-compat: ant-typography-single-line (no v6 counterpart: v6's Base/index.js signals single-line ellipsis entirely through `ant-typography-ellipsis-single-line` plus the `-webkit-line-clamp`/`text-overflow` inline styles it already emits; grepping node_modules/antd/es/typography/*.js and .../style/*.js for \"single-line\" finds no such class, and v6 CSS never styles the literal `.ant-typography-single-line` selector; compiled v4 CSS still styles it).",
+  "typography": ["ant-typography-single-line"],
   "_tag_comment": "v4-compat: -borderless (replacement: ant-tag-filled, added alongside on the same !nzBordered condition; compiled v4 CSS still styles .ant-tag-borderless, no v6 CSS rule for that literal class name — v6 only styles the variant classes). -has-color (no v6 counterpart: v6's custom-colour path (useColor.js) never emits a class at all, only the inline tagStyle; compiled v4 CSS still styles .ant-tag-has-color).",
   "badge": [
     "ant-ribbon-text",

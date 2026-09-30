@@ -104,6 +104,7 @@ export const v6Components = {
     prefixCls: 'ant-tree-select',
     renderedPrefixes: ['ant-select', 'ant-select-tree']
   },
+  typography: { antd: ['Typography'], prefixCls: 'ant-typography' },
   upload: { antd: ['Upload'], prefixCls: 'ant-upload' }
 } as const satisfies Record<string, V6ComponentEntry>;
 

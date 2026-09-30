@@ -1,7 +1,7 @@
 {
   "antdVersion": "6.6.5",
   "engineCoreBytes": 42701,
-  "engineComponentsBytes": 306677,
+  "engineComponentsBytes": 312328,
   "components": {
     "alert": {
       "classes": [
@@ -3178,6 +3178,40 @@
         "--ant-tree-select-node-selected-color",
         "--ant-tree-select-switcher-size",
         "--ant-tree-select-title-height"
+      ]
+    },
+    "typography": {
+      "classes": [
+        "ant-typography",
+        "ant-typography-actions",
+        "ant-typography-actions-start",
+        "ant-typography-collapse",
+        "ant-typography-copy",
+        "ant-typography-copy-icon-only",
+        "ant-typography-copy-success",
+        "ant-typography-danger",
+        "ant-typography-disabled",
+        "ant-typography-edit",
+        "ant-typography-edit-content",
+        "ant-typography-edit-content-confirm",
+        "ant-typography-ellipsis",
+        "ant-typography-ellipsis-multiple-line",
+        "ant-typography-ellipsis-single-line",
+        "ant-typography-expand",
+        "ant-typography-h1",
+        "ant-typography-h2",
+        "ant-typography-h3",
+        "ant-typography-h4",
+        "ant-typography-h5",
+        "ant-typography-link",
+        "ant-typography-rtl",
+        "ant-typography-secondary",
+        "ant-typography-success",
+        "ant-typography-warning"
+      ],
+      "tokens": [
+        "--ant-typography-title-margin-bottom",
+        "--ant-typography-title-margin-top"
       ]
     },
     "upload": {

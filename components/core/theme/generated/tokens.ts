@@ -1126,6 +1126,11 @@ export interface NzTreeSelectToken {
   titleHeight: number;
 }
 
+export interface NzTypographyToken {
+  titleMarginBottom: string;
+  titleMarginTop: string;
+}
+
 export interface NzUploadToken {
   actionsColor: string;
   pictureCardSize: number;
@@ -1172,5 +1177,6 @@ export interface NzComponentTokenMap {
   Transfer: NzTransferToken;
   Tree: NzTreeToken;
   TreeSelect: NzTreeSelectToken;
+  Typography: NzTypographyToken;
   Upload: NzUploadToken;
 }

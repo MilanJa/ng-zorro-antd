@@ -47,5 +47,6 @@ export const COMPONENT_ROOT_CLS: Record<string, string> = {
   Transfer: 'ant-transfer',
   Tree: 'ant-tree',
   TreeSelect: 'ant-tree-select',
+  Typography: 'ant-typography',
   Upload: 'ant-upload'
 };
