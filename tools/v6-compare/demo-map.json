@@ -255,5 +255,8 @@
   "empty": {
     "_antdDir": "empty",
     "config": "config-provider"
+  },
+  "list": {
+    "_antdDir": "list"
   }
 }

@@ -65,6 +65,10 @@ export const v6Components = {
   form: { antd: ['Form'], prefixCls: 'ant-form', renderedPrefixes: ['ant-col', 'ant-row'] },
   input: { antd: ['Input'], prefixCls: 'ant-input' },
   'input-number': { antd: ['InputNumber'], prefixCls: 'ant-input-number' },
+  // The empty-data-source state mounts a real `nz-embed-empty`/`nz-empty` (`list-cell.ts`'s
+  // `NzListEmptyComponent`), the loading state wraps content in a real `nz-spin`, and a `nzPagination`
+  // template typically composes a real `nz-pagination` -- all three are mapped.
+  list: { antd: ['List'], prefixCls: 'ant-list', renderedPrefixes: ['ant-empty', 'ant-spin', 'ant-pagination'] },
   mention: { antd: ['Mentions'], prefixCls: 'ant-mentions' },
   message: { antd: ['message'], prefixCls: 'ant-message' },
   modal: { antd: ['Modal'], prefixCls: 'ant-modal' },

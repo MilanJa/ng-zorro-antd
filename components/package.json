@@ -271,6 +271,9 @@
       "less": "./list/style/*.less",
       "style": "./list/style/index.min.css"
     },
+    "./list/style/v6/*": {
+      "style": "./list/style/v6/*"
+    },
     "./mention/style/*": {
       "less": "./mention/style/*.less",
       "style": "./mention/style/index.min.css"

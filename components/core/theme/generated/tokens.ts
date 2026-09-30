@@ -835,6 +835,20 @@ export interface NzInputNumberToken {
   warningActiveShadow: string;
 }
 
+export interface NzListToken {
+  avatarMarginRight: number;
+  contentWidth: number;
+  descriptionFontSize: number;
+  emptyTextPadding: number;
+  footerBg: string;
+  headerBg: string;
+  itemPadding: string;
+  itemPaddingLG: string;
+  itemPaddingSM: string;
+  metaMarginBottom: number;
+  titleMarginBottom: number;
+}
+
 export interface NzMentionsToken {
   activeBg: string;
   activeBorderColor: string;
@@ -1176,6 +1190,7 @@ export interface NzComponentTokenMap {
   Form: NzFormToken;
   Input: NzInputToken;
   InputNumber: NzInputNumberToken;
+  List: NzListToken;
   Mentions: NzMentionsToken;
   Message: NzMessageToken;
   Modal: NzModalToken;

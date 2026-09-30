@@ -26,6 +26,7 @@ export const COMPONENT_ROOT_CLS: Record<string, string> = {
   Form: 'ant-form',
   Input: 'ant-input',
   InputNumber: 'ant-input-number',
+  List: 'ant-list',
   Mentions: 'ant-mentions',
   Message: 'ant-message',
   Modal: 'ant-modal',
