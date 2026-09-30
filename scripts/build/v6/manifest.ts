@@ -9,8 +9,9 @@ import path from 'node:path';
 export const ENGINE_CORE_BUDGET = 50 * 1024;
 // Raised from 150 KiB to 256 KiB when the components bundle (151,480 B before Progress) crossed the
 // old budget with Progress's line, circle and steps CSS. Raised again to 384 KiB for wave 1 plan C:
-// the survey's 33-name bundle measured 265,567 B.
-export const ENGINE_COMPONENTS_BUDGET = 384 * 1024;
+// the survey's 33-name bundle measured 265,567 B. Raised again to 512 KiB for wave 1 plan D: the
+// survey's 51-name bundle measured 366,466 B before pagination.
+export const ENGINE_COMPONENTS_BUDGET = 512 * 1024;
 const SIZE_TOLERANCE = 1024;
 
 export interface V6Manifest {

@@ -3,6 +3,33 @@
  * found in the LICENSE file at https://github.com/NG-ZORRO/ng-zorro-antd/blob/master/LICENSE
  */
 
+import type { V6Manifest } from './manifest';
+
+/**
+ * The classes that style `dir`'s own emitted/rendered DOM: `dir`'s own manifest classes plus those
+ * of every directory `patchDependencies(dir)` names (its alias host and its mapped `renderedPrefixes`
+ * owners -- the same dependency graph `publish/<dir>/style/v6/index.css` bundles, so "styled for this
+ * directory" tracks exactly what that directory's own published bundle carries). This replaces the flat
+ * union of every migrated component's classes (`Object.values(manifest.components).flatMap(...)`),
+ * which made an unrelated component's CSS count towards a class it merely happens to select somewhere:
+ * color-picker's own v6 CSS mentions `.ant-select-selector` in a rule scoped to its format-select row,
+ * which is not select's own dependency and must not clear `ant-select-selector` off select's,
+ * cascader's or tree-select's allowlist (plan C finding M8).
+ */
+export function styledClassesFor<D extends string>(
+  dir: D,
+  manifest: V6Manifest,
+  patchDependencies: (dir: D) => D[]
+): Set<string> {
+  const styled = new Set(manifest.components[dir]?.classes ?? []);
+  for (const dep of patchDependencies(dir)) {
+    for (const cls of manifest.components[dep]?.classes ?? []) {
+      styled.add(cls);
+    }
+  }
+  return styled;
+}
+
 export function renderedCoverageGaps(
   rendered: Record<string, string[]>,
   styled: Set<string>,
