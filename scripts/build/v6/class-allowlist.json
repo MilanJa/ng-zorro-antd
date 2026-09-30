@@ -10,6 +10,25 @@
     "ant-btn-rtl",
     "ant-btn-text"
   ],
+  "_cascader_comment": "antd-emits: -rtl (@rc-component/cascader OptionList/List.js's own `${mergedPrefixCls}-rtl` on the menus wrapper; v6 CSS styles only -dropdown-rtl on the dropdown root, verified against node_modules/@rc-component/cascader/lib/OptionList/List.js). v4-compat: -menu-item-expanded (v4-only always-on class the option component's host binds; @rc-component/cascader's own Column.js only ever emits -menu-item-expand, never -expanded; no v6 counterpart), -menus-hidden (ng-zorro's own collapse-animation hook on .ant-cascader-menus while closed; List.js never emits it, no v6 counterpart), -picker-arrow-expand (ng-zorro's own rotate hook on the suffix icon; antd v6 has no per-cascader arrow class at all, no v6 counterpart). v4-compat (patch hook): -checkbox-inner (@rc-component/cascader's own OptionList/Checkbox.js draws the box directly on the bare `<span class=\"ant-cascader-checkbox\">` it renders, with no inner span, same shape as checkbox/radio/tree; style/v6/patch.css mirrors those rules onto -inner with cascader's own prefix, scoped under .ant-cascader-dropdown to match v6's own specificity). v4-compat (reused from select's Task 9 box/wrap/arrow/search resolution verbatim, since cascader's root carries the bare `ant-select` class and reuses select's nz-select-search/nz-select-clear/nz-select-placeholder subcomponents): -arrow-loading (nz-only, ng-zorro's own hook on nz-select-arrow), -close-icon (nz-only, ng-zorro's own hook on nz-select-clear, reused here for the clear button), -selection-overflow (replacement: ant-select-content, added alongside), -selection-overflow-item (replacement: ant-select-content-item), -selection-overflow-item-suffix (replacement: ant-select-content-item-suffix), -selection-placeholder (replacement: ant-select-placeholder, added alongside), -selection-search (v4-compat patch hook: select's style/v6/patch.css selects .ant-select-selection-search to size the multi-mode input/mirror), -selection-search-input (replacement: ant-select-input, added alongside), -selection-search-mirror (v4-compat patch hook: select's style/v6/patch.css selects this class), -selection-wrap (v4-compat patch hook: select's style/v6/patch.css selects .ant-select-selection-wrap to give it v6's layout), -selector (v4-compat patch hook: select's style/v6/patch.css mirrors the v6 box onto it).",
+  "cascader": [
+    "ant-cascader-checkbox-inner",
+    "ant-cascader-menu-item-expanded",
+    "ant-cascader-menus-hidden",
+    "ant-cascader-picker-arrow-expand",
+    "ant-cascader-rtl",
+    "ant-select-arrow-loading",
+    "ant-select-close-icon",
+    "ant-select-selection-overflow",
+    "ant-select-selection-overflow-item",
+    "ant-select-selection-overflow-item-suffix",
+    "ant-select-selection-placeholder",
+    "ant-select-selection-search",
+    "ant-select-selection-search-input",
+    "ant-select-selection-search-mirror",
+    "ant-select-selection-wrap",
+    "ant-select-selector"
+  ],
   "_notification_comment": "antd-emits: -close-icon (on the close anticon, PurePanel.js; v6 styles only -notice-close). v4-compat: -notice-content (next to -notice-wrapper), -notice-message (next to -notice-title), -notice-btn (next to -notice-actions), -notice-close-x (inner close span). v4-compat (patch hook): -notice-with-icon (next to -notice-section; the patch indents the text of notices with an icon). patch-motion: -fade-enter, -fade-leave.",
   "notification": [
     "ant-notification-close-icon",

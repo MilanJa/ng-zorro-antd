@@ -1,5 +1,19 @@
 {
   "_comment": "Pairs ng-zorro demo keys with antd demo file stems when the names differ; null marks an ng-zorro-only demo. `_antdDir` overrides the antd component directory.",
+  "cascader": {
+    "_antdDir": "cascader",
+    "change-on-function": "change-on-select",
+    "custom-field-names": "fields-name",
+    "custom-template": "custom-dropdown",
+    "disabled": "disabled-option",
+    "modal": null,
+    "open": "panel",
+    "popup-render": "custom-dropdown",
+    "prefix-and-suffix": "suffix",
+    "reactive-form": null,
+    "trigger": "custom-trigger",
+    "trigger-action": "custom-trigger"
+  },
   "input": { "_antdDir": "input" },
   "input-number": { "_antdDir": "input-number", "handler-icon": "controls", "prefix": "presuffix" },
   "message": { "_antdDir": "message", "close": null, "custom-style": "style-class", "template": null },

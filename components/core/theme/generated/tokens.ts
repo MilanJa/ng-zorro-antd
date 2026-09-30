@@ -615,6 +615,17 @@ export interface NzButtonToken {
   yellowShadowColor: string;
 }
 
+export interface NzCascaderToken {
+  controlItemWidth: number;
+  controlWidth: number;
+  dropdownHeight: number;
+  menuPadding: number;
+  optionPadding: string;
+  optionSelectedBg: string;
+  optionSelectedColor: string;
+  optionSelectedFontWeight: number;
+}
+
 export interface NzCheckboxToken {
 }
 
@@ -943,6 +954,7 @@ export interface NzUploadToken {
 export interface NzComponentTokenMap {
   Alert: NzAlertToken;
   Button: NzButtonToken;
+  Cascader: NzCascaderToken;
   Checkbox: NzCheckboxToken;
   Drawer: NzDrawerToken;
   FloatButton: NzFloatButtonToken;

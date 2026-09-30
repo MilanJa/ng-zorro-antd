@@ -60,6 +60,7 @@ import {
   POSITION_MAP,
   POSITION_TYPE
 } from 'ng-zorro-antd/core/overlay';
+import { nzThemeScopeClasses } from 'ng-zorro-antd/core/theme';
 import { NzTreeBase, NzTreeNode } from 'ng-zorro-antd/core/tree';
 import {
   NgClassInterface,
@@ -202,6 +203,7 @@ const NZ_CONFIG_MODULE_NAME: NzConfigKey = 'cascader';
       [cdkConnectedOverlayHasBackdrop]="nzBackdrop"
       [cdkConnectedOverlayOrigin]="overlayOrigin"
       [cdkConnectedOverlayPositions]="positions"
+      [cdkConnectedOverlayPanelClass]="dropdownPanelClasses!"
       cdkConnectedOverlayTransformOriginOn=".ant-cascader-dropdown"
       [cdkConnectedOverlayOpen]="menuOpen()"
       (overlayOutsideClick)="onClickOutside($event)"
@@ -349,6 +351,7 @@ export class NzCascaderComponent
   private readonly destroyRef = inject(DestroyRef);
   protected readonly nzFormStatusService = inject(NzFormStatusService, { optional: true });
   protected readonly noAnimation = inject(NzNoAnimationDirective, { host: true, optional: true });
+  private readonly themeScopeClasses = nzThemeScopeClasses();
 
   readonly _nzModuleName: NzConfigKey = NZ_CONFIG_MODULE_NAME;
 
@@ -453,6 +456,17 @@ export class NzCascaderComponent
   onChange = Function.prototype;
   onTouched = Function.prototype;
   positions: ConnectionPositionPair[] = [...DEFAULT_CASCADER_POSITIONS];
+
+  /**
+   * @internal The CDK overlay pane classes: the enclosing `[nzTheme]` scope only. Cascader has no
+   * `nzDropdownClassName` input -- `nzMenuClassName`/`nzColumnClassName` are already bound on the menus
+   * wrapper and each column, so the pane itself carries nothing but the scope classes select's
+   * `updateDropdownPanelClasses` also adds. The scope is constant per instance (resolved from the
+   * injector at construction), so this is set once and never reassigned.
+   */
+  readonly dropdownPanelClasses: string[] | null = this.themeScopeClasses().length
+    ? [...this.themeScopeClasses()]
+    : null;
 
   /**
    * Dropdown width in pixel.

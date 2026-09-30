@@ -29,6 +29,9 @@ export const v6Components = {
   // Select's DOM in combobox mode, so its CSS is Select's class set under Select's `prefixCls`.
   'auto-complete': { antd: ['AutoComplete'], prefixCls: 'ant-select' },
   button: { antd: ['Button'], prefixCls: 'ant-btn' },
+  // `ant-empty` is included because cascader's own v6 CSS styles `.ant-cascader-menu-empty .ant-empty-*`
+  // (the empty-state cell inside the dropdown), unlike a component with no such nested rule.
+  cascader: { antd: ['Cascader'], prefixCls: 'ant-cascader', renderedPrefixes: ['ant-select', 'ant-empty'] },
   checkbox: { antd: ['Checkbox'], prefixCls: 'ant-checkbox' },
   drawer: { antd: ['Drawer'], prefixCls: 'ant-drawer' },
   // Only `FloatButton`: the top-level `BackTop` export is antd's deprecated `back-top` component, with

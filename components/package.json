@@ -139,6 +139,9 @@
       "less": "./cascader/style/*.less",
       "style": "./cascader/style/index.min.css"
     },
+    "./cascader/style/v6/*": {
+      "style": "./cascader/style/v6/*"
+    },
     "./code-editor/style/*": {
       "less": "./code-editor/style/*.less",
       "style": "./code-editor/style/index.min.css"

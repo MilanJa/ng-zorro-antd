@@ -1,0 +1,124 @@
+/*
+ * CDK overlay pane positioning: cascader's dropdown carries the bare `.ant-select-dropdown` class
+ * alongside `.ant-cascader-dropdown` (`class="ant-select-dropdown ant-cascader-dropdown"` in
+ * cascader.component.ts), so select's own `style/v6/patch.css` bare `.ant-select-dropdown { position:
+ * relative; top: 0; left: 0; display: block; width: 100%; }` rule already matches this DOM and already
+ * counters v6's `position: absolute; top: -9999px` on the pane -- no cascader-specific rule is added
+ * here to avoid re-declaring the same properties on the same element twice.
+ *
+ * `style/patch.less`'s `.ant-cascader-dropdown { padding: 0; }` is dropped rather than ported: v6's own
+ * generated CSS already carries the exact compound selector this DOM matches,
+ * `.ant-cascader-dropdown.ant-select-dropdown { padding: 0; }` (both classes are present on the same
+ * element), so the v6 stylesheet needs no patch to reach the same padding.
+ */
+
+/*
+ * antd v6's rc-component/cascader draws the checkbox box directly on the `<span class="ant-cascader-checkbox">`
+ * OptionList/Checkbox.js renders (no inner span, no native input, no wrapper -- confirmed by that
+ * source: `React.createElement('span', { className: prefixCls ... })` with no children but the
+ * multi-select custom icon). ng-zorro keeps `span.ant-cascader-checkbox-inner` for v4
+ * (NzCascaderOptionComponent), so these rules mirror the v6 box rules from
+ * `.ant-cascader-dropdown .ant-cascader-checkbox` onto `-inner` at the same `.ant-cascader-dropdown `
+ * ancestor specificity v6 itself uses (the dropdown, not the `.ant-cascader` root -- the checkbox only
+ * ever renders inside the opened dropdown), and neutralise the outer element so the box is not drawn
+ * twice. Same pattern as checkbox/radio/tree (mirrored with `.ant-cascader-checkbox`'s own prefix).
+ */
+.ant-cascader-dropdown .ant-cascader-checkbox {
+  width: auto;
+  height: auto;
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  outline: none;
+}
+.ant-cascader-dropdown .ant-cascader-checkbox::after {
+  display: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .ant-cascader-dropdown .ant-cascader-checkbox:not(.ant-cascader-checkbox-disabled):hover {
+    border-color: transparent;
+  }
+  .ant-cascader-dropdown .ant-cascader-checkbox-checked:not(.ant-cascader-checkbox-disabled):hover {
+    background-color: transparent;
+    border-color: transparent;
+  }
+  .ant-cascader-dropdown .ant-cascader-checkbox-indeterminate:not(.ant-cascader-checkbox-disabled):hover {
+    background-color: transparent;
+    border-color: transparent;
+  }
+}
+.ant-cascader-dropdown .ant-cascader-checkbox-inner {
+  position: relative;
+  top: 0;
+  left: 0;
+  display: block;
+  width: var(--ant-control-interactive-size);
+  height: var(--ant-control-interactive-size);
+  direction: ltr;
+  background-color: var(--ant-color-bg-container);
+  border: var(--ant-line-width) var(--ant-line-type) var(--ant-color-border);
+  border-radius: var(--ant-border-radius-sm);
+  border-collapse: separate;
+  transition: all var(--ant-motion-duration-slow);
+}
+.ant-cascader-dropdown .ant-cascader-checkbox-inner::after {
+  box-sizing: border-box;
+  position: absolute;
+  top: calc(var(--ant-control-interactive-size) / 2 - var(--ant-line-width));
+  inset-inline-start: calc(var(--ant-control-interactive-size) / 4 - var(--ant-line-width));
+  display: table;
+  width: calc(var(--ant-control-interactive-size) / 14 * 5);
+  height: calc(var(--ant-control-interactive-size) / 14 * 8);
+  border: var(--ant-line-width-bold) solid var(--ant-color-white);
+  border-top: 0;
+  border-inline-start: 0;
+  transform: rotate(45deg) scale(0) translate(-50%, -50%);
+  opacity: 0;
+  content: '';
+  transition:
+    all var(--ant-motion-duration-fast) var(--ant-motion-ease-in-back),
+    opacity var(--ant-motion-duration-fast);
+}
+.ant-cascader-dropdown .ant-cascader-checkbox:not(.ant-cascader-checkbox-disabled):hover .ant-cascader-checkbox-inner {
+  border-color: var(--ant-color-primary);
+}
+.ant-cascader-dropdown .ant-cascader-checkbox-checked .ant-cascader-checkbox-inner {
+  background-color: var(--ant-color-primary);
+  border-color: var(--ant-color-primary);
+}
+.ant-cascader-dropdown .ant-cascader-checkbox-checked .ant-cascader-checkbox-inner::after {
+  opacity: 1;
+  transform: rotate(45deg) scale(1) translate(-50%, -50%);
+  transition: all var(--ant-motion-duration-mid) var(--ant-motion-ease-out-back) var(--ant-motion-duration-fast);
+}
+.ant-cascader-dropdown
+  .ant-cascader-checkbox-checked:not(.ant-cascader-checkbox-disabled):hover
+  .ant-cascader-checkbox-inner {
+  background-color: var(--ant-color-primary-hover);
+  border-color: transparent;
+}
+.ant-cascader-dropdown .ant-cascader-checkbox-indeterminate .ant-cascader-checkbox-inner {
+  background-color: var(--ant-color-bg-container);
+  border-color: var(--ant-color-border);
+}
+.ant-cascader-dropdown .ant-cascader-checkbox-indeterminate .ant-cascader-checkbox-inner::after {
+  top: 50%;
+  inset-inline-start: 50%;
+  width: calc(var(--ant-font-size-lg) / 2);
+  height: calc(var(--ant-font-size-lg) / 2);
+  background-color: var(--ant-color-primary);
+  border: 0;
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+  content: '';
+}
+.ant-cascader-dropdown .ant-cascader-checkbox-disabled .ant-cascader-checkbox-inner {
+  background: var(--ant-color-bg-container-disabled);
+  border-color: var(--ant-color-border);
+}
+.ant-cascader-dropdown .ant-cascader-checkbox-disabled .ant-cascader-checkbox-inner::after {
+  border-color: var(--ant-color-text-disabled);
+}
+.ant-cascader-dropdown .ant-cascader-checkbox-disabled.ant-cascader-checkbox-indeterminate .ant-cascader-checkbox-inner::after {
+  background: var(--ant-color-text-disabled);
+}
