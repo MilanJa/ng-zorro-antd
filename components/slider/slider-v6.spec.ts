@@ -27,7 +27,7 @@ function installV6Css(): void {
   template: `<nz-slider id="host" [ngModel]="30" [nzMarks]="marks" style="width: 200px" />`
 })
 class TestSliderComponent {
-  readonly marks = { 0: '0', 30: '30' };
+  readonly marks = { 0: '0', 30: '30', 100: '100' };
 }
 
 describe('slider under antd v6 css', () => {
@@ -69,9 +69,13 @@ describe('slider under antd v6 css', () => {
 
   it('colours the active mark text with v6 colorText', () => {
     const host = document.getElementById('host')!;
-    const activeMark = host.querySelector('.ant-slider-mark-text-active') as HTMLElement;
+    const activeMark = host.querySelector('.ant-slider-mark-active') as HTMLElement;
     expect(activeMark).not.toBeNull();
+    // v4 styles `ant-slider-mark-text-active` too, so v6's colour reaches the mark through the patch.
+    expect(host.querySelector('.ant-slider-mark-text-active')).toBeNull();
     expect(getComputedStyle(activeMark).color).toBe('rgba(0, 0, 0, 0.88)');
+    const inactiveMark = host.querySelector('.ant-slider-mark-text:not(.ant-slider-mark-active)') as HTMLElement;
+    expect(getComputedStyle(inactiveMark).color).toBe('rgba(0, 0, 0, 0.45)');
   });
 });
 
@@ -109,7 +113,7 @@ describe('slider handle tooltip inherits the enclosing theme scope', () => {
     return fixture.debugElement.query(By.directive(NzThemeDirective)).injector.get(NzThemeDirective).scopeClass;
   }
 
-  it("carries the enclosing [nzTheme] scope class on the handle's tooltip root (NzTooltipDirective's own popup, wired in plan B)", async () => {
+  it("carries the enclosing [nzTheme] scope class on the handle's tooltip root (NzTooltipDirective's own popup)", async () => {
     fixture.detectChanges();
     await fixture.whenStable();
     await new Promise(r => setTimeout(r, 0));

@@ -1,3 +1,13 @@
+/* ng-zorro's `nz-slider` host is the `.ant-slider` element; v4's `style/patch.less` makes it a block box. */
 .ant-slider {
   display: block;
+}
+
+/*
+ * antd's `.ant-slider .ant-slider-mark-text-active { color: var(--ant-color-text) }`, keyed onto the active
+ * mark's existing `ant-slider-mark-active` class: the v4 stylesheet also styles `ant-slider-mark-text-active`
+ * (darker active marks), so emitting it would change the default theme.
+ */
+.ant-slider .ant-slider-mark-active {
+  color: var(--ant-color-text);
 }

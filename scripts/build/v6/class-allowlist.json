@@ -325,7 +325,7 @@
   "mention": [
     "ant-mentions-focused"
   ],
-  "_slider_comment": "antd-emits: -rtl (Slider's own root className builder in `antd/es/slider/index.js` sets `${prefixCls}-rtl`; v6 CSS has no rule for it). v4-compat: -mark-active (kept next to its v6 replacement, -mark-text-active, added alongside it on the same mark-text span).",
+  "_slider_comment": "antd-emits: -rtl (Slider's own root className builder in `antd/es/slider/index.js` sets `${prefixCls}-rtl`; v6 CSS has no rule for it). v4-compat (patch hook): -mark-active (v6's -mark-text-active is not emitted because v4 styles it too; style/v6/patch.css gives this class v6's active-mark colour).",
   "slider": [
     "ant-slider-mark-active",
     "ant-slider-rtl"
