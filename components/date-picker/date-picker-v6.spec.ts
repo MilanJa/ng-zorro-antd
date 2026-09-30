@@ -47,8 +47,8 @@ describe('date-picker under antd v6 css', () => {
     TestBed.inject(OverlayContainer).ngOnDestroy();
   });
 
-  // Review focus: the dropdown opens below the input (matching antd/rc-picker's default placement)
-  // and is removed from the overlay container after it closes, not merely hidden.
+  // Positioning and leave motion: the dropdown opens below the input (matching antd/rc-picker's
+  // default placement) and is removed from the overlay container after it closes, not merely hidden.
   it('opens a positioned dropdown below the input, whose enter motion settles', async () => {
     const host = document.getElementById('host') as HTMLElement;
     expect(getComputedStyle(host).height).toBe('32px');

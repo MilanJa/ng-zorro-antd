@@ -48,8 +48,9 @@ describe('time-picker under antd v6 css', () => {
     TestBed.inject(OverlayContainer).ngOnDestroy();
   });
 
-  // Review focus: the dropdown opens below the input and is removed from the overlay container
-  // after it closes (shared dropdown root and animation with date-picker, ant-picker prefix).
+  // Positioning and leave motion: the dropdown opens below the input and is removed from the
+  // overlay container after it closes (shared dropdown root and animation with date-picker,
+  // ant-picker prefix).
   it('opens a positioned dropdown below the input, whose enter motion settles', async () => {
     const host = document.getElementById('host') as HTMLElement;
     expect(getComputedStyle(host).height).toBe('32px');
