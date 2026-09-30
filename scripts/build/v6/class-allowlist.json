@@ -464,9 +464,22 @@
   ],
   "_tag_comment": "v4-compat: -borderless (replacement: ant-tag-filled, added alongside on the same !nzBordered condition; compiled v4 CSS still styles .ant-tag-borderless, no v6 CSS rule for that literal class name — v6 only styles the variant classes). -has-color (no v6 counterpart: v6's custom-colour path (useColor.js) never emits a class at all, only the inline tagStyle; compiled v4 CSS still styles .ant-tag-has-color).",
   "badge": [
-    "ant-ribbon-text"
+    "ant-ribbon-text",
+    "ant-badge-status-pink",
+    "ant-badge-status-red",
+    "ant-badge-status-yellow",
+    "ant-badge-status-orange",
+    "ant-badge-status-cyan",
+    "ant-badge-status-green",
+    "ant-badge-status-blue",
+    "ant-badge-status-purple",
+    "ant-badge-status-geekblue",
+    "ant-badge-status-magenta",
+    "ant-badge-status-volcano",
+    "ant-badge-status-gold",
+    "ant-badge-status-lime"
   ],
-  "_badge_comment": "v4-compat: ant-ribbon-text (replacement: ant-ribbon-content, added alongside on the same span — antd v6's Ribbon.js renders the text span as `${prefixCls}-content`, not `-text`; compiled v4 CSS still styles .ant-ribbon-text).",
+  "_badge_comment": "v4-compat: ant-ribbon-text (replacement: ant-ribbon-content, added alongside on the same span — antd v6's Ribbon.js renders the text span as `${prefixCls}-content`, not `-text`; compiled v4 CSS still styles .ant-ribbon-text). ant-badge-status-<preset colour> (the 13 names in preset-colors.ts; runtime template literal, badge.component.ts/badge-sup.component.ts): replacement ant-badge-color-<colour>, added alongside on the same element -- the compiled v4 CSS styles `.ant-badge-status-<colour>` directly and there is no `.ant-badge-color-*` rule in v4, and the inline background-color that would otherwise carry a preset colour is intentionally omitted for it (mergedStyle), so dropping the v4 class would leave a preset-coloured badge with no background at all under the default stylesheet.",
   "qr-code": [
     "ant-qrcode-border",
     "ant-qrcode-mask"

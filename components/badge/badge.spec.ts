@@ -208,8 +208,12 @@ describe('badge', () => {
       testComponent.color.set(color);
       fixture.detectChanges();
       expect(badgeElement.nativeElement.classList).toContain('ant-badge-not-a-wrapper');
-      // A preset colour gets antd v6's `${prefixCls}-color-${color}` class
-      // (node_modules/antd/es/badge/Badge.js), not the `-status-` prefix reserved for `nzStatus`.
+      // A preset colour gets BOTH the v4 `ant-badge-status-<colour>` class (the compiled v4 CSS
+      // styles it directly and has no `.ant-badge-color-*` rule to fall back on) and antd v6's
+      // own `${prefixCls}-color-${color}` class (node_modules/antd/es/badge/Badge.js).
+      expect(badgeElement.nativeElement.querySelector('.ant-badge-status-dot').classList).toContain(
+        `ant-badge-status-${color}`
+      );
       expect(badgeElement.nativeElement.querySelector('.ant-badge-status-dot').classList).toContain(
         `ant-badge-color-${color}`
       );

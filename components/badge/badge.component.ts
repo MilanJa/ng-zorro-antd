@@ -35,7 +35,13 @@ const NZ_CONFIG_MODULE_NAME: NzConfigKey = 'badge';
     @if ((nzStatus || nzColor) && !showSup && !nzCount) {
       <span
         class="ant-badge-status-dot"
-        [class]="nzStatus ? 'ant-badge-status-' + nzStatus : presetColor ? 'ant-badge-color-' + presetColor : ''"
+        [class]="
+          nzStatus
+            ? 'ant-badge-status-' + nzStatus
+            : presetColor
+              ? 'ant-badge-status-' + presetColor + ' ant-badge-color-' + presetColor
+              : ''
+        "
         [style]="mergedStyle"
       ></span>
       <span class="ant-badge-status-text">

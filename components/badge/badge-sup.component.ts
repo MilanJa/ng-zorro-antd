@@ -47,10 +47,15 @@ import { NgStyleInterface, NzSafeAny, NzSizeDSType } from 'ng-zorro-antd/core/ty
   `,
   host: {
     class: 'ant-scroll-number',
-    // `nzColor` here is `nzStatus || presetColor || nzColor` from the parent badge: antd's
+    // `nzColor` here is `nzStatus || presetColor || nzColor` from the parent badge. antd v6's
     // Badge.js gives the preset-colour case `${prefixCls}-color-${color}` and the status case
-    // `${prefixCls}-status-${status}` -- two different class prefixes, not one.
-    '[class]': `nzColor ? (isPresetColor ? 'ant-badge-color-' + nzColor : 'ant-badge-status-' + nzColor) : ''`,
+    // `${prefixCls}-status-${status}` -- two different class prefixes, not one. The compiled v4
+    // CSS styles `.ant-badge-status-<preset colour>` (there is no `.ant-badge-color-*` rule in
+    // v4) and the inline `background-color` is intentionally omitted for a preset colour
+    // (`mergedStyle` below), so `ant-badge-status-<colour>` is kept for every case -- v4-compat,
+    // replacement `ant-badge-color-<colour>` -- and the v6 class is added alongside it only for
+    // a genuine preset.
+    '[class]': `nzColor ? 'ant-badge-status-' + nzColor + (isPresetColor ? ' ant-badge-color-' + nzColor : '') : ''`,
     '[attr.title]': `nzTitle === null ? '' : nzTitle || nzCount`,
     '[style]': `nzStyle`,
     '[style.right.px]': `nzOffset && nzOffset[0] ? -nzOffset[0] : null`,
