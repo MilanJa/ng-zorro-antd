@@ -36,28 +36,24 @@ import { DEFAULT_BACKGROUND_COLOR, DEFAULT_FRONT_COLOR, DEFAULT_MINVERSION } fro
   exportAs: 'nzQRCode',
   template: `
     @if (!!nzStatusRender()) {
-      <div class="ant-qrcode-mask">
+      <div class="ant-qrcode-mask ant-qrcode-cover">
         <ng-container *nzStringTemplateOutlet="nzStatusRender()">{{ nzStatusRender() }}</ng-container>
       </div>
     } @else if (nzStatus() !== 'active') {
-      <div class="ant-qrcode-mask">
+      <div class="ant-qrcode-mask ant-qrcode-cover">
         @switch (nzStatus()) {
           @case ('loading') {
             <nz-spin />
           }
           @case ('expired') {
-            <div>
-              <p class="ant-qrcode-expired">{{ locale().expired }}</p>
-              <button nz-button nzType="link" (click)="reloadQRCode()">
-                <nz-icon nzType="reload" nzTheme="outline" />
-                <span>{{ locale().refresh }}</span>
-              </button>
-            </div>
+            <p class="ant-qrcode-expired">{{ locale().expired }}</p>
+            <button nz-button nzType="link" (click)="reloadQRCode()">
+              <nz-icon nzType="reload" nzTheme="outline" />
+              <span>{{ locale().refresh }}</span>
+            </button>
           }
           @case ('scanned') {
-            <div>
-              <p class="ant-qrcode-expired">{{ locale().scanned }}</p>
-            </div>
+            <p class="ant-qrcode-scanned">{{ locale().scanned }}</p>
           }
         }
       </div>
@@ -98,6 +94,10 @@ import { DEFAULT_BACKGROUND_COLOR, DEFAULT_FRONT_COLOR, DEFAULT_MINVERSION } fro
   host: {
     class: 'ant-qrcode',
     '[class.ant-qrcode-border]': `nzBordered()`,
+    // antd v6 flips the default to bordered (base `.ant-qrcode` rule always draws the border) and
+    // opts OUT with `ant-qrcode-borderless` (node_modules/antd/es/qr-code/index.js); v4's
+    // `ant-qrcode-border` opts IN to the same border and is kept for the default stylesheet.
+    '[class.ant-qrcode-borderless]': `!nzBordered()`,
     '[style.background-color]': `nzBgColor()`
   },
   imports: [

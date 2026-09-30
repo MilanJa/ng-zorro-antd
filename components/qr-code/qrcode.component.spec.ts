@@ -68,7 +68,9 @@ describe('qrcode', () => {
         if (i === 1) {
           expect(statusView.firstElementChild.tagName).toBe('NZ-SPIN');
         } else {
-          expect(statusView.firstElementChild.tagName).toBe('DIV');
+          // v6 renders the expired/scanned message as a direct child of the cover (no
+          // wrapping div), matching antd's `QrcodeStatus.js` fragment structure.
+          expect(statusView.firstElementChild.tagName).toBe('P');
         }
       }
     });
