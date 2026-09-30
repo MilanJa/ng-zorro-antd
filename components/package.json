@@ -169,6 +169,9 @@
       "less": "./date-picker/style/*.less",
       "style": "./date-picker/style/index.min.css"
     },
+    "./date-picker/style/v6/*": {
+      "style": "./date-picker/style/v6/*"
+    },
     "./descriptions/style/*": {
       "less": "./descriptions/style/*.less",
       "style": "./descriptions/style/index.min.css"
@@ -399,6 +402,9 @@
     "./time-picker/style/*": {
       "less": "./time-picker/style/*.less",
       "style": "./time-picker/style/index.min.css"
+    },
+    "./time-picker/style/v6/*": {
+      "style": "./time-picker/style/v6/*"
     },
     "./timeline/style/*": {
       "less": "./timeline/style/*.less",

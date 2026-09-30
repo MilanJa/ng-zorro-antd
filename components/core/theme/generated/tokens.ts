@@ -629,6 +629,54 @@ export interface NzCascaderToken {
 export interface NzCheckboxToken {
 }
 
+export interface NzDatePickerToken {
+  INTERNAL_FIXED_ITEM_MARGIN: number;
+  activeBg: string;
+  activeBorderColor: string;
+  activeShadow: string;
+  addonBg: string;
+  arrowPath: string;
+  arrowPolygon: string;
+  arrowShadowWidth: number;
+  cellActiveWithRangeBg: string;
+  cellBgDisabled: string;
+  cellHeight: number;
+  cellHoverBg: string;
+  cellHoverWithRangeBg: string;
+  cellRangeBorderColor: string;
+  cellWidth: number;
+  errorActiveShadow: string;
+  hoverBg: string;
+  hoverBorderColor: string;
+  inputFontSize: number;
+  inputFontSizeLG: number;
+  inputFontSizeSM: number;
+  lineWidthFocus: number;
+  multipleItemBg: string;
+  multipleItemBorderColor: string;
+  multipleItemBorderColorDisabled: string;
+  multipleItemColorDisabled: string;
+  multipleItemHeight: number;
+  multipleItemHeightLG: number;
+  multipleItemHeightSM: number;
+  multipleSelectorBgDisabled: string;
+  paddingBlock: number;
+  paddingBlockLG: number;
+  paddingBlockSM: number;
+  paddingInline: number;
+  paddingInlineLG: number;
+  paddingInlineSM: number;
+  presetsMaxWidth: number;
+  presetsWidth: number;
+  textHeight: number;
+  timeCellHeight: number;
+  timeColumnHeight: number;
+  timeColumnWidth: number;
+  warningActiveShadow: string;
+  withoutTimeCellHeight: number;
+  zIndexPopup: number;
+}
+
 export interface NzDrawerToken {
   draggerSize: number;
   footerPaddingBlock: number;
@@ -956,6 +1004,7 @@ export interface NzComponentTokenMap {
   Button: NzButtonToken;
   Cascader: NzCascaderToken;
   Checkbox: NzCheckboxToken;
+  DatePicker: NzDatePickerToken;
   Drawer: NzDrawerToken;
   FloatButton: NzFloatButtonToken;
   Input: NzInputToken;

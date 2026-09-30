@@ -68,5 +68,13 @@
     "no-data": null,
     "prefix-and-suffix": "suffix",
     "virtual-scroll": null
+  },
+  "date-picker": {
+    "_antdDir": "date-picker",
+    "date-render": "cell-render",
+    "inline": "external-panel",
+    "presetted-ranges": "preset-ranges",
+    "switch": "switchable",
+    "week-number": null
   }
 }

@@ -54,6 +54,7 @@ import {
 } from 'ng-zorro-antd/core/form';
 import { NzOutletModule } from 'ng-zorro-antd/core/outlet';
 import { DATE_PICKER_POSITION_MAP, DEFAULT_DATE_PICKER_POSITIONS, NzOverlayModule } from 'ng-zorro-antd/core/overlay';
+import { nzThemeScopeClasses } from 'ng-zorro-antd/core/theme';
 import { CandyDate, cloneDate, CompatibleValue, NzDateAdapter, wrongSortOrder } from 'ng-zorro-antd/core/time';
 import {
   BooleanInput,
@@ -230,6 +231,7 @@ export type NzDatePickerSizeType = 'large' | 'default' | 'small';
       [cdkConnectedOverlayOrigin]="origin"
       [cdkConnectedOverlayOpen]="realOpenState"
       [cdkConnectedOverlayPositions]="overlayPositions"
+      [cdkConnectedOverlayPanelClass]="dropdownPanelClasses()"
       (positionChange)="onPositionChange($event)"
       (detach)="close()"
       (overlayKeydown)="onOverlayKeydown($event)"
@@ -284,6 +286,8 @@ export class NzDatePickerComponent implements OnInit, OnChanges, AfterViewInit, 
   private readonly platform = inject(Platform);
   private readonly destroyRef = inject(DestroyRef);
   private readonly nzFormStatusService = inject(NzFormStatusService, { optional: true });
+  /** Resolved once from the injector at construction: the enclosing `[nzTheme]` scope, if any. */
+  private readonly themeScopeClasses = nzThemeScopeClasses();
 
   readonly _nzModuleName: NzConfigKey = NZ_CONFIG_MODULE_NAME;
 
@@ -397,6 +401,12 @@ export class NzDatePickerComponent implements OnInit, OnChanges, AfterViewInit, 
     }
     return cls;
   });
+
+  /**
+   * The CDK overlay pane class: the enclosing `[nzTheme]` scope, so the dropdown (rendered inside
+   * the pane, styled via `dropdownClass()`/`nzDropdownClassName`) inherits the scoped tokens.
+   */
+  protected readonly dropdownPanelClasses = computed(() => this.themeScopeClasses());
 
   get realOpenState(): boolean {
     // The value that really decide the open state of overlay

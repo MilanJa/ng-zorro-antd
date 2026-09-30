@@ -33,6 +33,10 @@ export const v6Components = {
   // (the empty-state cell inside the dropdown), unlike a component with no such nested rule.
   cascader: { antd: ['Cascader'], prefixCls: 'ant-cascader', renderedPrefixes: ['ant-select', 'ant-empty'] },
   checkbox: { antd: ['Checkbox'], prefixCls: 'ant-checkbox' },
+  // DatePicker and TimePicker share one style module and registry entry (`ANTD_STYLE_MODULE_OVERRIDES`,
+  // `ANTD_REGISTRY_NAME_OVERRIDES` above): TimePicker is a DatePicker preset (`picker="time"`) with no
+  // style module of its own.
+  'date-picker': { antd: ['DatePicker'], prefixCls: 'ant-picker' },
   drawer: { antd: ['Drawer'], prefixCls: 'ant-drawer' },
   // Only `FloatButton`: the top-level `BackTop` export is antd's deprecated `back-top` component, with
   // its own `.ant-back-top*` style hook and `--ant-back-top-*` tokens that ng-zorro never renders.
@@ -57,6 +61,7 @@ export const v6Components = {
   space: { antd: ['Space'], prefixCls: 'ant-space' },
   spin: { antd: ['Spin'], prefixCls: 'ant-spin' },
   switch: { antd: ['Switch'], prefixCls: 'ant-switch' },
+  'time-picker': { antd: ['TimePicker'], prefixCls: 'ant-picker' },
   tooltip: { antd: ['Tooltip'], prefixCls: 'ant-tooltip' },
   tree: { antd: ['Tree'], prefixCls: 'ant-tree', renderedPrefixes: ['ant-select-tree'] },
   'tree-select': {

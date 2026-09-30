@@ -1,0 +1,53 @@
+/*
+ * `style/patch.less`'s rules, evaluated against v6's generated CSS (node_modules/antd/es/date-picker/style/index.js,
+ * panel.js):
+ *
+ * - `.ant-picker-dropdown { top: unset; left: unset; }` is ported below. v6's own `&-dropdown` rule sets
+ *   `position: absolute; top: -9999px; left: -9999px` (a static resting position antd's own JS overrides
+ *   before the popup ever paints, since antd measures and repositions it directly). ng-zorro's dropdown
+ *   root keeps `position: relative` (see the CDK note below) but never touches `top`/`left`, so v6's
+ *   static -9999px offset would still apply through the relative position and shove the whole panel out
+ *   of view; unsetting both restores the CDK-positioned element to its natural place inside the pane.
+ *
+ * - `.ant-picker-panel-container.ant-picker-week-number .ant-picker-date-panel .ant-picker-content { width:
+ *   100%; th { width: inherit } }` is dropped: v6's own unconditional `&-content` rule already sets
+ *   `width: 100%; table-layout: fixed` for every panel (node_modules/antd/es/date-picker/style/panel.js:295-298),
+ *   so `table-layout: fixed` alone gives every column, including the extra week-number column, an equal
+ *   share of the fixed width -- the v4-only width fix has no gap to fill under v6.
+ *
+ * - `.ant-picker-range-arrow { margin-right: ... }` is dropped: v6's own `&-range-arrow` rule inside
+ *   `&-dropdown` already sets `padding-inline` for the same purpose (index.js:341-352), so the v4-only
+ *   margin hack has no gap to fill under v6.
+ *
+ * - `.ant-picker-inline { padding: 0; border: none; }` plus its nested `&-range-arrow { display: none }`
+ *   and `&-dropdown { z-index: auto }` are ported below: v6 CSS has no rule for `.ant-picker-inline` at all
+ *   (confirmed absent from both style/index.js and style/panel.js -- antd's own inline mode renders a bare
+ *   PickerPanel with no input-box wrapper, so it never needed one), and v4's own box-reset rules for it are
+ *   not loaded under the v6 theme. Without this mirror the inline host keeps v6's `.ant-picker`/
+ *   `.ant-picker-outlined` input-box paint (border, padding, background) around what should be a flush
+ *   calendar panel.
+ */
+/*
+ * CDK overlay pane positioning: the dropdown root (`.ant-picker-dropdown`, the `<div>` `date-picker.component.ts`
+ * projects through `cdkConnectedOverlay`) is also given `position: relative` by the component itself
+ * (`POPUP_STYLE_PATCH`/`nzPopupStyle`, an inline style, already wins over any stylesheet's `position`).
+ * This rule states the same requirement in the stylesheet for consistency with every other CDK-positioned
+ * popup root's `style/v6/patch.css` (select, mention, tooltip, ...): v6 sets `position: absolute` on
+ * `.ant-picker-dropdown`, which -- were the inline style ever removed -- would collapse the CDK pane
+ * because the overlay can no longer read the content's own width/height.
+ */
+.ant-picker-dropdown {
+  position: relative;
+  top: unset;
+  left: unset;
+}
+.ant-picker-inline {
+  padding: 0;
+  border: none;
+}
+.ant-picker-inline .ant-picker-range-arrow {
+  display: none !important;
+}
+.ant-picker-inline .ant-picker-dropdown {
+  z-index: auto;
+}

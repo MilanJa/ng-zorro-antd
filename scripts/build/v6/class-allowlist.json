@@ -322,5 +322,40 @@
   "auto-complete": [
     "ant-select-dropdown-content",
     "ant-select-dropdown-content-wrapper"
+  ],
+  "_date-picker_comment": "pending-map (calendar): -calendar, -calendar-date-today (rendered by the shared cell-render table (`lib/abstract-table.html`'s `@case ('ant-picker-calendar')` branch) for the not-yet-mapped Calendar component; removed once Calendar is mapped in plan D). pending-map (tag): -tag (the preset-ranges footer's `<span class=\"ant-tag ant-tag-blue\">`; -tag-blue itself is already styled, since date-picker's own v6 CSS styles `.ant-picker-ranges .ant-picker-preset > .ant-tag-blue`, but the bare .ant-tag class waits on Tag's own mapping). antd-emits: -header-month-btn, -header-next-btn, -header-prev-btn, -header-super-next-btn, -header-super-prev-btn, -header-year-btn (@rc-component/picker's PanelHeader.js renders all six on real `<button>` elements; v6 CSS styles them generically via `.ant-picker-header button`/`.ant-picker-header > button`, node_modules/antd/es/date-picker/style/panel.js:213,229,244, never by these specific classes). v4-compat: -active-left, -active-right (v6's rc-picker RangeSelector.js draws the active indicator with a single `${prefixCls}-active-bar` element positioned by inline style, already rendered alongside; it never emits a left/right pair, no v6 counterpart), -cell-range-end-near-hover, -cell-range-end-single, -cell-range-hover, -cell-range-hover-edge-end, -cell-range-hover-edge-start, -cell-range-hover-end, -cell-range-hover-start, -cell-range-start-near-hover, -cell-range-start-single (v6's rc-picker PanelBody.js computes only `-hover`, `-in-range`, `-range-start`, `-range-end` for date cells; none of these hover-edge/near-hover/single variants are emitted by rc-picker any more, no v6 counterpart), -inline (antd v6's inline mode renders a bare PickerPanel with no picker-input wrapper at all, so there is no root to carry an `-inline` class; no v6 counterpart), -today-btn (calendar-footer.component.ts's own legacy footer for the plain date picker without time; v6's Footer.js unifies \"Today\"/\"Now\" into the same `-now`/`-now-btn` link regardless of mode, confirmed absent from both @rc-component/picker and antd's v6 style sources, so this separate class has no v6 counterpart), -week-number (date-range-popup.component.ts's panel-container modifier for `nzShowWeekNumber`; grepped absent from @rc-component/picker and antd's v6 style sources, no v6 counterpart).",
+  "date-picker": [
+    "ant-picker-active-left",
+    "ant-picker-active-right",
+    "ant-picker-calendar",
+    "ant-picker-calendar-date-today",
+    "ant-picker-cell-range-end-near-hover",
+    "ant-picker-cell-range-end-single",
+    "ant-picker-cell-range-hover",
+    "ant-picker-cell-range-hover-edge-end",
+    "ant-picker-cell-range-hover-edge-start",
+    "ant-picker-cell-range-hover-end",
+    "ant-picker-cell-range-hover-start",
+    "ant-picker-cell-range-start-near-hover",
+    "ant-picker-cell-range-start-single",
+    "ant-picker-header-month-btn",
+    "ant-picker-header-next-btn",
+    "ant-picker-header-prev-btn",
+    "ant-picker-header-super-next-btn",
+    "ant-picker-header-super-prev-btn",
+    "ant-picker-header-year-btn",
+    "ant-picker-inline",
+    "ant-picker-today-btn",
+    "ant-picker-week-number",
+    "ant-tag"
+  ],
+  "_time-picker_comment": "antd-emits: -now (@rc-component/picker's Popup/Footer.js renders `<li className={now}>`; v6 CSS styles the row generically via `.ant-picker-ranges > li`, never the `-now` class itself). nz-only: -time-panel-column-0, -time-panel-column-1, -time-panel-column-2, -time-panel-column-3, -time-panel-narrow (ng-zorro's own host bindings on `time-picker-panel.component.ts`, based on how many of hour/minute/second/12-hours columns are enabled; neither v4 Less (grepped across components/date-picker/style/*.less) nor v6 CSS has any rule for these class names — each `.ant-picker-time-panel-column` is sized uniformly regardless of how many columns are shown, so the classes carry no layout and are pure state hooks kept for template-compatibility).",
+  "time-picker": [
+    "ant-picker-now",
+    "ant-picker-time-panel-column-0",
+    "ant-picker-time-panel-column-1",
+    "ant-picker-time-panel-column-2",
+    "ant-picker-time-panel-column-3",
+    "ant-picker-time-panel-narrow"
   ]
 }

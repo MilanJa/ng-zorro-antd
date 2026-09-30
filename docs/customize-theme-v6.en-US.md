@@ -16,6 +16,7 @@ Only the components below have v6 styles so far. Others keep rendering with the 
 - `button`
 - `cascader`
 - `checkbox`
+- `date-picker`
 - `drawer`
 - `float-button`
 - `input`
@@ -37,6 +38,7 @@ Only the components below have v6 styles so far. Others keep rendering with the 
 - `space`
 - `spin`
 - `switch`
+- `time-picker`
 - `tooltip`
 - `tree`
 - `tree-select`
