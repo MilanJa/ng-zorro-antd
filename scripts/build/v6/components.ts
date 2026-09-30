@@ -63,6 +63,19 @@ export const v6Components = {
   switch: { antd: ['Switch'], prefixCls: 'ant-switch' },
   'time-picker': { antd: ['TimePicker'], prefixCls: 'ant-picker' },
   tooltip: { antd: ['Tooltip'], prefixCls: 'ant-tooltip' },
+  // `ant-btn`, `ant-checkbox` and `ant-input` are listed because Transfer's own extracted CSS
+  // relies on those already-mapped components' classes being styled by their own entries.
+  // `Dropdown` is bundled alongside `Transfer` (not just referenced via `renderedPrefixes`) because
+  // every Transfer list header unconditionally mounts a `Dropdown` trigger (`Section.js`'s
+  // "select all" menu), so real antd extraction always registers Dropdown's `--ant-dropdown-*`
+  // component tokens next to Transfer's; the static engine bundler only picks up a component's
+  // tokens by importing its style module directly, since Transfer's own style module never imports
+  // Dropdown's (it only emits `&-header-dropdown`'s icon-sizing rules, not Dropdown's token block).
+  transfer: {
+    antd: ['Transfer', 'Dropdown'],
+    prefixCls: 'ant-transfer',
+    renderedPrefixes: ['ant-btn', 'ant-checkbox', 'ant-input']
+  },
   tree: { antd: ['Tree'], prefixCls: 'ant-tree', renderedPrefixes: ['ant-select-tree'] },
   'tree-select': {
     antd: ['TreeSelect'],

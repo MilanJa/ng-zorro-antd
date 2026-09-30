@@ -421,6 +421,9 @@
       "less": "./transfer/style/*.less",
       "style": "./transfer/style/index.min.css"
     },
+    "./transfer/style/v6/*": {
+      "style": "./transfer/style/v6/*"
+    },
     "./tree/style/*": {
       "less": "./tree/style/*.less",
       "style": "./tree/style/index.min.css"

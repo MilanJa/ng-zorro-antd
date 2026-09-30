@@ -177,6 +177,17 @@
     "ant-tooltip-open",
     "ant-zoom-big-fast"
   ],
+  "_transfer_comment": "v4-compat: -list (replacement: ant-transfer-section, added alongside on the same element), -operation (replacement: ant-transfer-actions, added alongside on the same element), -list-body-customize-wrapper (antd v6's own Section.js still renders this div at the same class name, but v6 CSS has no rule for it, so no v6 counterpart), -list-body-with-search (ng-zorro-only modifier on -list-body; v6 never emits it and no stylesheet styles it, no v6 counterpart), -list-header-selected (v6's own Section.js renders an equivalent div at the same class name with no CSS rule either, no v6 counterpart), -list-with-footer (v6's own equivalent flag is -section-with-footer, which also carries no CSS rule, so no rename needed, no v6 counterpart). v4-compat (reused from checkbox's and input's own style/v6 resolution, since the header checkbox and search box render those components' DOM verbatim under the transfer prefix list): ant-checkbox-inner (checkbox's own patch hook, see the checkbox entry above), ant-input-affix-wrapper-outlined (input's own patch hook, see the input entry above).",
+  "transfer": [
+    "ant-checkbox-inner",
+    "ant-input-affix-wrapper-outlined",
+    "ant-transfer-list",
+    "ant-transfer-list-body-customize-wrapper",
+    "ant-transfer-list-body-with-search",
+    "ant-transfer-list-header-selected",
+    "ant-transfer-list-with-footer",
+    "ant-transfer-operation"
+  ],
   "_tree_comment": "antd-emits (verified against node_modules/@rc-component/tree/es/TreeNode.js and node_modules/antd/es/tree/Tree.js; absent from manifest.json's tree.classes): -icon-hide (Tree.js's `${prefixCls}-icon-hide` when `!showIcon`), -indent-unit-start (Indent.js's `${baseClassName}-start` for a start-of-row indent unit), -node-content-wrapper-open/-close (TreeNode.js's `${wrapClass}-${nodeState}`), -treenode-checkbox-checked/-indeterminate/-loading and -treenode-switcher-open/-close (TreeNode.js's own className builders). v4-compat (patch hook): -checkbox-inner (v6 draws the checkbox box on `.ant-tree-checkbox` itself, the same shape as checkbox/radio/cascader; style/v6/patch.css mirrors it onto -inner with the tree prefix). Every entry appears twice (bare `ant-tree-*` and `ant-select-tree-*`): NzTreeNodeBuiltinComponent/NzTreeNodeSwitcherComponent/NzTreeIndentComponent/NzTreeNodeTitleComponent emit both forms from the same host-binding pair, gated on `nzSelectMode`.",
   "tree": [
     "ant-select-tree-checkbox-inner",

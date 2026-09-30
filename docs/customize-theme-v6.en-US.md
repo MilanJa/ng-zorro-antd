@@ -40,6 +40,7 @@ Only the components below have v6 styles so far. Others keep rendering with the 
 - `switch`
 - `time-picker`
 - `tooltip`
+- `transfer`
 - `tree`
 - `tree-select`
 - `upload`

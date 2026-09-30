@@ -684,6 +684,16 @@ export interface NzDrawerToken {
   zIndexPopup: number;
 }
 
+export interface NzDropdownToken {
+  arrowOffsetHorizontal: number;
+  arrowOffsetVertical: number;
+  arrowPath: string;
+  arrowPolygon: string;
+  arrowShadowWidth: number;
+  paddingBlock: number;
+  zIndexPopup: number;
+}
+
 export interface NzFloatButtonToken {
 }
 
@@ -972,6 +982,16 @@ export interface NzTooltipToken {
   zIndexPopup: number;
 }
 
+export interface NzTransferToken {
+  headerHeight: number;
+  itemHeight: number;
+  itemPaddingBlock: number;
+  listHeight: number;
+  listWidth: number;
+  listWidthLG: number;
+  transferHeaderVerticalPadding: number;
+}
+
 export interface NzTreeToken {
   directoryNodeSelectedBg: string;
   directoryNodeSelectedColor: string;
@@ -1006,6 +1026,7 @@ export interface NzComponentTokenMap {
   Checkbox: NzCheckboxToken;
   DatePicker: NzDatePickerToken;
   Drawer: NzDrawerToken;
+  Dropdown: NzDropdownToken;
   FloatButton: NzFloatButtonToken;
   Input: NzInputToken;
   InputNumber: NzInputNumberToken;
@@ -1027,6 +1048,7 @@ export interface NzComponentTokenMap {
   Spin: NzSpinToken;
   Switch: NzSwitchToken;
   Tooltip: NzTooltipToken;
+  Transfer: NzTransferToken;
   Tree: NzTreeToken;
   TreeSelect: NzTreeSelectToken;
   Upload: NzUploadToken;

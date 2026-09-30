@@ -50,7 +50,7 @@ import { NzTransferListComponent } from './transfer-list.component';
   imports: [NzTransferListComponent, NzIconModule, NzButtonModule],
   template: `
     <nz-transfer-list
-      class="ant-transfer-list"
+      class="ant-transfer-list ant-transfer-section"
       [style]="nzListStyle"
       data-direction="left"
       direction="left"
@@ -73,7 +73,7 @@ import { NzTransferListComponent } from './transfer-list.component';
       (handleSelectAll)="handleLeftSelectAll($event)"
     />
     @if (dir() !== 'rtl') {
-      <div class="ant-transfer-operation">
+      <div class="ant-transfer-operation ant-transfer-actions">
         @if (!nzOneWay) {
           <button
             nz-button
@@ -104,7 +104,7 @@ import { NzTransferListComponent } from './transfer-list.component';
         </button>
       </div>
     } @else {
-      <div class="ant-transfer-operation">
+      <div class="ant-transfer-operation ant-transfer-actions">
         <button
           nz-button
           type="button"
@@ -136,7 +136,7 @@ import { NzTransferListComponent } from './transfer-list.component';
       </div>
     }
     <nz-transfer-list
-      class="ant-transfer-list"
+      class="ant-transfer-list ant-transfer-section"
       [style]="nzListStyle"
       data-direction="right"
       direction="right"

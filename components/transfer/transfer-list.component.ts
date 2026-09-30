@@ -105,12 +105,15 @@ import { RenderListContext, TransferDirection, TransferItem, TransferStat } from
         </div>
       } @else {
         @if (stat.shownCount > 0) {
-          <ul class="ant-transfer-list-content">
+          <ul class="ant-transfer-list-content" [class.ant-transfer-list-content-show-remove]="oneWay">
             @for (item of validData; track item.key) {
               <li
                 (click)="!oneWay ? onItemSelect(item) : null"
                 class="ant-transfer-list-content-item"
-                [class]="{ 'ant-transfer-list-content-item-disabled': disabled || item.disabled }"
+                [class]="{
+                  'ant-transfer-list-content-item-disabled': disabled || item.disabled,
+                  'ant-transfer-list-content-item-checked': item.checked && !(disabled || item.disabled)
+                }"
               >
                 @if (!oneWay) {
                   <label

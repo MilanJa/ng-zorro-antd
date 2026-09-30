@@ -34,6 +34,8 @@ export const COMPONENT_ROOT_CLS: Record<string, string> = {
   Spin: 'ant-spin',
   Switch: 'ant-switch',
   Tooltip: 'ant-tooltip',
+  Transfer: 'ant-transfer',
+  Dropdown: 'ant-transfer',
   Tree: 'ant-tree',
   TreeSelect: 'ant-tree-select',
   Upload: 'ant-upload'
