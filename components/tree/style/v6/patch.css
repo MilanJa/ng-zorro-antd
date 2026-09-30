@@ -14,7 +14,7 @@ nz-tree {
  * `span.ant-select-tree-checkbox-inner` for v4 (NzTreeNodeBuiltinCheckboxComponent), so these rules mirror
  * the v6 box rules from `.ant-tree .ant-tree-checkbox`/`.ant-select-tree .ant-select-tree-checkbox` onto
  * `-inner`, at the same `.ant-tree `/`.ant-select-tree ` ancestor specificity v6 itself uses, and
- * neutralise the outer element so the box is not drawn twice. Same pattern as checkbox/radio (Task 4).
+ * neutralise the outer element so the box is not drawn twice. Same pattern as `components/checkbox/style/v6/patch.css`.
  */
 .ant-tree .ant-tree-checkbox,
 .ant-select-tree .ant-select-tree-checkbox {

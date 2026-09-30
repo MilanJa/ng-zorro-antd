@@ -17,11 +17,15 @@
  * OptionList/Checkbox.js renders (no inner span, no native input, no wrapper -- confirmed by that
  * source: `React.createElement('span', { className: prefixCls ... })` with no children but the
  * multi-select custom icon). ng-zorro keeps `span.ant-cascader-checkbox-inner` for v4
- * (NzCascaderOptionComponent), so these rules mirror the v6 box rules from
- * `.ant-cascader-dropdown .ant-cascader-checkbox` onto `-inner` at the same `.ant-cascader-dropdown `
- * ancestor specificity v6 itself uses (the dropdown, not the `.ant-cascader` root -- the checkbox only
- * ever renders inside the opened dropdown), and neutralise the outer element so the box is not drawn
- * twice. Same pattern as checkbox/radio/tree (mirrored with `.ant-cascader-checkbox`'s own prefix).
+ * (NzCascaderOptionComponent), so these rules mirror the v6 box rules from bare, unscoped selectors
+ * (`.ant-cascader-checkbox`, `-checked`, `-indeterminate`, `-disabled`) onto `.ant-cascader-dropdown
+ * .ant-cascader-checkbox-inner` -- the added `.ant-cascader-dropdown` ancestor (the checkbox only ever
+ * renders inside the opened dropdown, never under the `.ant-cascader` root itself) gives every rule here
+ * strictly higher specificity than the unscoped v6 rule it mirrors, so source order does not matter for
+ * the base cases; the hover/focus compound forms below match v6's own compound specificity the same way
+ * checkbox/radio/tree's patches do. The outer element is neutralised so the box is not drawn twice.
+ * Same pattern as `components/checkbox/style/v6/patch.css` and `components/tree/style/v6/patch.css`
+ * (mirrored here with `.ant-cascader-checkbox`'s own prefix).
  */
 .ant-cascader-dropdown .ant-cascader-checkbox {
   width: auto;
