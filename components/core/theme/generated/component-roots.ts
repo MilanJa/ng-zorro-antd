@@ -15,6 +15,7 @@ export const COMPONENT_ROOT_CLS: Record<string, string> = {
   Carousel: 'ant-carousel',
   Cascader: 'ant-cascader',
   Checkbox: 'ant-checkbox',
+  Collapse: 'ant-collapse',
   ColorPicker: 'ant-color-picker',
   DatePicker: 'ant-picker',
   Descriptions: 'ant-descriptions',

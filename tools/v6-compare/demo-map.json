@@ -127,5 +127,6 @@
   "card": { "_antdDir": "card" },
   "descriptions": { "_antdDir": "descriptions", "custom-size": "size" },
   "typography": { "_antdDir": "typography", "interactive": "copyable" },
-  "statistic": { "_antdDir": "statistic", "countdown": "timer" }
+  "statistic": { "_antdDir": "statistic", "countdown": "timer" },
+  "collapse": { "_antdDir": "collapse" }
 }

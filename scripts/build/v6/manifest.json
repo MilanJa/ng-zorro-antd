@@ -1,7 +1,7 @@
 {
   "antdVersion": "6.6.5",
   "engineCoreBytes": 42701,
-  "engineComponentsBytes": 313140,
+  "engineComponentsBytes": 317075,
   "components": {
     "alert": {
       "classes": [
@@ -559,6 +559,43 @@
         "ant-wave"
       ],
       "tokens": []
+    },
+    "collapse": {
+      "classes": [
+        "ant-collapse",
+        "ant-collapse-arrow",
+        "ant-collapse-body",
+        "ant-collapse-borderless",
+        "ant-collapse-collapsible-header",
+        "ant-collapse-collapsible-icon",
+        "ant-collapse-expand-icon",
+        "ant-collapse-ghost",
+        "ant-collapse-header",
+        "ant-collapse-icon-placement-end",
+        "ant-collapse-item",
+        "ant-collapse-item-disabled",
+        "ant-collapse-large",
+        "ant-collapse-panel",
+        "ant-collapse-panel-hidden",
+        "ant-collapse-rtl",
+        "ant-collapse-small",
+        "ant-collapse-title",
+        "ant-motion-collapse",
+        "ant-motion-collapse-legacy",
+        "ant-motion-collapse-legacy-active"
+      ],
+      "tokens": [
+        "--ant-collapse-borderless-content-bg",
+        "--ant-collapse-borderless-content-padding",
+        "--ant-collapse-content-bg",
+        "--ant-collapse-content-padding",
+        "--ant-collapse-content-padding-lg",
+        "--ant-collapse-content-padding-sm",
+        "--ant-collapse-header-bg",
+        "--ant-collapse-header-padding",
+        "--ant-collapse-header-padding-lg",
+        "--ant-collapse-header-padding-sm"
+      ]
     },
     "color-picker": {
       "classes": [

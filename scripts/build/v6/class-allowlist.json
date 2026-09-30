@@ -138,6 +138,14 @@
     "ant-statistic-content-value-int",
     "ant-statistic-rtl"
   ],
+  "_collapse_comment": "antd-emits: -extra (@rc-component/collapse Panel.js's ifExtraExist && createElement('div', {className: prefixCls + '-extra'}); v6 CSS has no rule for it), -icon-placement-start (Collapse.js's prefixCls + '-icon-placement-' + mergedPlacement, with mergedPlacement defaulting to 'start'; v6 CSS only has a rule for the -end variant since start needs no repositioning -- the class name itself is unchanged from v4, contrary to a name guess of -icon-position-*), -item-active (Panel.js's collapsePanelClassNames clsx(prefixCls + '-item', {item-active: isActive}); v6 CSS has no dedicated rule, the active look comes from the inner .ant-collapse-panel/.ant-collapse-body rules), -no-arrow (CollapsePanel.js's no-arrow class when !showArrow; no v6 rule), -panel-active (PanelContent.js's clsx(prefixCls + '-panel', {panel-active: isActive}) -- still emitted by antd 6.6.5 exactly as v4, not dropped in favour of -item-active; v6 CSS styles only the bare .ant-collapse-panel selector, so -active itself carries no rule).",
+  "collapse": [
+    "ant-collapse-extra",
+    "ant-collapse-icon-placement-start",
+    "ant-collapse-item-active",
+    "ant-collapse-no-arrow",
+    "ant-collapse-panel-active"
+  ],
   "_rate_comment": "nz-only: -star-active, -star-focused, -star-zero (runtime state hooks on the hovered/focused/unfilled star from `updateStarStyle`; no stylesheet, v4 or v6, styles them — kept because removing them from the rendered DOM is a consumer-visible change, and `rate-v6.spec.ts` asserts `-star-zero`). v4-compat: ant-rate-text (the label span next to the stars in the clear and text demos; v4 gives it `margin: 0 8px`, no v6 counterpart, antd's demos use a plain span).",
   "rate": [
     "ant-rate-star-active",

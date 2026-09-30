@@ -173,6 +173,9 @@
       "less": "./collapse/style/*.less",
       "style": "./collapse/style/index.min.css"
     },
+    "./collapse/style/v6/*": {
+      "style": "./collapse/style/v6/*"
+    },
     "./comment/style/*": {
       "less": "./comment/style/*.less",
       "style": "./comment/style/index.min.css"

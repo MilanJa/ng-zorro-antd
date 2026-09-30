@@ -668,6 +668,19 @@ export interface NzCascaderToken {
 export interface NzCheckboxToken {
 }
 
+export interface NzCollapseToken {
+  borderlessContentBg: string;
+  borderlessContentPadding: string;
+  contentBg: string;
+  contentPadding: string;
+  contentPaddingLG: number;
+  contentPaddingSM: number;
+  headerBg: string;
+  headerPadding: string;
+  headerPaddingLG: string;
+  headerPaddingSM: string;
+}
+
 export interface NzColorPickerToken {
 }
 
@@ -1149,6 +1162,7 @@ export interface NzComponentTokenMap {
   Carousel: NzCarouselToken;
   Cascader: NzCascaderToken;
   Checkbox: NzCheckboxToken;
+  Collapse: NzCollapseToken;
   ColorPicker: NzColorPickerToken;
   DatePicker: NzDatePickerToken;
   Descriptions: NzDescriptionsToken;

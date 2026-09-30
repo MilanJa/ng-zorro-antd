@@ -66,7 +66,7 @@ describe('v6PatchDependencies', () => {
     expect(deps).toEqual({
       'auto-complete': ['select'],
       cascader: ['select'],
-      'color-picker': ['input-number', 'popover', 'select'],
+      'color-picker': ['collapse', 'input-number', 'popover', 'select'],
       pagination: ['select'],
       popconfirm: ['popover'],
       slider: ['tooltip'],

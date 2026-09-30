@@ -1,0 +1,8 @@
+/* patch.less: nz-collapse { display: block }, nz-collapse-panel { display: block } */
+nz-collapse {
+  display: block;
+}
+
+nz-collapse-panel {
+  display: block;
+}
