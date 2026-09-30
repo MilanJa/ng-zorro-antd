@@ -46,9 +46,12 @@ const CLICK_TARGET_SELECTOR =
   '.ant-picker-input input, .ant-color-picker-trigger, .ant-image-img, .ant-dropdown-trigger, ' +
   '.ant-tabs-nav-more, .ant-table-filter-trigger, .ant-pagination-options .ant-select-selector';
 
-// Scopes each comma-branch of `CLICK_TARGET_SELECTOR` to `containerSelector` individually -- a bare
-// `"${containerSelector} ${CLICK_TARGET_SELECTOR}"` would only scope the first branch (`.ant-btn`) and
-// leave the rest unscoped, matching the first `[nz-popconfirm]` etc. anywhere on the page.
+// Scopes each comma-branch of `targetSelector` to `containerSelector` individually -- a bare
+// `"${containerSelector} ${targetSelector}"` would only scope the first branch (`.ant-btn`) and
+// leave the rest unscoped, matching the first `[nz-popconfirm]` etc. anywhere on the page. Splits on
+// every top-level `,`: `targetSelector` (the built-in default set or a `--click <selector>` override)
+// is expected to be a plain comma-separated selector list, not a selector containing a `,` nested
+// inside `:not()`/an attribute value -- none of the defaults or the harness's own usage need that.
 function scopedClickSelector(containerSelector: string, targetSelector: string): string {
   return targetSelector
     .split(',')

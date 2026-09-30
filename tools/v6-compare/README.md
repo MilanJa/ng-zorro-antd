@@ -128,10 +128,10 @@ engine registration with `Select`/`DatePicker`; that override does not change
 
 ## v6-dark demo pane
 
-`site/styles-v6-chrome.less` gives `.code-box`/`.code-box-demo` (`codebox.component.html`)
-the active theme's `--ant-color-bg-container`/`--ant-color-text` under
-`body[data-theme^='v6']`, so a `v6-dark`/`v6-compact` demo's own contrast stays
-visible instead of sitting on the light v4 page background.
+`scripts/site/doc/styles-v6-chrome.less` (synced to the gitignored `site/` at doc-site build/serve
+time) gives `.code-box-demo` (`codebox.component.html`) the active theme's
+`--ant-color-bg-container`/`--ant-color-text` under `body[data-theme^='v6']`, so a `v6-dark`/
+`v6-compact` demo's own contrast stays visible instead of sitting on the light v4 page background.
 
 ## Windows note
 
