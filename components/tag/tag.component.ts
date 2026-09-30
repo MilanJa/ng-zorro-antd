@@ -41,6 +41,14 @@ import { NzTagColor } from './typings';
     '[class.ant-tag-checkable-checked]': `nzChecked`,
     '[class.ant-tag-rtl]': `dir() === 'rtl'`,
     '[class.ant-tag-borderless]': `!nzBordered`,
+    // antd v6 always carries a variant class (node_modules/antd/es/tag/hooks/useColor.js): no
+    // explicit `variant` and `bordered !== false` resolves to 'outlined' here (kept closest to the
+    // v4 bordered look: a visible border and the preset-colour background/border/text rules,
+    // which are all gated `:not(.ant-tag-disabled).ant-tag-outlined` in the v6 CSS); `bordered ===
+    // false` resolves to 'filled' the same way v4's `ant-tag-borderless` does, so the classes sit
+    // next to their v4 counterparts on the same `nzBordered` condition.
+    '[class.ant-tag-outlined]': `nzBordered`,
+    '[class.ant-tag-filled]': `!nzBordered`,
     '(click)': 'updateCheckedStatus()'
   },
   imports: [NzIconModule]
