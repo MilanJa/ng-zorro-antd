@@ -29,7 +29,6 @@ import { NZ_FORM_SIZE } from 'ng-zorro-antd/core/form';
 import { NzStringTemplateOutletDirective } from 'ng-zorro-antd/core/outlet';
 import { NzSafeAny, NzSizeLDSType } from 'ng-zorro-antd/core/types';
 import { NzPopoverDirective } from 'ng-zorro-antd/popover';
-import { NZ_SPACE_COMPACT_ITEM_TYPE, NzSpaceCompactItemDirective } from 'ng-zorro-antd/space';
 
 import { NzColorBlockComponent } from './color-block.component';
 import { NzColorFormatComponent } from './color-format.component';
@@ -118,14 +117,12 @@ import { NzColor, NzColorPickerFormatType, NzColorPickerTriggerType, NzPresetCol
     class: 'ant-color-picker-inline',
     '[class.ant-color-picker-disabled]': `nzDisabled`
   },
-  hostDirectives: [NzSpaceCompactItemDirective],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
       useExisting: forwardRef(() => NzColorPickerComponent),
       multi: true
-    },
-    { provide: NZ_SPACE_COMPACT_ITEM_TYPE, useValue: 'color-picker' }
+    }
   ]
 })
 export class NzColorPickerComponent implements OnInit, OnChanges, ControlValueAccessor {

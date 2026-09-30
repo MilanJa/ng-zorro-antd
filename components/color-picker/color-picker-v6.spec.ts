@@ -11,6 +11,8 @@ import { dispatchMouseEvent, expectMotionSettled } from 'ng-zorro-antd/core/test
 import { NzThemeDirective } from 'ng-zorro-antd/core/theme';
 import { V6_PATCH_CSS, V6_TEMPLATE_CSS, V6_TOKENS_DEFAULT_CSS } from 'ng-zorro-antd/core/theme/generated/test-css';
 import { provideNzIconsTesting } from 'ng-zorro-antd/icon/testing';
+import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzSpaceModule } from 'ng-zorro-antd/space';
 
 import { NzColorPickerModule } from './color-picker.module';
 
@@ -118,5 +120,30 @@ describe('color-picker under antd v6 css', () => {
     await new Promise(r => setTimeout(r, 400));
 
     expect(overlay.getContainerElement().querySelector('.ant-popover')).toBeNull();
+  });
+});
+
+@Component({
+  imports: [NzColorPickerModule, NzInputModule, NzSpaceModule],
+  template: `
+    <nz-space-compact>
+      <input nz-input id="neighbour" />
+      <nz-color-picker id="picker" />
+    </nz-space-compact>
+  `
+})
+class TestCompactColorPickerComponent {}
+
+describe('color-picker inside nz-space-compact', () => {
+  it('does not join the compact group, so its neighbour keeps both first and last item classes', () => {
+    TestBed.configureTestingModule({ providers: [provideNzIconsTesting()] });
+    const fixture = TestBed.createComponent(TestCompactColorPickerComponent);
+    fixture.detectChanges();
+    const input = fixture.nativeElement.querySelector('#neighbour') as HTMLElement;
+    expect(input.classList).toContain('ant-input-compact-item');
+    expect(input.classList).toContain('ant-input-compact-first-item');
+    expect(input.classList).toContain('ant-input-compact-last-item');
+    const picker = fixture.nativeElement.querySelector('#picker') as HTMLElement;
+    expect([...picker.classList].filter(c => c.includes('compact'))).toEqual([]);
   });
 });
