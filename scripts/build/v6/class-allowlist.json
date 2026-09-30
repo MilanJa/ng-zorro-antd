@@ -122,11 +122,12 @@
     "ant-spin-show-text",
     "ant-spin-text"
   ],
-  "_rate_comment": "nz-only: -star-active, -star-focused, -star-zero (runtime state hooks on the hovered/focused/unfilled star from `updateStarStyle`; no stylesheet, v4 or v6, styles them — kept because removing them from the rendered DOM is a consumer-visible change, and `rate-v6.spec.ts` asserts `-star-zero`).",
+  "_rate_comment": "nz-only: -star-active, -star-focused, -star-zero (runtime state hooks on the hovered/focused/unfilled star from `updateStarStyle`; no stylesheet, v4 or v6, styles them — kept because removing them from the rendered DOM is a consumer-visible change, and `rate-v6.spec.ts` asserts `-star-zero`). v4-compat: ant-rate-text (the label span next to the stars in the clear and text demos; v4 gives it `margin: 0 8px`, no v6 counterpart, antd's demos use a plain span).",
   "rate": [
     "ant-rate-star-active",
     "ant-rate-star-focused",
-    "ant-rate-star-zero"
+    "ant-rate-star-zero",
+    "ant-rate-text"
   ],
   "_switch_comment": "nz-only: -click-animating-node (the wave-effect node `nz-wave` renders on click; a v4-only ripple, no v6 stylesheet targets it since v6 Switch has no click ripple).",
   "switch": [

@@ -9,7 +9,7 @@ import { NzRateModule } from 'ng-zorro-antd/rate';
   template: `
     <nz-rate [(ngModel)]="value" [nzTooltips]="tooltips" />
     @if (value(); as rate) {
-      <span>{{ rate ? tooltips[rate - 1] : '' }}</span>
+      <span class="ant-rate-text">{{ rate ? tooltips[rate - 1] : '' }}</span>
     }
   `
 })

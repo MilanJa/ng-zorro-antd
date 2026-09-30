@@ -8,10 +8,10 @@ import { NzRateModule } from 'ng-zorro-antd/rate';
   imports: [FormsModule, NzRateModule],
   template: `
     <nz-rate [(ngModel)]="value" nzAllowHalf />
-    <span>allowClear: true</span>
+    <span class="ant-rate-text">allowClear: true</span>
     <br />
     <nz-rate [(ngModel)]="value" nzAllowHalf [nzAllowClear]="false" />
-    <span>allowClear: false</span>
+    <span class="ant-rate-text">allowClear: false</span>
   `
 })
 export class NzDemoRateClearComponent {
