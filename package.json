@@ -15,6 +15,7 @@
     "typecheck:tools": "tsc -p tsconfig.tools.json",
     "v6:generate": "nx run ng-zorro-antd-lib:generate-v6-styles",
     "v6:update-manifest": "nx run ng-zorro-antd-lib:generate-v6-engine && tsx scripts/tasks/generate-v6-styles.ts --update-manifest",
+    "v6:update-baseline": "tsx scripts/tasks/v6-emitted-baseline.ts",
     "test:schematics": "nx run schematics:test",
     "build:schematics": "nx run schematics:build",
     "build": "nx run ng-zorro-antd-doc:build-site",
