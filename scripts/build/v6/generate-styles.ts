@@ -10,7 +10,14 @@ import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-import { allAntdComponentNames, antdRegistryName, v6ComponentDirs, v6Components } from './components';
+import {
+  allAntdComponentNames,
+  antdRegistryName,
+  V6ComponentDir,
+  v6ComponentDirs,
+  v6Components,
+  v6PatchDependencies
+} from './components';
 import {
   assertNoAntdScoping,
   dropForeignCssVarBlocks,
@@ -155,8 +162,24 @@ export async function buildV6Bundle(algorithm: V6Algorithm, componentsDir: strin
   };
 }
 
-export function buildComponentCss(template: string, patchCss: string | null): string {
-  return patchCss ? `${template}\n${patchCss}` : template;
+/** The template followed by each non-empty patch, newline-separated. */
+export function buildComponentCss(template: string, patches: string | null | ReadonlyArray<string | null>): string {
+  const list = (typeof patches === 'string' || patches === null ? [patches] : patches).filter(
+    (patch): patch is string => !!patch
+  );
+  return [template, ...list].join('\n');
+}
+
+/**
+ * The patches a component's standalone `<dir>/style/v6/index.css` carries: its own plus those of
+ * `v6PatchDependencies(dir)`, in map order so equal-specificity ties resolve as in `ng-zorro-antd.v6.css`.
+ */
+export function componentBundlePatches(componentsDir: string, dir: V6ComponentDir): string[] {
+  const dirs = new Set<V6ComponentDir>([dir, ...v6PatchDependencies(dir)]);
+  return v6ComponentDirs
+    .filter(d => dirs.has(d))
+    .map(d => readPatch(componentsDir, d))
+    .filter((patch): patch is string => patch !== null);
 }
 
 async function minify(css: string): Promise<string> {
@@ -198,7 +221,7 @@ export async function generateStyles(options: GenerateStylesOptions): Promise<Ge
     const { template } = partitionBlocks(raw, KEY);
     const templateCss = normalizeCssVarRootCls(joinTemplate(dropForeignCssVarBlocks(template, KEY)));
     assertNoAntdScoping(templateCss);
-    const css = buildComponentCss(templateCss, readPatch(componentsDir, dir));
+    const css = buildComponentCss(templateCss, componentBundlePatches(componentsDir, dir));
     perComponent[dir] = css;
     manifest.components[dir] = { classes: extractClassNames(templateCss), tokens: [] };
     write(path.join(publishDir, dir, 'style/v6/index.css'), withHeader(css, antdVersion));

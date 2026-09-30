@@ -65,7 +65,7 @@ NG-ZORRO 提供了一份基于 Ant Design v6 生成的可选样式表。它将 v
 @import 'ng-zorro-antd/style/v6/patch.css';
 ```
 
-或者按组件单独引入：`ng-zorro-antd/button/style/v6/index.css` 加一份令牌文件。
+或者按组件单独引入：`ng-zorro-antd/button/style/v6/index.css` 加一份令牌文件；每个组件的文件也包含它所渲染的其他组件的 ng-zorro 补丁（例如 `time-picker` 包含 date-picker 的补丁，`cascader` 包含 select 的补丁）。
 
 ## 配置主题
 

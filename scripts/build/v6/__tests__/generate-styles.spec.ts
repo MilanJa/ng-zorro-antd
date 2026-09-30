@@ -13,6 +13,7 @@ import { v6ComponentDirs } from '../components';
 import {
   assertEngineBudgets,
   buildComponentCss,
+  componentBundlePatches,
   generateStyles,
   normalizeCssVarRootCls,
   type V6Algorithm
@@ -27,6 +28,36 @@ describe('buildComponentCss', () => {
   });
   it('returns the template alone when there is no patch', () => {
     expect(buildComponentCss('.a{}', null)).toBe('.a{}');
+  });
+  it('appends several patches in the given order and skips missing ones', () => {
+    expect(buildComponentCss('.a{}', ['.p{}', null, '.q{}'])).toBe('.a{}\n.p{}\n.q{}');
+    expect(buildComponentCss('.a{}', [])).toBe('.a{}');
+  });
+});
+
+describe('componentBundlePatches', () => {
+  const patchOf = (dir: string): string =>
+    readFileSync(path.join(componentsDir, dir, 'style/v6/patch.css'), 'utf8').trim();
+
+  it('carries the alias host patch for a preset without a patch of its own', () => {
+    expect(componentBundlePatches(componentsDir, 'time-picker')).toEqual([patchOf('date-picker')]);
+  });
+  it('orders own and borrowed patches in map order', () => {
+    expect(componentBundlePatches(componentsDir, 'tree-select')).toEqual([
+      patchOf('select'),
+      patchOf('tree'),
+      patchOf('tree-select')
+    ]);
+    // button has no patch of its own; transfer's own patch sorts after checkbox and input.
+    expect(componentBundlePatches(componentsDir, 'transfer')).toEqual([
+      patchOf('checkbox'),
+      patchOf('input'),
+      patchOf('transfer')
+    ]);
+  });
+  it('is the own patch alone for a component with no dependencies', () => {
+    expect(componentBundlePatches(componentsDir, 'select')).toEqual([patchOf('select')]);
+    expect(componentBundlePatches(componentsDir, 'rate')).toEqual([]);
   });
 });
 
@@ -118,6 +149,30 @@ describe('generateStyles', () => {
     expect(templateAt).toBeLessThan(patchAt);
     expect(result.perComponent['button']).not.toContain('/* antd positions popups');
   });
+
+  // Every CDK-positioned popup root needs its `position: relative` patch rule in the standalone
+  // bundle of each component that opens it, including presets and components that borrow the popup.
+  const popupRoots: Record<string, string> = {
+    'auto-complete': '.ant-select-dropdown',
+    cascader: '.ant-select-dropdown',
+    'color-picker': '.ant-popover',
+    'date-picker': '.ant-picker-dropdown',
+    mention: '.ant-mentions-dropdown',
+    popconfirm: '.ant-popover',
+    popover: '.ant-popover',
+    select: '.ant-select-dropdown',
+    slider: '.ant-tooltip',
+    'time-picker': '.ant-picker-dropdown',
+    tooltip: '.ant-tooltip',
+    'tree-select': '.ant-select-dropdown'
+  };
+  for (const [dir, root] of Object.entries(popupRoots)) {
+    it(`${dir}: the standalone bundle keeps ${root} position: relative`, () => {
+      const css = readFileSync(path.join(publishDir, dir, 'style/v6/index.css'), 'utf8');
+      const escaped = root.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      expect(css).toMatch(new RegExp(`(^|[\\n,}])\\s*${escaped}\\s*(,[^{]*)?\\{[^}]*position:\\s*relative`));
+    });
+  }
 
   it('writes the bundle and the style/v6 files with attribution headers', () => {
     for (const f of [

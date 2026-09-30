@@ -65,7 +65,7 @@ Or compose it yourself (template + one token file + CDK overlay rules):
 @import 'ng-zorro-antd/style/v6/patch.css';
 ```
 
-Or per component: `ng-zorro-antd/button/style/v6/index.css` plus a token file.
+Or per component: `ng-zorro-antd/button/style/v6/index.css` plus a token file; each per-component file also carries the ng-zorro patches of the components it renders (for example `time-picker` carries date-picker's, `cascader` carries select's).
 
 ## Configure the theme
 

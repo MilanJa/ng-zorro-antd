@@ -157,6 +157,50 @@ export function allAntdComponentNames(): string[] {
   return [...new Set(v6ComponentDirs.flatMap(dir => [...v6Components[dir].antd]))];
 }
 
+/**
+ * Rendered prefixes whose mapped owner is not the entry with that `prefixCls`: `ant-select-tree` is
+ * Tree's DOM under Select's prefix (antd's TreeSelect renders rc-tree with `${selectPrefixCls}-tree`),
+ * and its `-inner` checkbox box mirror lives in tree's `style/v6/patch.css`.
+ */
+const RENDERED_PREFIX_OWNERS: Record<string, V6ComponentDir> = {
+  'ant-select-tree': 'tree'
+};
+
+/** True for an entry whose antd names all have a style module of their own (no preset alias). */
+function ownsStyleModule(dir: V6ComponentDir): boolean {
+  return v6Components[dir].antd.every(name => antdStyleModuleDir(name) === kebabCase(name));
+}
+
+/**
+ * Mapped directories whose `style/v6/patch.css` a component's standalone bundle
+ * (`<dir>/style/v6/index.css`) also carries, because its DOM relies on them:
+ * - the style-module host of a preset alias (`ANTD_STYLE_MODULE_OVERRIDES`: auto-complete -> select,
+ *   time-picker -> date-picker), whose extracted CSS is the alias's whole template;
+ * - the owner of every `renderedPrefixes` entry: the non-alias entry whose `prefixCls` it is, or
+ *   `RENDERED_PREFIX_OWNERS`; prefixes of unmapped components (`ant-empty`, `ant-col`) have none.
+ * Returned in map order (the order `ng-zorro-antd.v6.css` concatenates patches in), without `dir`.
+ */
+export function v6PatchDependencies(dir: V6ComponentDir): V6ComponentDir[] {
+  const entry: V6ComponentEntry = v6Components[dir];
+  const deps = new Set<string>();
+  for (const name of entry.antd) {
+    const host = antdStyleModuleDir(name);
+    if (host !== kebabCase(name)) {
+      deps.add(host);
+    }
+  }
+  for (const prefix of entry.renderedPrefixes ?? []) {
+    const owner =
+      RENDERED_PREFIX_OWNERS[prefix] ??
+      v6ComponentDirs.find(d => v6Components[d].prefixCls === prefix && ownsStyleModule(d));
+    if (owner) {
+      deps.add(owner);
+    }
+  }
+  deps.delete(dir);
+  return v6ComponentDirs.filter(d => deps.has(d));
+}
+
 /** antd registry name -> root class, in map order (source of `generated/component-roots.ts`). */
 export function componentRootClasses(): Record<string, string> {
   const roots: Record<string, string> = {};

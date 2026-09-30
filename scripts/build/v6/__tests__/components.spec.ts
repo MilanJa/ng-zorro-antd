@@ -14,7 +14,8 @@ import {
   antdRegistryName,
   antdStyleModuleDir,
   v6ComponentDirs,
-  v6Components
+  v6Components,
+  v6PatchDependencies
 } from '../components';
 
 const componentsRoot = path.resolve(__dirname, '../../../../components');
@@ -54,5 +55,36 @@ describe('v6 component map', () => {
     expect(antdStyleModuleDir('InputNumber')).toBe('input-number');
     expect(antdRegistryName('AutoComplete')).toBe('Select');
     expect(antdRegistryName('TimePicker')).toBe('DatePicker');
+  });
+});
+
+describe('v6PatchDependencies', () => {
+  it('pins the patches each standalone component bundle borrows', () => {
+    const deps = Object.fromEntries(
+      v6ComponentDirs.map(dir => [dir, v6PatchDependencies(dir)]).filter(([, list]) => list.length)
+    );
+    expect(deps).toEqual({
+      'auto-complete': ['select'],
+      cascader: ['select'],
+      'color-picker': ['input-number', 'popover', 'select'],
+      popconfirm: ['popover'],
+      slider: ['tooltip'],
+      'time-picker': ['date-picker'],
+      transfer: ['button', 'checkbox', 'input'],
+      'tree-select': ['select', 'tree']
+    });
+  });
+
+  it('never lists the component itself and keeps map order', () => {
+    for (const dir of v6ComponentDirs) {
+      const deps = v6PatchDependencies(dir);
+      expect(deps, dir).not.toContain(dir);
+      expect(deps, dir).toEqual(v6ComponentDirs.filter(d => deps.includes(d)));
+    }
+  });
+
+  it('resolves a shared prefix to its non-alias owner (ant-select -> select, not auto-complete)', () => {
+    expect(v6Components['auto-complete'].prefixCls).toBe(v6Components.select.prefixCls);
+    expect(v6PatchDependencies('cascader')).toEqual(['select']);
   });
 });
