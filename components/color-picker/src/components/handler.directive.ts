@@ -3,7 +3,7 @@
  * found in the LICENSE file at https://github.com/NG-ZORRO/ng-zorro-antd/blob/master/LICENSE
  */
 
-import { Directive, Input } from '@angular/core';
+import { booleanAttribute, Directive, Input } from '@angular/core';
 
 type HandlerSize = 'default' | 'small';
 
@@ -12,10 +12,15 @@ type HandlerSize = 'default' | 'small';
   host: {
     class: 'ant-color-picker-handler',
     '[style.background-color]': 'color',
-    '[class.ant-color-picker-handler-sm]': `size === 'small'`
+    '[class.ant-color-picker-handler-sm]': `size === 'small'`,
+    // antd's hue/alpha sliders render their handle through antd's own Slider component
+    // (`ColorSlider.js`'s `classNames.handle`), not through `@rc-component/color-picker`'s
+    // `Handler.js`; this input tells the shared handle element which context it is in.
+    '[class.ant-color-picker-slider-handle]': 'slider'
   }
 })
 export class HandlerDirective {
   @Input() color: string | null = null;
   @Input() size: HandlerSize = 'default';
+  @Input({ transform: booleanAttribute }) slider: boolean = false;
 }

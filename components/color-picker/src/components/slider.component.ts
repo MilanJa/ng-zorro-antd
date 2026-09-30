@@ -44,7 +44,7 @@ function getPosition(e: EventType): { pageX: number; pageY: number } {
   template: `
     <div class="ant-color-picker-palette">
       <div #transform class="ant-color-picker-transform" [style.left.px]="offsetValue.x" [style.top.px]="offsetValue.y">
-        <color-handler size="small" [color]="value" />
+        <color-handler size="small" [color]="value" slider />
       </div>
       <color-gradient [colors]="gradientColors" [direction]="direction" [type]="type" />
     </div>

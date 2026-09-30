@@ -3,6 +3,7 @@
  * found in the LICENSE file at https://github.com/NG-ZORRO/ng-zorro-antd/blob/master/LICENSE
  */
 
+import { Directionality } from '@angular/cdk/bidi';
 import { NgTemplateOutlet } from '@angular/common';
 import {
   booleanAttribute,
@@ -28,6 +29,7 @@ import { NZ_FORM_SIZE } from 'ng-zorro-antd/core/form';
 import { NzStringTemplateOutletDirective } from 'ng-zorro-antd/core/outlet';
 import { NzSafeAny, NzSizeLDSType } from 'ng-zorro-antd/core/types';
 import { NzPopoverDirective } from 'ng-zorro-antd/popover';
+import { NZ_SPACE_COMPACT_ITEM_TYPE, NzSpaceCompactItemDirective } from 'ng-zorro-antd/space';
 
 import { NzColorBlockComponent } from './color-block.component';
 import { NzColorFormatComponent } from './color-format.component';
@@ -51,12 +53,16 @@ import { NzColor, NzColorPickerFormatType, NzColorPickerTriggerType, NzPresetCol
       [class.ant-color-picker-trigger]="!nzFlipFlop"
       [class.ant-color-picker-sm]="finalSize() === 'small'"
       [class.ant-color-picker-lg]="finalSize() === 'large'"
+      [class.ant-color-picker-trigger-active]="isOpen()"
+      [class.ant-color-picker-trigger-disabled]="nzDisabled"
+      [class.ant-color-picker-rtl]="dir() === 'rtl'"
       nz-popover
       [nzPopoverContent]="colorPicker"
       [nzPopoverPlacement]="popoverPlacements"
       [nzPopoverTrigger]="!nzDisabled ? nzTrigger : null"
       [nzPopoverVisible]="nzOpen"
-      (nzPopoverVisibleChange)="nzOnOpenChange.emit($event)"
+      [nzPopoverOverlayClassName]="popoverOverlayClassName()"
+      (nzPopoverVisibleChange)="onPopoverVisibleChange($event)"
     >
       @if (!nzFlipFlop) {
         <nz-color-block [nzColor]="blockColor" [nzSize]="finalSize()" />
@@ -83,12 +89,16 @@ import { NzColor, NzColorPickerFormatType, NzColorPickerTriggerType, NzPresetCol
     </ng-template>
     <ng-template #nzPanelRenderHeader>
       @if (nzTitle || nzAllowClear) {
-        <div class="ant-color-picker-title">
+        <div class="ant-color-picker-title ant-color-picker-operation">
           <div class="ant-color-picker-title-content">
             <ng-template [nzStringTemplateOutlet]="nzTitle">{{ nzTitle }}</ng-template>
           </div>
           @if (nzAllowClear) {
-            <div class="ant-color-picker-clear" (click)="clearColorHandle()"></div>
+            <div
+              class="ant-color-picker-clear"
+              [class.ant-color-picker-clear-disabled]="nzDisabled"
+              (click)="clearColorHandle()"
+            ></div>
           }
         </div>
       }
@@ -108,12 +118,14 @@ import { NzColor, NzColorPickerFormatType, NzColorPickerTriggerType, NzPresetCol
     class: 'ant-color-picker-inline',
     '[class.ant-color-picker-disabled]': `nzDisabled`
   },
+  hostDirectives: [NzSpaceCompactItemDirective],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
       useExisting: forwardRef(() => NzColorPickerComponent),
       multi: true
-    }
+    },
+    { provide: NZ_SPACE_COMPACT_ITEM_TYPE, useValue: 'color-picker' }
   ]
 })
 export class NzColorPickerComponent implements OnInit, OnChanges, ControlValueAccessor {
@@ -143,6 +155,17 @@ export class NzColorPickerComponent implements OnInit, OnChanges, ControlValueAc
 
   private isNzDisableFirstChange: boolean = true;
   protected readonly popoverPlacements = ['bottomLeft', 'bottomRight', 'topLeft', 'topRight'];
+  protected readonly dir = inject(Directionality).valueSignal;
+  /** Tracks the popover's actual visibility (rather than the `nzOpen` input) for the trigger's active-state class. */
+  protected readonly isOpen = signal(false);
+  /**
+   * antd puts ColorPicker's root class on the popup content rather than the trigger
+   * (`mergedPopupCls` in antd/es/color-picker/ColorPicker.js), which is where v6's own
+   * `.ant-color-picker .ant-color-picker-inner ...` selectors expect it.
+   */
+  protected readonly popoverOverlayClassName = computed(
+    () => `ant-color-picker${this.dir() === 'rtl' ? ' ant-color-picker-rtl' : ''}`
+  );
   blockColor: string = '';
   clearColor: boolean = false;
   showText: string = defaultColor.toHexString();
@@ -201,6 +224,11 @@ export class NzColorPickerComponent implements OnInit, OnChanges, ControlValueAc
     if (nzSize) {
       this.size.set(nzSize.currentValue);
     }
+  }
+
+  onPopoverVisibleChange(visible: boolean): void {
+    this.isOpen.set(visible);
+    this.nzOnOpenChange.emit(visible);
   }
 
   clearColorHandle(): void {

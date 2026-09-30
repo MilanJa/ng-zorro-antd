@@ -33,6 +33,14 @@ export const v6Components = {
   // (the empty-state cell inside the dropdown), unlike a component with no such nested rule.
   cascader: { antd: ['Cascader'], prefixCls: 'ant-cascader', renderedPrefixes: ['ant-select', 'ant-empty'] },
   checkbox: { antd: ['Checkbox'], prefixCls: 'ant-checkbox' },
+  // `ant-popover` is ColorPicker's own popup chrome; `ant-collapse` is styled by ColorPicker's own
+  // extracted CSS for the presets accordion even though Collapse itself has no v6 entry yet;
+  // `ant-input-number` and `ant-select` are the format-input row's mapped components.
+  'color-picker': {
+    antd: ['ColorPicker'],
+    prefixCls: 'ant-color-picker',
+    renderedPrefixes: ['ant-popover', 'ant-collapse', 'ant-input-number', 'ant-select']
+  },
   // DatePicker and TimePicker share one style module and registry entry (`ANTD_STYLE_MODULE_OVERRIDES`,
   // `ANTD_REGISTRY_NAME_OVERRIDES` above): TimePicker is a DatePicker preset (`picker="time"`) with no
   // style module of its own.

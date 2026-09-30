@@ -629,6 +629,9 @@ export interface NzCascaderToken {
 export interface NzCheckboxToken {
 }
 
+export interface NzColorPickerToken {
+}
+
 export interface NzDatePickerToken {
   INTERNAL_FIXED_ITEM_MARGIN: number;
   activeBg: string;
@@ -1014,6 +1017,7 @@ export interface NzComponentTokenMap {
   Button: NzButtonToken;
   Cascader: NzCascaderToken;
   Checkbox: NzCheckboxToken;
+  ColorPicker: NzColorPickerToken;
   DatePicker: NzDatePickerToken;
   Drawer: NzDrawerToken;
   FloatButton: NzFloatButtonToken;

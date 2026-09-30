@@ -153,6 +153,13 @@
     "./checkbox/style/v6/*": {
       "style": "./checkbox/style/v6/*"
     },
+    "./color-picker/style/*": {
+      "less": "./color-picker/style/*.less",
+      "style": "./color-picker/style/index.min.css"
+    },
+    "./color-picker/style/v6/*": {
+      "style": "./color-picker/style/v6/*"
+    },
     "./collapse/style/*": {
       "less": "./collapse/style/*.less",
       "style": "./collapse/style/index.min.css"

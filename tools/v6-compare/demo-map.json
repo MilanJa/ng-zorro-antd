@@ -27,6 +27,17 @@
   "spin": { "_antdDir": "spin", "delay-and-debounce": "delayAndDebounce", "inside": null },
   "switch": { "_antdDir": "switch" },
   "checkbox": { "_antdDir": "checkbox" },
+  "color-picker": {
+    "_antdDir": "color-picker",
+    "basic": "base",
+    "block": null,
+    "clear": "allowClear",
+    "disable": "disabled",
+    "disable-alpha": "disabled-alpha",
+    "flip-flop": null,
+    "show-text": "text-render",
+    "use": "pure-panel"
+  },
   "radio": { "_antdDir": "radio", "disable": "disabled", "solid": "radiobutton-solid" },
   "result": { "_antdDir": "result", "custom": "customIcon", "fof": "404", "foo": "500", "fot": "403" },
   "alert": { "_antdDir": "alert", "close-text": null, "style": "style-class" },

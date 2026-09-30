@@ -12,7 +12,10 @@ import { generateColor } from '../util/util';
 @Directive({
   selector: 'color-gradient',
   host: {
-    class: 'ant-color-picker-gradient',
+    // Only used inside the hue/alpha sliders (`slider.component.ts`), where it plays the role of
+    // antd's rc-slider rail (`ColorSlider.js`'s `classNames.rail`); `ant-color-picker-gradient`
+    // itself has no v6 rule, so `style/v6/patch.css` keeps its v4 absolute-fill positioning.
+    class: 'ant-color-picker-gradient ant-color-picker-slider-rail',
     '[style.background]': `'linear-gradient(' + direction + ', ' + gradientColors + ')'`
   }
 })

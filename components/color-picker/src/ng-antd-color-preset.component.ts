@@ -23,17 +23,25 @@ import { generateColor } from './util/util';
           <nz-collapse-panel
             [nzActive]="openPresets.has($index)"
             (nzActiveChange)="onPanelActiveChange($index, $event)"
-            [nzHeader]="preset.label"
+            [nzHeader]="presetLabel"
           >
-            <div class="ant-color-picker-presets-items">
-              @for (color of preset.colors; track $index) {
-                <ng-antd-color-block
-                  [value]="value"
-                  [color]="getColorString(color)"
-                  (nzOnClick)="selectPresetColor(color)"
-                />
-              }
-            </div>
+            <ng-template #presetLabel>
+              <div class="ant-color-picker-presets-label">{{ preset.label }}</div>
+            </ng-template>
+            @if (preset.colors && preset.colors.length > 0) {
+              <div class="ant-color-picker-presets-items">
+                @for (color of preset.colors; track $index) {
+                  <ng-antd-color-block
+                    [value]="value"
+                    [color]="getColorString(color)"
+                    (nzOnClick)="selectPresetColor(color)"
+                  />
+                }
+              </div>
+            } @else {
+              <!-- static English matches antd's own en_US.presetEmpty; ColorPresets.js has no locale hook here -->
+              <span class="ant-color-picker-presets-empty">Empty</span>
+            }
           </nz-collapse-panel>
         }
       </nz-collapse>

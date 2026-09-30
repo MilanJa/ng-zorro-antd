@@ -1,0 +1,66 @@
+/* rc-component/color-picker's Picker.js sets the saturation/value overlay gradients inline
+   (`backgroundImage`) on its own saturation div; ng-zorro's `color-picker.component.ts` only sets
+   the hue `background-color` inline and relied on v4's Less rule for the gradient overlays, which
+   is not loaded under the v6 theme, leaving the picker showing a flat hue colour with no visible
+   saturation/value axes. */
+.ant-color-picker-saturation {
+  background-image:
+    linear-gradient(0deg, #000, transparent),
+    linear-gradient(90deg, #fff, hsla(0deg, 0%, 100%, 0));
+}
+
+/* rc-component/color-picker's Palette.js sets `position: 'relative'` inline on its own div;
+   ng-zorro's equivalent element only gets it from v4's `.ant-color-picker-palette` Less rule,
+   which is not loaded under the v6 theme. Used both by the big palette (picker.component.ts)
+   and by the hue/alpha sliders (slider.component.ts). */
+.ant-color-picker-palette {
+  position: relative;
+}
+
+/* rc-component/color-picker's Transform.js sets `position: 'absolute'` and `z-index: 1` inline;
+   ng-zorro's `.ant-color-picker-transform` div only sets the `left`/`top` offsets inline and
+   relies on v4's Less rule for positioning, which is not loaded under the v6 theme. */
+.ant-color-picker-transform {
+  position: absolute;
+  z-index: 1;
+}
+
+/* `.ant-color-picker-gradient` is ng-zorro's own rail-fill element (the hue/alpha sliders'
+   linear-gradient background); v6 replaced it with antd's own Slider component and has no CSS
+   rule for it at all, so v4's absolute-fill rule (`position: absolute; inset: 0;`) is kept. */
+.ant-color-picker-gradient {
+  position: absolute;
+  inset: 0;
+}
+
+/* v6 sizes the rail itself via the new `.ant-color-picker-slider-rail` class (8px height), but
+   the rail is absolutely positioned (`inset: 0` above) inside `.ant-color-picker-palette`, so the
+   palette still needs an explicit height under the slider to avoid collapsing, same as v4's
+   `.ant-color-picker-slider .ant-color-picker-palette { height: 8px; }`. */
+.ant-color-picker-slider .ant-color-picker-palette {
+  height: 8px;
+}
+
+/* antd's ColorPresets.js renders `.ant-color-picker-presets` directly with no scrolling wrapper;
+   ng-zorro keeps its own `.ant-color-picker-presets-wrapper` host element for the scroll
+   container, which v6 has no rule for. */
+.ant-color-picker-presets-wrapper {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+/* ng-zorro's `<nz-color-picker>` host always carries `.ant-color-picker-inline`, which only v4's
+   Less gives `display: inline-block`; without it the host falls back to its default `display:
+   block` under the v6 theme, changing how the closed trigger flows next to inline content. */
+.ant-color-picker-inline {
+  display: inline-block;
+}
+
+/* antd's ColorBlock is a plain `<div>` (block by default); ng-zorro renders it as the custom
+   element `<ng-antd-color-block>`, which browsers otherwise treat as `display: inline` with no
+   intrinsic box, collapsing the swatch to 0x0 even though v6's own sizing rules (width/height on
+   `.ant-color-picker-color-block`) are present. v4's Less always set `display: block` explicitly;
+   v6 CSS never needs to, since antd's own element already is one. */
+.ant-color-picker-color-block {
+  display: block;
+}
