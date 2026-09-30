@@ -53,6 +53,20 @@
     "open": "controlled",
     "description": null
   },
+  "form": {
+    "_antdDir": "form",
+    "auto-tips": "custom-feedback-icons",
+    "coordinated": "form-dependencies",
+    "horizontal-login": "login",
+    "normal-login": "login",
+    "label-align": "label-debug",
+    "label-wrap": "layout-can-wrap",
+    "mix-layout": "layout-multiple",
+    "required-style": "required-mark",
+    "validate-reactive": "validate-only",
+    "validate-static": "validate-other",
+    "validate-template": null
+  },
   "modal": {
     "_antdDir": "modal",
     "footer2": null,

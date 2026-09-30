@@ -690,6 +690,20 @@ export interface NzDrawerToken {
 export interface NzFloatButtonToken {
 }
 
+export interface NzFormToken {
+  inlineItemMarginBottom: number;
+  itemMarginBottom: number;
+  labelColonMarginInlineEnd: number;
+  labelColonMarginInlineStart: number;
+  labelColor: string;
+  labelFontSize: number;
+  labelHeight: number;
+  labelRequiredMarkColor: string;
+  verticalLabelHeight: string;
+  verticalLabelMargin: number;
+  verticalLabelPadding: string;
+}
+
 export interface NzInputToken {
   activeBg: string;
   activeBorderColor: string;
@@ -1021,6 +1035,7 @@ export interface NzComponentTokenMap {
   DatePicker: NzDatePickerToken;
   Drawer: NzDrawerToken;
   FloatButton: NzFloatButtonToken;
+  Form: NzFormToken;
   Input: NzInputToken;
   InputNumber: NzInputNumberToken;
   Mentions: NzMentionsToken;

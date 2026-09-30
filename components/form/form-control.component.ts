@@ -47,24 +47,28 @@ import { NzFormDirective } from './form.directive';
         <ng-content />
       </div>
     </div>
-    @if (innerTip) {
-      <div
-        [animate.enter]="nzValidateAnimationEnter()"
-        [animate.leave]="nzValidateAnimationLeave()"
-        (animate.leave)="onAnimationLeave($event)"
-        class="ant-form-item-explain ant-form-item-explain-connected"
-      >
-        <div role="alert" [class]="['ant-form-item-explain-' + status]">
-          <ng-container *nzStringTemplateOutlet="innerTip; context: { $implicit: validateControl }">{{
-            innerTip
-          }}</ng-container>
-        </div>
-      </div>
-    }
+    @if (innerTip || nzExtra) {
+      <div class="ant-form-item-additional">
+        @if (innerTip) {
+          <div
+            [animate.enter]="nzValidateAnimationEnter()"
+            [animate.leave]="nzValidateAnimationLeave()"
+            (animate.leave)="onAnimationLeave($event)"
+            class="ant-form-item-explain ant-form-item-explain-connected ant-form-show-help"
+          >
+            <div role="alert" [class]="['ant-form-item-explain-' + status]">
+              <ng-container *nzStringTemplateOutlet="innerTip; context: { $implicit: validateControl }">{{
+                innerTip
+              }}</ng-container>
+            </div>
+          </div>
+        }
 
-    @if (nzExtra) {
-      <div class="ant-form-item-extra">
-        <ng-container *nzStringTemplateOutlet="nzExtra">{{ nzExtra }}</ng-container>
+        @if (nzExtra) {
+          <div class="ant-form-item-extra">
+            <ng-container *nzStringTemplateOutlet="nzExtra">{{ nzExtra }}</ng-container>
+          </div>
+        }
       </div>
     }
   `,

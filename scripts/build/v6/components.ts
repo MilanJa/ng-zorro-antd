@@ -50,6 +50,10 @@ export const v6Components = {
   // its own `.ant-back-top*` style hook and `--ant-back-top-*` tokens that ng-zorro never renders.
   // ng-zorro's back-top mirrors `FloatButton.BackTop`, which is a plain FloatButton.
   'float-button': { antd: ['FloatButton'], prefixCls: 'ant-float-btn' },
+  // `ant-col`/`ant-row` are included because Form's own extracted CSS styles the labelCol=24 vertical
+  // layout via `.ant-col-24.ant-form-item-label`/`.ant-row` selectors (Grid itself is not mapped;
+  // borrowed here the same way Modal borrows `getMediaSize` from Grid's style module).
+  form: { antd: ['Form'], prefixCls: 'ant-form', renderedPrefixes: ['ant-col', 'ant-row'] },
   input: { antd: ['Input'], prefixCls: 'ant-input' },
   'input-number': { antd: ['InputNumber'], prefixCls: 'ant-input-number' },
   mention: { antd: ['Mentions'], prefixCls: 'ant-mentions' },

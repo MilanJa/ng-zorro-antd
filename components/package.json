@@ -209,6 +209,9 @@
       "less": "./form/style/*.less",
       "style": "./form/style/index.min.css"
     },
+    "./form/style/v6/*": {
+      "style": "./form/style/v6/*"
+    },
     "./graph/style/*": {
       "less": "./graph/style/*.less",
       "style": "./graph/style/index.min.css"

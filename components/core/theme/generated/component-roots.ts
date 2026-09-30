@@ -16,6 +16,7 @@ export const COMPONENT_ROOT_CLS: Record<string, string> = {
   DatePicker: 'ant-picker',
   Drawer: 'ant-drawer',
   FloatButton: 'ant-float-btn',
+  Form: 'ant-form',
   Input: 'ant-input',
   InputNumber: 'ant-input-number',
   Mentions: 'ant-mentions',
