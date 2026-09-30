@@ -63,9 +63,11 @@ describe('tree-select under antd v6 css', () => {
     fixture.detectChanges();
     await fixture.whenStable();
     fixture.detectChanges();
-    const root = overlay.getContainerElement().querySelector('.ant-tree-select-dropdown') as HTMLElement;
+    const root = overlay.getContainerElement().querySelector('.ant-select-tree-dropdown') as HTMLElement;
     expect(root).not.toBeNull();
-    expect(root.classList.contains('ant-select-tree-dropdown')).toBe(true);
+    // v4 styles `ant-tree-select-dropdown` as well, so it stays off the DOM; the patch keys v6's rules
+    // onto `ant-select-tree-dropdown` instead.
+    expect(root.classList.contains('ant-tree-select-dropdown')).toBe(false);
     await expectMotionSettled(root);
     // The scope class lands on `.cdk-overlay-pane` (createOverlayRef's panelClass mechanism); the
     // popup root inherits the theme's CSS custom properties from it.
@@ -79,6 +81,13 @@ describe('tree-select under antd v6 css', () => {
     const node = root.querySelector('.ant-select-tree-node-content-wrapper') as HTMLElement;
     expect(node).not.toBeNull();
     expect(getComputedStyle(node).minHeight).toBe('24px');
+    // v6's `.ant-tree-select-dropdown` rules, applied through the re-keyed patch rules: dropdown padding
+    // (paddingXS, paddingXS / 2), square tree corners, full-width node highlight, 6px node radius.
+    expect(getComputedStyle(root).padding).toBe('8px 4px');
+    expect(getComputedStyle(root.querySelector('.ant-select-tree')!).borderTopLeftRadius).toBe('0px');
+    expect(getComputedStyle(node).flexGrow).toBe('1');
+    expect(getComputedStyle(node).borderTopLeftRadius).toBe('6px');
+    expect(getComputedStyle(node).paddingInlineStart).toBe('8px');
   });
 
   it('is removed after close', async () => {
@@ -92,6 +101,6 @@ describe('tree-select under antd v6 css', () => {
     // Leave motion: `.ant-slide-up-leave` runs slideUpOut for --ant-motion-duration-mid (0.2s);
     // Angular removes the popup on `animationend`. 500 ms leaves room for the frame it starts on.
     await new Promise(r => setTimeout(r, 500));
-    expect(overlay.getContainerElement().querySelector('.ant-tree-select-dropdown')).toBeNull();
+    expect(overlay.getContainerElement().querySelector('.ant-select-tree-dropdown')).toBeNull();
   });
 });

@@ -81,9 +81,9 @@ import { NzTreeSelectService } from './tree-select.service';
 
 export type NzPlacementType = 'bottomLeft' | 'bottomRight' | 'topLeft' | 'topRight' | '';
 const NZ_CONFIG_MODULE_NAME: NzConfigKey = 'treeSelect';
-// `ant-tree-select-dropdown` is the real antd v6 class (`getPrefixCls('tree-select')` in
-// `antd/es/tree-select/index.js`); `ant-select-tree-dropdown` is kept alongside it for v4.
-const TREE_SELECT_DEFAULT_CLASS = 'ant-select-dropdown ant-select-tree-dropdown ant-tree-select-dropdown';
+// antd v6's popup class `ant-tree-select-dropdown` is not emitted: the v4 stylesheet styles it too
+// (padding, tree radius, node width). `style/v6/patch.css` keys v6's rules onto `ant-select-tree-dropdown`.
+const TREE_SELECT_DEFAULT_CLASS = 'ant-select-dropdown ant-select-tree-dropdown';
 
 @Component({
   selector: 'nz-tree-select',
@@ -442,7 +442,7 @@ export class NzTreeSelectComponent extends NzTreeBase implements ControlValueAcc
     // exactly as select's `updateDropdownPanelClasses` does: `TREE_SELECT_DEFAULT_CLASS` is never
     // included here, since it is already applied to the dropdown root itself via `[class]`, and
     // `OverlayRef` renders `.cdk-overlay-pane` as an ANCESTOR of that root — adding the same
-    // `ant-select-dropdown`/`ant-tree-select-dropdown` classes to the pane would make a bare
+    // `ant-select-dropdown`/`ant-select-tree-dropdown` classes to the pane would make a bare
     // `.ant-select-dropdown` lookup match the outer pane (which carries none of the placement/RTL
     // classes) before the real dropdown root.
     const scope = this.themeScopeClasses();
