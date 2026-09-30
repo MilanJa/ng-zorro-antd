@@ -76,5 +76,12 @@
     "presetted-ranges": "preset-ranges",
     "switch": "switchable",
     "week-number": null
+  },
+  "time-picker": {
+    "_antdDir": "time-picker",
+    "confirmation": "need-confirm",
+    "disabled-part": "disabled",
+    "prefix-suffix": "suffix",
+    "use12-hours": "12hours"
   }
 }

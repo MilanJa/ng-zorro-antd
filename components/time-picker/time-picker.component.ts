@@ -47,6 +47,7 @@ import {
 import { warn } from 'ng-zorro-antd/core/logger';
 import { NzOutletModule } from 'ng-zorro-antd/core/outlet';
 import { DATE_PICKER_POSITION_MAP, DEFAULT_DATE_PICKER_POSITIONS, NzOverlayModule } from 'ng-zorro-antd/core/overlay';
+import { nzThemeScopeClasses } from 'ng-zorro-antd/core/theme';
 import { NzDateAdapter } from 'ng-zorro-antd/core/time';
 import {
   NgClassInterface,
@@ -116,6 +117,7 @@ const NZ_CONFIG_MODULE_NAME: NzConfigKey = 'timePicker';
       [cdkConnectedOverlayPositions]="overlayPositions()"
       [cdkConnectedOverlayOrigin]="origin"
       [cdkConnectedOverlayOpen]="nzOpen"
+      [cdkConnectedOverlayPanelClass]="dropdownPanelClasses()"
       (detach)="close()"
       (overlayOutsideClick)="onClickOutside($event)"
       (positionChange)="onPositionChange($event)"
@@ -199,6 +201,8 @@ export class NzTimePickerComponent implements ControlValueAccessor, OnInit, Afte
   protected readonly dir = inject(Directionality).valueSignal;
   private readonly elementRef = inject(ElementRef);
   private readonly renderer = inject(Renderer2);
+  /** Resolved once from the injector at construction: the enclosing `[nzTheme]` scope, if any. */
+  private readonly themeScopeClasses = nzThemeScopeClasses();
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly dateAdapter = inject(NzDateAdapter);
   private readonly platform = inject(Platform);
@@ -409,6 +413,12 @@ export class NzTimePickerComponent implements ControlValueAccessor, OnInit, Afte
   });
 
   protected readonly finalVariant = computed(() => this.variant() || this.formVariant?.() || 'outlined');
+
+  /**
+   * The CDK overlay pane class: the enclosing `[nzTheme]` scope, so the dropdown (rendered inside the
+   * pane, styled via `dropdownTimePickerClass()`/`nzPopupClassName`) inherits the scoped tokens.
+   */
+  protected readonly dropdownPanelClasses = computed(() => this.themeScopeClasses());
 
   protected dropdownTimePickerClass = computed(() => {
     const classList = [this.generateClass('dropdown')];
