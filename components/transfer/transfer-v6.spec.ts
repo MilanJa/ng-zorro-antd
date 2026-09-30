@@ -88,14 +88,14 @@ describe('transfer under antd v6 css', () => {
     fixture.componentInstance.oneWay.set(true);
     fixture.detectChanges();
     await fixture.whenStable();
+    // `nz-transfer-list[data-direction="right"]` carries both `ant-transfer-list` and
+    // `ant-transfer-section` on the same host element, so querying by the v6 class alone still
+    // resolves it.
     const rightSection = fixture.nativeElement.querySelector(
-      'nz-transfer-list[data-direction="right"] .ant-transfer-section'
+      'nz-transfer-list[data-direction="right"].ant-transfer-section'
     ) as HTMLElement;
-    // rightSection carries both `ant-transfer-list` and `ant-transfer-section` on the same element,
-    // so querying by the v6 class still resolves the host.
-    const host = fixture.nativeElement.querySelector('nz-transfer-list[data-direction="right"]') as HTMLElement;
-    expect(host.classList.contains('ant-transfer-section')).toBe(true);
-    const content = host.querySelector('.ant-transfer-list-content-show-remove');
+    expect(rightSection).not.toBeNull();
+    const content = rightSection.querySelector('.ant-transfer-list-content-show-remove');
     expect(content).not.toBeNull();
   });
 });
