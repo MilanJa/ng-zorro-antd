@@ -52,7 +52,11 @@ export class NzContextMenuService {
         .withPositions(LIST_OF_POSITIONS)
         .withTransformOriginOn('.ant-dropdown'),
       disposeOnNavigation: true,
-      scrollStrategy: createCloseScrollStrategy(this.injector)
+      scrollStrategy: createCloseScrollStrategy(this.injector),
+      // This service is `providedIn: 'root'`, so it has no scoped injector of its own; read the
+      // enclosing `[nzTheme]` scope from the menu component being shown instead (resolved from ITS
+      // injector at construction, i.e. wherever the `<nz-dropdown-menu>` is declared).
+      panelClass: [...nzDropdownMenuComponent.themeScopeClasses()]
     });
 
     this.closeSubscription = new Subscription();

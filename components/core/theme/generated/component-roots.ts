@@ -15,6 +15,7 @@ export const COMPONENT_ROOT_CLS: Record<string, string> = {
   ColorPicker: 'ant-color-picker',
   DatePicker: 'ant-picker',
   Drawer: 'ant-drawer',
+  Dropdown: 'ant-dropdown',
   FloatButton: 'ant-float-btn',
   Form: 'ant-form',
   Input: 'ant-input',

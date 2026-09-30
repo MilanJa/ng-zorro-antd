@@ -41,6 +41,7 @@ import {
   setConnectedPositionOffset,
   TOOLTIP_OFFSET_MAP
 } from 'ng-zorro-antd/core/overlay';
+import { nzThemeScopeClasses } from 'ng-zorro-antd/core/theme';
 import { IndexableObject } from 'ng-zorro-antd/core/types';
 
 import { NzDropdownMenuComponent, NzPlacementType } from './dropdown-menu.component';
@@ -65,6 +66,8 @@ export class NzDropdownDirective implements AfterViewInit, OnChanges {
   readonly _nzModuleName: NzConfigKey = NZ_CONFIG_MODULE_NAME;
   public elementRef = inject(ElementRef);
   private injector = inject(Injector);
+  /** The enclosing `[nzTheme]` scope's classes, resolved once at construction from this directive's own injector. */
+  private readonly themeScopeClasses = nzThemeScopeClasses();
 
   private portal?: TemplatePortal;
   private overlayRef: OverlayRef | null = null;
@@ -175,7 +178,8 @@ export class NzDropdownDirective implements AfterViewInit, OnChanges {
                 minWidth: triggerWidth,
                 disposeOnNavigation: true,
                 hasBackdrop: this.nzBackdrop && this.nzTrigger === 'click',
-                scrollStrategy: createRepositionScrollStrategy(this.injector)
+                scrollStrategy: createRepositionScrollStrategy(this.injector),
+                panelClass: [...this.themeScopeClasses()]
               });
               merge(
                 this.overlayRef.backdropClick(),

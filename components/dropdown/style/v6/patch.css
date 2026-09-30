@@ -1,0 +1,63 @@
+/* CDK overlay pane positioning: v6's own base rule (`V6_TEMPLATE_CSS`) sets `position: absolute` plus
+   `top`/`left: -9999px` (an offscreen-measurement trick from the React implementation), which would
+   collapse or mis-locate the pane the CDK overlay already positions. Port of `style/patch.less`; its
+   `&:not(:has(.ant-dropdown-arrow)) { margin-block: ... }` compensation is dropped because ng-zorro
+   already offsets the connected position strategy itself when the arrow is shown
+   (`dropdown.directive.ts`'s `setConnectedPositionOffset`/`TOOLTIP_OFFSET_MAP`, applied to every
+   position pair before `withPositions`), so no CSS margin correction on the root is needed; the
+   `.ant-dropdown-menu > ul { margin: 0; padding: 0; list-style: inherit }` rule is dropped because
+   `[nz-menu]` (`components/menu/menu.directive.ts`) puts the `.ant-dropdown-menu` class on the `<ul>`
+   element itself, never on a wrapper with a further child `<ul>` — the one nested `<ul>` ng-zorro does
+   render, `nz-menu-group`'s item list, already carries `.ant-dropdown-menu-item-group-list`, styled by
+   both stylesheets. */
+.ant-dropdown {
+  position: relative;
+  inset: 0;
+}
+
+/* v6 styles `.ant-dropdown-menu-title-content` (`components/core/theme/generated/test-css.ts`), but the
+   compiled v4 stylesheet already has a rule for that exact class (`style/index.less`'s `&-title-content`
+   under `.@{dropdown-prefix-cls}-menu`), so this task cannot add it to the template without the v6 class
+   also repainting v4's default rendering. The item/submenu-title content is wrapped in
+   `.ant-menu-title-content` in dropdown mode too (`components/menu/menu-item.component.ts`,
+   `components/menu/submenu-title.component.ts` — both apply that class unconditionally, not only outside
+   a dropdown), so mirror the v6 layout onto that existing, v4-inert-in-this-position hook instead. */
+.ant-dropdown-menu-item > .ant-menu-title-content,
+.ant-dropdown-menu-submenu-title > .ant-menu-title-content {
+  flex: auto;
+}
+.ant-dropdown-menu-item > .ant-menu-title-content > a,
+.ant-dropdown-menu-submenu-title > .ant-menu-title-content > a {
+  color: inherit;
+  transition: all var(--ant-motion-duration-mid);
+}
+.ant-dropdown-menu-item > .ant-menu-title-content > a:hover,
+.ant-dropdown-menu-submenu-title > .ant-menu-title-content > a:hover {
+  color: inherit;
+}
+.ant-dropdown-menu-item > .ant-menu-title-content > a::after,
+.ant-dropdown-menu-submenu-title > .ant-menu-title-content > a::after {
+  position: absolute;
+  inset: 0;
+  content: '';
+}
+
+/* v6 styles `.ant-dropdown-menu-submenu-popup` too, also already matched by the compiled v4 stylesheet
+   (`style/index.less`'s `&-submenu-popup`). `components/menu/submenu-non-inline-child.component.ts`
+   (the non-inline submenu's CDK-overlay content, used by dropdown's `sub-menu` demo) emits the menu
+   component's own `.ant-menu-submenu-popup` class regardless of dropdown mode — a pre-existing choice
+   of that directive, not this task's to change — so mirror the v6 popup box onto that class instead,
+   scoped to only fire when nested inside `.ant-dropdown` (a combinator the compiled v4 stylesheet never
+   uses, since v4's own dropdown submenu styling is keyed off the dropdown-prefixed class alone). */
+.ant-dropdown .ant-menu-submenu-popup {
+  position: absolute;
+  z-index: var(--ant-dropdown-z-index-popup);
+  background: transparent;
+  box-shadow: none;
+  transform-origin: 0 0;
+}
+.ant-dropdown .ant-menu-submenu-popup ul,
+.ant-dropdown .ant-menu-submenu-popup li {
+  margin: 0;
+  list-style: none;
+}

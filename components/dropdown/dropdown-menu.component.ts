@@ -22,6 +22,7 @@ import {
 import { BehaviorSubject } from 'rxjs';
 
 import { NzNoAnimationDirective, slideAnimationEnter, slideAnimationLeave } from 'ng-zorro-antd/core/animation';
+import { nzThemeScopeClasses } from 'ng-zorro-antd/core/theme';
 import { IndexableObject, NzSafeAny } from 'ng-zorro-antd/core/types';
 import { MenuService, NzIsMenuInsideDropdownToken } from 'ng-zorro-antd/menu';
 
@@ -80,6 +81,14 @@ export class NzDropdownMenuComponent implements AfterContentInit {
 
   isChildSubMenuOpen$ = this.nzMenuService.isChildSubMenuOpen$;
   descendantMenuItemClick$ = this.nzMenuService.descendantMenuItemClick$;
+  /**
+   * The enclosing `[nzTheme]` scope's classes, resolved once at construction from this component's
+   * own injector. `NzContextMenuService` is `providedIn: 'root'` and builds its overlay imperatively
+   * from its own (unscoped) injector, so it reads the scope from here instead — from whichever
+   * `NzDropdownMenuComponent` instance is passed to `create()`. A menu declared outside any
+   * `[nzTheme]` yields an empty array.
+   */
+  readonly themeScopeClasses = nzThemeScopeClasses();
   mouseState$ = new BehaviorSubject<boolean>(false);
   animationStateChange$ = new EventEmitter<AnimationCallbackEvent>();
   @ViewChild(TemplateRef, { static: true }) templateRef!: TemplateRef<NzSafeAny>;

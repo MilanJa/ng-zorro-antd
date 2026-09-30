@@ -198,6 +198,9 @@
       "less": "./dropdown/style/*.less",
       "style": "./dropdown/style/index.min.css"
     },
+    "./dropdown/style/v6/*": {
+      "style": "./dropdown/style/v6/*"
+    },
     "./empty/style/*": {
       "less": "./empty/style/*.less",
       "style": "./empty/style/index.min.css"

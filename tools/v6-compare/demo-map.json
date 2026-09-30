@@ -110,5 +110,6 @@
     "prefix-suffix": "suffix",
     "use12-hours": "12hours"
   },
-  "transfer": { "_antdDir": "transfer", "can-move": "actions", "one-way": "oneWay" }
+  "transfer": { "_antdDir": "transfer", "can-move": "actions", "one-way": "oneWay" },
+  "dropdown": { "_antdDir": "dropdown", "overlay-visible": "overlay-open" }
 }
