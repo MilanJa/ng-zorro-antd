@@ -60,6 +60,9 @@ export const v6Components = {
   message: { antd: ['message'], prefixCls: 'ant-message' },
   modal: { antd: ['Modal'], prefixCls: 'ant-modal' },
   notification: { antd: ['notification'], prefixCls: 'ant-notification' },
+  // The size changer is a real `nz-select` (`pagination-options.component.ts`); select's own
+  // patch ships in pagination's per-component bundle via `v6PatchDependencies`.
+  pagination: { antd: ['Pagination'], prefixCls: 'ant-pagination', renderedPrefixes: ['ant-select'] },
   popconfirm: { antd: ['Popconfirm'], prefixCls: 'ant-popconfirm', renderedPrefixes: ['ant-popover'] },
   popover: { antd: ['Popover'], prefixCls: 'ant-popover' },
   progress: { antd: ['Progress'], prefixCls: 'ant-progress' },

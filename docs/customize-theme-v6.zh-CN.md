@@ -27,6 +27,7 @@ NG-ZORRO 提供了一份基于 Ant Design v6 生成的可选样式表。它将 v
 - `message`
 - `modal`
 - `notification`
+- `pagination`
 - `popconfirm`
 - `popover`
 - `progress`

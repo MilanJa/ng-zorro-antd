@@ -18,6 +18,7 @@
   "input-number": { "_antdDir": "input-number", "handler-icon": "controls", "prefix": "presuffix" },
   "message": { "_antdDir": "message", "close": null, "custom-style": "style-class", "template": null },
   "notification": { "_antdDir": "notification", "custom-style": "style-class", "template": null },
+  "pagination": { "_antdDir": "pagination", "item-render": "itemRender" },
   "select": { "_antdDir": "select" },
   "skeleton": { "_antdDir": "skeleton" },
   "space": { "_antdDir": "space", "basic": "base", "split": "separator" },

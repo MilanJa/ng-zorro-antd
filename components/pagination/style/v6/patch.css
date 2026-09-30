@@ -1,0 +1,21 @@
+nz-pagination {
+  display: block;
+}
+
+/*
+ * v6 marks the pager item adjacent to a jump control with `ant-pagination-item-after-jump-prev` /
+ * `ant-pagination-item-before-jump-next` so the responsive rule below can hide it under 992px
+ * (antd's own `Pagination.js` derives them from data, not a prop: @rc-component/pagination's
+ * `Pagination.js` clones the first/last item of the freshly generated page range with the class
+ * when `hasJumpPrev`/`hasJumpNext` is true). The compiled v4 CSS already selects both literal
+ * classes at the same breakpoint (`publish/ng-zorro-antd.css`, the `@media (max-width: 992px)`
+ * block right after the disabled-state rules), so they are not emitted; the adjacency to the
+ * already-emitted `ant-pagination-jump-prev` / `ant-pagination-jump-next` classes gives the same
+ * result without touching a v4-styled selector.
+ */
+@media (max-width: 992px) {
+  .ant-pagination .ant-pagination-jump-prev + .ant-pagination-item,
+  .ant-pagination .ant-pagination-item:has(+ .ant-pagination-jump-next) {
+    display: none;
+  }
+}

@@ -816,6 +816,39 @@ export interface NzNotificationToken {
   zIndexPopup: number;
 }
 
+export interface NzPaginationToken {
+  activeBg: string;
+  activeBorderColor: string;
+  activeShadow: string;
+  addonBg: string;
+  errorActiveShadow: string;
+  hoverBg: string;
+  hoverBorderColor: string;
+  inputFontSize: number;
+  inputFontSizeLG: number;
+  inputFontSizeSM: number;
+  itemActiveBg: string;
+  itemActiveBgDisabled: string;
+  itemActiveColor: string;
+  itemActiveColorDisabled: string;
+  itemActiveColorHover: string;
+  itemBg: string;
+  itemInputBg: string;
+  itemLinkBg: string;
+  itemSize: number;
+  itemSizeLG: number;
+  itemSizeSM: number;
+  lineWidthFocus: number;
+  miniOptionsSizeChangerTop: number;
+  paddingBlock: number;
+  paddingBlockLG: number;
+  paddingBlockSM: number;
+  paddingInline: number;
+  paddingInlineLG: number;
+  paddingInlineSM: number;
+  warningActiveShadow: string;
+}
+
 export interface NzPopconfirmToken {
   zIndexPopup: number;
 }
@@ -1042,6 +1075,7 @@ export interface NzComponentTokenMap {
   Message: NzMessageToken;
   Modal: NzModalToken;
   Notification: NzNotificationToken;
+  Pagination: NzPaginationToken;
   Popconfirm: NzPopconfirmToken;
   Popover: NzPopoverToken;
   Progress: NzProgressToken;

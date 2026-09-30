@@ -16,7 +16,7 @@ import { NzSelectModule } from 'ng-zorro-antd/select';
   template: `
     @if (showSizeChanger) {
       <nz-select
-        class="ant-pagination-options-size-changer"
+        class="ant-pagination-options-size-changer ant-pagination-options-size-changer-select"
         [nzDisabled]="disabled"
         [nzSize]="nzSize"
         [ngModel]="pageSize"

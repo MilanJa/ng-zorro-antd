@@ -438,5 +438,16 @@
     "ant-picker-time-panel-column-2",
     "ant-picker-time-panel-column-3",
     "ant-picker-time-panel-narrow"
+  ],
+  "_pagination_comment": "antd-emits: -jump-next-custom-icon, -jump-prev-custom-icon (antd's own `Pagination.js` always supplies its own `jumpPrevIcon`/`jumpNextIcon` to `@rc-component/pagination`, so `Pagination.js:303,310` (`@rc-component/pagination/es/Pagination.js`) always sets `${prefixCls}-jump-{prev,next}-custom-icon` from rc-pagination's point of view; v6 CSS never has a rule for either name). v4-compat: -mini (replacement: ant-pagination-small, added alongside; kept because the compiled v4 CSS styles `.ant-pagination-mini` and it stays the default-stylesheet size hook while v4 is default). v4-compat (patch hook, reused from select's own `style/v6/patch.css` box/search resolution verbatim, since the size changer is a real `nz-select` rendered inside pagination's options item): ant-select-arrow, ant-select-selector (v6 draws the whole select box on the bare `.ant-select` root; select's patch mirrors it onto `-selector` and positions `-arrow` itself), ant-select-selection-search, ant-select-selection-search-input, ant-select-selection-wrap (v6 has no wrapper for the search input or around `.ant-select-content`; select's patch gives each its v6 layout with v4 tokens).",
+  "pagination": [
+    "ant-pagination-jump-next-custom-icon",
+    "ant-pagination-jump-prev-custom-icon",
+    "ant-pagination-mini",
+    "ant-select-arrow",
+    "ant-select-selection-search",
+    "ant-select-selection-search-input",
+    "ant-select-selection-wrap",
+    "ant-select-selector"
   ]
 }

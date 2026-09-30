@@ -80,6 +80,7 @@ const NZ_CONFIG_MODULE_NAME: NzConfigKey = 'pagination';
     '[class.ant-pagination-simple]': 'nzSimple',
     '[class.ant-pagination-disabled]': 'nzDisabled',
     '[class.ant-pagination-mini]': `!nzSimple && size === 'small'`,
+    '[class.ant-pagination-small]': `!nzSimple && size === 'small'`,
     '[class.ant-pagination-rtl]': `dir() === 'rtl'`,
     '[class.ant-pagination-start]': 'nzAlign() === "start"',
     '[class.ant-pagination-center]': 'nzAlign() === "center"',

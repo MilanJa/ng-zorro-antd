@@ -23,6 +23,7 @@ export const COMPONENT_ROOT_CLS: Record<string, string> = {
   Message: 'ant-message',
   Modal: 'ant-modal',
   Notification: 'ant-notification',
+  Pagination: 'ant-pagination',
   Popconfirm: 'ant-popconfirm',
   Popover: 'ant-popover',
   Progress: 'ant-progress',

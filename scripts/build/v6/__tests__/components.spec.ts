@@ -67,6 +67,7 @@ describe('v6PatchDependencies', () => {
       'auto-complete': ['select'],
       cascader: ['select'],
       'color-picker': ['input-number', 'popover', 'select'],
+      pagination: ['select'],
       popconfirm: ['popover'],
       slider: ['tooltip'],
       'time-picker': ['date-picker'],

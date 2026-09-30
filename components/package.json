@@ -290,6 +290,9 @@
       "less": "./pagination/style/*.less",
       "style": "./pagination/style/index.min.css"
     },
+    "./pagination/style/v6/*": {
+      "style": "./pagination/style/v6/*"
+    },
     "./popconfirm/style/*": {
       "less": "./popconfirm/style/*.less",
       "style": "./popconfirm/style/index.min.css"
