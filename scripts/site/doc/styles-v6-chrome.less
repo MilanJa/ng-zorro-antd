@@ -12,3 +12,14 @@
 @import 'style/index';
 @import 'style/patch';
 @import 'style/doc-search';
+
+// The doc site's `?theme=v6-dark`/`v6-compact` toggle sets `data-theme` on `<body>` (`app.component.ts`)
+// but leaves every demo pane's own background/text colour at the light v4 default -- `codebox.component.html`'s
+// `.code-box`/`.code-box-demo` containers never read a theme token, so a dark-theme demo (e.g. a checkbox
+// or switch track meant to read light-on-dark) renders on a light pane and its own dark-on-light contrast
+// can go invisible. Give both containers the active theme's own surface colours.
+body[data-theme^='v6'] .code-box,
+body[data-theme^='v6'] .code-box-demo {
+  color: var(--ant-color-text);
+  background: var(--ant-color-bg-container);
+}
