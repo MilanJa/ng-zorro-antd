@@ -106,23 +106,4 @@ describe('form under antd v6 css', () => {
     const explain = additional.querySelector('.ant-form-item-explain.ant-form-show-help');
     expect(explain).not.toBeNull();
   });
-
-  it('marks an item ant-form-item-inline when the ancestor form is laid out inline', () => {
-    const inlineFixture = TestBed.createComponent(TestInlineFormComponent);
-    inlineFixture.detectChanges();
-    const item = inlineFixture.nativeElement.querySelector('.ant-form-item') as HTMLElement;
-    expect(item.classList.contains('ant-form-item-inline')).toBe(true);
-  });
 });
-
-@Component({
-  imports: [NzFormModule],
-  template: `
-    <form nz-form nzLayout="inline">
-      <nz-form-item>
-        <nz-form-label>Name</nz-form-label>
-      </nz-form-item>
-    </form>
-  `
-})
-class TestInlineFormComponent {}

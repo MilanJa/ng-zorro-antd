@@ -5,7 +5,10 @@
    dump: with a single visible message the container itself carries `ant-form-item-explain
    ant-form-show-help ant-form-show-help-appear[-active]` — no separate `-show-help-item` element).
    Since ng-zorro's own mechanism is unchanged by this task, its spacing compensation is ported using
-   v6 tokens. */
+   v6 tokens. The generated v6 CSS's bare `.ant-form-show-help{transition:opacity ...}` rule now
+   matches this same explain div (it carries the base `ant-form-show-help` class permanently), but stays
+   inert: that transition only fires between the `-appear`/`-enter`/`-leave` opacity values, and ng-zorro
+   never emits those state-suffix classes, so no opacity value actually changes under it. */
 .ant-form-item-explain-connected {
   height: 0;
 }
@@ -26,7 +29,10 @@
    > .ant-form-item-control`), breaking the default (v4) inline layout. These two rules mirror v6's
    `.ant-form-item-horizontal >.ant-form-item-row>.ant-col-24.ant-form-item-label` /
    `.ant-form-item-vertical >.ant-form-item-row>.ant-col-24.ant-form-item-label` (and their `-xl-24`
-   siblings) one level shallower, since the item host already plays the row's part. */
+   siblings) one level shallower, since the item host already plays the row's part. v6 itself routes
+   this margin through the `--ant-form-item-label-margin` custom property (set here, read by the label
+   rule) rather than a literal `margin` declaration; this mirror sets `margin` directly, at higher
+   specificity than the property indirection, for the same visible result. */
 .ant-form-item-horizontal > .ant-col-24.ant-form-item-label,
 .ant-form-item-horizontal > .ant-col-xl-24.ant-form-item-label,
 .ant-form-item-vertical > .ant-form-item-label,
