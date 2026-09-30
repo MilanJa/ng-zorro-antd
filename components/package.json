@@ -134,6 +134,9 @@
       "less": "./card/style/*.less",
       "style": "./card/style/index.min.css"
     },
+    "./card/style/v6/*": {
+      "style": "./card/style/v6/*"
+    },
     "./carousel/style/*": {
       "less": "./carousel/style/*.less",
       "style": "./carousel/style/index.min.css"

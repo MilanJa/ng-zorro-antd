@@ -30,6 +30,7 @@ export const v6Components = {
   'auto-complete': { antd: ['AutoComplete'], prefixCls: 'ant-select' },
   badge: { antd: ['Badge'], prefixCls: 'ant-badge' },
   button: { antd: ['Button'], prefixCls: 'ant-btn' },
+  card: { antd: ['Card'], prefixCls: 'ant-card' },
   carousel: { antd: ['Carousel'], prefixCls: 'ant-carousel' },
   // `ant-empty` is included because cascader's own v6 CSS styles `.ant-cascader-menu-empty .ant-empty-*`
   // (the empty-state cell inside the dropdown), unlike a component with no such nested rule.

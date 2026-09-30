@@ -20,7 +20,7 @@ import { NzOutletModule } from 'ng-zorro-antd/core/outlet';
     }
 
     @if (nzTitle || nzDescription) {
-      <div class="ant-card-meta-detail">
+      <div class="ant-card-meta-detail ant-card-meta-section">
         @if (nzTitle) {
           <div class="ant-card-meta-title">
             <ng-container *nzStringTemplateOutlet="nzTitle">{{ nzTitle }}</ng-container>

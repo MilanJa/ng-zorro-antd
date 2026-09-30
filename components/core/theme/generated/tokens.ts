@@ -627,6 +627,22 @@ export interface NzButtonToken {
   yellowShadowColor: string;
 }
 
+export interface NzCardToken {
+  actionsBg: string;
+  actionsLiMargin: string;
+  bodyPadding: number;
+  bodyPaddingSM: number;
+  extraColor: string;
+  headerBg: string;
+  headerFontSize: number;
+  headerFontSizeSM: number;
+  headerHeight: number;
+  headerHeightSM: number;
+  headerPadding: number;
+  headerPaddingSM: number;
+  tabsMarginBottom: number;
+}
+
 export interface NzCarouselToken {
   arrowOffset: number;
   arrowSize: number;
@@ -1106,6 +1122,7 @@ export interface NzComponentTokenMap {
   Alert: NzAlertToken;
   Badge: NzBadgeToken;
   Button: NzButtonToken;
+  Card: NzCardToken;
   Carousel: NzCarouselToken;
   Cascader: NzCascaderToken;
   Checkbox: NzCheckboxToken;

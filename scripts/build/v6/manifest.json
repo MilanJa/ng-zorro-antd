@@ -1,7 +1,7 @@
 {
   "antdVersion": "6.6.5",
   "engineCoreBytes": 42701,
-  "engineComponentsBytes": 297850,
+  "engineComponentsBytes": 303559,
   "components": {
     "alert": {
       "classes": [
@@ -336,6 +336,53 @@
         "--ant-button-text-text-hover-color",
         "--ant-button-volcano-shadow-color",
         "--ant-button-yellow-shadow-color"
+      ]
+    },
+    "card": {
+      "classes": [
+        "ant-card",
+        "ant-card-actions",
+        "ant-card-body",
+        "ant-card-bordered",
+        "ant-card-btn",
+        "ant-card-contain-grid",
+        "ant-card-contain-tabs",
+        "ant-card-cover",
+        "ant-card-extra",
+        "ant-card-grid",
+        "ant-card-grid-hoverable",
+        "ant-card-head",
+        "ant-card-head-title",
+        "ant-card-head-wrapper",
+        "ant-card-hoverable",
+        "ant-card-loading",
+        "ant-card-meta",
+        "ant-card-meta-avatar",
+        "ant-card-meta-description",
+        "ant-card-meta-section",
+        "ant-card-meta-title",
+        "ant-card-rtl",
+        "ant-card-small",
+        "ant-card-type-inner",
+        "ant-card-typography",
+        "ant-card-typography-edit-content",
+        "ant-tabs-top",
+        "ant-tabs-top-bar"
+      ],
+      "tokens": [
+        "--ant-card-actions-bg",
+        "--ant-card-actions-li-margin",
+        "--ant-card-body-padding",
+        "--ant-card-body-padding-sm",
+        "--ant-card-extra-color",
+        "--ant-card-header-bg",
+        "--ant-card-header-font-size",
+        "--ant-card-header-font-size-sm",
+        "--ant-card-header-height",
+        "--ant-card-header-height-sm",
+        "--ant-card-header-padding",
+        "--ant-card-header-padding-sm",
+        "--ant-card-tabs-margin-bottom"
       ]
     },
     "carousel": {

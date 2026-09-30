@@ -123,5 +123,6 @@
     "error-level": "errorlevel",
     "background": null,
     "padding": null
-  }
+  },
+  "card": { "_antdDir": "card" }
 }
