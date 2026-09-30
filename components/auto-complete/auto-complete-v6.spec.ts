@@ -35,6 +35,15 @@ function installV6Css(): void {
 })
 class TestAutocompleteComponent {}
 
+@Component({
+  imports: [FormsModule, NzAutocompleteModule],
+  template: `
+    <input id="in" nz-input [nzAutocomplete]="auto" ngModel="a" />
+    <nz-autocomplete #auto [nzDataSource]="['aa', 'ab']" />
+  `
+})
+class TestUnscopedAutocompleteComponent {}
+
 describe('auto-complete under antd v6 css', () => {
   let fixture: ComponentFixture<TestAutocompleteComponent>;
   let overlay: OverlayContainer;
@@ -93,12 +102,7 @@ describe('auto-complete under antd v6 css', () => {
 
     const options = dropdown.querySelectorAll('.ant-select-item-option');
     expect(options.length).toBe(2);
-    const active = dropdown.querySelector('.ant-select-item-option-active') as HTMLElement;
-    expect(active).not.toBeNull();
-    // optionActiveBg (controlItemBgHover); under the scoped `[nzTheme]` override this derives to
-    // 0.035 rather than the documented default 0.04, since `NzThemeDirective` recomputes the full
-    // neutral-fill palette from the partial token override instead of reusing the system default.
-    expect(getComputedStyle(active).backgroundColor).toBe('rgba(0, 0, 0, 0.035)');
+    expect(dropdown.querySelector('.ant-select-item-option-active')).not.toBeNull();
   });
 
   // `NzAutocompleteTriggerDirective.handleBlur` only marks the control touched -- it never calls
@@ -136,5 +140,52 @@ describe('auto-complete under antd v6 css', () => {
     await new Promise(r => setTimeout(r, 400));
 
     expect(overlay.getContainerElement().querySelector('.ant-select-dropdown')).toBeNull();
+  });
+});
+
+describe('auto-complete option colors under antd v6 css', () => {
+  let fixture: ComponentFixture<TestUnscopedAutocompleteComponent>;
+  let overlay: OverlayContainer;
+  let input: HTMLInputElement;
+
+  beforeEach(() => {
+    installV6Css();
+    TestBed.configureTestingModule({ providers: [provideNzIconsTesting()], animationsEnabled: true });
+    fixture = TestBed.createComponent(TestUnscopedAutocompleteComponent);
+    overlay = TestBed.inject(OverlayContainer);
+    fixture.detectChanges();
+    input = fixture.debugElement.query(By.css('input')).nativeElement;
+  });
+
+  afterEach(() => {
+    style.remove();
+    overlay.ngOnDestroy();
+  });
+
+  // Outside any `[nzTheme]` scope, so this is the plain default-token value. `colorFillTertiary`
+  // (which `controlItemBgHover`/`optionActiveBg` alias) derives from `colorTextBase`, not
+  // `colorPrimary` (antd's theme seed/alias derivation never reads `colorPrimary` for it), so a
+  // `colorPrimary`-only override does not change this value either -- `getNzDesignToken({})` and
+  // `getNzDesignToken({ token: { colorPrimary: '#00b96b' } })` both return `controlItemBgHover:
+  // 'rgba(0,0,0,0.04)'`.
+  it('gives the active option the default optionActiveBg background', async () => {
+    input.focus();
+    typeInElement('a', input);
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const dropdown = overlay.getContainerElement().querySelector('.ant-select-dropdown') as HTMLElement;
+    expect(dropdown).not.toBeNull();
+    await expectMotionSettled(dropdown);
+
+    const active = dropdown.querySelector('.ant-select-item-option-active') as HTMLElement;
+    expect(active).not.toBeNull();
+    // `.ant-select-item`'s own `background-color` transitions over `--ant-motion-duration-slow`
+    // (0.3s); `expectMotionSettled` above only watches the dropdown root's motion classes/animations,
+    // not this per-item CSS transition, so read the background only after it has settled -- reading
+    // it immediately after the wait above sampled a mid-transition value (measured 0.035, not the
+    // resting 0.04) during investigation of this exact assertion.
+    await new Promise(r => setTimeout(r, 350));
+    expect(getComputedStyle(active).backgroundColor).toBe('rgba(0, 0, 0, 0.04)');
   });
 });
