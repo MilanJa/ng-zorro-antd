@@ -47,7 +47,10 @@ import { NgStyleInterface, NzSafeAny, NzSizeDSType } from 'ng-zorro-antd/core/ty
   `,
   host: {
     class: 'ant-scroll-number',
-    '[class]': `isPresetColor ? ('ant-badge-status-' + nzColor) : ''`,
+    // `nzColor` here is `nzStatus || presetColor || nzColor` from the parent badge: antd's
+    // Badge.js gives the preset-colour case `${prefixCls}-color-${color}` and the status case
+    // `${prefixCls}-status-${status}` -- two different class prefixes, not one.
+    '[class]': `nzColor ? (isPresetColor ? 'ant-badge-color-' + nzColor : 'ant-badge-status-' + nzColor) : ''`,
     '[attr.title]': `nzTitle === null ? '' : nzTitle || nzCount`,
     '[style]': `nzStyle`,
     '[style.right.px]': `nzOffset && nzOffset[0] ? -nzOffset[0] : null`,

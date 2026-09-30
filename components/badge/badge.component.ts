@@ -35,7 +35,7 @@ const NZ_CONFIG_MODULE_NAME: NzConfigKey = 'badge';
     @if ((nzStatus || nzColor) && !showSup && !nzCount) {
       <span
         class="ant-badge-status-dot"
-        [class]="(nzStatus || presetColor) && 'ant-badge-status-' + (nzStatus || presetColor)"
+        [class]="nzStatus ? 'ant-badge-status-' + nzStatus : presetColor ? 'ant-badge-color-' + presetColor : ''"
         [style]="mergedStyle"
       ></span>
       <span class="ant-badge-status-text">
@@ -46,7 +46,7 @@ const NZ_CONFIG_MODULE_NAME: NzConfigKey = 'badge';
     <ng-container *nzStringTemplateOutlet="nzCount">
       @if (showSup) {
         <nz-badge-sup
-          [isPresetColor]="nzStatus || presetColor"
+          [isPresetColor]="!!presetColor"
           [nzColor]="nzStatus || presetColor || nzColor"
           [nzOffset]="nzOffset"
           [nzSize]="nzSize"

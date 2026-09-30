@@ -208,8 +208,10 @@ describe('badge', () => {
       testComponent.color.set(color);
       fixture.detectChanges();
       expect(badgeElement.nativeElement.classList).toContain('ant-badge-not-a-wrapper');
+      // A preset colour gets antd v6's `${prefixCls}-color-${color}` class
+      // (node_modules/antd/es/badge/Badge.js), not the `-status-` prefix reserved for `nzStatus`.
       expect(badgeElement.nativeElement.querySelector('.ant-badge-status-dot').classList).toContain(
-        `ant-badge-status-${color}`
+        `ant-badge-color-${color}`
       );
       expect(badgeElement.nativeElement.querySelector('.ant-badge-status-text').innerText).toBe('test');
       expect(badgeElement.nativeElement.querySelector('nz-badge-sup')).toBeNull();
@@ -221,6 +223,9 @@ describe('badge', () => {
       expect(badgeElement.nativeElement.classList).toContain('ant-badge-not-a-wrapper');
       expect(badgeElement.nativeElement.querySelector('.ant-badge-status-dot').classList).not.toContain(
         `ant-badge-status-`
+      );
+      expect(badgeElement.nativeElement.querySelector('.ant-badge-status-dot').classList).not.toContain(
+        `ant-badge-color-`
       );
       expect(badgeElement.nativeElement.querySelector('.ant-badge-status-dot').style.backgroundColor).toBe(
         'rgb(245, 34, 45)'

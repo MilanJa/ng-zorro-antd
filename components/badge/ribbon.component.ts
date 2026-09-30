@@ -3,7 +3,8 @@
  * found in the LICENSE file at https://github.com/NG-ZORRO/ng-zorro-antd/blob/master/LICENSE
  */
 
-import { Component, Input, OnChanges, SimpleChanges, TemplateRef, ViewEncapsulation } from '@angular/core';
+import { Directionality } from '@angular/cdk/bidi';
+import { Component, Input, OnChanges, SimpleChanges, TemplateRef, ViewEncapsulation, inject } from '@angular/core';
 
 import { NzOutletModule } from 'ng-zorro-antd/core/outlet';
 
@@ -21,17 +22,20 @@ import { badgePresetColors } from './preset-colors';
       [class]="presetColor && 'ant-ribbon-color-' + presetColor"
       [class.ant-ribbon-placement-end]="nzPlacement === 'end'"
       [class.ant-ribbon-placement-start]="nzPlacement === 'start'"
+      [attr.dir]="dir() === 'rtl' ? 'rtl' : null"
       [style.background-color]="!presetColor && nzColor"
     >
-      <ng-container *nzStringTemplateOutlet="nzText">
-        <span class="ant-ribbon-text">{{ nzText }}</span>
-      </ng-container>
+      <span class="ant-ribbon-text ant-ribbon-content">
+        <ng-container *nzStringTemplateOutlet="nzText">{{ nzText }}</ng-container>
+      </span>
       <div class="ant-ribbon-corner" [style.color]="!presetColor && nzColor"></div>
     </div>
   `,
   host: { class: 'ant-ribbon-wrapper' }
 })
 export class NzRibbonComponent implements OnChanges {
+  protected readonly dir = inject(Directionality).valueSignal;
+
   @Input() nzColor?: string;
   @Input() nzPlacement: 'start' | 'end' = 'end';
   @Input() nzText: string | TemplateRef<void> | null = null;

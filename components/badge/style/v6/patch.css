@@ -1,0 +1,24 @@
+.ant-badge .ant-scroll-number:only-child {
+  position: relative;
+  top: auto;
+  display: block;
+}
+
+.ant-badge .ant-badge-count:only-child {
+  transform: none;
+}
+
+.ant-ribbon-wrapper {
+  display: block;
+}
+
+/*
+ * The compiled v4 CSS already has a `.ant-ribbon-rtl { direction: rtl; }` rule (v6's own copy is
+ * identical), so emitting the class directly would be a new hit against a v4-styled selector.
+ * The ribbon's `.ant-ribbon` div gets a plain `dir="rtl"` attribute instead (ribbon.component.ts,
+ * from `Directionality`), which v4's Less never selects on, and this rule reproduces the v6 effect
+ * on that attribute hook.
+ */
+.ant-ribbon[dir='rtl'] {
+  direction: rtl;
+}
