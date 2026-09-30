@@ -18,8 +18,19 @@ function arg(name: string): string | null {
   return i >= 0 ? process.argv[i + 1] : null;
 }
 
-function hasFlag(name: string): boolean {
-  return process.argv.includes(`--${name}`);
+/**
+ * `--click` as a bare flag (use the default trigger set) or with an optional selector argument
+ * (`--click .ant-select-selector`) that overrides it. The value is taken only when the next argv
+ * entry does not itself look like another `--flag`, so `--click --theme v6` still means "click,
+ * default set" rather than swallowing `--theme`.
+ */
+function clickArg(): { click: boolean; selector: string | null } {
+  const i = process.argv.indexOf('--click');
+  if (i < 0) {
+    return { click: false, selector: null };
+  }
+  const next = process.argv[i + 1];
+  return { click: true, selector: next && !next.startsWith('--') ? next : null };
 }
 
 // Default selector set when the demo is clicked open: popups mount either inside `.cmp-demo-body`
@@ -27,16 +38,20 @@ function hasFlag(name: string): boolean {
 const CLICK_DEFAULT_SELECTOR = '.ant-message, .ant-notification, [class^="ant-"][class*="-wrap"], [role="tooltip"]';
 
 // Any click-opened popup trigger inside a demo container: a plain `.ant-btn` (modal/drawer/message/
-// notification/…) or a directive-driven overlay trigger (popconfirm/popover/tooltip/dropdown) that may
-// render on a non-button element (e.g. `<a nz-popconfirm>`). Narrower than `collect-classes.ts`, which
-// also opens select and picker popups.
-const CLICK_TARGET_SELECTOR = '.ant-btn, [nz-popconfirm], [nz-popover], [nz-tooltip], [nz-dropdown]';
+// notification/…), a directive-driven overlay trigger (popconfirm/popover/tooltip/dropdown) that may
+// render on a non-button element (e.g. `<a nz-popconfirm>`), or a select-style control (select,
+// cascader, tree-select, date/time-picker) whose popup opens from its own box rather than a button.
+const CLICK_TARGET_SELECTOR =
+  '.ant-btn, [nz-popconfirm], [nz-popover], [nz-tooltip], [nz-dropdown], .ant-select-selector, ' +
+  '.ant-picker-input input, .ant-color-picker-trigger, .ant-image-img, .ant-dropdown-trigger, ' +
+  '.ant-tabs-nav-more, .ant-table-filter-trigger, .ant-pagination-options .ant-select-selector';
 
 // Scopes each comma-branch of `CLICK_TARGET_SELECTOR` to `containerSelector` individually -- a bare
 // `"${containerSelector} ${CLICK_TARGET_SELECTOR}"` would only scope the first branch (`.ant-btn`) and
 // leave the rest unscoped, matching the first `[nz-popconfirm]` etc. anywhere on the page.
-function scopedClickSelector(containerSelector: string): string {
-  return CLICK_TARGET_SELECTOR.split(',')
+function scopedClickSelector(containerSelector: string, targetSelector: string): string {
+  return targetSelector
+    .split(',')
     .map(part => `${containerSelector} ${part.trim()}`)
     .join(', ');
 }
@@ -46,12 +61,13 @@ async function main(): Promise<void> {
   const demo = arg('demo');
   const theme = arg('theme') ?? 'v6';
   const side = arg('side') ?? 'antd';
-  const click = hasFlag('click');
+  const { click, selector: clickSelector } = clickArg();
+  const clickTarget = clickSelector ?? CLICK_TARGET_SELECTOR;
   let selector = arg('selector');
 
   if (!dir || !demo) {
     console.error(
-      'Usage: dump-dom.ts --component <dir> --demo <name> [--side antd|nz] [--theme v6] [--selector <css>] [--click]'
+      'Usage: dump-dom.ts --component <dir> --demo <name> [--side antd|nz] [--theme v6] [--selector <css>] [--click [<selector>]]'
     );
     process.exit(1);
   }
@@ -104,14 +120,12 @@ async function main(): Promise<void> {
       await page.goto(`${siteUrl}/components/${dir}/en?theme=${theme}`, { waitUntil: 'networkidle' });
       if (click) {
         const containerSelector = `#components-${dir}-demo-${demo}`;
-        const button = await page.$(scopedClickSelector(containerSelector));
+        const button = await page.$(scopedClickSelector(containerSelector, clickTarget));
         if (button) {
           await button.click();
           await page.waitForTimeout(600);
         } else {
-          console.error(
-            `--click: no element matched "${CLICK_TARGET_SELECTOR}" inside ${containerSelector}; nothing clicked.`
-          );
+          console.error(`--click: no element matched "${clickTarget}" inside ${containerSelector}; nothing clicked.`);
         }
       }
     } else {
@@ -119,12 +133,12 @@ async function main(): Promise<void> {
         waitUntil: 'networkidle'
       });
       if (click) {
-        const button = await page.$(scopedClickSelector('.cmp-demo-body'));
+        const button = await page.$(scopedClickSelector('.cmp-demo-body', clickTarget));
         if (button) {
           await button.click();
           await page.waitForTimeout(600);
         } else {
-          console.error(`--click: no element matched ".cmp-demo-body ${CLICK_TARGET_SELECTOR}"; nothing clicked.`);
+          console.error(`--click: no element matched ".cmp-demo-body ${clickTarget}"; nothing clicked.`);
         }
       }
     }

@@ -15,11 +15,10 @@ whether a migrated ng-zorro component matches antd v6's visuals.
   `tsconfig.json` `paths` (which point at its `components/` source). The bundle
   therefore holds exactly one antd, the package the v6 CSS is generated from,
   and `compare.tsx`'s `ConfigProvider theme={{ zeroRuntime: true }}` reaches
-  every demo. What antd v6 still registers at runtime under `zeroRuntime` (its
-  default-theme CSS-variable blocks, which would override the harness theme's
-  tokens) goes to a detached element through `StyleProvider`, so only the
-  generated v6 CSS styles the antd pane. `capture.ts` fails if antd's runtime
-  CSS-in-JS reaches the antd pane anyway.
+  every demo. What antd v6 still registers at runtime under `zeroRuntime` goes
+  to a detached element through `StyleProvider`, so only the generated v6 CSS
+  styles the antd pane; `capture.ts` fails if antd's runtime CSS-in-JS reaches
+  it anyway.
 - The checkout must be at the same version as this fork's `antd` dependency,
   since its demos are rendered against the installed package's CSS:
   `git -C ../ant-design checkout 6.6.5` (the tag matching
@@ -27,8 +26,7 @@ whether a migrated ng-zorro component matches antd v6's visuals.
   `package.json`, its `components/version/version.ts` and the installed
   `antd` version and fails, naming all three, on a mismatch.
 - The checkout's git-ignored generated file `components/version/version.ts`
-  must exist (its own build produces this from `package.json` at publish
-  time, and a bare checkout won't have it). Either create it manually as
+  must exist (a bare checkout won't have it): create it manually as
   `export default '<version>';` matching that checkout's `package.json`
   version, or run `npm run version` there. `build-demos.ts` fails fast with
   this same guidance if the file is missing.
@@ -63,53 +61,49 @@ whether a migrated ng-zorro component matches antd v6's visuals.
   only (no antd pane) for a component task's before/after diff; copy
   `out/<dir>/default/` to `out/<dir>/default-before/` by hand before the
   template change.
-- `npx tsx tools/v6-compare/dump-dom.ts --component <dir> --demo <stem> [--side antd|nz] [--theme v6] [--selector <css>] [--click]` —
+- `npx tsx tools/v6-compare/dump-dom.ts --component <dir> --demo <stem> [--side antd|nz] [--theme v6] [--selector <css>] [--click [<selector>]]` —
   prints a demo's rendered DOM (text, `style`, `id`, `aria-*` and `data-*`
   stripped, indented by depth). `--side antd` (default) reads the bundled antd
   demo from the out server it starts; `--side nz` reads the doc site
-  (`SITE_URL`; the demo key must exist on that page). `--click` first clicks
-  the first trigger inside the demo (`.cmp-demo-body` on the antd side,
-  `#components-<dir>-demo-<demo>` on the nz side) matching `.ant-btn`,
-  `[nz-popconfirm]`, `[nz-popover]`, `[nz-tooltip]` or `[nz-dropdown]`, and
-  says so if none matches. `--selector` defaults to the component's
-  `prefixCls` on the antd side (with `--click`: `.ant-message`,
-  `.ant-notification`, `-wrap` roots, `[role="tooltip"]`), and to the demo
+  (`SITE_URL`; the demo key must exist on that page). `--click` clicks the
+  first trigger inside the demo matching a default set (`.ant-btn`,
+  `[nz-popconfirm]`, select-style boxes, pickers, dropdowns, tabs' overflow
+  menu, table filter triggers, …), or a selector passed after it
+  (`--click .ant-select-selector`) to open one popup specifically; says so
+  if nothing matches. `--selector` defaults to the component's `prefixCls`
+  on the antd side (with `--click`: overlay/portal roots), and to the demo
   section's `[class^="ant-"]` descendants on the nz side (plus the CDK
-  overlay container's with `--click`). Only top-most matches are printed; a
-  root whose class attribute starts with a non-`ant-` class is missed, so
-  pass `--selector` then. Exits non-zero on no match.
+  overlay container's with `--click`); only top-most matches print, so pass
+  `--selector` explicitly if a root's class attribute does not start with
+  `ant-`. Exits non-zero on no match.
 - `npx tsx tools/v6-compare/collect-classes.ts [--component <dir>]` — records
   `ant-*` classes rendered on the doc-site page (`SITE_URL`) into
   `out/rendered-classes.json` for the style-coverage tests, with the popup
   triggers that opened something per component (hover `TRIGGERS` first, then
   click-only popups via `CLICK_TRIGGERS`). Classes are attributed by
   `prefixCls` plus `renderedPrefixes` (see `scripts/build/v6/components.ts`).
+- `npx vitest run --config scripts/vitest.config.mts scripts/build/v6/__tests__/v4-rule-guard.spec.ts` —
+  fails a commit that emits a class the compiled v4 CSS also styles;
+  `npm run v6:update-baseline` refreshes the baseline it diffs against (a
+  plan's end only).
 - `npx tsx tools/v6-compare/check-toggle.ts` — on every mapped component's
   page (`SITE_URL`) and each of `?theme=v6|v6-dark|default`, asserts the base
   stylesheet is disabled only under v6, the theme stylesheet and
-  `--ant-color-primary` match the theme, and v6 rules reach the first element
-  carrying the component's `prefixCls` (overlay pages, which render nothing
-  until opened, only need `prefixCls` rules in the theme stylesheet). Button,
-  input, select and space also check exact computed values.
-- `npx tsx tools/v6-compare/ssr-check/run.ts` — builds and asserts on the
-  standalone SSR check app.
-- `npm run typecheck:tools` — `tsc` over `tools/` and `scripts/`
-  (`tsconfig.tools.json`); tsx runs these files without type-checking, so run
-  it after editing the harness or the build scripts.
+  `--ant-color-primary` match the theme, and v6 rules reach the component's
+  `prefixCls` element (button/input/select/space also check exact values).
+- `npx tsx tools/v6-compare/ssr-check/run.ts` — builds and asserts on the standalone SSR check app.
+- `npm run typecheck:tools` — `tsc` over `tools/` and `scripts/` (`tsconfig.tools.json`); tsx runs
+  these files without type-checking, so run it after editing the harness or the build scripts.
 
 ## Doc-site v6 toggle
 
 `?theme=v6|v6-dark|v6-compact` (or the theme menu) disables the v4 base
-stylesheet (`link[href^="styles"]`) and loads the generated v6 CSS. With
-Angular's default production optimization, the build would also inline the
-v4 _critical_ CSS into each prerendered page as a `<style>` element, which
-disabling the link cannot switch off, so above-the-fold v4 rules would stay
-mixed into the v6 view. The doc site's production configuration
-(`project.json`, `build` target, used by `npm run build` and the preview
-deploy) therefore sets `optimization.styles.inlineCritical: false` (scripts,
-style minification and fonts stay optimized); the cost is a slightly later
-first paint on the preview site. A `?theme=` link applies for that visit
-only and does not overwrite the reader's stored site theme.
+stylesheet (`link[href^="styles"]`) and loads the generated v6 CSS. Angular's
+default production optimization would otherwise still inline v4's _critical_
+CSS into each prerendered page, so the doc site's production config
+(`project.json`, `build` target) sets `optimization.styles.inlineCritical: false`
+(a slightly later first paint, scripts/fonts stay optimized). A `?theme=`
+link applies for that visit only and does not overwrite the stored site theme.
 
 ## Viewing the harness
 
@@ -128,9 +122,16 @@ with a differently-named antd demo file stem; `null` marks an ng-zorro-only demo
 with no antd counterpart. Demo keys not listed pair by identical name.
 
 `AutoComplete` and `TimePicker` have their own antd demo directories (`auto-complete`,
-`time-picker`) even though they share `Select`/`DatePicker`'s style module and engine
-registration (`ANTD_STYLE_MODULE_OVERRIDES` in `scripts/build/v6/components.ts`); that
-override does not change `_antdDir`'s default here.
+`time-picker`) even though `ANTD_STYLE_MODULE_OVERRIDES` shares their style module and
+engine registration with `Select`/`DatePicker`; that override does not change
+`_antdDir`'s default here.
+
+## v6-dark demo pane
+
+`site/styles-v6-chrome.less` gives `.code-box`/`.code-box-demo` (`codebox.component.html`)
+the active theme's `--ant-color-bg-container`/`--ant-color-text` under
+`body[data-theme^='v6']`, so a `v6-dark`/`v6-compact` demo's own contrast stays
+visible instead of sitting on the light v4 page background.
 
 ## Windows note
 

@@ -41,7 +41,13 @@ const CLICK_TRIGGERS: Partial<Record<string, string>> = {
   'color-picker': '.ant-color-picker-trigger',
   'tree-select': '.ant-select-selector',
   cascader: '.ant-select-selector',
-  upload: '.ant-upload button, .ant-upload-btn'
+  upload: '.ant-upload button, .ant-upload-btn',
+  dropdown: '[nz-dropdown], .ant-dropdown-trigger',
+  image: '.ant-image-img',
+  tabs: '.ant-tabs-nav-more',
+  table: '.ant-table-filter-trigger',
+  pagination: '.ant-pagination-options .ant-select-selector'
+  // 'context-menu': n/a -- right-click is not exercised by this harness.
 };
 
 async function main(): Promise<void> {
