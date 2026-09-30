@@ -2179,10 +2179,16 @@ describe('cascader', () => {
     it('should nzLoadData work when specifies default value', async () => {
       vi.spyOn(testComponent, 'addCallTimes').mockImplementation(() => {});
       testComponent.values.set(['zhejiang', 'hangzhou', 'xihu']);
-      await sleep(LAZY_LOAD_DELAY * 3 + 16);
-      fixture.detectChanges();
-      expect(testComponent.addCallTimes).toHaveBeenCalledTimes(3);
-      expect(testComponent.cascader.cascaderService.columns.length).toBe(3);
+      // Three chained lazy loads of LAZY_LOAD_DELAY each; poll for the last one instead of a fixed
+      // wall-clock wait, which a loaded runner can overshoot.
+      await vi.waitFor(
+        () => {
+          fixture.detectChanges();
+          expect(testComponent.addCallTimes).toHaveBeenCalledTimes(3);
+          expect(testComponent.cascader.cascaderService.columns.length).toBe(3);
+        },
+        { timeout: 3000, interval: 20 }
+      );
       expect(testComponent.values()).toEqual(['zhejiang', 'hangzhou', 'xihu']);
     });
 
