@@ -5,7 +5,7 @@
 
 import { chromium } from 'playwright';
 
-import { V6ComponentDir, v6ComponentDirs, v6Components } from '../../scripts/build/v6/components';
+import { V6ComponentDir, V6ComponentEntry, v6ComponentDirs, v6Components } from '../../scripts/build/v6/components';
 
 const base = process.env['SITE_URL'] ?? 'http://localhost:4200';
 const THEMES = ['v6', 'v6-dark', 'default'] as const;
@@ -57,10 +57,14 @@ const EXACT_PROBES: Partial<Record<V6ComponentDir, ExactProbe>> = {
     }
   },
   select: {
-    selector: '#components-select-demo-basic nz-select',
+    // antd v6's rc-select draws the box (background, border-radius) on its root; ng-zorro keeps
+    // `nz-select-top-control` (`.ant-select-selector`) as the nested box element and neutralises the
+    // root's paint in `components/select/style/v6/patch.css` (`.ant-select { background: transparent;
+    // border-radius: 0; }`). Probe the box element the patch actually paints, not the neutralised root.
+    selector: '#components-select-demo-basic nz-select .ant-select-selector',
     expected: {
-      backgroundColor: { v6: 'rgb(255, 255, 255)', 'v6-dark': 'rgb(20, 20, 20)', default: 'rgba(0, 0, 0, 0)' },
-      borderRadius: { v6: '6px', 'v6-dark': '6px', default: '0px' }
+      backgroundColor: { v6: 'rgb(255, 255, 255)', 'v6-dark': 'rgb(20, 20, 20)', default: 'rgb(255, 255, 255)' },
+      borderRadius: { v6: '6px', 'v6-dark': '6px', default: '2px' }
     }
   },
   space: {
@@ -89,6 +93,12 @@ async function main(): Promise<void> {
   const failures: string[] = [];
   for (const dir of v6ComponentDirs) {
     const prefixCls = v6Components[dir].prefixCls;
+    // A component that reuses another family's box (tree-select renders the select box pattern; its
+    // root also carries `ant-select`, declared as its own `renderedPrefixes` in components.ts) can have
+    // its real v6 rules keyed on that rendered prefix rather than its own `prefixCls`. Widen the rule
+    // search accordingly instead of special-casing components here.
+    const renderedPrefixes: readonly string[] = (v6Components[dir] as V6ComponentEntry).renderedPrefixes ?? [];
+    const rulePrefixes = [prefixCls, ...renderedPrefixes];
     const exact = EXACT_PROBES[dir];
     for (const theme of THEMES) {
       await page.goto(`${base}/components/${dir}/en?theme=${theme}`, { waitUntil: 'networkidle' });
@@ -102,7 +112,7 @@ async function main(): Promise<void> {
           .catch(() => undefined);
       }
       const state = await page.evaluate(
-        ({ theme, prefixCls, exactSelector, properties }) => {
+        ({ theme, prefixCls, rulePrefixes, exactSelector, properties }) => {
           const baseLinks = Array.from(
             document.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"][href^="styles"]')
           );
@@ -124,7 +134,7 @@ async function main(): Promise<void> {
           const matchingV6Rules = el
             ? rules.filter(r => {
                 try {
-                  return r.selectorText.includes(`.${prefixCls}`) && el.matches(r.selectorText);
+                  return rulePrefixes.some(p => r.selectorText.includes(`.${p}`)) && el.matches(r.selectorText);
                 } catch {
                   return false;
                 }
@@ -148,6 +158,7 @@ async function main(): Promise<void> {
         {
           theme,
           prefixCls,
+          rulePrefixes,
           exactSelector: exact?.selector ?? null,
           properties: exact ? Object.keys(exact.expected) : []
         }
