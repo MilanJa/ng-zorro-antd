@@ -288,6 +288,8 @@
     "ant-popconfirm-inner-content",
     "ant-popconfirm-message-text"
   ],
+  "_descriptions_comment": "v4-compat: ant-descriptions-middle (replacement: ant-descriptions-medium, added alongside on the same nzSize === 'middle' condition — antd v6's Descriptions/index.js clsx map keys `${prefixCls}-medium` off `mergedSize === 'medium' || mergedSize === 'middle'`, so v6 CSS never has a rule for the literal `-middle` class; compiled v4 CSS still styles .ant-descriptions-middle).",
+  "descriptions": ["ant-descriptions-middle"],
   "_drawer_comment": "v4-compat (patch hook): -wrapper-body (kept as the flex container; the patch mirrors v6's -section layout onto it). antd-emits: -header-close-only, -open (the patch uses -open only in `:not(.ant-drawer-open)` for the closed-panel shadow).",
   "drawer": [
     "ant-drawer-header-close-only",

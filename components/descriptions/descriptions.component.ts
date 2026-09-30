@@ -156,6 +156,7 @@ const DEFAULT_COLUMN_NUM = 3;
     class: 'ant-descriptions',
     '[class.ant-descriptions-bordered]': 'nzBordered',
     '[class.ant-descriptions-middle]': 'nzSize === "middle"',
+    '[class.ant-descriptions-medium]': 'nzSize === "middle"',
     '[class.ant-descriptions-small]': 'nzSize === "small"',
     '[class.ant-descriptions-rtl]': `dir() === "rtl"`
   },

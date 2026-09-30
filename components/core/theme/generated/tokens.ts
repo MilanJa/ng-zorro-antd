@@ -719,6 +719,19 @@ export interface NzDatePickerToken {
   zIndexPopup: number;
 }
 
+export interface NzDescriptionsToken {
+  colonMarginLeft: number;
+  colonMarginRight: number;
+  contentColor: string;
+  extraColor: string;
+  itemPaddingBottom: number;
+  itemPaddingEnd: number;
+  labelBg: string;
+  labelColor: string;
+  titleColor: string;
+  titleMarginBottom: number;
+}
+
 export interface NzDrawerToken {
   draggerSize: number;
   footerPaddingBlock: number;
@@ -1128,6 +1141,7 @@ export interface NzComponentTokenMap {
   Checkbox: NzCheckboxToken;
   ColorPicker: NzColorPickerToken;
   DatePicker: NzDatePickerToken;
+  Descriptions: NzDescriptionsToken;
   Drawer: NzDrawerToken;
   Dropdown: NzDropdownToken;
   FloatButton: NzFloatButtonToken;

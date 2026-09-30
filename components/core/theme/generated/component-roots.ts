@@ -17,6 +17,7 @@ export const COMPONENT_ROOT_CLS: Record<string, string> = {
   Checkbox: 'ant-checkbox',
   ColorPicker: 'ant-color-picker',
   DatePicker: 'ant-picker',
+  Descriptions: 'ant-descriptions',
   Drawer: 'ant-drawer',
   Dropdown: 'ant-dropdown',
   FloatButton: 'ant-float-btn',

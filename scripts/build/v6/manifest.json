@@ -1,7 +1,7 @@
 {
   "antdVersion": "6.6.5",
   "engineCoreBytes": 42701,
-  "engineComponentsBytes": 303559,
+  "engineComponentsBytes": 306677,
   "components": {
     "alert": {
       "classes": [
@@ -851,6 +851,38 @@
         "--ant-date-picker-warning-active-shadow",
         "--ant-date-picker-without-time-cell-height",
         "--ant-date-picker-z-index-popup"
+      ]
+    },
+    "descriptions": {
+      "classes": [
+        "ant-descriptions",
+        "ant-descriptions-bordered",
+        "ant-descriptions-extra",
+        "ant-descriptions-header",
+        "ant-descriptions-item",
+        "ant-descriptions-item-container",
+        "ant-descriptions-item-content",
+        "ant-descriptions-item-label",
+        "ant-descriptions-item-no-colon",
+        "ant-descriptions-item-no-label",
+        "ant-descriptions-medium",
+        "ant-descriptions-row",
+        "ant-descriptions-rtl",
+        "ant-descriptions-small",
+        "ant-descriptions-title",
+        "ant-descriptions-view"
+      ],
+      "tokens": [
+        "--ant-descriptions-colon-margin-left",
+        "--ant-descriptions-colon-margin-right",
+        "--ant-descriptions-content-color",
+        "--ant-descriptions-extra-color",
+        "--ant-descriptions-item-padding-bottom",
+        "--ant-descriptions-item-padding-end",
+        "--ant-descriptions-label-bg",
+        "--ant-descriptions-label-color",
+        "--ant-descriptions-title-color",
+        "--ant-descriptions-title-margin-bottom"
       ]
     },
     "drawer": {

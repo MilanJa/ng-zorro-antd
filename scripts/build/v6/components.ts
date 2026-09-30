@@ -48,6 +48,7 @@ export const v6Components = {
   // `ANTD_REGISTRY_NAME_OVERRIDES` above): TimePicker is a DatePicker preset (`picker="time"`) with no
   // style module of its own.
   'date-picker': { antd: ['DatePicker'], prefixCls: 'ant-picker' },
+  descriptions: { antd: ['Descriptions'], prefixCls: 'ant-descriptions' },
   drawer: { antd: ['Drawer'], prefixCls: 'ant-drawer' },
   dropdown: { antd: ['Dropdown'], prefixCls: 'ant-dropdown' },
   // Only `FloatButton`: the top-level `BackTop` export is antd's deprecated `back-top` component, with

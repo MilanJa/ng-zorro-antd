@@ -192,6 +192,9 @@
       "less": "./descriptions/style/*.less",
       "style": "./descriptions/style/index.min.css"
     },
+    "./descriptions/style/v6/*": {
+      "style": "./descriptions/style/v6/*"
+    },
     "./divider/style/*": {
       "less": "./divider/style/*.less",
       "style": "./divider/style/index.min.css"
