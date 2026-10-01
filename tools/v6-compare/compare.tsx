@@ -17,7 +17,11 @@ const algorithm = theme === 'v6-dark' ? 'dark' : theme === 'v6-compact' ? 'compa
 
 const link = document.createElement('link');
 link.rel = 'stylesheet';
-link.href = `v6-${algorithm}.css`;
+// The antd pane renders real antd markup, so it loads only the extracted antd template and the
+// theme's tokens, not `v6-<algorithm>.css` (which also carries the component patches that retarget
+// antd's rules onto ng-zorro's DOM, e.g. moving the select box off `.ant-select`); that file styles
+// ng-zorro's own doc-site page, not this pane.
+link.href = `v6-${algorithm}.antd.css`;
 document.head.appendChild(link);
 
 // Even with `zeroRuntime`, antd v6 registers its CSS-variable blocks (alias and component tokens of the

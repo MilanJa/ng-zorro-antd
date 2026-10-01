@@ -16,9 +16,9 @@ whether a migrated ng-zorro component matches antd v6's visuals.
   therefore holds exactly one antd, the package the v6 CSS is generated from,
   and `compare.tsx`'s `ConfigProvider theme={{ zeroRuntime: true }}` reaches
   every demo. What antd v6 still registers at runtime under `zeroRuntime` goes
-  to a detached element through `StyleProvider`, so only the generated v6 CSS
-  styles the antd pane; `capture.ts` fails if antd's runtime CSS-in-JS reaches
-  it anyway.
+  to a detached element through `StyleProvider`, so only the antd-pane
+  stylesheet below styles the antd pane; `capture.ts` fails if antd's
+  runtime CSS-in-JS reaches it anyway.
 - The checkout must be at the same version as this fork's `antd` dependency,
   since its demos are rendered against the installed package's CSS:
   `git -C ../ant-design checkout 6.6.5` (the tag matching
@@ -42,12 +42,13 @@ whether a migrated ng-zorro component matches antd v6's visuals.
 
 - `npx tsx tools/v6-compare/build-demos.ts [--component <dir>]` — bundles each
   mapped antd component's demo files (self-contained ESM, one per ng-zorro dir)
-  into `out/demos/<dir>.js`, writes `out/v6-{default,dark,compact}.css` from
-  `buildV6Bundle`, copies `compare.html` to `out/`, and writes/merges
-  `out/build-report.json`. Demos that import docs-only packages (e.g.
-  `antd-style`, `@ant-design/happy-work-theme`, `runes2`) are reported under
-  `skipped` rather than installed; antd's `debug-*`/`*-debug` demos are not
-  bundled.
+  into `out/demos/<dir>.js`, writes `out/v6-{default,dark,compact}.css` (full
+  `buildV6Bundle` output) and its `.antd.css` sibling (`antdPaneCss`: template
+  - tokens only, no component patches — see Prerequisites), copies
+    `compare.html` to `out/`, and writes/merges `out/build-report.json`. Demos
+    that import docs-only packages (e.g. `antd-style`,
+    `@ant-design/happy-work-theme`, `runes2`) are reported under `skipped`
+    rather than installed; antd's `debug-*`/`*-debug` demos are not bundled.
 - `npx tsx tools/v6-compare/serve-out.ts` — serves `tools/v6-compare/out` on
   `127.0.0.1` (loopback only, confined to `out/`), on the port of `HARNESS_URL`
   (default `http://localhost:4301`).
@@ -69,9 +70,9 @@ whether a migrated ng-zorro component matches antd v6's visuals.
   first trigger inside the demo matching a default set (`.ant-btn`,
   `[nz-popconfirm]`, select-style boxes, pickers, dropdowns, tabs' overflow
   menu, table filter triggers, …), or a selector passed after it
-  (`--click .ant-select-selector`) to open one popup specifically; says so
-  if nothing matches. `--selector` defaults to the component's `prefixCls`
-  on the antd side (with `--click`: overlay/portal roots), and to the demo
+  (`--click .ant-select-selector`) to open one popup specifically; says so if
+  nothing matches. `--selector` defaults to the component's `prefixCls` on
+  the antd side (with `--click`: overlay/portal roots), and to the demo
   section's `[class^="ant-"]` descendants on the nz side (plus the CDK
   overlay container's with `--click`); only top-most matches print, so pass
   `--selector` explicitly if a root's class attribute does not start with
@@ -84,8 +85,7 @@ whether a migrated ng-zorro component matches antd v6's visuals.
   `prefixCls` plus `renderedPrefixes` (see `scripts/build/v6/components.ts`).
 - `npx vitest run --config scripts/vitest.config.mts scripts/build/v6/__tests__/v4-rule-guard.spec.ts` —
   fails a commit that emits a class the compiled v4 CSS also styles;
-  `npm run v6:update-baseline` refreshes the baseline it diffs against (a
-  plan's end only).
+  `npm run v6:update-baseline` refreshes the baseline it diffs against.
 - `npx tsx tools/v6-compare/check-toggle.ts` — on every mapped component's
   page (`SITE_URL`) and each of `?theme=v6|v6-dark|default`, asserts the base
   stylesheet is disabled only under v6, the theme stylesheet and
@@ -135,6 +135,6 @@ time) gives `.code-box-demo` (`codebox.component.html`) the active theme's
 
 ## Windows note
 
-The Vitest runner used by this fork's own test scripts may need a local patch to
-`node_modules/@angular/build`'s vitest executor to run browser specs on Windows;
-this is unrelated to the harness itself.
+The Vitest runner used by this fork's own test scripts may need a local patch
+to `node_modules/@angular/build`'s vitest executor to run browser specs on
+Windows; unrelated to the harness itself.

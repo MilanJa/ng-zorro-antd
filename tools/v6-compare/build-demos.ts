@@ -10,7 +10,7 @@ import path from 'node:path';
 
 import { kebabCase } from '../../scripts/build/v6/bundle-engine';
 import { v6ComponentDirs, v6Components } from '../../scripts/build/v6/components';
-import { buildV6Bundle } from '../../scripts/build/v6/generate-styles';
+import { buildV6Bundle, type V6Bundle } from '../../scripts/build/v6/generate-styles';
 
 const repoRoot = path.resolve(__dirname, '../..');
 const antdRepo = path.resolve(process.env['ANTD_REPO'] ?? path.join(repoRoot, '../ant-design'));
@@ -66,6 +66,14 @@ function assertAntdVersions(): void {
         `(and regenerate version.ts there).`
     );
   }
+}
+
+// The component patches and the global patch only adapt antd's CSS onto ng-zorro's DOM (e.g. moving
+// the select box's border/radius/height off `.ant-select` and onto `.ant-select-selector`), so on the
+// antd pane — real antd markup — they strip or relocate rules antd itself depends on. The antd pane
+// gets the extracted template and the theme tokens only, the same two pieces antd's own DOM needs.
+export function antdPaneCss(bundle: Pick<V6Bundle, 'template' | 'tokens'>): string {
+  return [bundle.template, bundle.tokens].join('\n');
 }
 
 export function antdDirFor(dir: string): string {
@@ -161,10 +169,12 @@ async function main(): Promise<void> {
     await bundleComponent(dir, report);
   }
   for (const algorithm of ['default', 'dark', 'compact'] as const) {
-    writeFileSync(
-      path.join(outDir, `v6-${algorithm}.css`),
-      (await buildV6Bundle(algorithm, path.join(repoRoot, 'components'))).css
-    );
+    const bundle = await buildV6Bundle(algorithm, path.join(repoRoot, 'components'));
+    // `bundle.css` (template + component patches + tokens + global patch) is kept for anything else
+    // that reads `v6-<algorithm>.css` as the full v6 stylesheet; compare.tsx's antd pane uses the
+    // `.antd.css` sibling instead (see antdPaneCss above).
+    writeFileSync(path.join(outDir, `v6-${algorithm}.css`), bundle.css);
+    writeFileSync(path.join(outDir, `v6-${algorithm}.antd.css`), antdPaneCss(bundle));
   }
   copyFileSync(path.join(__dirname, 'compare.html'), path.join(outDir, 'compare.html'));
   const previous = existsSync(path.join(outDir, 'build-report.json'))
