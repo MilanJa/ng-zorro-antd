@@ -19,13 +19,17 @@ import { NzStatisticValueType } from './typings';
   encapsulation: ViewEncapsulation.None,
   imports: [NzSkeletonModule, NzStatisticContentValueComponent, NzOutletModule],
   template: `
-    @if (nzTitle) {
-      <div class="ant-statistic-header">
-        <div class="ant-statistic-title">
-          <ng-container *nzStringTemplateOutlet="nzTitle">{{ nzTitle }}</ng-container>
-        </div>
+    <!--
+      Rendered unconditionally (unlike v6's Statistic.js, which skips both this and the title
+      div when the title is empty): v4's .ant-statistic-title margin-bottom: 4px rule applies
+      to the title div whether or not it has content, so a title-less statistic still needs the
+      div present to keep that 4px gap under the default stylesheet.
+    -->
+    <div class="ant-statistic-header">
+      <div class="ant-statistic-title">
+        <ng-container *nzStringTemplateOutlet="nzTitle">{{ nzTitle }}</ng-container>
       </div>
-    }
+    </div>
     @if (nzLoading) {
       <nz-skeleton class="ant-statistic-skeleton" [nzParagraph]="false" />
     } @else {
