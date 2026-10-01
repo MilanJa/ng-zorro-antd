@@ -53,6 +53,7 @@ const NZ_CONFIG_MODULE_NAME: NzConfigKey = 'badge';
       @if (showSup) {
         <nz-badge-sup
           [isPresetColor]="!!presetColor"
+          [isStatusColor]="!!nzStatus"
           [nzColor]="nzStatus || presetColor || nzColor"
           [nzOffset]="nzOffset"
           [nzSize]="nzSize"

@@ -270,6 +270,20 @@ describe('badge', () => {
       );
     });
 
+    it('should not treat a status word passed as nzColor (no nzStatus set) as a status', () => {
+      // `nzColor="success"` names a colour, not a status: antd v6's Badge.js only emits
+      // `${prefixCls}-status-${status}` when `nzStatus` (the real `status` prop) is set, and
+      // `success` is not in antd's preset colour list either, so no `-status-`/`-color-` class
+      // should appear here.
+      testComponent.color.set('success');
+      testComponent.count.set(5);
+      fixture.detectChanges();
+      const sup = badgeElement.nativeElement.querySelector('nz-badge-sup');
+      expect(Array.from(sup.classList as DOMTokenList).some((c: string) => c.startsWith('ant-badge-status-'))).toBe(
+        false
+      );
+    });
+
     it('should nzStyle work even if nzColor is not provided', () => {
       testComponent.color.set(undefined);
       testComponent.status.set('success'); // must set nzStatus to make sure status dot is rendered

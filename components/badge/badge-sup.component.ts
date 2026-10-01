@@ -19,11 +19,6 @@ import {
 import { NzNoAnimationDirective } from 'ng-zorro-antd/core/animation';
 import { NgStyleInterface, NzSafeAny, NzSizeDSType } from 'ng-zorro-antd/core/types';
 
-// antd's `PresetStatusColors` (node_modules/antd/es/_util/colors.js), the set `isPresetStatusColor`
-// checks before Badge.js emits `${prefixCls}-status-${status}`; a plain custom colour (e.g. `#f50`)
-// is not in this set and gets no status-prefixed class at all, only the inline background/colour.
-const BADGE_STATUS_COLORS: readonly string[] = ['success', 'processing', 'default', 'error', 'warning'];
-
 @Component({
   selector: 'nz-badge-sup',
   exportAs: 'nzBadgeSup',
@@ -53,14 +48,19 @@ const BADGE_STATUS_COLORS: readonly string[] = ['success', 'processing', 'defaul
   host: {
     class: 'ant-scroll-number',
     // `nzColor` here is `nzStatus || presetColor || nzColor` from the parent badge, so it also
-    // carries a plain custom colour (e.g. `#f50`) when neither a status nor a preset matched.
-    // antd v6's Badge.js gives the preset-colour case `${prefixCls}-color-${color}` and the
-    // status case `${prefixCls}-status-${status}` -- two different class prefixes, not one --
-    // and emits NEITHER for a custom colour (`isPresetColor(color, false)` is false, so only the
-    // inline background/colour style applies). The compiled v4 CSS styles
+    // carries a plain custom colour (e.g. `#f50`) when neither a status nor a preset matched, and
+    // it carries a status word (e.g. `success`) whether that word came from `nzStatus` or was
+    // passed as `nzColor` directly -- the merged string alone cannot tell the two apart, which is
+    // why `isStatusColor` is a separate flag set by the parent from `!!nzStatus`, not a lookup of
+    // `nzColor` against the status-name list (a `nzColor="success"` badge is a custom colour that
+    // happens to share a name with a status, not a status). antd v6's Badge.js gives the
+    // preset-colour case `${prefixCls}-color-${color}` and the status case
+    // `${prefixCls}-status-${status}` -- two different class prefixes, not one -- and emits
+    // NEITHER for a custom colour (`isPresetColor(color, false)` is false, so only the inline
+    // background/colour style applies). The compiled v4 CSS styles
     // `.ant-badge-status-<preset colour>` (there is no `.ant-badge-color-*` rule in v4) and the
-    // inline `background-color` is intentionally omitted for a preset colour (`mergedStyle`
-    // below), so `ant-badge-status-<colour>` is kept -- v4-compat, replacement
+    // inline `background-color` is intentionally omitted for a preset colour (the parent's
+    // `mergedStyle`), so `ant-badge-status-<colour>` is kept -- v4-compat, replacement
     // `ant-badge-color-<colour>` -- for the status and preset cases only; `isStatusOrPresetColor`
     // keeps a bare custom colour from getting either class.
     '[class]': `isStatusOrPresetColor ? 'ant-badge-status-' + nzColor + (isPresetColor ? ' ant-badge-color-' + nzColor : '') : ''`,
@@ -85,10 +85,14 @@ export class NzBadgeSupComponent implements OnInit, OnChanges {
   @Input() nzCount?: number | TemplateRef<NzSafeAny>;
   @Input() nzSize: NzSizeDSType = 'default';
   @Input({ transform: booleanAttribute }) isPresetColor = false;
+  // Set by the parent from `!!nzStatus`, not derived from `nzColor`'s value: a status word
+  // reaching this component through `nzColor` (no `nzStatus` set) is a custom colour, not a
+  // status, and must not be mistaken for one just because the two share a name.
+  @Input({ transform: booleanAttribute }) isStatusColor = false;
   @Input() nzColor?: string;
 
   protected get isStatusOrPresetColor(): boolean {
-    return !!this.nzColor && (this.isPresetColor || BADGE_STATUS_COLORS.includes(this.nzColor));
+    return !!this.nzColor && (this.isPresetColor || this.isStatusColor);
   }
 
   maxNumberArray: string[] = [];
