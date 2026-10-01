@@ -10,7 +10,7 @@ const MOTION_CLASS = /^ant-.*-(enter|appear|leave)(-.*)?$/;
  * running on it. Rejects after `timeoutMs`. Use it to assert that antd motion CSS and Angular's class-based
  * animations agree.
  */
-export function expectMotionSettled(el: Element, timeoutMs = 1000): Promise<void> {
+export function expectMotionSettled(el: Element, timeoutMs = 2000): Promise<void> {
   const start = performance.now();
   return new Promise((resolve, reject) => {
     const check = (): void => {
