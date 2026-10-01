@@ -80,10 +80,16 @@ describe('image preview under antd v6 css', () => {
     expect(pane.className).toContain(enclosingScopeClass());
     expect(getComputedStyle(root).getPropertyValue('--ant-color-primary').trim()).toBe('#00b96b');
 
-    // colorBgMask default token, read from the v6 CSS rather than hard-coded.
-    const mask = root.querySelector('.ant-image-preview-mask') as HTMLElement;
+    // The mask is a sibling of `.ant-image-preview-wrap`, both children of `.ant-image-preview-root`
+    // (the v4 DOM position), not nested inside `.ant-image-preview` (`root`).
+    const previewRoot = root.closest('.ant-image-preview-root') as HTMLElement;
+    expect(previewRoot).not.toBeNull();
+    const mask = previewRoot.querySelector('.ant-image-preview-mask') as HTMLElement;
     expect(mask).not.toBeNull();
+    // colorBgMask default token, read from the v6 CSS rather than hard-coded.
     expect(getComputedStyle(mask).backgroundColor).toBe('rgba(0, 0, 0, 0.45)');
+    expect(getComputedStyle(mask).position).toBe('fixed');
+    expect(getComputedStyle(mask).zIndex).toBe(getComputedStyle(root).zIndex);
 
     const footer = root.querySelector('.ant-image-preview-footer') as HTMLElement;
     expect(footer).not.toBeNull();

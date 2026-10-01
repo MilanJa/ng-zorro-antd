@@ -1,4 +1,24 @@
 /*
+ * v4 renders `.ant-image-preview-mask` as a sibling of `.ant-image-preview-wrap`, fixed to the
+ * viewport below the wrap (`ant-image-preview-mask { position: fixed; z-index: 1000 }`,
+ * `.ant-image-preview-wrap { position: fixed; z-index: 1080 }`), so it stays kept here at that
+ * position rather than moved inside `.ant-image-preview-wrap` the way v6's `Preview/index.js`
+ * renders it (nested, filling its fixed-positioned parent with `position: absolute; inset: 0`).
+ * Under the v6 bundle alone (no v4 stylesheet) the mask has no containing block to fill and no
+ * stacking order relative to the wrap, so its v6 paint (`.ant-image-preview .ant-image-preview-mask`
+ * in `publish/style/v6/template.css`: `background: var(--ant-color-bg-mask)`) and its parent's own
+ * fixed placement/z-index (`.ant-image-preview { inset: 0; position: fixed;
+ * z-index: var(--ant-image-z-index-popup) }`, same file) are mirrored directly onto the mask at its
+ * v4 sibling position.
+ */
+.ant-image-preview-root > .ant-image-preview-mask {
+  position: fixed;
+  inset: 0;
+  z-index: var(--ant-image-z-index-popup);
+  background: var(--ant-color-bg-mask);
+}
+
+/*
  * v6 draws the preview toolbar as a bottom-centered pill (`.ant-image-preview-footer`,
  * `position: absolute; bottom: var(--ant-margin-xl); left: 50%; transform: translateX(-50%)`).
  * ng-zorro keeps the v4 top bar element (`.ant-image-preview-operations-wrapper`, itself
