@@ -53,7 +53,8 @@ import { DEFAULT_BACKGROUND_COLOR, DEFAULT_FRONT_COLOR, DEFAULT_MINVERSION } fro
             </button>
           }
           @case ('scanned') {
-            <p class="ant-qrcode-scanned">{{ locale().scanned }}</p>
+            <!-- ant-qrcode-expired keeps v4 text colour here too; v6 styles both classes. -->
+            <p class="ant-qrcode-expired ant-qrcode-scanned">{{ locale().scanned }}</p>
           }
         }
       </div>

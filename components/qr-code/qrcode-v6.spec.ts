@@ -109,11 +109,11 @@ describe('scanned qrcode under antd v6 css', () => {
     TestBed.inject(OverlayContainer).ngOnDestroy();
   });
 
-  it('uses ant-qrcode-scanned, not the expired class, for the scanned message', () => {
-    // v4 reused `ant-qrcode-expired` for both messages; v6's QrcodeStatus gives the scanned
-    // message its own `${prefixCls}-scanned` class.
-    expect(document.querySelector('#host .ant-qrcode-expired')).toBeFalsy();
-    const scanned = document.querySelector('#host > .ant-qrcode-cover > .ant-qrcode-scanned');
+  it('keeps ant-qrcode-expired (v4 text colour) alongside ant-qrcode-scanned for the scanned message', () => {
+    // v4 reused `ant-qrcode-expired` (`color: rgba(0, 0, 0, .85)`) for both messages; v6's
+    // QrcodeStatus gives the scanned message its own `${prefixCls}-scanned` class. Both classes
+    // are kept on the same element so the default stylesheet still colours the scanned text.
+    const scanned = document.querySelector('#host > .ant-qrcode-cover > .ant-qrcode-scanned.ant-qrcode-expired');
     expect(scanned).toBeTruthy();
   });
 });
