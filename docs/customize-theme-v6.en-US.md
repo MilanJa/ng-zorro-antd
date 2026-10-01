@@ -54,6 +54,7 @@ Only the components below have v6 styles so far. Others keep rendering with the 
 - `spin`
 - `statistic`
 - `switch`
+- `table`
 - `tabs`
 - `tag`
 - `time-picker`

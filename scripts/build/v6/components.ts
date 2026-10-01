@@ -108,6 +108,23 @@ export const v6Components = {
   // v6 bundle carries skeleton's patch (`v6PatchDependencies`).
   statistic: { antd: ['Statistic'], prefixCls: 'ant-statistic', renderedPrefixes: ['ant-skeleton'] },
   switch: { antd: ['Switch'], prefixCls: 'ant-switch' },
+  // Table's filter dropdown mounts a real `nz-dropdown` (dropdown's own classes), its selection
+  // column mounts checkbox/radio, pagination mounts Pagination (which itself renders Select for
+  // the page-size changer), the empty placeholder mounts Empty, the loading overlay mounts Spin,
+  // and the filter tree (`nzFilterMultiple` with `nzFilters` nesting) mounts Tree.
+  table: {
+    antd: ['Table'],
+    prefixCls: 'ant-table',
+    renderedPrefixes: [
+      'ant-checkbox',
+      'ant-radio',
+      'ant-dropdown',
+      'ant-empty',
+      'ant-spin',
+      'ant-tree',
+      'ant-pagination'
+    ]
+  },
   tabs: { antd: ['Tabs'], prefixCls: 'ant-tabs' },
   tag: { antd: ['Tag'], prefixCls: 'ant-tag' },
   'time-picker': { antd: ['TimePicker'], prefixCls: 'ant-picker' },

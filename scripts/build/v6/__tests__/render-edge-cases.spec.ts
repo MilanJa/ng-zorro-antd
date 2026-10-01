@@ -22,9 +22,9 @@ describe('renderThemeCss edge cases', () => {
   });
 
   it('ignores component overrides for components that are not in the registry', async () => {
-    const css = await r.renderThemeCss({ components: { Table: { headerBg: '#123456' } } } as never);
+    const css = await r.renderThemeCss({ components: { Anchor: { linkPaddingBlock: '#123456' } } } as never);
     expect(css).not.toContain('#123456');
-    expect(css).not.toContain('--ant-table-');
+    expect(css).not.toContain('--ant-anchor-');
   });
 
   it('keeps zero values (borderRadius: 0 renders as 0px)', async () => {

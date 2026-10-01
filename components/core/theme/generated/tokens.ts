@@ -1167,6 +1167,46 @@ export interface NzSwitchToken {
   trackPadding: number;
 }
 
+export interface NzTableToken {
+  bodySortBg: string;
+  borderColor: string;
+  cellFontSize: number;
+  cellFontSizeMD: number;
+  cellFontSizeSM: number;
+  cellPaddingBlock: number;
+  cellPaddingBlockMD: number;
+  cellPaddingBlockSM: number;
+  cellPaddingInline: number;
+  cellPaddingInlineMD: number;
+  cellPaddingInlineSM: number;
+  expandIconBg: string;
+  expandIconHalfInner: number;
+  expandIconMarginTop: number;
+  expandIconScale: number;
+  expandIconSize: number;
+  filterDropdownBg: string;
+  filterDropdownMenuBg: string;
+  fixedHeaderSortActiveBg: string;
+  footerBg: string;
+  footerColor: string;
+  headerBg: string;
+  headerBorderRadius: number;
+  headerColor: string;
+  headerFilterHoverBg: string;
+  headerIconColor: string;
+  headerIconHoverColor: string;
+  headerSortActiveBg: string;
+  headerSortHoverBg: string;
+  headerSplitColor: string;
+  rowExpandedBg: string;
+  rowHoverBg: string;
+  rowSelectedBg: string;
+  rowSelectedHoverBg: string;
+  selectionColumnWidth: number;
+  stickyScrollBarBg: string;
+  stickyScrollBarBorderRadius: number;
+}
+
 export interface NzTabsToken {
   cardBg: string;
   cardGutter: number;
@@ -1297,6 +1337,7 @@ export interface NzComponentTokenMap {
   Spin: NzSpinToken;
   Statistic: NzStatisticToken;
   Switch: NzSwitchToken;
+  Table: NzTableToken;
   Tabs: NzTabsToken;
   Tag: NzTagToken;
   Tooltip: NzTooltipToken;

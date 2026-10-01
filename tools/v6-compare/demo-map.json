@@ -266,6 +266,16 @@
     "_antdDir": "image",
     "service": null
   },
+  "table": {
+    "_antdDir": "table",
+    "sort-filter": "head",
+    "expand-children": "tree-data",
+    "virtual": "virtual-list",
+    "custom-column": null,
+    "expand-icon": null,
+    "template": null,
+    "break-word": null
+  },
   "tabs": {
     "_antdDir": "tabs",
     "position": "placement",

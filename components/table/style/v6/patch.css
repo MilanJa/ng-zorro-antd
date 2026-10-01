@@ -1,0 +1,401 @@
+/*
+ * Angular custom elements have no default display; v4's `style/patch.less` sets `display: block`
+ * (or `inline-flex` for the filter trigger) for ng-zorro's own table elements so they lay out like
+ * the plain HTML/antd DOM they stand in for. This is not antd-specific (it is needed regardless of
+ * which theme's CSS is loaded), so it is ported as-is rather than tied to any v6 token.
+ */
+nz-table,
+nz-table-title-footer,
+nz-table-inner-scroll,
+nz-table-inner-default,
+nz-table-selection {
+  display: block;
+}
+
+nz-filter-trigger {
+  display: inline-flex;
+}
+
+/*
+ * `nzOuterBordered` (`.nz-table-out-bordered`) is an ng-zorro-only input with no antd equivalent:
+ * it draws the same border antd v6's `.ant-table-bordered` uses (`--ant-table-border-color`) around
+ * the title/container/footer instead of every cell. Ported from v4's rule with v6 tokens.
+ */
+.nz-table-out-bordered > .ant-table-title {
+  border: var(--ant-line-width) var(--ant-line-type) var(--ant-table-border-color);
+  border-bottom: 0;
+}
+.nz-table-out-bordered > .ant-table-container {
+  border: var(--ant-line-width) var(--ant-line-type) var(--ant-table-border-color);
+  border-bottom: 0;
+}
+.nz-table-out-bordered > .ant-table-footer {
+  border: var(--ant-line-width) var(--ant-line-type) var(--ant-table-border-color);
+  border-top: 0;
+}
+
+/* CDK's virtual-scroll viewport (ng-zorro's `nzVirtualScroll`) is not antd's own scroller, so v6
+ * has no rule for it; v4's own scrollbar fix is ported unchanged (no antd token involved). */
+cdk-virtual-scroll-viewport.ant-table-body {
+  overflow-y: scroll;
+}
+
+/* The fixed table header's own scrollbar is hidden so only the body's is visible; the header's
+ * background is read from the v6 token so both scrollbar and the row behind it match. */
+.nz-table-hide-scrollbar {
+  scrollbar-color: var(--ant-table-header-bg) var(--ant-table-header-bg);
+}
+.nz-table-hide-scrollbar::-webkit-scrollbar {
+  background-color: var(--ant-table-header-bg);
+}
+
+/*
+ * antd v6 does not vary the header background by size the way v4 did (`@table-header-bg-sm`); its
+ * token set has one `--ant-table-header-bg` for every size, so the small-table override is dropped
+ * (not "kept as v4-compat" - there is nothing left to override).
+ */
+
+/*
+ * Bordered + CDK virtual scroll: antd v6's own `bordered.js` walks `.ant-table-container >` the
+ * plain `table`/`thead`/`tbody` DOM it renders; ng-zorro's virtual-scroll mode inserts CDK's
+ * `cdk-virtual-scroll-viewport` / `cdk-virtual-scroll-content-wrapper` between the container and
+ * that table, an insertion point antd's compiled CSS never reaches (no child/adjacent combinator
+ * crosses it - checked in `node_modules/antd/es/table/style/bordered.js`, which only ever nests
+ * `> ${componentCls}-header...`, `> table`, `tbody > tr` etc. under `.ant-table-container`
+ * directly). Mirrored here with the v6 tokens so the virtual-scroll bordered demo keeps its
+ * borders under v6 the same way v4's `patch.less` mirrored them under v4. The horizontal-scroll
+ * variant below is keyed off the already-emitted `ant-table-fixed-column` (not antd v6's own
+ * `ant-table-scroll-horizontal`, which the compiled v4 CSS also has a rule for - `v4-rule-guard`
+ * caught this: emitting that class would turn on v4's identical `patch.less`-ported rule for
+ * every default-theme table with horizontal scroll, not just this patch).
+ */
+.ant-table.ant-table-bordered
+  > .ant-table-container
+  > .cdk-virtual-scroll-viewport
+  > .cdk-virtual-scroll-content-wrapper
+  > table
+  > thead
+  > tr
+  > th,
+.ant-table.ant-table-bordered
+  > .ant-table-container
+  > .cdk-virtual-scroll-viewport
+  > .cdk-virtual-scroll-content-wrapper
+  > table
+  > tbody
+  > tr
+  > td,
+.ant-table.ant-table-bordered
+  > .ant-table-container
+  > .cdk-virtual-scroll-viewport
+  > .cdk-virtual-scroll-content-wrapper
+  > table
+  > tfoot
+  > tr
+  > th,
+.ant-table.ant-table-bordered
+  > .ant-table-container
+  > .cdk-virtual-scroll-viewport
+  > .cdk-virtual-scroll-content-wrapper
+  > table
+  > tfoot
+  > tr
+  > td {
+  border-inline-end: var(--ant-line-width) var(--ant-line-type) var(--ant-table-border-color);
+}
+.ant-table.ant-table-bordered
+  > .ant-table-container
+  > .cdk-virtual-scroll-viewport
+  > .cdk-virtual-scroll-content-wrapper
+  > table
+  > thead
+  > tr:not(:last-child)
+  > th {
+  border-bottom: var(--ant-line-width) var(--ant-line-type) var(--ant-table-border-color);
+}
+.ant-table.ant-table-bordered
+  > .ant-table-container
+  > .cdk-virtual-scroll-viewport
+  > .cdk-virtual-scroll-content-wrapper
+  > table
+  > thead
+  > tr
+  > .ant-table-cell-fix-right-first::after,
+.ant-table.ant-table-bordered
+  > .ant-table-container
+  > .cdk-virtual-scroll-viewport
+  > .cdk-virtual-scroll-content-wrapper
+  > table
+  > tbody
+  > tr
+  > .ant-table-cell-fix-right-first::after,
+.ant-table.ant-table-bordered
+  > .ant-table-container
+  > .cdk-virtual-scroll-viewport
+  > .cdk-virtual-scroll-content-wrapper
+  > table
+  > tfoot
+  > tr
+  > .ant-table-cell-fix-right-first::after {
+  border-right: var(--ant-line-width) var(--ant-line-type) var(--ant-table-border-color);
+}
+.ant-table.ant-table-bordered.ant-table-fixed-column
+  > .ant-table-container
+  > .cdk-virtual-scroll-viewport
+  > .cdk-virtual-scroll-content-wrapper
+  > table
+  > tbody
+  > tr.ant-table-expanded-row
+  > td,
+.ant-table.ant-table-bordered.ant-table-fixed-column
+  > .ant-table-container
+  > .cdk-virtual-scroll-viewport
+  > .cdk-virtual-scroll-content-wrapper
+  > table
+  > tbody
+  > tr.ant-table-placeholder
+  > td {
+  border-right: 0;
+}
+.ant-table.ant-table-bordered.ant-table-medium
+  > .ant-table-container
+  > .cdk-virtual-scroll-viewport
+  > .cdk-virtual-scroll-content-wrapper
+  > table
+  > tbody
+  > tr
+  > td
+  > .ant-table-expanded-row-fixed {
+  margin: calc(var(--ant-table-cell-padding-block-md) * -1)
+    calc((var(--ant-table-cell-padding-inline-md) + var(--ant-line-width)) * -1);
+}
+.ant-table.ant-table-bordered.ant-table-small
+  > .ant-table-container
+  > .cdk-virtual-scroll-viewport
+  > .cdk-virtual-scroll-content-wrapper
+  > table
+  > tbody
+  > tr
+  > td
+  > .ant-table-expanded-row-fixed {
+  margin: calc(var(--ant-table-cell-padding-block-sm) * -1)
+    calc((var(--ant-table-cell-padding-inline-sm) + var(--ant-line-width)) * -1);
+}
+.ant-table.ant-table-bordered
+  > .ant-table-container
+  > .cdk-virtual-scroll-viewport
+  > .cdk-virtual-scroll-content-wrapper
+  > table
+  > tbody
+  > tr
+  > td
+  > .ant-table-expanded-row-fixed {
+  margin: calc(var(--ant-table-cell-padding-block) * -1)
+    calc((var(--ant-table-cell-padding-inline) + var(--ant-line-width)) * -1);
+  padding: var(--ant-table-cell-padding-block) var(--ant-table-cell-padding-inline);
+}
+.ant-table.ant-table-bordered
+  > .ant-table-container
+  > .cdk-virtual-scroll-viewport
+  > .cdk-virtual-scroll-content-wrapper
+  > table
+  > tbody
+  > tr
+  > td
+  > .ant-table-expanded-row-fixed::after {
+  position: absolute;
+  top: 0;
+  right: var(--ant-line-width);
+  bottom: 0;
+  border-right: var(--ant-line-width) var(--ant-line-type) var(--ant-table-border-color);
+  content: '';
+}
+
+/*
+ * `nzCustomColumn` (`.ant-table-custom-column`) is an ng-zorro-only column-manager feature with no
+ * antd equivalent, so v6 has no rule for it either; ported from v4 unchanged (layout only, no color
+ * tokens involved).
+ */
+.ant-table-custom-column col {
+  display: none;
+  width: auto !important;
+  min-width: auto !important;
+}
+.ant-table-custom-column .ant-table-thead .ant-table-row,
+.ant-table-custom-column .ant-table-thead tr {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+.ant-table-custom-column .ant-table-thead .ant-table-row th,
+.ant-table-custom-column .ant-table-thead tr th {
+  overflow: hidden;
+}
+.ant-table-custom-column .ant-table-tbody .ant-table-row,
+.ant-table-custom-column .ant-table-tbody tr {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+.ant-table-custom-column .ant-table-tbody .ant-table-row td,
+.ant-table-custom-column .ant-table-tbody tr td {
+  overflow: hidden;
+}
+.ant-table-custom-column .ant-table-tbody .ant-table-row .nz-disable-td,
+.ant-table-custom-column .ant-table-tbody tr .nz-disable-td {
+  width: 100%;
+}
+.ant-table-custom-column .ant-table-fixed tr .ant-table-cell-fix-left-last,
+.ant-table-custom-column .ant-table-fixed tr .ant-table-cell-fix-right-first {
+  overflow: visible;
+}
+.ant-table-custom-column .ant-table-fixed .ant-table-row {
+  width: 100%;
+}
+
+/*
+ * antd v6 highlights a hovered row by toggling a JS-driven `ant-table-cell-row-hover` class on
+ * every cell of the hovered row (`@rc-component/table` `Cell/index.js`'s `useHoverState`, so a
+ * row-spanned cell lights up with the row it visually belongs to); the generated template CSS has
+ * no plain `:hover` rule at all (checked `components/core/theme/generated/test-css.ts`:
+ * `.ant-table-wrapper .ant-table-tbody .ant-table-row >.ant-table-cell-row-hover{background:...}`
+ * is the only row-hover selector). ng-zorro does not track per-row hover state in JS, so this
+ * mirrors the same background onto v4's plain `:hover` pseudo-class instead of adding the class -
+ * a cheaper, additive equivalent for every table that does not rowSpan across the hovered row.
+ */
+.ant-table-tbody > tr.ant-table-row:hover > td {
+  background: var(--ant-table-row-hover-bg);
+  transition: background var(--ant-motion-duration-slow);
+}
+/*
+ * No selected-row hover mirror: ng-zorro's table never emits `ant-table-row-selected` at all
+ * (checked `components/table/src/**`), so there is no selected row for a `-selected:hover` rule to
+ * apply to here.
+ */
+
+/*
+ * v4's fixed-column scroll shadow is a container pseudo-element keyed off `ant-table-ping-left/
+ * -right`; v6 moved it onto the boundary cell itself (`.ant-table-cell-fix-start/-end-shadow-show`,
+ * toggled in `NzTableInnerScrollComponent.setScrollPositionClassName` alongside the v4 ping
+ * classes), which the generated template CSS already renders (see
+ * `node_modules/antd/es/table/style/fixed.js`). No patch rule is needed for the shadow itself; this
+ * comment records that the ping classes now drive two things instead of one.
+ */
+
+/*
+ * antd v6's `bordered.js` draws an extra separator on the FIRST fixed-right cell
+ * (`.ant-table-cell-fix-right-first:not(.ant-table-cell-fix-right-last)::after{border-inline-end}`)
+ * to avoid a doubled border when there are 2+ fixed-right columns (the comment in that source file
+ * reads "Only add separator border when there are multiple fixed-right columns ... otherwise the
+ * ::after border doubles up with the cell's own borderInlineEnd"). `@rc-component/table`'s own
+ * `Cell/index.js` never emits `-fix-right-last` under its current v6 naming at all (only
+ * `-fix-start`/`-fix-end`/`-fix-start-shadow`/`-fix-end-shadow`/their `-show` siblings) - `-right-
+ * first`/`-right-last` survive only as v4-era compat selectors in the STYLE files. ng-zorro's own
+ * `-right-first` is the v4-compat hook kept next to the real `ant-table-cell-fix-end` (see the
+ * class-mapping table), but ng-zorro never computes a `-right-last` class at all (adding it would
+ * turn on an existing v4 rule - `v4-rule-guard.spec.ts` catches this), so this selector's `:not(
+ * .ant-table-cell-fix-right-last)` is unconditionally true for every fixed-right table ng-zorro
+ * renders: the "only when multiple columns" guard never actually applies, and the extra border
+ * shows up even on a single fixed-right column, doubling up with that cell's own
+ * `border-inline-end` from the general bordered-cell rule. Neutralised below at equal specificity
+ * (same selector list, same declaration property, patch.css source order after template.css wins
+ * the tie) rather than emitting `-right-last` to make the real condition expressible.
+ */
+.ant-table-wrapper
+  .ant-table.ant-table-bordered
+  > .ant-table-container
+  > .ant-table-content
+  > table
+  > thead
+  > tr
+  > .ant-table-cell-fix-right-first:not(.ant-table-cell-fix-right-last)::after,
+.ant-table-wrapper
+  .ant-table.ant-table-bordered
+  > .ant-table-container
+  > .ant-table-header
+  > table
+  > thead
+  > tr
+  > .ant-table-cell-fix-right-first:not(.ant-table-cell-fix-right-last)::after,
+.ant-table-wrapper
+  .ant-table.ant-table-bordered
+  > .ant-table-container
+  > .ant-table-body
+  > table
+  > thead
+  > tr
+  > .ant-table-cell-fix-right-first:not(.ant-table-cell-fix-right-last)::after,
+.ant-table-wrapper
+  .ant-table.ant-table-bordered
+  > .ant-table-container
+  > .ant-table-summary
+  > table
+  > thead
+  > tr
+  > .ant-table-cell-fix-right-first:not(.ant-table-cell-fix-right-last)::after,
+.ant-table-wrapper
+  .ant-table.ant-table-bordered
+  > .ant-table-container
+  > .ant-table-content
+  > table
+  > tbody
+  > tr
+  > .ant-table-cell-fix-right-first:not(.ant-table-cell-fix-right-last)::after,
+.ant-table-wrapper
+  .ant-table.ant-table-bordered
+  > .ant-table-container
+  > .ant-table-header
+  > table
+  > tbody
+  > tr
+  > .ant-table-cell-fix-right-first:not(.ant-table-cell-fix-right-last)::after,
+.ant-table-wrapper
+  .ant-table.ant-table-bordered
+  > .ant-table-container
+  > .ant-table-body
+  > table
+  > tbody
+  > tr
+  > .ant-table-cell-fix-right-first:not(.ant-table-cell-fix-right-last)::after,
+.ant-table-wrapper
+  .ant-table.ant-table-bordered
+  > .ant-table-container
+  > .ant-table-summary
+  > table
+  > tbody
+  > tr
+  > .ant-table-cell-fix-right-first:not(.ant-table-cell-fix-right-last)::after,
+.ant-table-wrapper
+  .ant-table.ant-table-bordered
+  > .ant-table-container
+  > .ant-table-content
+  > table
+  > tfoot
+  > tr
+  > .ant-table-cell-fix-right-first:not(.ant-table-cell-fix-right-last)::after,
+.ant-table-wrapper
+  .ant-table.ant-table-bordered
+  > .ant-table-container
+  > .ant-table-header
+  > table
+  > tfoot
+  > tr
+  > .ant-table-cell-fix-right-first:not(.ant-table-cell-fix-right-last)::after,
+.ant-table-wrapper
+  .ant-table.ant-table-bordered
+  > .ant-table-container
+  > .ant-table-body
+  > table
+  > tfoot
+  > tr
+  > .ant-table-cell-fix-right-first:not(.ant-table-cell-fix-right-last)::after,
+.ant-table-wrapper
+  .ant-table.ant-table-bordered
+  > .ant-table-container
+  > .ant-table-summary
+  > table
+  > tfoot
+  > tr
+  > .ant-table-cell-fix-right-first:not(.ant-table-cell-fix-right-last)::after {
+  border-inline-end: 0;
+}

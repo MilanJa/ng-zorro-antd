@@ -443,6 +443,9 @@
       "less": "./table/style/*.less",
       "style": "./table/style/index.min.css"
     },
+    "./table/style/v6/*": {
+      "style": "./table/style/v6/*"
+    },
     "./tabs/style/*": {
       "less": "./tabs/style/*.less",
       "style": "./tabs/style/index.min.css"

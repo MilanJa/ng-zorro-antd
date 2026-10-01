@@ -24,7 +24,7 @@ describe('componentTokenNames', () => {
   });
 
   it('returns an empty list for an unregistered component', async () => {
-    expect(await componentTokenNames('Table')).toEqual([]);
+    expect(await componentTokenNames('Anchor')).toEqual([]);
   });
 });
 

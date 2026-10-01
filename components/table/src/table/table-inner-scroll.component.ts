@@ -141,23 +141,64 @@ export class NzTableInnerScrollComponent<T> implements OnChanges, AfterViewInit 
   private data$ = new Subject<void>();
   private scroll$ = new Subject<void>();
 
+  // antd v6 draws the fixed-column scroll shadow two ways, both gated by the same "is there more
+  // content past this edge" state v4's ping classes already track: a container pseudo-element
+  // (the "fix-start-shadow-show"/"fix-end-shadow-show" selectors against ".ant-table-container"
+  // before/after in `node_modules/antd/es/table/style/fixed.js`) and a per-cell one on the
+  // boundary fixed cell itself (the cell-level "fix-start-shadow-show"/"fix-end-shadow-show"
+  // selectors, `@rc-component/table` `Cell/index.js`'s `showFixStartShadow`/`showFixEndShadow`).
+  // Both are toggled here alongside the v4 ping classes rather than duplicating the
+  // scroll-position arithmetic.
+  private setShadowShowClass(show: boolean, cellSelector: string, rootClassName: string, cellClassName: string): void {
+    if (show) {
+      this.renderer.addClass(this.tableMainElement, rootClassName);
+    } else {
+      this.renderer.removeClass(this.tableMainElement, rootClassName);
+    }
+    this.tableMainElement?.querySelectorAll(cellSelector).forEach(cell => {
+      if (show) {
+        this.renderer.addClass(cell, cellClassName);
+      } else {
+        this.renderer.removeClass(cell, cellClassName);
+      }
+    });
+  }
+
   private setScrollPositionClassName(clear: boolean = false): void {
     const { scrollWidth, scrollLeft, clientWidth } = this.tableBodyElement.nativeElement;
     const leftClassName = 'ant-table-ping-left';
     const rightClassName = 'ant-table-ping-right';
+    let showLeft = false;
+    let showRight = false;
     if ((scrollWidth === clientWidth && scrollWidth !== 0) || clear) {
       this.renderer.removeClass(this.tableMainElement, leftClassName);
       this.renderer.removeClass(this.tableMainElement, rightClassName);
     } else if (scrollLeft === 0) {
       this.renderer.removeClass(this.tableMainElement, leftClassName);
       this.renderer.addClass(this.tableMainElement, rightClassName);
+      showRight = true;
     } else if (scrollWidth === scrollLeft + clientWidth) {
       this.renderer.removeClass(this.tableMainElement, rightClassName);
       this.renderer.addClass(this.tableMainElement, leftClassName);
+      showLeft = true;
     } else {
       this.renderer.addClass(this.tableMainElement, leftClassName);
       this.renderer.addClass(this.tableMainElement, rightClassName);
+      showLeft = true;
+      showRight = true;
     }
+    this.setShadowShowClass(
+      showLeft,
+      '.ant-table-cell-fix-left-last',
+      'ant-table-fix-start-shadow-show',
+      'ant-table-cell-fix-start-shadow-show'
+    );
+    this.setShadowShowClass(
+      showRight,
+      '.ant-table-cell-fix-right-first',
+      'ant-table-fix-end-shadow-show',
+      'ant-table-cell-fix-end-shadow-show'
+    );
   }
 
   constructor() {

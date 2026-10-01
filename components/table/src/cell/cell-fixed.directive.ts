@@ -11,6 +11,14 @@ import { Subject } from 'rxjs';
   host: {
     '[class.ant-table-cell-fix-right]': `isFixedRight`,
     '[class.ant-table-cell-fix-left]': `isFixedLeft`,
+    // v6's `@rc-component/table` `Cell/index.js` draws the sticky box (position, z-index,
+    // background) off `ant-table-cell-fix`/`-fix-start`/`-fix-end` rather than the v4
+    // `-fix-left`/`-fix-right` pair, which v6 keeps only for a few compat selectors
+    // (selection header background, sorter hover background) with no position/background rule
+    // of their own.
+    '[class.ant-table-cell-fix]': `isFixed`,
+    '[class.ant-table-cell-fix-start]': `isFixedLeft`,
+    '[class.ant-table-cell-fix-end]': `isFixedRight`,
     '[style.position]': `isFixed? 'sticky' : null`
   }
 })
@@ -39,10 +47,16 @@ export class NzCellFixedDirective implements OnChanges {
 
   setIsFirstRight(isFirstRight: boolean): void {
     this.setFixClass(isFirstRight, 'ant-table-cell-fix-right-first');
+    // v6's `fixedEndShadow` prop (eligibility for the end-side scroll shadow) is true only for the
+    // first fixed-right cell; the `-show` half that the ping state gates is toggled separately in
+    // `NzTableInnerScrollComponent.setScrollPositionClassName`.
+    this.setFixClass(isFirstRight, 'ant-table-cell-fix-end-shadow');
   }
 
   setIsLastLeft(isLastLeft: boolean): void {
     this.setFixClass(isLastLeft, 'ant-table-cell-fix-left-last');
+    // Same as `ant-table-cell-fix-end-shadow` above, mirrored for the start side.
+    this.setFixClass(isLastLeft, 'ant-table-cell-fix-start-shadow');
   }
 
   private setFixClass(flag: boolean, className: string): void {
