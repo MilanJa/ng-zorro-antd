@@ -133,6 +133,9 @@
       "less": "./calendar/style/*.less",
       "style": "./calendar/style/index.min.css"
     },
+    "./calendar/style/v6/*": {
+      "style": "./calendar/style/v6/*"
+    },
     "./card/style/*": {
       "less": "./card/style/*.less",
       "style": "./card/style/index.min.css"

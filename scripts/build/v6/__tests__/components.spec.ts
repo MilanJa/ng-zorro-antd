@@ -65,6 +65,7 @@ describe('v6PatchDependencies', () => {
     );
     expect(deps).toEqual({
       'auto-complete': ['select'],
+      calendar: ['badge', 'radio', 'select', 'typography'],
       cascader: ['empty', 'select'],
       'color-picker': ['collapse', 'input-number', 'popover', 'select'],
       list: ['empty', 'pagination', 'spin'],

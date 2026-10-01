@@ -642,6 +642,36 @@ export interface NzButtonToken {
   yellowShadowColor: string;
 }
 
+export interface NzCalendarToken {
+  INTERNAL_FIXED_ITEM_MARGIN: number;
+  cellActiveWithRangeBg: string;
+  cellBgDisabled: string;
+  cellHeight: number;
+  cellHoverBg: string;
+  cellHoverWithRangeBg: string;
+  cellRangeBorderColor: string;
+  cellWidth: number;
+  fullBg: string;
+  fullPanelBg: string;
+  itemActiveBg: string;
+  miniContentHeight: number;
+  monthControlWidth: number;
+  multipleItemBg: string;
+  multipleItemBorderColor: string;
+  multipleItemBorderColorDisabled: string;
+  multipleItemColorDisabled: string;
+  multipleItemHeight: number;
+  multipleItemHeightLG: number;
+  multipleItemHeightSM: number;
+  multipleSelectorBgDisabled: string;
+  textHeight: number;
+  timeCellHeight: number;
+  timeColumnHeight: number;
+  timeColumnWidth: number;
+  withoutTimeCellHeight: number;
+  yearControlWidth: number;
+}
+
 export interface NzCardToken {
   actionsBg: string;
   actionsLiMargin: string;
@@ -1229,6 +1259,7 @@ export interface NzComponentTokenMap {
   Avatar: NzAvatarToken;
   Badge: NzBadgeToken;
   Button: NzButtonToken;
+  Calendar: NzCalendarToken;
   Card: NzCardToken;
   Carousel: NzCarouselToken;
   Cascader: NzCascaderToken;

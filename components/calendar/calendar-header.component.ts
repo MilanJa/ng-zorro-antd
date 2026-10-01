@@ -74,7 +74,6 @@ import { NzSelectModule, NzSelectSizeType } from 'ng-zorro-antd/select';
     }
   `,
   host: {
-    class: 'ant-fullcalendar-header',
     '[style.display]': `'block'`
   }
 })

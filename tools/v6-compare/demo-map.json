@@ -58,6 +58,9 @@
   "button": {
     "_antdDir": "button"
   },
+  "calendar": {
+    "_antdDir": "calendar"
+  },
   "spin": {
     "_antdDir": "spin",
     "delay-and-debounce": "delayAndDebounce",
