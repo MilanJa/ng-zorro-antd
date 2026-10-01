@@ -10,7 +10,7 @@ import path from 'node:path';
 
 import { pairDemos } from './pairing';
 import { startOutServer } from './serve-out';
-import { v6ComponentDirs } from '../../scripts/build/v6/components';
+import { v6ComponentDirs, v6Components, V6ComponentDir } from '../../scripts/build/v6/components';
 
 const repoRoot = path.resolve(__dirname, '../..');
 const outDir = path.join(__dirname, 'out');
@@ -82,6 +82,53 @@ async function assertNoAntdRuntimeStyles(page: Page, what: string): Promise<void
         `must render against the generated v6 CSS only; check that out/demos bundles a single antd copy ` +
         `(node_modules/antd) and that compare.tsx's StyleProvider/ConfigProvider wrap every demo, then ` +
         `rebuild with build-demos.ts.`
+    );
+  }
+}
+
+/**
+ * A class of `dir`'s own prefix is "styled" when the antd-pane CSS has a selector that names it as a
+ * literal class (a `:where()`-wrapped or antd-hashed form still contains the plain class token inside
+ * it, so a substring match after the leading dot is enough; no need to parse selector lists).
+ */
+export function ownClassesStyled(css: string, classes: string[], prefixCls: string): { own: number; styled: number } {
+  const own = classes.filter(c => c === prefixCls || c.startsWith(`${prefixCls}-`));
+  let styled = 0;
+  for (const cls of own) {
+    const escaped = cls.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+    if (new RegExp(`\\.${escaped}(?:[.:,\\s{~>+)]|$)`).test(css)) styled++;
+  }
+  return { own: own.length, styled };
+}
+
+/**
+ * Guards against capturing screenshots from a stale `out/v6-<algorithm>.antd.css`: `build-demos.ts`
+ * must run after `v6:update-manifest` for every component whose entry changed, or the antd pane can be
+ * built from a bundle that predates the component's mapping, rendering it unstyled (an unstyled antd
+ * pane is never acceptable evidence of parity). A small gap is expected even for a fresh bundle — antd emits a
+ * few classes (e.g. `-dropdown-placement-bottomLeft`) under combined/hashed selector forms this
+ * substring check does not resolve — measured at up to 2 classes (~3%) across every mapped component
+ * on a known-fresh build, so the tolerance is the larger of 2 or 5% of the component's own classes.
+ */
+function assertAntdPaneFresh(dir: V6ComponentDir, theme: string): void {
+  const algorithm = theme === 'v6-dark' ? 'dark' : theme === 'v6-compact' ? 'compact' : 'default';
+  const cssPath = path.join(outDir, `v6-${algorithm}.antd.css`);
+  if (!existsSync(cssPath)) return;
+  const prefixCls = v6Components[dir]?.prefixCls;
+  const manifestPath = path.join(repoRoot, 'scripts/build/v6/manifest.json');
+  if (!prefixCls || !existsSync(manifestPath)) return;
+  const manifest = JSON.parse(readFileSync(manifestPath, 'utf8')) as {
+    components: Record<string, { classes: string[] }>;
+  };
+  const classes = manifest.components[dir]?.classes ?? [];
+  const { own, styled } = ownClassesStyled(readFileSync(cssPath, 'utf8'), classes, prefixCls);
+  if (own === 0) return;
+  const tolerance = Math.max(2, Math.ceil(own * 0.05));
+  if (own - styled > tolerance) {
+    throw new Error(
+      `out/v6-${algorithm}.antd.css styles only ${styled} of ${own} "${prefixCls}" classes the manifest ` +
+        `lists for "${dir}" (tolerance ${tolerance}); the bundle is stale. Re-run ` +
+        `"npx tsx tools/v6-compare/build-demos.ts --component ${dir}" after the manifest change, then retry.`
     );
   }
 }
@@ -175,6 +222,7 @@ async function main(): Promise<void> {
     if (only && dir !== only) continue;
     const pairing = pairDemos(dir, ngDemoKeys(dir), report[dir]?.demos ?? [], map);
     for (const theme of themes) {
+      if (theme !== 'default') assertAntdPaneFresh(dir, theme);
       const folder = path.join(outDir, dir, theme);
       mkdirSync(folder, { recursive: true });
       await page.goto(`${siteUrl}/components/${dir}/en?theme=${theme}`, { waitUntil: 'networkidle' });
