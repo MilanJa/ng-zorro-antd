@@ -10,6 +10,17 @@
     "ant-btn-rtl",
     "ant-btn-text"
   ],
+  "_calendar_comment": "calendar's header renders genuine nz-select (year/month) and nz-radio-button (month/year mode switch) components, so these classes are reused from select's and radio's own resolution verbatim, not independently explained here. antd-emits: -radio-button-checked, -radio-button-input (rc-checkbox's Checkbox.js renders these unstyled on the button variant's host/input; v6 CSS never styles them, same as radio's own entry). v4-compat: -radio-button-inner (ng-zorro-only structural element for the button variant; style/v6/patch.css never selects it, same as radio's own entry). v4-compat (patch hook), reused from select's own resolution (select's own manifest entry never carries these either, since v6 has no CSS rule for the bare selector/arrow/search-wrap elements at all; select's style/v6/patch.css still does the real positioning for all of them): -select-arrow, -select-selection-search, -select-selection-wrap, -select-selector. v4-compat (replacement: ant-select-input, added alongside, reused from select's own resolution): -select-selection-search-input.",
+  "calendar": [
+    "ant-radio-button-checked",
+    "ant-radio-button-inner",
+    "ant-radio-button-input",
+    "ant-select-arrow",
+    "ant-select-selection-search",
+    "ant-select-selection-search-input",
+    "ant-select-selection-wrap",
+    "ant-select-selector"
+  ],
   "_card_comment": "v4-compat: ant-card-meta-detail (replacement: ant-card-meta-section, added alongside on the same div — antd v6's CardMeta.js renders the title+description wrapper as `${metaPrefixCls}-section`, not `-detail`; compiled v4 CSS still styles .ant-card-meta-detail and no `.ant-card-meta-section` rule exists in v4).",
   "card": [
     "ant-card-meta-detail"
