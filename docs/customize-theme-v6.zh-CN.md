@@ -7,7 +7,7 @@ NG-ZORRO 提供了一份基于 Ant Design v6 生成的可选样式表。它将 v
 
 ## 已覆盖的组件
 
-目前只有以下组件拥有 v6 样式。其余组件仍会使用你加载的 v4 样式表渲染。
+目前只有以下组件拥有 v6 样式。其余组件仍会使用你加载的 v4 样式表渲染。此列表不包含 Timeline：Ant Design v6 内部通过 Steps 渲染 Timeline，因此它会在后续阶段与 Steps 一起迁移。
 
 <!-- prettier-ignore-start -->
 <!-- v6-components:start -->
@@ -133,7 +133,7 @@ chart.color = token.colorPrimary;
 
 `nzThemeInherit`（默认 `true`）会合并最近的祖先 `[nzTheme]` 的主题；若没有祖先指令，则合并通过 `NzConfig.theme` 应用的全局主题。与 antd 一致，`token` 按键合并，`components` 按组件合并。
 
-由 CDK 浮层渲染的弹出内容在 DOM 中位于该区域之外。会带上最近的外层 `[nzTheme]` 作用域的浮层：Select 下拉菜单、Tooltip、Popover、Popconfirm、Drawer（声明式）、Modal（声明式，或在作用域内通过 `nzViewContainerRef` 创建），此外还有 AutoComplete、TreeSelect、Cascader、DatePicker、TimePicker、Mention 的浮层面板，基于 Popover 构建的 ColorPicker 拾色面板，以及 Slider 的滑块提示气泡。Message 和 Notification 是应用级单例，始终遵循全局主题。作用域依据 Angular 的*注入器*树而不是 DOM 确定，并且与所有 CDK 浮层一样，下拉菜单的类名在浮层首次创建时应用：之后对 `nzDropdownClassName` 的修改不会作用于已经打开过的下拉菜单。
+由 CDK 浮层渲染的弹出内容在 DOM 中位于该区域之外。会带上最近的外层 `[nzTheme]` 作用域的浮层：Select 下拉菜单、Tooltip、Popover、Popconfirm、Drawer（声明式）、Modal（声明式，或在作用域内通过 `nzViewContainerRef` 创建），此外还有 AutoComplete、TreeSelect、Cascader、DatePicker、TimePicker、Mention 的浮层面板，基于 Popover 构建的 ColorPicker 拾色面板，以及 Slider 的滑块提示气泡，Dropdown 的菜单面板（包括由 `NzContextMenuService` 创建的右键菜单）、Image 的预览浮层、Tabs 的溢出菜单和 Table 的筛选下拉菜单（后两者均基于 Dropdown，继承其作用域，无需额外接入），以及 Pagination 的每页条数选择器和 Calendar 头部的选择器（两者均基于 Select）。Message 和 Notification 是应用级单例，始终遵循全局主题。作用域依据 Angular 的*注入器*树而不是 DOM 确定，并且与所有 CDK 浮层一样，下拉菜单的类名在浮层首次创建时应用：之后对 `nzDropdownClassName` 的修改不会作用于已经打开过的下拉菜单。
 
 ## 服务端渲染
 
@@ -142,7 +142,7 @@ chart.color = token.colorPrimary;
 ## 预览版的限制
 
 - 未在上方列出的组件仍会回退到 v4 规则。
-- 在基于浮层的组件中，Select 下拉菜单、Tooltip、Popover、Popconfirm、Drawer（声明式）以及 Modal（声明式，或在作用域内通过 `nzViewContainerRef` 创建）会带上局部主题，AutoComplete、TreeSelect、Cascader、DatePicker、TimePicker、Mention 的浮层面板，基于 Popover 构建的 ColorPicker 拾色面板，以及 Slider 的滑块提示气泡同样如此；Message 和 Notification 是应用级单例，始终遵循全局主题；其余浮层组件在迁移之前仍遵循全局主题。
+- 在基于浮层的组件中，Select 下拉菜单、Tooltip、Popover、Popconfirm、Drawer（声明式）以及 Modal（声明式，或在作用域内通过 `nzViewContainerRef` 创建）会带上局部主题，AutoComplete、TreeSelect、Cascader、DatePicker、TimePicker、Mention 的浮层面板，基于 Popover 构建的 ColorPicker 拾色面板，以及 Slider 的滑块提示气泡同样如此；Dropdown 的菜单面板（及其右键菜单）、Image 的预览浮层、Tabs 的溢出菜单和 Table 的筛选下拉菜单（继承 Dropdown 的作用域）、Pagination 的每页条数选择器和 Calendar 头部的选择器（继承 Select 的作用域）也是如此；Message 和 Notification 是应用级单例，始终遵循全局主题；其余浮层组件在迁移之前仍遵循全局主题。
 - 如果 Select 通过 `<ng-content>` 投影到一个自身模板中包含 `[nzTheme]` 的组件里，或者通过 `ngTemplateOutlet` 渲染一个在作用域之外声明的模板，那么它的内联部分会获得局部主题（CSS 变量沿 DOM 继承），但下拉菜单不会带上作用域，因为作用域取决于 Select 声明位置的注入器树。此时请把 `[nzTheme]` 放在声明 Select 的位置。
 - 全局设置的组件级别名覆盖，即使在不继承主题的局部作用域内也仍然生效：它以类作用域规则的形式写在 `:root` 上，而 CSS 变量的继承不受 `nzThemeInherit` 影响，会沿 DOM 正常传递。
 - 生成的 CSS 引用的是 `--ant-*` 变量，因此不支持 `ant` 以外的 `cssVar.prefix` 取值。
