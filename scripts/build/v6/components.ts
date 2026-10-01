@@ -266,20 +266,35 @@ export function renderedPrefixStyleOwner(prefix: string): V6ComponentDir | undef
  * Returned in map order (the order `ng-zorro-antd.v6.css` concatenates patches in), without `dir`.
  */
 export function v6PatchDependencies(dir: V6ComponentDir): V6ComponentDir[] {
-  const entry: V6ComponentEntry = v6Components[dir];
   const deps = new Set<string>();
-  for (const name of entry.antd) {
-    const host = antdStyleModuleDir(name);
-    if (host !== kebabCase(name)) {
-      deps.add(host);
+  const visited = new Set<string>([dir]);
+  const queue: V6ComponentDir[] = [dir];
+  // Walks the dependency graph breadth-first, so a chain such as table -> pagination -> select
+  // contributes select's patch to table's bundle too; `visited` makes the walk cycle-safe.
+  while (queue.length > 0) {
+    const current = queue.shift()!;
+    const entry: V6ComponentEntry = v6Components[current];
+    const direct = new Set<string>();
+    for (const name of entry.antd) {
+      const host = antdStyleModuleDir(name);
+      if (host !== kebabCase(name)) {
+        direct.add(host);
+      }
     }
-  }
-  for (const prefix of entry.renderedPrefixes ?? []) {
-    const owner =
-      RENDERED_PREFIX_OWNERS[prefix] ??
-      v6ComponentDirs.find(d => v6Components[d].prefixCls === prefix && ownsStyleModule(d));
-    if (owner) {
-      deps.add(owner);
+    for (const prefix of entry.renderedPrefixes ?? []) {
+      const owner =
+        RENDERED_PREFIX_OWNERS[prefix] ??
+        v6ComponentDirs.find(d => v6Components[d].prefixCls === prefix && ownsStyleModule(d));
+      if (owner) {
+        direct.add(owner);
+      }
+    }
+    for (const d of direct) {
+      deps.add(d);
+      if (!visited.has(d)) {
+        visited.add(d);
+        queue.push(d as V6ComponentDir);
+      }
     }
   }
   deps.delete(dir);

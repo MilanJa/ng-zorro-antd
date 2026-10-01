@@ -68,12 +68,12 @@ describe('v6PatchDependencies', () => {
       calendar: ['badge', 'radio', 'select', 'typography'],
       cascader: ['empty', 'select'],
       'color-picker': ['collapse', 'input-number', 'popover', 'select'],
-      list: ['empty', 'pagination', 'spin'],
+      list: ['empty', 'pagination', 'select', 'spin'],
       pagination: ['select'],
       popconfirm: ['popover'],
       slider: ['tooltip'],
       statistic: ['skeleton'],
-      table: ['checkbox', 'dropdown', 'empty', 'pagination', 'radio', 'spin', 'tree'],
+      table: ['checkbox', 'dropdown', 'empty', 'pagination', 'radio', 'select', 'spin', 'tree'],
       'time-picker': ['date-picker'],
       transfer: ['button', 'checkbox', 'input'],
       'tree-select': ['select', 'tree']
@@ -91,5 +91,12 @@ describe('v6PatchDependencies', () => {
   it('resolves a shared prefix to its non-alias owner (ant-select -> select, not auto-complete)', () => {
     expect(v6Components['auto-complete'].prefixCls).toBe(v6Components.select.prefixCls);
     expect(v6PatchDependencies('cascader')).toEqual(['empty', 'select']);
+  });
+
+  it('follows a two-level dependency chain (table -> pagination -> select)', () => {
+    expect(v6Components.pagination.renderedPrefixes).toContain('ant-select');
+    expect(v6PatchDependencies('pagination')).toEqual(['select']);
+    expect(v6PatchDependencies('table')).toContain('select');
+    expect(v6PatchDependencies('list')).toContain('select');
   });
 });
