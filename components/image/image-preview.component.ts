@@ -39,6 +39,8 @@ export interface NzImageContainerOperation {
   icon: string;
   type: string;
   rotate?: number;
+  /** antd v6 `Footer`'s action type (`ant-image-preview-actions-action-<v6Type>`); absent for `close`, which v6 renders outside the actions group. */
+  v6Type?: string;
   onClick(): void;
 }
 
@@ -55,54 +57,63 @@ const NZ_DEFAULT_ROTATE = 0;
   selector: 'nz-image-preview',
   exportAs: 'nzImagePreview',
   template: `
-    <div class="ant-image-preview-mask"></div>
-
-    <div class="ant-image-preview-operations-wrapper">
-      @if (images.length > 1) {
-        <div
-          class="ant-image-preview-switch-left"
-          [class.ant-image-preview-switch-left-disabled]="index <= 0"
-          (click)="onSwitchLeft($event)"
-        >
-          <nz-icon nzType="left" nzTheme="outline" />
-        </div>
-        <div
-          class="ant-image-preview-switch-right"
-          [class.ant-image-preview-switch-right-disabled]="index >= images.length - 1"
-          (click)="onSwitchRight($event)"
-        >
-          <nz-icon nzType="right" nzTheme="outline" />
-        </div>
-      }
-
-      <ul class="ant-image-preview-operations">
-        @if (images.length > 1) {
-          <li class="ant-image-preview-operations-progress">{{ index + 1 }} / {{ images.length }}</li>
-        }
-
-        @for (option of operations; track option) {
-          <li
-            class="ant-image-preview-operations-operation"
-            [class.ant-image-preview-operations-operation-disabled]="zoomOutDisabled && option.type === 'zoomOut'"
-            (click)="option.onClick()"
-          >
-            <nz-icon
-              class="ant-image-preview-operations-icon"
-              [nzType]="option.icon"
-              [nzRotate]="option.rotate ?? 0"
-              nzTheme="outline"
-            />
-          </li>
-        }
-      </ul>
-    </div>
-
     <div
       class="ant-image-preview-wrap"
       tabindex="-1"
       (click)="maskClosable && $event.target === $event.currentTarget && onClose()"
     >
       <div class="ant-image-preview" role="dialog" aria-modal="true">
+        <div class="ant-image-preview-mask"></div>
+
+        <div class="ant-image-preview-operations-wrapper ant-image-preview-footer">
+          @if (images.length > 1) {
+            <div
+              class="ant-image-preview-switch-left ant-image-preview-switch ant-image-preview-switch-prev"
+              [class.ant-image-preview-switch-left-disabled]="index <= 0"
+              [class.ant-image-preview-switch-disabled]="index <= 0"
+              (click)="onSwitchLeft($event)"
+            >
+              <nz-icon nzType="left" nzTheme="outline" />
+            </div>
+            <div
+              class="ant-image-preview-switch-right ant-image-preview-switch ant-image-preview-switch-next"
+              [class.ant-image-preview-switch-right-disabled]="index >= images.length - 1"
+              [class.ant-image-preview-switch-disabled]="index >= images.length - 1"
+              (click)="onSwitchRight($event)"
+            >
+              <nz-icon nzType="right" nzTheme="outline" />
+            </div>
+          }
+
+          <ul class="ant-image-preview-operations ant-image-preview-actions">
+            @if (images.length > 1) {
+              <li class="ant-image-preview-operations-progress">{{ index + 1 }} / {{ images.length }}</li>
+            }
+
+            @for (option of operations; track option) {
+              <li
+                class="ant-image-preview-operations-operation"
+                [class.ant-image-preview-close]="option.type === 'close'"
+                [class]="
+                  option.v6Type
+                    ? 'ant-image-preview-actions-action ant-image-preview-actions-action-' + option.v6Type
+                    : ''
+                "
+                [class.ant-image-preview-operations-operation-disabled]="zoomOutDisabled && option.type === 'zoomOut'"
+                [class.ant-image-preview-actions-action-disabled]="zoomOutDisabled && option.type === 'zoomOut'"
+                (click)="option.onClick()"
+              >
+                <nz-icon
+                  class="ant-image-preview-operations-icon"
+                  [nzType]="option.icon"
+                  [nzRotate]="option.rotate ?? 0"
+                  nzTheme="outline"
+                />
+              </li>
+            }
+          </ul>
+        </div>
+
         <div tabindex="0" aria-hidden="true" class="ant-image-preview-focus-trap"></div>
         <div class="ant-image-preview-content">
           <div class="ant-image-preview-body">
@@ -178,35 +189,40 @@ export class NzImagePreviewComponent implements OnInit {
       onClick: () => {
         this.onZoomIn();
       },
-      type: 'zoomIn'
+      type: 'zoomIn',
+      v6Type: 'zoomIn'
     },
     {
       icon: 'zoom-out',
       onClick: () => {
         this.onZoomOut();
       },
-      type: 'zoomOut'
+      type: 'zoomOut',
+      v6Type: 'zoomOut'
     },
     {
       icon: 'rotate-right',
       onClick: () => {
         this.onRotateRight();
       },
-      type: 'rotateRight'
+      type: 'rotateRight',
+      v6Type: 'rotateRight'
     },
     {
       icon: 'rotate-left',
       onClick: () => {
         this.onRotateLeft();
       },
-      type: 'rotateLeft'
+      type: 'rotateLeft',
+      v6Type: 'rotateLeft'
     },
     {
       icon: 'swap',
       onClick: () => {
         this.onHorizontalFlip();
       },
-      type: 'flipHorizontally'
+      type: 'flipHorizontally',
+      v6Type: 'flipX'
     },
     {
       icon: 'swap',
@@ -214,7 +230,8 @@ export class NzImagePreviewComponent implements OnInit {
         this.onVerticalFlip();
       },
       type: 'flipVertically',
-      rotate: 90
+      rotate: 90,
+      v6Type: 'flipY'
     }
   ];
 

@@ -1,0 +1,36 @@
+/*
+ * v6 draws the preview toolbar as a bottom-centered pill (`.ant-image-preview-footer`,
+ * `position: absolute; bottom: var(--ant-margin-xl); left: 50%; transform: translateX(-50%)`).
+ * ng-zorro keeps the v4 top bar element (`.ant-image-preview-operations-wrapper`, itself
+ * `position: fixed; top: 0; right: 0; width: 100%; z-index: …`) and adds the v6 class to it
+ * rather than a second element. v6's own rule does not set `top`/`right`/`width`/`z-index`,
+ * so those v4 values linger on the same element and, combined with `left: 50%` plus a
+ * `width: 100%` box, push the translated pill half off-screen; clearing them lets the v6
+ * centering rule compute against the box it expects.
+ */
+.ant-image-preview-footer {
+  top: auto;
+  right: auto;
+  width: auto;
+  z-index: auto;
+}
+
+/*
+ * v4 lays the action list out with `flex-direction: row-reverse` (closest-to-hand action
+ * first); v6's `.ant-image-preview-actions` assumes source order and spaces items with
+ * `gap` instead, so the reversal is cleared for the v6 action order (flipY, flipX,
+ * rotateLeft, rotateRight, zoomOut, zoomIn) to read left-to-right.
+ */
+.ant-image-preview-actions {
+  flex-direction: row;
+}
+
+/*
+ * v4 spaces action items with `margin-left` on each `li`; v6 uses `gap` on the actions
+ * container instead. Both are additive (nothing removes the `gap`), so the per-item
+ * margin is cleared to avoid doubled spacing between actions.
+ */
+.ant-image-preview-actions-action {
+  margin-left: 0;
+  margin-inline-start: 0;
+}

@@ -1,7 +1,7 @@
 {
   "antdVersion": "6.6.5",
   "engineCoreBytes": 42701,
-  "engineComponentsBytes": 323237,
+  "engineComponentsBytes": 330947,
   "components": {
     "alert": {
       "classes": [
@@ -1290,6 +1290,55 @@
         "--ant-form-vertical-label-height",
         "--ant-form-vertical-label-margin",
         "--ant-form-vertical-label-padding"
+      ]
+    },
+    "image": {
+      "classes": [
+        "ant-image",
+        "ant-image-cover",
+        "ant-image-cover-bottom",
+        "ant-image-cover-top",
+        "ant-image-img",
+        "ant-image-img-placeholder",
+        "ant-image-placeholder",
+        "ant-image-preview",
+        "ant-image-preview-actions",
+        "ant-image-preview-actions-action",
+        "ant-image-preview-actions-action-disabled",
+        "ant-image-preview-body",
+        "ant-image-preview-close",
+        "ant-image-preview-fade",
+        "ant-image-preview-fade-appear",
+        "ant-image-preview-fade-appear-active",
+        "ant-image-preview-fade-enter",
+        "ant-image-preview-fade-enter-active",
+        "ant-image-preview-fade-leave",
+        "ant-image-preview-fade-leave-active",
+        "ant-image-preview-footer",
+        "ant-image-preview-img",
+        "ant-image-preview-mask",
+        "ant-image-preview-mask-blur",
+        "ant-image-preview-mask-hidden",
+        "ant-image-preview-movable",
+        "ant-image-preview-moving",
+        "ant-image-preview-switch",
+        "ant-image-preview-switch-disabled",
+        "ant-image-preview-switch-next",
+        "ant-image-preview-switch-prev",
+        "ant-image-progress-content",
+        "ant-image-progress-indicator",
+        "ant-image-progress-ink-1",
+        "ant-image-progress-ink-2",
+        "ant-image-progress-rail",
+        "ant-image-progress-wrapper"
+      ],
+      "tokens": [
+        "--ant-image-preview-operation-color",
+        "--ant-image-preview-operation-color-disabled",
+        "--ant-image-preview-operation-hover-color",
+        "--ant-image-preview-operation-size",
+        "--ant-image-progress-animation-duration",
+        "--ant-image-z-index-popup"
       ]
     },
     "input": {

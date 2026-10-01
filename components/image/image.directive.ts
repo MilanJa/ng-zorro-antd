@@ -21,6 +21,7 @@ import { fromEvent, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 import { NzConfigKey, NzConfigService, WithConfig } from 'ng-zorro-antd/core/config';
+import { nzThemeScopeClasses } from 'ng-zorro-antd/core/theme';
 
 import { NzImageGroupComponent } from './image-group.component';
 import { NZ_DEFAULT_SCALE_STEP } from './image-preview.component';
@@ -46,6 +47,7 @@ export class NzImageDirective implements OnInit, OnChanges {
   private nzImageService = inject(NzImageService);
   protected readonly dir = inject(Directionality).valueSignal;
   private destroyRef = inject(DestroyRef);
+  private readonly themeScopeClasses = nzThemeScopeClasses();
   readonly _nzModuleName: NzConfigKey = NZ_CONFIG_MODULE_NAME;
 
   @Input() nzSrc = '';
@@ -93,16 +95,22 @@ export class NzImageDirective implements OnInit, OnChanges {
         {
           nzDirection: this.dir()
         },
-        scaleStepMap
+        scaleStepMap,
+        this.themeScopeClasses()
       );
       previewRef.switchTo(previewIndex);
     } else {
       // preview not inside image group
       const previewImages = [{ src: this.nzSrc, srcset: this.nzSrcset }];
-      this.nzImageService.preview(previewImages, {
-        nzDirection: this.dir(),
-        nzScaleStep: this.nzScaleStep ?? NZ_DEFAULT_SCALE_STEP
-      });
+      this.nzImageService.preview(
+        previewImages,
+        {
+          nzDirection: this.dir(),
+          nzScaleStep: this.nzScaleStep ?? NZ_DEFAULT_SCALE_STEP
+        },
+        undefined,
+        this.themeScopeClasses()
+      );
     }
   }
 

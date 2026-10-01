@@ -249,6 +249,9 @@
       "less": "./image/style/*.less",
       "style": "./image/style/index.min.css"
     },
+    "./image/style/v6/*": {
+      "style": "./image/style/v6/*"
+    },
     "./input/style/*": {
       "less": "./input/style/*.less",
       "style": "./input/style/index.min.css"

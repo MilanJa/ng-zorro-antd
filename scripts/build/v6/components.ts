@@ -63,6 +63,7 @@ export const v6Components = {
   // layout via `.ant-col-24.ant-form-item-label`/`.ant-row` selectors (Grid itself is not mapped;
   // borrowed here the same way Modal borrows `getMediaSize` from Grid's style module).
   form: { antd: ['Form'], prefixCls: 'ant-form', renderedPrefixes: ['ant-col', 'ant-row'] },
+  image: { antd: ['Image'], prefixCls: 'ant-image' },
   input: { antd: ['Input'], prefixCls: 'ant-input' },
   'input-number': { antd: ['InputNumber'], prefixCls: 'ant-input-number' },
   // The empty-data-source state mounts a real `nz-embed-empty`/`nz-empty` (`list-cell.ts`'s

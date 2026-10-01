@@ -533,5 +533,29 @@
     "ant-list-rtl",
     "ant-spin-nested-loading"
   ],
-  "_list_comment": "antd-emits: ant-list-rtl (index.js clsx condition direction === rtl on the root div, matching the pre-existing [class.ant-list-rtl] host binding in list.component.ts exactly); v6 CSS has no dedicated rule for it (the list stylesheet uses only logical properties, e.g. margin-inline-start, so no explicit rtl override is needed). v4-compat (patch hook, duplicated from spin's own allowlist entry per the statistic/skeleton precedent): ant-spin-nested-loading is spin.component.ts's own class (!nzSimple); list's renderedPrefixes: ['ant-spin'] classes count toward list's own rendered-coverage check, and the shared allowlist is keyed by directory, not merged automatically, so list needs its own copy of this entry."
+  "_list_comment": "antd-emits: ant-list-rtl (index.js clsx condition direction === rtl on the root div, matching the pre-existing [class.ant-list-rtl] host binding in list.component.ts exactly); v6 CSS has no dedicated rule for it (the list stylesheet uses only logical properties, e.g. margin-inline-start, so no explicit rtl override is needed). v4-compat (patch hook, duplicated from spin's own allowlist entry per the statistic/skeleton precedent): ant-spin-nested-loading is spin.component.ts's own class (!nzSimple); list's renderedPrefixes: ['ant-spin'] classes count toward list's own rendered-coverage check, and the shared allowlist is keyed by directory, not merged automatically, so list needs its own copy of this entry.",
+  "image": [
+    "ant-image-preview-root",
+    "ant-image-preview-wrap",
+    "ant-image-preview-content",
+    "ant-image-preview-focus-trap",
+    "ant-image-preview-img-wrapper",
+    "ant-image-preview-operations-wrapper",
+    "ant-image-preview-operations",
+    "ant-image-preview-operations-operation",
+    "ant-image-preview-operations-operation-disabled",
+    "ant-image-preview-operations-progress",
+    "ant-image-preview-operations-icon",
+    "ant-image-preview-switch-left",
+    "ant-image-preview-switch-left-disabled",
+    "ant-image-preview-switch-right",
+    "ant-image-preview-switch-right-disabled",
+    "ant-image-preview-actions-action-flipX",
+    "ant-image-preview-actions-action-flipY",
+    "ant-image-preview-actions-action-rotateLeft",
+    "ant-image-preview-actions-action-rotateRight",
+    "ant-image-preview-actions-action-zoomIn",
+    "ant-image-preview-actions-action-zoomOut"
+  ],
+  "_image_comment": "v4-compat: ant-image-preview-root (image-preview.component.ts host class; v6's rc-component/image Preview.js puts the prefixCls class -- ant-image-preview, already emitted here -- directly on the motion wrapper div, with no separate -root wrapper, so -root has no v6 counterpart and stays as the component's own host identifier), ant-image-preview-wrap (no v6 counterpart -- v6's Preview.js has one wrapper div, not a -wrap plus a -preview; -wrap keeps the fixed full-viewport box v4 needs for its own top-bar-and-corner-buttons layout), ant-image-preview-content and ant-image-preview-img-wrapper (no v6 counterpart -- Preview.js nests the <img> directly in -body with no intermediate wrappers; ng-zorro keeps both for the CDK drag host and v4's own transform transition). v4-compat (replacement: ant-image-preview-footer, added alongside on the same element): ant-image-preview-operations-wrapper. v4-compat (replacement: ant-image-preview-actions, added alongside on the same element): ant-image-preview-operations. v4-compat (replacement: ant-image-preview-actions-action for the six non-close operations, ant-image-preview-close for the close operation, both added alongside on the same li): ant-image-preview-operations-operation. v4-compat (replacement: ant-image-preview-actions-action-disabled, added alongside): ant-image-preview-operations-operation-disabled. v4-compat (no v6 counterpart -- Footer.js's progressNode carries only ant-image-preview-progress, itself unstyled by v6 CSS, so the v4 progress class is kept without a v6 sibling): ant-image-preview-operations-progress. v4-compat (no v6 counterpart -- v6 does not class the icon inside an action button): ant-image-preview-operations-icon. v4-compat (replacement: ant-image-preview-switch-prev and ant-image-preview-switch-disabled respectively, added alongside on the same div): ant-image-preview-switch-left, ant-image-preview-switch-left-disabled. v4-compat (replacement: ant-image-preview-switch-next and ant-image-preview-switch-disabled respectively, added alongside on the same div): ant-image-preview-switch-right, ant-image-preview-switch-right-disabled. antd-emits (unstyled): ant-image-preview-actions-action-flipX/-flipY/-rotateLeft/-rotateRight/-zoomIn/-zoomOut (@rc-component/image es/Preview/Footer.js renderOperation: `clsx(actionCls, \\`${actionCls}-${type}\\`, ...)` on every action button; v6 CSS has no per-type rule, only the bare .ant-image-preview-actions-action, already emitted and styled -- kept as the same runtime-built-looking but here template-bound class pair antd itself emits)."
 }

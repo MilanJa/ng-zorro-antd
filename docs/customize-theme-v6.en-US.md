@@ -28,6 +28,7 @@ Only the components below have v6 styles so far. Others keep rendering with the 
 - `empty`
 - `float-button`
 - `form`
+- `image`
 - `input`
 - `input-number`
 - `list`

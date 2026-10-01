@@ -36,18 +36,20 @@ export class NzImageService {
   preview(
     images: NzImage[],
     options?: NzImagePreviewOptions,
-    zoomMap?: Map<NzImageUrl, NzImageScaleStep>
+    zoomMap?: Map<NzImageUrl, NzImageScaleStep>,
+    panelClasses?: string[]
   ): NzImagePreviewRef {
-    return this.display(images, options, zoomMap);
+    return this.display(images, options, zoomMap, panelClasses);
   }
 
   private display(
     images: NzImage[],
     config?: NzImagePreviewOptions,
-    scaleStepMap?: Map<NzImageUrl, NzImageScaleStep>
+    scaleStepMap?: Map<NzImageUrl, NzImageScaleStep>,
+    panelClasses?: string[]
   ): NzImagePreviewRef {
     const configMerged = { ...new NzImagePreviewOptions(), ...(config ?? {}) };
-    const overlayRef = this.createOverlay(configMerged);
+    const overlayRef = this.createOverlay(configMerged, panelClasses);
     const previewComponent = this.attachPreviewComponent(overlayRef, configMerged);
     previewComponent.setImages(images, scaleStepMap);
     const previewRef = new NzImagePreviewRef(previewComponent, configMerged, overlayRef);
@@ -71,14 +73,15 @@ export class NzImageService {
     return containerRef.instance;
   }
 
-  private createOverlay(config: NzImagePreviewOptions): OverlayRef {
+  private createOverlay(config: NzImagePreviewOptions, panelClasses?: string[]): OverlayRef {
     const globalConfig = (this.nzConfigService.getConfigForComponent(NZ_CONFIG_MODULE_NAME) as ImageConfig) || {};
 
     return createOverlayRef(this.injector, {
       scrollStrategy: createBlockScrollStrategy(this.injector),
       positionStrategy: createGlobalPositionStrategy(this.injector),
       disposeOnNavigation: config.nzCloseOnNavigation ?? globalConfig.nzCloseOnNavigation ?? true,
-      direction: config.nzDirection || globalConfig.nzDirection || this.directionality.valueSignal()
+      direction: config.nzDirection || globalConfig.nzDirection || this.directionality.valueSignal(),
+      panelClass: [...(panelClasses ?? [])]
     });
   }
 }
