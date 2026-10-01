@@ -258,5 +258,9 @@
   },
   "list": {
     "_antdDir": "list"
+  },
+  "image": {
+    "_antdDir": "image",
+    "service": null
   }
 }

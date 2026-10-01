@@ -34,3 +34,56 @@
   margin-left: 0;
   margin-inline-start: 0;
 }
+
+/*
+ * v6 draws the previewed image's `max-height: 70%` against `.ant-image-preview-body`'s own
+ * `position: absolute; inset: 0` (a definite height). ng-zorro additionally nests the image in
+ * `.ant-image-preview-img-wrapper` for the drag handle; v4's own `position: absolute; inset: 0`
+ * on that wrapper (needed for the same definite-height chain) is a v4-only rule with no v6
+ * counterpart, so it is mirrored here for the case where only the v6 bundle is loaded (no v4
+ * stylesheet) -- without it the wrapper falls back to a static, content-sized box, the `70%`
+ * percentage has no definite containing-block height to resolve against, and the image renders
+ * unconstrained at its intrinsic size instead of fitted inside the viewport.
+ *
+ * v6 centres the image by making `.ant-image-preview-body` itself `display: flex;
+ * align-items: center; justify-content: center` and rendering the <img> as its direct flex
+ * child. ng-zorro's `-img-wrapper` sits between body and the image (for the drag handle) and is
+ * not a flex container, so the image -- sized by the rule above -- sits at the wrapper's
+ * top-left corner instead of centred. v4's own centring technique (an inline-block `::before`
+ * ghost element plus `vertical-align: middle`) only works with the wrapper NOT absolutely
+ * positioned the way this rule positions it, so it is not reusable here; centring the wrapper's
+ * own content with flex is the minimum additional rule that reaches the same visual result.
+ */
+.ant-image-preview-img-wrapper {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/*
+ * v6's `.ant-image-preview .ant-image-preview-close` rule assumes `close` is a direct child of
+ * `.ant-image-preview` (`Preview/index.js` renders `CloseBtn` as a sibling of `Footer`, not nested
+ * inside it) and positions it absolutely in the top-right corner with its own circular,
+ * semi-transparent badge. ng-zorro keeps `close` as the first action inside the v4 toolbar
+ * (moving it out would change the v4-rendered markup), where that absolute corner-positioning
+ * instead draws the badge over the action pill's own corner. Rather than attempt antd's separate
+ * top-right placement, `close` is laid out as an ordinary pill action here: positioning is
+ * neutralised back to the normal flex-item flow, and its background/radius are reset to the
+ * transparent, square-cornered look `.ant-image-preview-actions-action`'s siblings already have
+ * (padding is already identical, so it is left alone). Equal specificity to the base
+ * `.ant-image-preview .ant-image-preview-close` rule (two classes each); this rule wins on
+ * source order, the same way every other neutraliser in this file does.
+ */
+.ant-image-preview-footer .ant-image-preview-close {
+  position: static;
+  top: auto;
+  inset-inline-end: auto;
+  background-color: transparent;
+  border-radius: 0;
+}
+.ant-image-preview-footer .ant-image-preview-close:hover,
+.ant-image-preview-footer .ant-image-preview-close:active {
+  background-color: transparent;
+}

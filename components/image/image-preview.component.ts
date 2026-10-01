@@ -65,6 +65,43 @@ const NZ_DEFAULT_ROTATE = 0;
       <div class="ant-image-preview" role="dialog" aria-modal="true">
         <div class="ant-image-preview-mask"></div>
 
+        <div tabindex="0" aria-hidden="true" class="ant-image-preview-focus-trap"></div>
+        <div class="ant-image-preview-content">
+          <div class="ant-image-preview-body">
+            <div
+              class="ant-image-preview-img-wrapper"
+              #imagePreviewWrapper
+              cdkDrag
+              [style.transform]="previewImageWrapperTransform()"
+              [cdkDragFreeDragPosition]="position"
+              (cdkDragEnded)="onDragEnd($event)"
+            >
+              @for (image of images; track image) {
+                @if ($index === index) {
+                  <img
+                    cdkDragHandle
+                    class="ant-image-preview-img"
+                    #imgRef
+                    [attr.src]="sanitizerResourceUrl(image.src)"
+                    [attr.srcset]="image.srcset"
+                    [attr.alt]="image.alt"
+                    [style.width]="image.width"
+                    [style.height]="image.height"
+                    [style.transform]="previewImageTransform()"
+                  />
+                }
+              }
+            </div>
+          </div>
+        </div>
+        <div tabindex="0" aria-hidden="true" class="ant-image-preview-focus-trap"></div>
+
+        <!--
+          Painted after .ant-image-preview-content (above): v6's own Preview/index.js creates the
+          close button, the switch buttons and the Footer after the body in JSX, so they paint over
+          the image without needing a z-index; this element shares the same stacking context (no
+          explicit z-index on either side), so DOM order alone decides paint order here too.
+        -->
         <div class="ant-image-preview-operations-wrapper ant-image-preview-footer">
           @if (images.length > 1) {
             <div
@@ -113,37 +150,6 @@ const NZ_DEFAULT_ROTATE = 0;
             }
           </ul>
         </div>
-
-        <div tabindex="0" aria-hidden="true" class="ant-image-preview-focus-trap"></div>
-        <div class="ant-image-preview-content">
-          <div class="ant-image-preview-body">
-            <div
-              class="ant-image-preview-img-wrapper"
-              #imagePreviewWrapper
-              cdkDrag
-              [style.transform]="previewImageWrapperTransform()"
-              [cdkDragFreeDragPosition]="position"
-              (cdkDragEnded)="onDragEnd($event)"
-            >
-              @for (image of images; track image) {
-                @if ($index === index) {
-                  <img
-                    cdkDragHandle
-                    class="ant-image-preview-img"
-                    #imgRef
-                    [attr.src]="sanitizerResourceUrl(image.src)"
-                    [attr.srcset]="image.srcset"
-                    [attr.alt]="image.alt"
-                    [style.width]="image.width"
-                    [style.height]="image.height"
-                    [style.transform]="previewImageTransform()"
-                  />
-                }
-              }
-            </div>
-          </div>
-        </div>
-        <div tabindex="0" aria-hidden="true" class="ant-image-preview-focus-trap"></div>
       </div>
     </div>
   `,

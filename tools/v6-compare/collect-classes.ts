@@ -43,7 +43,9 @@ const CLICK_TRIGGERS: Partial<Record<string, string>> = {
   cascader: '.ant-select-selector',
   upload: '.ant-upload button, .ant-upload-btn',
   dropdown: '[nz-dropdown], .ant-dropdown-trigger',
-  image: '.ant-image-img',
+  // `nz-image` is a directive on the host `<img>`; it never emits antd's own `.ant-image-img`
+  // class (there is no wrapping component), so the trigger is the element selector itself.
+  image: 'img[nz-image]',
   tabs: '.ant-tabs-nav-more',
   table: '.ant-table-filter-trigger',
   pagination: '.ant-pagination-options .ant-select-selector'
