@@ -16,8 +16,8 @@ import { emittedClassesBaseline, v4StyledClasses } from '../v4-rules';
 // sources (`emitted-classes.ts`'s regex): a template-literal or helper-built class name (e.g.
 // `` `${prefixCls}-x` ``, `getStatusClassNames(...)`, the compact-item directive's runtime class list)
 // yields no token here and is invisible to this check. There is no rendered/runtime variant of this
-// guard in this task; a class that only ever appears as a template-literal interpolation gets no
-// automated coverage from this spec and must be checked against the compiled v4 CSS by hand.
+// guard; a class that only ever appears as a template-literal interpolation gets no automated
+// coverage from this spec and must be checked against the compiled v4 CSS by hand.
 const v4Css = path.resolve(__dirname, '../../../../publish/ng-zorro-antd.css');
 const skip = !existsSync(v4Css);
 

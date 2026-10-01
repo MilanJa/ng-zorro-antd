@@ -120,6 +120,8 @@ describe('pagination size changer dropdown under antd v6 css', () => {
     selector.click();
     fixture.detectChanges();
     await fixture.whenStable();
+    // CDK's FlexibleConnectedPositionStrategy queues the pane's initial position/offset
+    // calculation on a macrotask after attach; this flushes it before the pane is queried.
     await new Promise(resolve => setTimeout(resolve, 0));
 
     const pane = overlay.getContainerElement().querySelector('.cdk-overlay-pane') as HTMLElement;
@@ -143,6 +145,8 @@ describe('pagination size changer dropdown under antd v6 css', () => {
     selector.click();
     fixture.detectChanges();
     await fixture.whenStable();
+    // Past the select dropdown's slideUpOut leave animation (rc-motion's default
+    // `--ant-motion-duration-mid`, 0.2s) so the pane is fully detached before asserting it's gone.
     await new Promise(resolve => setTimeout(resolve, 400));
     expect(overlay.getContainerElement().querySelector('.ant-select-dropdown')).toBeNull();
   });

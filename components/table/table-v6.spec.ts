@@ -176,6 +176,8 @@ describe('table under antd v6 css', () => {
       const bodyDiv = root.querySelector('.ant-table-body') as HTMLElement;
       bodyDiv.scrollLeft = 200;
       bodyDiv.dispatchEvent(new Event('scroll'));
+      // table-inner-scroll.component.ts pipes the scroll stream through `delay(0)` (outside the
+      // Angular zone) before recomputing the ping classes; this flushes that macrotask.
       await new Promise(r => setTimeout(r, 50));
       fixture.detectChanges();
 
@@ -281,6 +283,8 @@ describe('table under antd v6 css', () => {
       const trigger = root.querySelector('.ant-table-filter-trigger') as HTMLElement;
       expect(trigger).not.toBeNull();
       trigger.click();
+      // Past the filter dropdown's slideDownIn enter animation (nz-dropdown's overlay, antd's
+      // default rc-motion duration, ~0.2s) so the pane's layout has settled before it is queried.
       await new Promise(r => setTimeout(r, 200));
       fixture.detectChanges();
       await fixture.whenStable();

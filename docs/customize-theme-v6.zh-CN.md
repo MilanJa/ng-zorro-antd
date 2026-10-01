@@ -133,7 +133,7 @@ chart.color = token.colorPrimary;
 
 `nzThemeInherit`（默认 `true`）会合并最近的祖先 `[nzTheme]` 的主题；若没有祖先指令，则合并通过 `NzConfig.theme` 应用的全局主题。与 antd 一致，`token` 按键合并，`components` 按组件合并。
 
-由 CDK 浮层渲染的弹出内容在 DOM 中位于该区域之外。会带上最近的外层 `[nzTheme]` 作用域的浮层：Select 下拉菜单、Tooltip、Popover、Popconfirm、Drawer（声明式）、Modal（声明式，或在作用域内通过 `nzViewContainerRef` 创建），此外还有 AutoComplete、TreeSelect、Cascader、DatePicker、TimePicker、Mention 的浮层面板，基于 Popover 构建的 ColorPicker 拾色面板，以及 Slider 的滑块提示气泡，Dropdown 的菜单面板（包括由 `NzContextMenuService` 创建的右键菜单）、Image 的预览浮层、Tabs 的溢出菜单和 Table 的筛选下拉菜单（后两者均基于 Dropdown，继承其作用域，无需额外接入），以及 Pagination 的每页条数选择器和 Calendar 头部的选择器（两者均基于 Select）。Message 和 Notification 是应用级单例，始终遵循全局主题。作用域依据 Angular 的*注入器*树而不是 DOM 确定，并且与所有 CDK 浮层一样，下拉菜单的类名在浮层首次创建时应用：之后对 `nzDropdownClassName` 的修改不会作用于已经打开过的下拉菜单。
+由 CDK 浮层渲染的弹出内容在 DOM 中位于该区域之外。会带上最近的外层 `[nzTheme]` 作用域的浮层：Select 下拉菜单、Tooltip、Popover、Popconfirm、Drawer（声明式）、Modal（声明式，或在作用域内通过 `nzViewContainerRef` 创建），此外还有 AutoComplete、TreeSelect、Cascader、DatePicker、TimePicker、Mention 的浮层面板，基于 Popover 构建的 ColorPicker 拾色面板，以及 Slider 的滑块提示气泡。Dropdown 的菜单面板（包括由 `NzContextMenuService` 创建的右键菜单）、Image 的预览浮层、Tabs 的溢出菜单和 Table 的筛选下拉菜单（后两者均基于 Dropdown，继承其作用域，无需额外接入），以及 Pagination 的每页条数选择器和 Calendar 头部的选择器（两者均基于 Select）同样会带上该作用域。Message 和 Notification 是应用级单例，始终遵循全局主题。作用域依据 Angular 的*注入器*树而不是 DOM 确定，并且与所有 CDK 浮层一样，下拉菜单的类名在浮层首次创建时应用：之后对 `nzDropdownClassName` 的修改不会作用于已经打开过的下拉菜单。
 
 ## 服务端渲染
 

@@ -87,6 +87,9 @@ describe('calendar under antd v6 css', () => {
   it('switches to mini mode at v6 mini cell height', async () => {
     fixture.componentInstance.fullscreen = false;
     fixture.detectChanges();
+    // No CSS transition runs on the mode switch (the mini/full classes are plain attribute
+    // bindings); this only flushes the macrotask queue after detectChanges so the mini cell's
+    // post-mutation layout is settled before getComputedStyle reads it.
     await new Promise(r => setTimeout(r, 0));
     expect(host.classList.contains('ant-picker-calendar-mini')).toBe(true);
     const cellInner = host.querySelector('.ant-picker-cell-inner') as HTMLElement;
