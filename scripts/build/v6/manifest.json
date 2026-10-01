@@ -1,7 +1,7 @@
 {
   "antdVersion": "6.6.5",
   "engineCoreBytes": 42701,
-  "engineComponentsBytes": 330947,
+  "engineComponentsBytes": 332743,
   "components": {
     "alert": {
       "classes": [
@@ -152,6 +152,33 @@
         "--ant-select-show-arrow-padding-inline-end",
         "--ant-select-single-item-height-lg",
         "--ant-select-z-index-popup"
+      ]
+    },
+    "avatar": {
+      "classes": [
+        "ant-avatar",
+        "ant-avatar-group",
+        "ant-avatar-group-popover",
+        "ant-avatar-icon",
+        "ant-avatar-image",
+        "ant-avatar-lg",
+        "ant-avatar-sm",
+        "ant-avatar-square",
+        "ant-image-img"
+      ],
+      "tokens": [
+        "--ant-avatar-container-size",
+        "--ant-avatar-container-size-lg",
+        "--ant-avatar-container-size-sm",
+        "--ant-avatar-group-border-color",
+        "--ant-avatar-group-overlapping",
+        "--ant-avatar-group-space",
+        "--ant-avatar-icon-font-size",
+        "--ant-avatar-icon-font-size-lg",
+        "--ant-avatar-icon-font-size-sm",
+        "--ant-avatar-text-font-size",
+        "--ant-avatar-text-font-size-lg",
+        "--ant-avatar-text-font-size-sm"
       ]
     },
     "badge": {

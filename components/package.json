@@ -108,6 +108,9 @@
       "less": "./avatar/style/*.less",
       "style": "./avatar/style/index.min.css"
     },
+    "./avatar/style/v6/*": {
+      "style": "./avatar/style/v6/*"
+    },
     "./badge/style/*": {
       "less": "./badge/style/*.less",
       "style": "./badge/style/index.min.css"

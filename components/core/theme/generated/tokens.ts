@@ -554,6 +554,21 @@ export interface NzAlertToken {
   withDescriptionPadding: string;
 }
 
+export interface NzAvatarToken {
+  containerSize: number;
+  containerSizeLG: number;
+  containerSizeSM: number;
+  groupBorderColor: string;
+  groupOverlapping: number;
+  groupSpace: number;
+  iconFontSize: number;
+  iconFontSizeLG: number;
+  iconFontSizeSM: number;
+  textFontSize: number;
+  textFontSizeLG: number;
+  textFontSizeSM: number;
+}
+
 export interface NzBadgeToken {
   dotSize: number;
   indicatorHeight: number;
@@ -1182,6 +1197,7 @@ export interface NzUploadToken {
 
 export interface NzComponentTokenMap {
   Alert: NzAlertToken;
+  Avatar: NzAvatarToken;
   Badge: NzBadgeToken;
   Button: NzButtonToken;
   Card: NzCardToken;

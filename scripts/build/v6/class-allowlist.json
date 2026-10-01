@@ -534,6 +534,11 @@
     "ant-spin-nested-loading"
   ],
   "_list_comment": "antd-emits: ant-list-rtl (index.js clsx condition direction === rtl on the root div, matching the pre-existing [class.ant-list-rtl] host binding in list.component.ts exactly); v6 CSS has no dedicated rule for it (the list stylesheet uses only logical properties, e.g. margin-inline-start, so no explicit rtl override is needed). v4-compat (patch hook, duplicated from spin's own allowlist entry per the statistic/skeleton precedent): ant-spin-nested-loading is spin.component.ts's own class (!nzSimple); list's renderedPrefixes: ['ant-spin'] classes count toward list's own rendered-coverage check, and the shared allowlist is keyed by directory, not merged automatically, so list needs its own copy of this entry.",
+  "avatar": [
+    "ant-avatar-circle",
+    "ant-avatar-string"
+  ],
+  "_avatar_comment": "v4-compat (no v6 counterpart): ant-avatar-circle (avatar.component.ts's `[class.ant-avatar-circle]` host binding on the default `nzShape === 'circle'`; antd 6's Avatar.js clsx still adds `${prefixCls}-${mergedShape}`, i.e. the literal class is genuinely emitted by real antd 6 too, but v6 CSS draws the circle as `.ant-avatar`'s own `border-radius: 50%` base rule and has no `.ant-avatar-circle` selector at all -- confirmed against the raw v6 CSS extraction and manifest.json's avatar.classes), ant-avatar-string (avatar.component.ts's `<span class=\"ant-avatar-string\">`; Avatar.js renders the same class on its text span, but v6 positions/scales it entirely via the inline styles its ResizeObserver callback sets -- the same technique avatar.component.ts's own calcStringSize already uses -- and v6 CSS has no `.ant-avatar-string` rule).",
   "image": [
     "ant-image-preview-root",
     "ant-image-preview-wrap",
