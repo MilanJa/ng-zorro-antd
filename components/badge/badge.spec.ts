@@ -261,7 +261,13 @@ describe('badge', () => {
 
       testComponent.count.set(5);
       fixture.detectChanges();
-      expect(badgeElement.nativeElement.querySelector('nz-badge-sup').style.backgroundColor).toBe('rgb(245, 34, 45)');
+      const sup = badgeElement.nativeElement.querySelector('nz-badge-sup');
+      expect(sup.style.backgroundColor).toBe('rgb(245, 34, 45)');
+      // A custom (non-preset, non-status) colour is not in antd's preset set, so v6's Badge.js
+      // emits neither a `-status-` nor a `-color-` class for it, only the inline background.
+      expect(Array.from(sup.classList as DOMTokenList).some((c: string) => c.startsWith('ant-badge-status-'))).toBe(
+        false
+      );
     });
 
     it('should nzStyle work even if nzColor is not provided', () => {
