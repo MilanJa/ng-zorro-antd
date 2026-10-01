@@ -1,0 +1,12 @@
+/*
+ * The title box is rendered unconditionally (statistic.component.ts) so the compiled v4 CSS's
+ * `.ant-statistic-title { margin-bottom: 4px }` still applies to a title-less statistic. v6's own
+ * Statistic.js skips the header entirely when there is no title, so under the v6 bundle alone the
+ * always-present, empty header would otherwise keep its `.ant-statistic .ant-statistic-header
+ * { padding-bottom: var(--ant-margin-xxs) }` band (publish/style/v6/template.css) with nothing in
+ * it. Hiding it here, keyed on the title div being empty, reaches the v6-only result without
+ * touching the v4 DOM.
+ */
+.ant-statistic-header:has(> .ant-statistic-title:empty) {
+  display: none;
+}

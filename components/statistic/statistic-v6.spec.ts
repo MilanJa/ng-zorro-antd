@@ -68,13 +68,16 @@ describe('statistic under antd v6 css', () => {
     expect(decimalSpan).toBeTruthy();
   });
 
-  it('keeps an empty header element when there is no title (v4 spacing)', () => {
-    // Rendered unconditionally so the compiled v4 CSS's `.ant-statistic-title { margin-bottom:
-    // 4px }` still applies without a title; under v6 the empty header keeps its own padding.
+  it('keeps the title div in the DOM but hides the empty header under v6', () => {
+    // The title div stays in the DOM unconditionally (statistic.component.ts) so the compiled v4
+    // CSS's `.ant-statistic-title { margin-bottom: 4px }` still applies to it without a title;
+    // under v6 alone, `style/v6/patch.css`'s `.ant-statistic-header:has(> .ant-statistic-title
+    // :empty)` rule hides the header instead of leaving its empty `padding-bottom` band.
     const untitled = document.getElementById('untitled')!;
     const header = untitled.querySelector('.ant-statistic-header') as HTMLElement;
     expect(header).toBeTruthy();
-    expect(getComputedStyle(header).paddingBottom).toBe('4px'); // margin-xxs
+    expect(getComputedStyle(header).display).toBe('none');
+    expect(header.getBoundingClientRect().height).toBe(0);
     const title = header.querySelector('.ant-statistic-title') as HTMLElement;
     expect(title).toBeTruthy();
     expect(title.textContent?.trim()).toBe('');
