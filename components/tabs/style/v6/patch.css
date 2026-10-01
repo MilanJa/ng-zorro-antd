@@ -1,0 +1,93 @@
+/*
+ * antd v6's `@rc-component/tabs` renamed the pane wrapper chain: the outer holder is
+ * `ant-tabs-body-holder` (was `ant-tabs-content-holder`), the middle div is `ant-tabs-body`
+ * (was `ant-tabs-content`), and each pane itself is `ant-tabs-content`/`ant-tabs-content-active`
+ * (was `ant-tabs-tabpane`/`ant-tabs-tabpane-active`). ng-zorro now emits the new outer/middle
+ * names next to the old ones (no v4 collision for `ant-tabs-body*`), but the per-pane element
+ * keeps only the old `ant-tabs-tabpane`/`-active`/`-hidden` names: the compiled v4 CSS already
+ * has a bare `.ant-tabs-content { position: relative; width: 100% }` rule for the *middle*
+ * wrapper, so adding that same class name to the *pane* element would additionally apply that
+ * rule to every pane under the v4 (default) stylesheet. The two v6 rules that key off the
+ * per-pane `.ant-tabs-content` class are mirrored here onto the kept `.ant-tabs-tabpane` hook.
+ */
+.ant-tabs .ant-tabs-tabpane:focus-visible {
+  outline: var(--ant-line-width-focus) solid var(--ant-color-primary-border);
+  outline-offset: 1px;
+  transition: outline-offset 0s, outline 0s;
+}
+
+/*
+ * v6: `.ant-tabs-left > .ant-tabs-body-holder > .ant-tabs-body > .ant-tabs-content { padding-left }`
+ * (and the right-side mirror). ng-zorro's pane element never carries `ant-tabs-content`, so the
+ * rule is re-keyed on the chain of classes the pane actually has. Needed even though v4's own
+ * `position.less` already has the equivalent rule on the old class chain, because the doc site's
+ * `?theme=v6` mode loads only this v6 bundle and never loads the v4 stylesheet at all.
+ */
+.ant-tabs-left > .ant-tabs-content-holder > .ant-tabs-content > .ant-tabs-tabpane,
+.ant-tabs-left > div > .ant-tabs-content-holder > .ant-tabs-content > .ant-tabs-tabpane {
+  padding-left: var(--ant-padding-lg);
+}
+.ant-tabs-right > .ant-tabs-content-holder > .ant-tabs-content > .ant-tabs-tabpane,
+.ant-tabs-right > div > .ant-tabs-content-holder > .ant-tabs-content > .ant-tabs-tabpane {
+  padding-right: var(--ant-padding-lg);
+}
+
+/*
+ * antd v6 tracks a JS-driven `ant-tabs-tab-focus` state class on the tab for its keyboard-focus
+ * ring (`node_modules/@rc-component/tabs/es/TabNavList/TabNode.js`'s `focus` prop) and keys three
+ * rules off `.ant-tabs-tab.ant-tabs-tab-focus .ant-tabs-tab-btn:focus-visible` (and the card-mode
+ * variant with `:has()`). Since the tab in this DOM only ever receives `:focus-visible` through
+ * its `.ant-tabs-tab-btn` child, `:has()` on that same child gives an identical result without
+ * adding a bookkeeping class or new input.
+ */
+.ant-tabs .ant-tabs-tab .ant-tabs-tab-btn:focus-visible {
+  outline: var(--ant-line-width-focus) solid var(--ant-color-primary-border);
+  outline-offset: 1px;
+  transition: outline-offset 0s, outline 0s;
+}
+.ant-tabs-card > .ant-tabs-nav .ant-tabs-tab:has(.ant-tabs-tab-btn:focus-visible),
+.ant-tabs-card > div > .ant-tabs-nav .ant-tabs-tab:has(.ant-tabs-tab-btn:focus-visible) {
+  outline: var(--ant-line-width-focus) solid var(--ant-color-primary-border);
+  outline-offset: -3px;
+  transition: outline-offset 0s, outline 0s;
+}
+.ant-tabs-card > .ant-tabs-nav .ant-tabs-tab:has(.ant-tabs-tab-btn:focus-visible) .ant-tabs-tab-btn:focus-visible,
+.ant-tabs-card > div > .ant-tabs-nav .ant-tabs-tab:has(.ant-tabs-tab-btn:focus-visible) .ant-tabs-tab-btn:focus-visible {
+  outline: none;
+}
+
+/*
+ * The overflow ("more") menu reuses `nz-dropdown`/`ant-dropdown` (its pane already gets the
+ * trigger's theme scope for free from dropdown's own wiring) instead of antd v6's bespoke
+ * `ant-tabs-dropdown` element — the same structural choice v4's own `patch.less` already makes
+ * (`.nz-tabs-dropdown.ant-dropdown .ant-dropdown-menu {...}`). `ant-tabs-dropdown` itself is not
+ * emitted on the pane root: the compiled v4 CSS already has an absolute-positioned, z-indexed
+ * `.ant-tabs-dropdown` rule from the pre-CDK era that would collapse the CDK overlay pane
+ * (the same hazard the global constraints call out for CDK-positioned popup roots). v6's own
+ * `.ant-tabs-dropdown .ant-tabs-dropdown-menu*` rules are mirrored onto the `nz-tabs-dropdown`
+ * hook actually present in the DOM instead.
+ */
+.nz-tabs-dropdown.ant-dropdown {
+  position: relative;
+}
+.nz-tabs-dropdown.ant-dropdown .ant-dropdown-menu {
+  max-height: 200px;
+  padding: var(--ant-padding-xxs) 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  border-radius: var(--ant-border-radius-lg);
+  box-shadow: var(--ant-box-shadow-secondary);
+}
+.nz-tabs-dropdown.ant-dropdown .ant-dropdown-menu-item.ant-tabs-dropdown-menu-item {
+  min-width: 120px;
+  padding: var(--ant-padding-xxs) var(--ant-padding-sm);
+}
+.nz-tabs-dropdown.ant-dropdown .ant-dropdown-menu-item.ant-tabs-dropdown-menu-item:hover {
+  background: var(--ant-control-item-bg-hover);
+}
+.nz-tabs-dropdown.ant-dropdown .ant-dropdown-menu-item.ant-tabs-dropdown-menu-item-disabled,
+.nz-tabs-dropdown.ant-dropdown .ant-dropdown-menu-item.ant-tabs-dropdown-menu-item-disabled:hover {
+  color: var(--ant-color-text-disabled);
+  background: transparent;
+  cursor: not-allowed;
+}

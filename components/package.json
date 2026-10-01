@@ -444,6 +444,9 @@
       "less": "./tabs/style/*.less",
       "style": "./tabs/style/index.min.css"
     },
+    "./tabs/style/v6/*": {
+      "style": "./tabs/style/v6/*"
+    },
     "./tag/style/*": {
       "less": "./tag/style/*.less",
       "style": "./tag/style/index.min.css"

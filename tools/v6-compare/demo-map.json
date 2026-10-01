@@ -262,5 +262,14 @@
   "image": {
     "_antdDir": "image",
     "service": null
+  },
+  "tabs": {
+    "_antdDir": "tabs",
+    "position": "placement",
+    "indicator": "custom-indicator",
+    "draggable": null,
+    "guard": null,
+    "lazy": null,
+    "link-router": null
   }
 }

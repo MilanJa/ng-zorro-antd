@@ -1137,6 +1137,35 @@ export interface NzSwitchToken {
   trackPadding: number;
 }
 
+export interface NzTabsToken {
+  cardBg: string;
+  cardGutter: number;
+  cardHeight: number;
+  cardHeightLG: number;
+  cardHeightSM: number;
+  cardPadding: string;
+  cardPaddingLG: string;
+  cardPaddingSM: string;
+  horizontalItemGutter: number;
+  horizontalItemMargin: string;
+  horizontalItemMarginRTL: string;
+  horizontalItemPadding: string;
+  horizontalItemPaddingLG: string;
+  horizontalItemPaddingSM: string;
+  horizontalMargin: string;
+  inkBarColor: string;
+  itemActiveColor: string;
+  itemColor: string;
+  itemHoverColor: string;
+  itemSelectedColor: string;
+  titleFontSize: number;
+  titleFontSizeLG: number;
+  titleFontSizeSM: number;
+  verticalItemMargin: string;
+  verticalItemPadding: string;
+  zIndexPopup: number;
+}
+
 export interface NzTagToken {
   defaultBg: string;
   defaultColor: string;
@@ -1237,6 +1266,7 @@ export interface NzComponentTokenMap {
   Spin: NzSpinToken;
   Statistic: NzStatisticToken;
   Switch: NzSwitchToken;
+  Tabs: NzTabsToken;
   Tag: NzTagToken;
   Tooltip: NzTooltipToken;
   Transfer: NzTransferToken;

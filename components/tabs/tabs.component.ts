@@ -125,14 +125,19 @@ let nextId = 0;
         }
       </nz-tabs-nav>
     }
-    <div class="ant-tabs-content-holder">
+    <div class="ant-tabs-content-holder ant-tabs-body-holder">
       <div
-        class="ant-tabs-content"
+        class="ant-tabs-content ant-tabs-body"
         [class.ant-tabs-content-top]="nzTabPosition === 'top'"
         [class.ant-tabs-content-bottom]="nzTabPosition === 'bottom'"
         [class.ant-tabs-content-left]="nzTabPosition === 'left'"
         [class.ant-tabs-content-right]="nzTabPosition === 'right'"
         [class.ant-tabs-content-animated]="tabPaneAnimated"
+        [class.ant-tabs-body-top]="nzTabPosition === 'top'"
+        [class.ant-tabs-body-bottom]="nzTabPosition === 'bottom'"
+        [class.ant-tabs-body-left]="nzTabPosition === 'left'"
+        [class.ant-tabs-body-right]="nzTabPosition === 'right'"
+        [class.ant-tabs-body-animated]="tabPaneAnimated"
       >
         @if (!nzHideAll) {
           @for (tab of tabs; track tab) {

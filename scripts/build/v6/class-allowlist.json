@@ -485,6 +485,27 @@
     "ant-tag-borderless",
     "ant-tag-has-color"
   ],
+  "tabs": [
+    "ant-tabs-body-animated",
+    "ant-tabs-body-bottom",
+    "ant-tabs-body-left",
+    "ant-tabs-body-right",
+    "ant-tabs-body-top",
+    "ant-tabs-content-active",
+    "ant-tabs-content-animated",
+    "ant-tabs-content-bottom",
+    "ant-tabs-content-holder",
+    "ant-tabs-content-left",
+    "ant-tabs-content-right",
+    "ant-tabs-content-top",
+    "ant-tabs-default",
+    "ant-tabs-editable",
+    "ant-tabs-editable-card",
+    "ant-tabs-switch",
+    "ant-tabs-tabpane",
+    "ant-tabs-tabpane-active"
+  ],
+  "_tabs_comment": "antd-emits: ant-tabs-body-animated/-top/-bottom/-left/-right (`@rc-component/tabs/es/TabPanelList/index.js`'s `clsx(bodyPrefixCls, \\`${bodyPrefixCls}-${tabPosition}\\`, { [\\`${bodyPrefixCls}-animated\\`]: tabPaneAnimated })` on the middle wrapper, matching `tabs.component.ts`'s existing conditions exactly; no v6 CSS rule keys off any of the five, confirmed against `2026-09-30-plan-d-css-tabs.css`), ant-tabs-content-active (`TabPanelList/TabPane.js`: `clsx(prefixCls, active && \\`${prefixCls}-active\\`, className)` on the per-pane element when active; v6 CSS has no rule for it either — the active pane's only real effect is the ABSENCE of `-hidden`), ant-tabs-editable (`@rc-component/tabs/es/Tabs.js`'s root `clsx` adds `${prefixCls}-editable` whenever the `editable` prop is truthy, i.e. `nzType === 'editable-card'`, matching `tabs.component.ts`'s existing `[class.ant-tabs-editable]`; no v6 CSS rule keys off it), ant-tabs-editable-card (`antd/es/tabs/index.js`'s root `clsx` adds `${prefixCls}-editable-card` when `type === 'editable-card'`, matching the existing host binding; no v6 CSS rule either). scan-artefact: ant-tabs-switch (`tab-body.component.ts`'s `ANIMATION_PREFIX` constant, only ever used as a `generateClassName` prefix for the suffixed `-appear`/`-enter`/`-leave` motion classes, which ARE emitted and styled by v6 CSS; the bare prefix itself is never rendered). nz-only: ant-tabs-default (`tabs.component.ts`'s `[class.ant-tabs-default]` mirrors the `-small`/`-large` size markers structurally; antd's own size `clsx` (`antd/es/tabs/index.js`) never emits a class for the default size at all — confirmed no `.ant-tabs-default` selector anywhere in the extraction — so this is ng-zorro's own unstyled runtime-state hook, kept for symmetry with the other two size classes). v4-compat: ant-tabs-content-holder (replacement: ant-tabs-body-holder, added alongside on the same element — the compiled v4 CSS already has a bare `.ant-tabs-content-holder {...}` rule, and v6's `@rc-component/tabs` renamed the same wrapper to `ant-tabs-body-holder`, which IS styled by v6 CSS). ant-tabs-content, -content-animated, -content-top/-bottom/-left/-right (replacement: ant-tabs-body, -body-animated, -body-top/-bottom/-left/-right respectively, added alongside on the same middle-wrapper element — compiled v4 CSS has a bare `.ant-tabs-content {...}` rule for this element, matching v6's renamed `ant-tabs-body`). ant-tabs-tabpane, -tabpane-active (replacement: ant-tabs-content, -content-active respectively — NOT added alongside, because compiled v4 CSS's `.ant-tabs-content {...}` rule styles a DIFFERENT element (the middle wrapper above); adding the literal class `ant-tabs-content` to the per-pane element as well would make that middle-wrapper rule also apply to every pane under the default v4 stylesheet. `ant-tabs-content-active` is itself unstyled by v6 (see above) and has no v4 rule, so it IS added directly to the pane (`tab-body.component.ts`'s new `[class.ant-tabs-content-active]`); the two v6 rules that key off the per-pane `.ant-tabs-content` class (`:focus-visible` outline, left/right padding) are mirrored in `style/v6/patch.css` onto the kept `.ant-tabs-tabpane` hook instead, with the v4-collision rationale in that file's header comment).",
   "_typography_comment": "v4-compat: ant-typography-single-line (no v6 counterpart: v6's Base/index.js signals single-line ellipsis entirely through `ant-typography-ellipsis-single-line` plus the `-webkit-line-clamp`/`text-overflow` inline styles it already emits; grepping node_modules/antd/es/typography/*.js and .../style/*.js for \"single-line\" finds no such class, and v6 CSS never styles the literal `.ant-typography-single-line` selector; compiled v4 CSS still styles it).",
   "typography": [
     "ant-typography-single-line"

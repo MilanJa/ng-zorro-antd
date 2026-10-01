@@ -24,6 +24,12 @@ import { generateClassName } from 'ng-zorro-antd/core/util';
 type AnimationState = 'enter-start' | 'enter-active' | 'leave-start' | 'leave-active' | 'void' | 'hidden';
 
 const CLASS_NAME = 'ant-tabs-tabpane';
+// antd v6's `@rc-component/tabs` renamed the per-pane element's own class to `ant-tabs-content`
+// (`TabPanelList/TabPane.js`), with `ant-tabs-content-hidden` as its leaved/inactive state class
+// (`TabPanelList/index.js`'s `leavedClassName`). `ant-tabs-content` itself cannot be added to this
+// element (see `style/v6/patch.css`'s header comment for the v4 collision), but the two suffixed
+// state classes are v4-inert and safe to emit alongside the kept `ant-tabs-tabpane*` names.
+const V6_CLASS_NAME = 'ant-tabs-content';
 const ANIMATION_PREFIX = 'ant-tabs-switch';
 const ANIMATION_CLASS_MAP: Record<AnimationState, string[]> = {
   'enter-start': [generateClassName(ANIMATION_PREFIX, 'enter'), generateClassName(ANIMATION_PREFIX, 'enter-start')],
@@ -31,7 +37,7 @@ const ANIMATION_CLASS_MAP: Record<AnimationState, string[]> = {
   'leave-start': [generateClassName(ANIMATION_PREFIX, 'leave'), generateClassName(ANIMATION_PREFIX, 'leave-start')],
   'leave-active': [generateClassName(ANIMATION_PREFIX, 'leave'), generateClassName(ANIMATION_PREFIX, 'leave-active')],
   // If animation is enabled, we should hide the tabpane after the leave animation is done
-  hidden: [generateClassName(CLASS_NAME, 'hidden')],
+  hidden: [generateClassName(CLASS_NAME, 'hidden'), generateClassName(V6_CLASS_NAME, 'hidden')],
   void: []
 };
 
@@ -43,6 +49,7 @@ const ANIMATION_CLASS_MAP: Record<AnimationState, string[]> = {
   host: {
     '[class]': 'class()',
     '[class.ant-tabs-tabpane-active]': 'active()',
+    '[class.ant-tabs-content-active]': 'active()',
     '[attr.tabindex]': 'active() ? 0 : -1',
     '[attr.aria-hidden]': '!active()',
     '(transitionend)': '_onTransitionEnd($event)'
@@ -64,7 +71,7 @@ export class NzTabBodyComponent {
     if (this._animationEnabled()) {
       cls.push(...ANIMATION_CLASS_MAP[this._animationState()]);
     } else if (!this.active()) {
-      cls.push(generateClassName(CLASS_NAME, 'hidden'));
+      cls.push(generateClassName(CLASS_NAME, 'hidden'), generateClassName(V6_CLASS_NAME, 'hidden'));
     }
     return cls;
   });
