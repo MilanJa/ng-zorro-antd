@@ -121,9 +121,8 @@
     "ant-spin-show-text",
     "ant-spin-text"
   ],
-  "_statistic_comment": "antd-emits: -content-value-int, -content-value-decimal (`Number.js`'s `StatisticNumber` emits these exact class names on the digit/decimal spans; v6 CSS styles only their ancestor `.ant-statistic-content-value`, so the split spans inherit colour/size with no rule of their own), -rtl (`Statistic.js` sets `${prefixCls}-rtl` from `direction === 'rtl'`; v6 CSS has no dedicated rtl rule for statistic, the class is a plain state hook). v4-compat: ant-skeleton-content (skeleton's own allowlist entry, repeated here because statistic's loading state renders a real `nz-skeleton` -- `ant-skeleton` is a `renderedPrefixes` dependency, next to `-section` in v4's skeleton markup, no v6 counterpart).",
+  "_statistic_comment": "antd-emits: -content-value-int, -content-value-decimal (`Number.js`'s `StatisticNumber` emits these exact class names on the digit/decimal spans; v6 CSS styles only their ancestor `.ant-statistic-content-value`, so the split spans inherit colour/size with no rule of their own), -rtl (`Statistic.js` sets `${prefixCls}-rtl` from `direction === 'rtl'`; v6 CSS has no dedicated rtl rule for statistic, the class is a plain state hook). The ant-skeleton-content class statistic's loading-state nz-skeleton renders is not repeated here: skeleton's own `_skeleton_comment` already explains it, and `allowlistFor` credits statistic with skeleton's entries for the `ant-skeleton` prefix.",
   "statistic": [
-    "ant-skeleton-content",
     "ant-statistic-content-value-decimal",
     "ant-statistic-content-value-int",
     "ant-statistic-rtl"
@@ -229,11 +228,8 @@
     "ant-tooltip-open",
     "ant-zoom-big-fast"
   ],
-  "_transfer_comment": "v4-compat: -list (replacement: ant-transfer-section, added alongside on the same element), -operation (replacement: ant-transfer-actions, added alongside on the same element), -list-body-customize-wrapper (antd v6's own Section.js still renders this div at the same class name, but v6 CSS has no rule for it, so no v6 counterpart), -list-body-with-search (ng-zorro-only modifier on -list-body; v6 never emits it and no stylesheet styles it, no v6 counterpart), -list-header-selected (v6's own Section.js renders an equivalent div at the same class name with no CSS rule either, no v6 counterpart), -list-with-footer (v6's own equivalent flag is -section-with-footer, which also carries no CSS rule, so no rename needed, no v6 counterpart). v4-compat (reused from checkbox's and input's own style/v6 resolution, since the header checkbox and search box render those components' DOM verbatim under the transfer prefix list): ant-checkbox-inner (checkbox's own patch hook, see the checkbox entry above), ant-input-affix-wrapper-outlined (input's own patch hook, see the input entry above). antd-emits: ant-checkbox-wrapper-checked (the checkbox in each row and in the header renders it, as antd's Checkbox does; v6 CSS never styles it). Not emitted: -content-item-checked and -content-show-remove, which v4 styles too; style/v6/patch.css keys antd's rules for them onto the checked checkbox and onto rows without a checkbox.",
+  "_transfer_comment": "v4-compat: -list (replacement: ant-transfer-section, added alongside on the same element), -operation (replacement: ant-transfer-actions, added alongside on the same element), -list-body-customize-wrapper (antd v6's own Section.js still renders this div at the same class name, but v6 CSS has no rule for it, so no v6 counterpart), -list-body-with-search (ng-zorro-only modifier on -list-body; v6 never emits it and no stylesheet styles it, no v6 counterpart), -list-header-selected (v6's own Section.js renders an equivalent div at the same class name with no CSS rule either, no v6 counterpart), -list-with-footer (v6's own equivalent flag is -section-with-footer, which also carries no CSS rule, so no rename needed, no v6 counterpart). Not emitted: -content-item-checked and -content-show-remove, which v4 styles too; style/v6/patch.css keys antd's rules for them onto the checked checkbox and onto rows without a checkbox. The ant-checkbox-inner, ant-checkbox-wrapper-checked and ant-input-affix-wrapper-outlined classes the header checkbox and search box render (verbatim checkbox/input DOM under the transfer prefix) are not repeated here: checkbox's and input's own `_checkbox_comment`/`_input_comment` already explain them, and `allowlistFor` credits transfer with each owner's entries for its `renderedPrefixes`.",
   "transfer": [
-    "ant-checkbox-inner",
-    "ant-checkbox-wrapper-checked",
-    "ant-input-affix-wrapper-outlined",
     "ant-transfer-list",
     "ant-transfer-list-body-customize-wrapper",
     "ant-transfer-list-body-with-search",
@@ -241,18 +237,12 @@
     "ant-transfer-list-with-footer",
     "ant-transfer-operation"
   ],
-  "_tree_comment": "antd-emits (verified against node_modules/@rc-component/tree/es/TreeNode.js and node_modules/antd/es/tree/Tree.js; absent from manifest.json's tree.classes): -icon-hide (Tree.js's `${prefixCls}-icon-hide` when `!showIcon`), -indent-unit-start (Indent.js's `${baseClassName}-start` for a start-of-row indent unit), -node-content-wrapper-open/-close (TreeNode.js's `${wrapClass}-${nodeState}`), -treenode-checkbox-checked/-indeterminate/-loading and -treenode-switcher-open/-close (TreeNode.js's own className builders). v4-compat (patch hook): -checkbox-inner (v6 draws the checkbox box on `.ant-tree-checkbox` itself, the same shape as checkbox/radio/cascader; style/v6/patch.css mirrors it onto -inner with the tree prefix). Every entry appears twice (bare `ant-tree-*` and `ant-select-tree-*`): NzTreeNodeBuiltinComponent/NzTreeNodeSwitcherComponent/NzTreeIndentComponent/NzTreeNodeTitleComponent emit both forms from the same host-binding pair, gated on `nzSelectMode`. The rest of the `ant-select-tree-*` structural classes tree also emits (-block-node, -checkbox[-checked/-disabled/-indeterminate], -icon, -indent[-unit][-end], -list, -list-holder-inner, -node-content-wrapper, -node-selected, -show-line, -switcher[-icon/-noop], -treenode[-disabled/-leaf-last/-selected], the bare -tree root) are not listed here: `renderedPrefixStyleOwner('ant-select-tree')` resolves to `tree-select` (the only directory whose antd extraction renders under that prefix), so `styledClassesFor` credits tree with the matching classes from tree-select's manifest instead.",
+  "_tree_comment": "antd-emits (verified against node_modules/@rc-component/tree/es/TreeNode.js and node_modules/antd/es/tree/Tree.js; absent from manifest.json's tree.classes): -icon-hide (Tree.js's `${prefixCls}-icon-hide` when `!showIcon`), -indent-unit-start (Indent.js's `${baseClassName}-start` for a start-of-row indent unit), -node-content-wrapper-open/-close (TreeNode.js's `${wrapClass}-${nodeState}`), -treenode-checkbox-checked/-indeterminate/-loading and -treenode-switcher-open/-close (TreeNode.js's own className builders). v4-compat (patch hook): -checkbox-inner (v6 draws the checkbox box on `.ant-tree-checkbox` itself, the same shape as checkbox/radio/cascader; style/v6/patch.css mirrors it onto -inner with the tree prefix). Every entry appears twice (bare `ant-tree-*` and `ant-select-tree-*`): NzTreeNodeBuiltinComponent/NzTreeNodeSwitcherComponent/NzTreeIndentComponent/NzTreeNodeTitleComponent emit both forms from the same host-binding pair, gated on `nzSelectMode` -- EXCEPT -icon-hide, -indent-unit-start, -node-content-wrapper-open/-close and -treenode-switcher-open/-close, whose `ant-select-tree-*` form is not repeated here: `tree-select`'s own `_tree-select_comment` already explains it (tree's renderedPrefixes: ['ant-select-tree'] credits tree-select's allowlist for that prefix via `allowlistFor`), so only the bare `ant-tree-*` form stays listed for those six. The rest of the `ant-select-tree-*` structural classes tree also emits (-block-node, -checkbox[-checked/-disabled/-indeterminate], -icon, -indent[-unit][-end], -list, -list-holder-inner, -node-content-wrapper, -node-selected, -show-line, -switcher[-icon/-noop], -treenode[-disabled/-leaf-last/-selected], the bare -tree root) are not listed here either: `renderedPrefixStyleOwner('ant-select-tree')` resolves to `tree-select` (the only directory whose antd extraction renders under that prefix), so `styledClassesFor` credits tree with the matching classes from tree-select's manifest instead.",
   "tree": [
     "ant-select-tree-checkbox-inner",
-    "ant-select-tree-icon-hide",
-    "ant-select-tree-indent-unit-start",
-    "ant-select-tree-node-content-wrapper-close",
-    "ant-select-tree-node-content-wrapper-open",
     "ant-select-tree-treenode-checkbox-checked",
     "ant-select-tree-treenode-checkbox-indeterminate",
     "ant-select-tree-treenode-loading",
-    "ant-select-tree-treenode-switcher-close",
-    "ant-select-tree-treenode-switcher-open",
     "ant-tree-checkbox-inner",
     "ant-tree-icon-hide",
     "ant-tree-indent-unit-start",
@@ -282,14 +272,12 @@
     "ant-popover-open",
     "ant-zoom-big"
   ],
-  "_popconfirm_comment": "v4-compat: ant-popover-buttons, ant-popover-inner-content, ant-popover-message, ant-popover-message-icon, ant-popover-message-title (next to their ant-popconfirm-* replacements). antd-emits: ant-popover-open (the trigger's visibility class), ant-popconfirm-inner-content, ant-popconfirm-message-text (antd emits both; v6 styles only their children). scan-artefact: ant-zoom-big (the `_animationPrefix` literal, as for popover).",
+  "_popconfirm_comment": "v4-compat: ant-popover-buttons, ant-popover-message, ant-popover-message-icon, ant-popover-message-title (next to their ant-popconfirm-* replacements). antd-emits: ant-popconfirm-inner-content, ant-popconfirm-message-text (antd emits both; v6 styles only their children). scan-artefact: ant-zoom-big (the `_animationPrefix` literal, as for popover). ant-popover-inner-content and ant-popover-open are not repeated here: popover's own `_popover_comment` already explains both, and `allowlistFor` credits popconfirm with popover's entries for the `ant-popover` prefix.",
   "popconfirm": [
     "ant-popover-buttons",
-    "ant-popover-inner-content",
     "ant-popover-message",
     "ant-popover-message-icon",
     "ant-popover-message-title",
-    "ant-popover-open",
     "ant-zoom-big",
     "ant-popconfirm-inner-content",
     "ant-popconfirm-message-text"
@@ -535,10 +523,9 @@
   ],
   "_empty_comment": "v4-compat (patch hook): the 12 ant-empty-img-* classes (empty.js/simple.js element+condition: the 12 static class names on partial/default.ts and partial/simple.ts svg shapes) have no v6 CSS rule at all (antd 6 colours these shapes via inline styles resolved from theme tokens in React, not CSS classes); compiled v4 CSS still styles every one of them (hex fills), so style/v6/patch.css re-targets the same literal class names with the equivalent v6 token mapping (empty.js/simple.js shadowColor/borderColor/panelBgColor/detailColor/iconColor/contentColor) to keep the illustrations visible under the v6 theme. nz-only: nz-empty-rtl is a marker class (empty.component.ts host binding on Directionality) mirroring antd 6 own ant-empty-rtl state hook (Empty/index.js clsx condition direction === rtl) which v6 CSS itself does not style (ant-empty uses only logical properties); the literal antd class name ant-empty-rtl is not emitted because compiled v4 CSS already has a .ant-empty-rtl{direction:rtl} rule ng-zorro never previously reached (v4-rule-guard would flag it), so a differently-named, unstyled-under-v6 marker is used instead with no patch rule (matching its null visual effect in real antd 6). nz-only: nz-empty-simple (empty.component.ts host binding, nzNotFoundImage === 'simple') is a v4-inert hook standing in for antd's literal ant-empty-normal class on the public API path -- compiled v4 CSS already styles ant-empty-normal and ng-zorro never emitted it for a bare nzNotFoundImage=\"simple\" caller before, so emitting the literal class now would newly change v4's existing rendering there (confirmed by a default-theme capture of the simple demo); style/v6/patch.css mirrors the same v6 sizing/colour onto this hook instead.",
   "list": [
-    "ant-list-rtl",
-    "ant-spin-nested-loading"
+    "ant-list-rtl"
   ],
-  "_list_comment": "antd-emits: ant-list-rtl (index.js clsx condition direction === rtl on the root div, matching the pre-existing [class.ant-list-rtl] host binding in list.component.ts exactly); v6 CSS has no dedicated rule for it (the list stylesheet uses only logical properties, e.g. margin-inline-start, so no explicit rtl override is needed). v4-compat (patch hook, duplicated from spin's own allowlist entry per the statistic/skeleton precedent): ant-spin-nested-loading is spin.component.ts's own class (!nzSimple); list's renderedPrefixes: ['ant-spin'] classes count toward list's own rendered-coverage check, and the shared allowlist is keyed by directory, not merged automatically, so list needs its own copy of this entry.",
+  "_list_comment": "antd-emits: ant-list-rtl (index.js clsx condition direction === rtl on the root div, matching the pre-existing [class.ant-list-rtl] host binding in list.component.ts exactly); v6 CSS has no dedicated rule for it (the list stylesheet uses only logical properties, e.g. margin-inline-start, so no explicit rtl override is needed). The ant-spin-* class list's own nz-spin loading wrapper renders is not repeated here: spin's own `_spin_comment` already explains it, and `allowlistFor` credits list with spin's entries for the `ant-spin` prefix.",
   "avatar": [
     "ant-avatar-circle",
     "ant-avatar-string"
