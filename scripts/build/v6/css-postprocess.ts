@@ -134,6 +134,80 @@ export function dropForeignComponentVarBlocks(blocks: CssBlock[], ownComponents:
   });
 }
 
+/**
+ * Copy of another component's rules under this component's prefix: every class selector token
+ * `.<from>` / `.<from>-…` in the selector part of a block becomes `.<to>` / `.<to>-…`. Only the
+ * selector text is rewritten (declarations, `@keyframes` names, attribute values and custom
+ * properties keep the original name), and a compound selector that already names the same class
+ * under both prefixes keeps one copy. antd renders Timeline through Steps, so Timeline's template
+ * is Steps' template re-keyed onto `ant-timeline-*` plus Timeline's own rules.
+ */
+export function rewriteClassPrefix(blocks: CssBlock[], from: string, to: string): CssBlock[] {
+  const classTokenRe = /\.[a-zA-Z0-9_-]+/g;
+  // antd's per-component reset matches the class attribute text: `[class^="ant-steps"]`, `[class*=" ant-steps"]`
+  const attrToken = new RegExp(`(\\[class[\\^*]="\\s?)${from}`, 'g');
+  const rewriteToken = (token: string): string => {
+    const name = token.slice(1);
+    if (name === from) return `.${to}`;
+    if (name.startsWith(`${from}-`)) return `.${to}-${name.slice(from.length + 1)}`;
+    return token;
+  };
+  const rewriteSelector = (selector: string): string => {
+    const withAttrs = selector.replace(attrToken, `$1${to}`);
+    const matches = [...withAttrs.matchAll(classTokenRe)];
+    if (matches.length === 0) return withAttrs;
+    // Group immediately-adjacent class tokens (no characters between them, i.e. a compound like
+    // `.a.b`) into runs: only tokens within the same run are candidates for de-duplication, since a
+    // descendant/`:not()`-nested token merely happening to equal another after rewriting is not the
+    // same "repeated compound" case the dedup exists for.
+    const runs: number[][] = [];
+    let current: number[] = [0];
+    for (let i = 1; i < matches.length; i++) {
+      const prev = matches[i - 1];
+      const adjacent = matches[i].index === prev.index! + prev[0].length;
+      if (adjacent) {
+        current.push(i);
+      } else {
+        runs.push(current);
+        current = [i];
+      }
+    }
+    runs.push(current);
+
+    let out = '';
+    let cursor = 0;
+    for (const run of runs) {
+      out += withAttrs.slice(cursor, matches[run[0]].index);
+      const originals = run.map(i => matches[i][0]);
+      const rewritten = originals.map(rewriteToken);
+      const kept: string[] = [];
+      for (let i = 0; i < rewritten.length; i++) {
+        // Collapse a token only when rewriting it just created a fresh duplicate of the previous kept
+        // token (the two ORIGINAL tokens differed, e.g. one already read `.ant-timeline-item` and the
+        // other was `.ant-steps-item`); a compound that already repeated the identical class before
+        // rewriting (a specificity hack) keeps every repetition.
+        if (i > 0 && rewritten[i] === kept[kept.length - 1] && originals[i] !== originals[i - 1]) {
+          continue;
+        }
+        kept.push(rewritten[i]);
+      }
+      out += kept.join('');
+      const last = matches[run[run.length - 1]];
+      cursor = last.index! + last[0].length;
+    }
+    out += withAttrs.slice(cursor);
+    return out;
+  };
+  const make = (selector: string, body: string): CssBlock => ({ selector, body, raw: `${selector}{${body}}` });
+  return blocks.map(block => {
+    if (block.selector.startsWith('@')) {
+      const nests = /^@(media|supports|container)\b/.test(block.selector);
+      return nests ? make(block.selector, joinTemplate(rewriteClassPrefix(splitBlocks(block.body), from, to))) : block;
+    }
+    return make(rewriteSelector(block.selector), block.body);
+  });
+}
+
 /** Component variable names are namespaced, so every variable block can live on :root. */
 export function varsToRoot(vars: CssBlock[]): string {
   return [...new Set(vars.map(b => `:root{${b.body}}`))].join('\n');

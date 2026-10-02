@@ -7,12 +7,14 @@ import { describe, expect, it } from 'vitest';
 
 import {
   assertNoAntdScoping,
+  type CssBlock,
   dropForeignComponentVarBlocks,
   dropForeignCssVarBlocks,
   extractClassNames,
   extractTokenNames,
   joinTemplate,
   partitionBlocks,
+  rewriteClassPrefix,
   splitBlocks,
   varsToRoot,
   withHeader
@@ -169,5 +171,77 @@ describe('dropForeignComponentVarBlocks', () => {
     expect(() => dropForeignComponentVarBlocks(blocks, ['Transfer'])).toThrow(
       /non-variable declaration: \.x\.ant-dropdown-css-var/
     );
+  });
+});
+
+describe('rewriteClassPrefix', () => {
+  const blocks = (css: string): CssBlock[] => splitBlocks(css);
+  const css = (b: CssBlock[]): string => joinTemplate(b);
+
+  it('rewrites every class selector under the prefix, compound forms included', () => {
+    const out = css(
+      rewriteClassPrefix(
+        blocks(
+          '.ant-steps .ant-steps-item-icon{a:1}' +
+            '.ant-steps-vertical>.ant-steps-item:not(.ant-steps-item-active)::after{b:2}' +
+            '.ant-steps.ant-steps-dot .ant-steps-item-icon .ant-steps-icon-dot{c:3}'
+        ),
+        'ant-steps',
+        'ant-timeline'
+      )
+    );
+    expect(out).toContain('.ant-timeline .ant-timeline-item-icon{a:1}');
+    expect(out).toContain('.ant-timeline-vertical>.ant-timeline-item:not(.ant-timeline-item-active)::after{b:2}');
+    expect(out).toContain('.ant-timeline.ant-timeline-dot .ant-timeline-item-icon .ant-timeline-icon-dot{c:3}');
+    expect(out).not.toContain('ant-steps');
+  });
+
+  it('rewrites the class-attribute substring selectors antd uses for its box-sizing reset', () => {
+    const out = css(
+      rewriteClassPrefix(
+        blocks('.ant-steps [class^="ant-steps"],.ant-steps [class*=" ant-steps"]{box-sizing:border-box}'),
+        'ant-steps',
+        'ant-timeline'
+      )
+    );
+    expect(out).toBe(
+      '.ant-timeline [class^="ant-timeline"],.ant-timeline [class*=" ant-timeline"]{box-sizing:border-box}'
+    );
+  });
+
+  it('leaves custom properties, keyframe names, @container conditions and other prefixes alone', () => {
+    const out = css(
+      rewriteClassPrefix(
+        blocks(
+          '.ant-steps-item{--ant-cmp-steps-icon-size:8px;animation:ant-steps-spin 1s}' +
+            '@keyframes ant-steps-spin{to{transform:rotate(1turn)}}' +
+            '@container style(--ant-steps-description-max-width){.ant-steps-dot .ant-steps-item-icon{g:7}}' +
+            '.ant-steps-item .anticon{d:4}' +
+            '.ant-progress-circle .ant-steps-item{e:5}'
+        ),
+        'ant-steps',
+        'ant-timeline'
+      )
+    );
+    expect(out).toContain('--ant-cmp-steps-icon-size:8px');
+    expect(out).toContain('animation:ant-steps-spin 1s');
+    expect(out).toContain('@keyframes ant-steps-spin');
+    expect(out).toContain(
+      '@container style(--ant-steps-description-max-width){.ant-timeline-dot .ant-timeline-item-icon{g:7}}'
+    );
+    expect(out).toContain('.ant-timeline-item .anticon');
+    expect(out).toContain('.ant-progress-circle .ant-timeline-item{e:5}');
+  });
+
+  it('keeps a repeated self-compound used as a specificity hack', () => {
+    const out = css(
+      rewriteClassPrefix(blocks('.ant-steps-item.ant-steps-item.ant-steps-item{h:8}'), 'ant-steps', 'ant-timeline')
+    );
+    expect(out).toBe('.ant-timeline-item.ant-timeline-item.ant-timeline-item{h:8}');
+  });
+
+  it('collapses a selector that already carries both prefixes', () => {
+    const out = css(rewriteClassPrefix(blocks('.ant-steps-item.ant-timeline-item{f:6}'), 'ant-steps', 'ant-timeline'));
+    expect(out).toBe('.ant-timeline-item{f:6}');
   });
 });

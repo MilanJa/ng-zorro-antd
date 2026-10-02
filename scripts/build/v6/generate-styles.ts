@@ -13,18 +13,23 @@ import { pathToFileURL } from 'node:url';
 import {
   allAntdComponentNames,
   antdRegistryName,
+  stylesThroughOf,
   V6ComponentDir,
+  V6ComponentEntry,
   v6ComponentDirs,
   v6Components,
   v6PatchDependencies
 } from './components';
 import {
   assertNoAntdScoping,
+  CssBlock,
   dropForeignCssVarBlocks,
   extractClassNames,
   joinTemplate,
   normalizeCssVarRootCls,
   partitionBlocks,
+  rewriteClassPrefix,
+  splitBlocks,
   withHeader
 } from './css-postprocess';
 import { extractAntdCss } from './extract-styles';
@@ -131,15 +136,84 @@ async function renderTokens(algorithm: V6Algorithm): Promise<string> {
   return renderer.renderThemeCss(algorithms[algorithm] ? { algorithm: algorithms[algorithm] } : {}, ':root');
 }
 
+/**
+ * antd's own render pass for a component with a `stylesThrough` source genuinely mounts that source
+ * component too (Timeline's `Timeline.js` imports and renders the real `Steps`, with no `prefixCls`
+ * override, since only its semantic slot classNames are overridden), so the raw per-directory
+ * extraction for `entry.antd` alone already carries the source's real, unrewritten rules (literal
+ * `.ant-steps-*` selectors) next to the ones genuinely authored for this component. They would
+ * duplicate the rewritten copy `componentTemplate` prepends (and defeat the point of rewriting them
+ * at all: NG-ZORRO never emits the literal source class on this component's elements), so every block
+ * whose selector names a `from`-prefixed class anywhere is dropped first, recursing into
+ * `@media`/`@supports`/`@container` the same way `rewriteClassPrefix` does (an unrelated genuine rule
+ * of this component's own never needs the source's class name, since its own style module is written
+ * entirely under its own `componentCls`).
+ */
+function dropStylesThroughSource(blocks: CssBlock[], from: string): CssBlock[] {
+  const classToken = new RegExp(`\\.${from}(?=[^a-zA-Z0-9_-]|$)|\\.${from}-[a-zA-Z0-9_-]+`);
+  const make = (selector: string, body: string): CssBlock => ({ selector, body, raw: `${selector}{${body}}` });
+  const out: CssBlock[] = [];
+  for (const block of blocks) {
+    if (block.selector.startsWith('@')) {
+      if (/^@(media|supports|container)\b/.test(block.selector)) {
+        const inner = dropStylesThroughSource(splitBlocks(block.body), from);
+        if (inner.length > 0) out.push(make(block.selector, joinTemplate(inner)));
+      } else {
+        out.push(block); // @keyframes/@font-face: shared, inert if unused by this component
+      }
+      continue;
+    }
+    if (!classToken.test(block.selector)) {
+      out.push(block);
+    }
+  }
+  return out;
+}
+
+/**
+ * A mapped component's own template CSS: its own extraction, plus, for a `stylesThrough` entry, the
+ * source directory's extraction rewritten onto this component's prefix and prepended (so the copy
+ * reads as if it were this component's own rules, e.g. timeline before its own small set of
+ * overrides). `entry` defaults to the committed map but can be overridden with a fixture for testing
+ * a `stylesThrough` shape before a real map entry exists.
+ */
+export function componentTemplate(
+  dir: V6ComponentDir,
+  entry: V6ComponentEntry = v6Components[dir] as V6ComponentEntry
+): string {
+  const own = partitionBlocks(extractAntdCss({ includes: [...entry.antd], key: KEY }), KEY).template;
+  let blocks = dropForeignCssVarBlocks(own, KEY);
+  const through = entry.stylesThrough;
+  if (through) {
+    blocks = dropStylesThroughSource(blocks, through.from);
+    const source = v6Components[through.dir] as V6ComponentEntry;
+    const sourceBlocks = partitionBlocks(extractAntdCss({ includes: [...source.antd], key: KEY }), KEY).template;
+    // Keep the source's own component token block: the copied rules read it (manifest tokens for a
+    // `stylesThrough` entry are its own `componentTokenNames` union the source's, computed below).
+    blocks = [...rewriteClassPrefix(dropForeignCssVarBlocks(sourceBlocks, KEY), through.from, through.to), ...blocks];
+  }
+  return normalizeCssVarRootCls(joinTemplate(blocks));
+}
+
 let templateCache: string | null = null;
 
 /** The full v6 template (all mapped components, one extraction, shared reset rules emitted once). */
 export function buildV6Template(): string {
   if (templateCache === null) {
     const allRaw = extractAntdCss({ includes: allAntdComponentNames(), key: KEY });
-    templateCache = normalizeCssVarRootCls(
-      joinTemplate(dropForeignCssVarBlocks(partitionBlocks(allRaw, KEY).template, KEY))
-    );
+    const shared = dropForeignCssVarBlocks(partitionBlocks(allRaw, KEY).template, KEY);
+    // The shared extraction above never includes a `stylesThrough` source's rules under the COPY's
+    // prefix (it only extracts each antd name once, under its own name): append the rewritten copy for
+    // every `stylesThrough` entry here, once, after the shared extraction.
+    const copies = v6ComponentDirs
+      .filter(dir => stylesThroughOf(dir))
+      .flatMap(dir => {
+        const through = stylesThroughOf(dir)!;
+        const source = v6Components[through.dir] as V6ComponentEntry;
+        const sourceBlocks = partitionBlocks(extractAntdCss({ includes: [...source.antd], key: KEY }), KEY).template;
+        return rewriteClassPrefix(dropForeignCssVarBlocks(sourceBlocks, KEY), through.from, through.to);
+      });
+    templateCache = normalizeCssVarRootCls(joinTemplate([...shared, ...copies]));
     assertNoAntdScoping(templateCache);
   }
   return templateCache;
@@ -217,9 +291,7 @@ export async function generateStyles(options: GenerateStylesOptions): Promise<Ge
   assertEngineBudgets(manifest);
 
   for (const dir of v6ComponentDirs) {
-    const raw = extractAntdCss({ includes: [...v6Components[dir].antd], key: KEY });
-    const { template } = partitionBlocks(raw, KEY);
-    const templateCss = normalizeCssVarRootCls(joinTemplate(dropForeignCssVarBlocks(template, KEY)));
+    const templateCss = componentTemplate(dir);
     assertNoAntdScoping(templateCss);
     const css = buildComponentCss(templateCss, componentBundlePatches(componentsDir, dir));
     perComponent[dir] = css;
@@ -238,7 +310,13 @@ export async function generateStyles(options: GenerateStylesOptions): Promise<Ge
     compact: await renderTokens('compact')
   };
   for (const dir of v6ComponentDirs) {
-    const names = await Promise.all(v6Components[dir].antd.map(name => componentTokenNames(antdRegistryName(name))));
+    const entry = v6Components[dir] as V6ComponentEntry;
+    const names = await Promise.all(entry.antd.map(name => componentTokenNames(antdRegistryName(name))));
+    const through = stylesThroughOf(dir);
+    if (through) {
+      const source = v6Components[through.dir] as V6ComponentEntry;
+      names.push(...(await Promise.all(source.antd.map(name => componentTokenNames(antdRegistryName(name))))));
+    }
     manifest.components[dir].tokens = [...new Set(names.flat())].sort();
   }
 

@@ -12,6 +12,14 @@
  * `components/core/theme/generated/component-roots.ts` for every antd name of the entry.
  * Adding a component here is the first step of migrating it to v6 (see .claude/DEVELOPMENT.md).
  */
+/** Another mapped component whose extracted rules are copied under this component's prefix (`generate-styles.ts`'s `componentTemplate`). */
+export interface StylesThrough {
+  /** mapped directory whose extracted rules are copied under this component's prefix */
+  dir: V6ComponentDir;
+  from: string;
+  to: string;
+}
+
 export interface V6ComponentEntry {
   antd: readonly string[];
   prefixCls: string;
@@ -21,6 +29,13 @@ export interface V6ComponentEntry {
    * coverage check (`attributeRenderedClasses` in `rendered-coverage.ts`).
    */
   renderedPrefixes?: readonly string[];
+  /**
+   * antd renders this component's DOM through another component's rc-component implementation (Timeline
+   * through Steps): the source directory's extracted CSS is rewritten onto this component's own prefix
+   * and prepended to its template (`generate-styles.ts`'s `componentTemplate`), instead of re-extracting
+   * antd rules this component's own antd name never renders.
+   */
+  stylesThrough?: StylesThrough;
 }
 
 export const v6Components = {
@@ -297,6 +312,16 @@ export function v6PatchDependencies(dir: V6ComponentDir): V6ComponentDir[] {
   }
   deps.delete(dir);
   return v6ComponentDirs.filter(d => deps.has(d));
+}
+
+/**
+ * `dir`'s `stylesThrough` entry, if it has one. `v6Components` is typed `as const satisfies
+ * Record<string, V6ComponentEntry>`, so TS infers each entry's own narrow literal type (lacking
+ * `stylesThrough` entirely for an entry that never sets it) rather than `V6ComponentEntry` itself;
+ * this is the one place that widens back to the common shape to read the optional field.
+ */
+export function stylesThroughOf(dir: V6ComponentDir): StylesThrough | undefined {
+  return (v6Components[dir] as V6ComponentEntry).stylesThrough;
 }
 
 /** antd registry name -> root class, in map order (source of `generated/component-roots.ts`). */

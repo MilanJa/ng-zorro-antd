@@ -9,11 +9,12 @@ import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'no
 import os from 'node:os';
 import path from 'node:path';
 
-import { v6ComponentDirs } from '../components';
+import { v6Components, v6ComponentDirs, type V6ComponentEntry } from '../components';
 import {
   assertEngineBudgets,
   buildComponentCss,
   componentBundlePatches,
+  componentTemplate,
   generateStyles,
   normalizeCssVarRootCls,
   type V6Algorithm
@@ -58,6 +59,34 @@ describe('componentBundlePatches', () => {
   it('is the own patch alone for a component with no dependencies', () => {
     expect(componentBundlePatches(componentsDir, 'select')).toEqual([patchOf('select')]);
     expect(componentBundlePatches(componentsDir, 'rate')).toEqual([]);
+  });
+});
+
+describe('componentTemplate with a stylesThrough entry', () => {
+  // Until a plan E task adds the real `timeline`/`steps` map entries, inject a fixture `steps` entry
+  // into the map for the duration of the test (there is no `v6Components` setter: this is a plain
+  // object at runtime despite its `as const` type).
+  it('gets the source component rules under its own prefix and the source tokens', () => {
+    const components = v6Components as unknown as Record<string, V6ComponentEntry>;
+    const hadSteps = Object.prototype.hasOwnProperty.call(components, 'steps');
+    const previousSteps = components['steps'];
+    components['steps'] = { antd: ['Steps'], prefixCls: 'ant-steps' };
+    try {
+      const fixtureEntry: V6ComponentEntry = {
+        antd: ['Timeline'],
+        prefixCls: 'ant-timeline',
+        stylesThrough: { dir: 'steps' as never, from: 'ant-steps', to: 'ant-timeline' }
+      };
+      const css = componentTemplate('timeline' as never, fixtureEntry);
+      expect(css).toMatch(/\.ant-timeline-item-icon\{/);
+      expect(css).not.toMatch(/\.ant-steps/);
+    } finally {
+      if (hadSteps) {
+        components['steps'] = previousSteps;
+      } else {
+        delete components['steps'];
+      }
+    }
   });
 });
 
