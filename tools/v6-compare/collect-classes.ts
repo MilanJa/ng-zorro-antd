@@ -3,7 +3,7 @@
  * found in the LICENSE file at https://github.com/NG-ZORRO/ng-zorro-antd/blob/master/LICENSE
  */
 
-import { chromium } from 'playwright';
+import { chromium, Page } from 'playwright';
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
@@ -15,6 +15,21 @@ import { attributeRenderedClasses } from '../../scripts/build/v6/rendered-covera
 const outDir = path.join(__dirname, 'out');
 const outFile = path.join(outDir, 'rendered-classes.json');
 const siteUrl = process.env['SITE_URL'] ?? 'http://localhost:4200';
+
+/**
+ * A trigger click (or, in principle, a hover landing on a nested link) can navigate the page away
+ * from the component route when the trigger element wraps a real `<a href>` (e.g. breadcrumb's
+ * dropdown-hosted crumb, `components/breadcrumb/demo/dropdown.ts`, matched by the generic
+ * `.ant-dropdown-trigger` entry in `TRIGGERS` as well as by `CLICK_TRIGGERS`/`HOVER_TRIGGERS`).
+ * Detect it and go back instead of scraping classes off whatever page the attempt landed on.
+ */
+async function returnIfNavigatedAway(page: Page, dir: string): Promise<void> {
+  const componentUrl = `${siteUrl}/components/${dir}/en`;
+  if (!page.url().startsWith(componentUrl)) {
+    console.warn(`${dir}: page navigated away from ${componentUrl} to ${page.url()}, returning`);
+    await page.goto(`${componentUrl}?theme=v6`, { waitUntil: 'networkidle' });
+  }
+}
 
 async function main(): Promise<void> {
   const componentFlagIndex = process.argv.indexOf('--component');
@@ -63,6 +78,7 @@ async function main(): Promise<void> {
         await page.waitForTimeout(350);
         (await page.evaluate(collect, dir)).forEach(c => seen.add(c));
         await page.keyboard.press('Escape');
+        await returnIfNavigatedAway(page, dir);
       }
       if (activated > 0) opened.push(`${selector} (${activated}/${handles.length})`);
     }
@@ -89,14 +105,7 @@ async function main(): Promise<void> {
         await page.waitForTimeout(400);
       }
       if (activated > 0) opened.push(`${CLICK_TRIGGERS[dir]} (${activated}/${clickable.length})`);
-      // A click can navigate the page away when the trigger wraps a real `<a href>` (see
-      // `HOVER_TRIGGERS`'s comment in `triggers.ts`); detect it and return to the component page
-      // instead of scraping classes off whatever page the click landed on afterward.
-      const componentUrl = `${siteUrl}/components/${dir}/en`;
-      if (!page.url().startsWith(componentUrl)) {
-        console.warn(`${dir}: page navigated away from ${componentUrl} to ${page.url()}, returning`);
-        await page.goto(`${componentUrl}?theme=v6`, { waitUntil: 'networkidle' });
-      }
+      await returnIfNavigatedAway(page, dir);
     }
     if (HOVER_TRIGGERS[dir]) {
       const hoverable = await page.$$(`[id^="components-${dir}-demo-"] ${HOVER_TRIGGERS[dir]}`);
@@ -115,6 +124,7 @@ async function main(): Promise<void> {
         if (after.some(c => !before.has(c))) activated++;
         await page.keyboard.press('Escape');
         await page.waitForTimeout(400);
+        await returnIfNavigatedAway(page, dir);
       }
       if (activated > 0) opened.push(`${HOVER_TRIGGERS[dir]} (hover, ${activated}/${hoverable.length})`);
     }
