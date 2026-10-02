@@ -19,6 +19,7 @@ import {
   componentTokenNamesFor,
   dropStylesThroughSource,
   generateStyles,
+  minify,
   normalizeCssVarRootCls,
   type V6Algorithm
 } from '../generate-styles';
@@ -36,6 +37,21 @@ describe('buildComponentCss', () => {
   it('appends several patches in the given order and skips missing ones', () => {
     expect(buildComponentCss('.a{}', ['.p{}', null, '.q{}'])).toBe('.a{}\n.p{}\n.q{}');
     expect(buildComponentCss('.a{}', [])).toBe('.a{}');
+  });
+});
+
+describe('minify', () => {
+  it('keeps CSS math functions that share a name with a Less built-in', async () => {
+    const css = '.a{--u:calc(100 / tan(atan2(var(--s), 1px)));width:sqrt(var(--w));height:round(up, var(--h), 1px)}';
+    const out = await minify(css);
+    // Custom property values are kept verbatim by the minifier, whitespace included.
+    expect(out).toContain('tan(atan2(var(--s), 1px))');
+    expect(out).toContain('sqrt(var(--w))');
+    expect(out).toContain('round(up,var(--h),1px)');
+    expect(out).not.toContain('nz-css-fn-');
+  });
+  it('leaves identifiers that merely end in a math function name untouched', async () => {
+    expect(await minify('.a{width:my-tan(1px)}')).toContain('my-tan(1px)');
   });
 });
 

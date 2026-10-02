@@ -296,9 +296,21 @@ export function componentBundlePatches(componentsDir: string, dir: V6ComponentDi
     .filter((patch): patch is string => patch !== null);
 }
 
-async function minify(css: string): Promise<string> {
-  const { css: out } = await less.render(css, { plugins: [new LessPluginCleanCSS({ advanced: true })] });
-  return out;
+/**
+ * CSS math functions that share a name with a Less built-in. Less evaluates its own `tan()`, `sqrt()`, ...
+ * while parsing and throws when the argument is not a literal number (antd's Steps progress ring computes
+ * `tan(atan2(var(--x), 1px))`), so they are renamed out of Less's reach for the render and restored after.
+ */
+const LESS_SHADOWED_CSS_FUNCTIONS = /(?<![\w-])(sin|cos|tan|asin|acos|atan|sqrt|abs|mod|pow|round)\(/g;
+const SHADOW_PREFIX = 'nz-css-fn-';
+
+export async function minify(css: string): Promise<string> {
+  if (css.includes(SHADOW_PREFIX)) {
+    throw new Error(`v6 CSS unexpectedly contains the reserved token "${SHADOW_PREFIX}"`);
+  }
+  const shielded = css.replace(LESS_SHADOWED_CSS_FUNCTIONS, `${SHADOW_PREFIX}$1(`);
+  const { css: out } = await less.render(shielded, { plugins: [new LessPluginCleanCSS({ advanced: true })] });
+  return out.split(SHADOW_PREFIX).join('');
 }
 
 /** A component's `style/v6/patch.css`, trimmed, or `null` if it has none. Shared with `generate-engine.ts`. */
