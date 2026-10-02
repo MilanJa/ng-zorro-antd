@@ -61,28 +61,27 @@ whether a migrated ng-zorro component matches antd v6's visuals.
   site from `SITE_URL`. `--theme default` captures the plain v4 ng-zorro page
   only (no antd pane) for a component task's before/after diff; copy
   `out/<dir>/default/` to `out/<dir>/default-before/` by hand before the
-  template change.
+  template change. `--opened` (with `--theme default`) also clicks each
+  demo's `CLICK_TRIGGERS` entry and saves a viewport shot of the opened
+  popup to `out/<dir>/default/<demo>-opened.nz.png`.
 - `npx tsx tools/v6-compare/dump-dom.ts --component <dir> --demo <stem> [--side antd|nz] [--theme v6] [--selector <css>] [--click [<selector>]]` —
-  prints a demo's rendered DOM (text, `style`, `id`, `aria-*` and `data-*`
-  stripped, indented by depth). `--side antd` (default) reads the bundled antd
-  demo from the out server it starts; `--side nz` reads the doc site
-  (`SITE_URL`; the demo key must exist on that page). `--click` clicks the
-  first trigger inside the demo matching a default set (`.ant-btn`,
-  `[nz-popconfirm]`, select-style boxes, pickers, dropdowns, tabs' overflow
-  menu, table filter triggers, …), or a selector passed after it
-  (`--click .ant-select-selector`) to open one popup specifically; says so if
-  nothing matches. `--selector` defaults to the component's `prefixCls` on
-  the antd side (with `--click`: overlay/portal roots), and to the demo
-  section's `[class^="ant-"]` descendants on the nz side (plus the CDK
-  overlay container's with `--click`); only top-most matches print, so pass
-  `--selector` explicitly if a root's class attribute does not start with
-  `ant-`. Exits non-zero on no match.
+  prints a demo's rendered DOM (text, `style`, `id`, `aria-*` and `data-*` stripped, indented by
+  depth). `--side antd` (default) reads the bundled antd demo from the out server it starts;
+  `--side nz` reads the doc site (`SITE_URL`; the demo key must exist on that page). `--click`
+  clicks the first trigger inside the demo matching a default set (`.ant-btn`, `[nz-popconfirm]`,
+  select-style boxes, pickers, dropdowns, tabs' overflow menu, table filter triggers, …), or a
+  selector passed after it (`--click .ant-select-selector`) to open one popup specifically; says so
+  if nothing matches. `--selector` defaults to the component's `prefixCls` on the antd side (with
+  `--click`: overlay/portal roots), and to the demo section's `[class^="ant-"]` descendants on the
+  nz side (plus the CDK overlay container's with `--click`); only top-most matches print, so pass
+  `--selector` explicitly if a root's class attribute does not start with `ant-`. Exits non-zero on
+  no match.
 - `npx tsx tools/v6-compare/collect-classes.ts [--component <dir>]` — records
   `ant-*` classes rendered on the doc-site page (`SITE_URL`) into
   `out/rendered-classes.json` for the style-coverage tests, with the popup
   triggers that opened something per component (hover `TRIGGERS` first, then
-  click-only popups via `CLICK_TRIGGERS`). Classes are attributed by
-  `prefixCls` plus `renderedPrefixes` (see `scripts/build/v6/components.ts`).
+  click-only `CLICK_TRIGGERS`); classes are attributed by `prefixCls` plus
+  `renderedPrefixes` (see `scripts/build/v6/components.ts`).
 - `npx vitest run --config scripts/vitest.config.mts scripts/build/v6/__tests__/v4-rule-guard.spec.ts` —
   fails a commit that emits a class the compiled v4 CSS also styles;
   `npm run v6:update-baseline` refreshes the baseline it diffs against.

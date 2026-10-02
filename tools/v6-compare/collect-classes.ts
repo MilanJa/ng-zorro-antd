@@ -15,7 +15,7 @@ const outDir = path.join(__dirname, 'out');
 const outFile = path.join(outDir, 'rendered-classes.json');
 const siteUrl = process.env['SITE_URL'] ?? 'http://localhost:4200';
 // Elements whose activation opens a popup; best effort, each clicked/hovered once per page.
-const TRIGGERS = [
+export const TRIGGERS = [
   '.ant-select-selector',
   '[nz-tooltip]',
   '[nz-popover]',
@@ -31,7 +31,7 @@ const TRIGGERS = [
 
 // Components whose popup only opens on click (not hover), scoped to the component's own demo
 // containers; clicked up to 4 times each, closed with Escape/close buttons between attempts.
-const CLICK_TRIGGERS: Partial<Record<string, string>> = {
+export const CLICK_TRIGGERS: Partial<Record<string, string>> = {
   modal: '.ant-btn',
   drawer: '.ant-btn',
   message: '.ant-btn',

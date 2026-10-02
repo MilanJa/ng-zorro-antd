@@ -8,6 +8,7 @@ import { chromium, Page } from 'playwright';
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 
+import { CLICK_TRIGGERS } from './collect-classes';
 import { pairDemos } from './pairing';
 import { startOutServer } from './serve-out';
 import { v6ComponentDirs, v6Components, V6ComponentDir } from '../../scripts/build/v6/components';
@@ -31,6 +32,23 @@ function ngDemoKeys(dir: string): string[] {
         .map(f => f.replace(/\.ts$/, ''))
         .sort()
     : [];
+}
+
+/**
+ * Which element to click to open `dir`'s popup for its `demo`, and where to save the screenshot of
+ * the opened state, scoped to that demo's own container the same way `collect-classes.ts` scopes its
+ * click triggers. `null` when `dir` has no registered click trigger (`CLICK_TRIGGERS`): not every
+ * mapped component opens a popup on click.
+ */
+export function openedShotPlan(
+  dir: string,
+  demo: string,
+  clickTriggers: Partial<Record<string, string>>
+): { selector: string; file: string } | null {
+  const trigger = clickTriggers[dir];
+  return trigger
+    ? { selector: `[id^="components-${dir}-demo-${demo}"] ${trigger}`, file: `${demo}-opened.nz.png` }
+    : null;
 }
 
 async function shotElement(page: Page, selector: string, file: string): Promise<boolean> {
@@ -228,6 +246,22 @@ async function main(): Promise<void> {
       await page.goto(`${siteUrl}/components/${dir}/en?theme=${theme}`, { waitUntil: 'networkidle' });
       for (const { key, antd } of pairing.pairs) {
         await shotElement(page, `#components-${dir}-demo-${key}`, path.join(folder, `${key}.nz.png`));
+        // Default-theme opened state of a popup demo, for the before/after diff popup components keep
+        // next to their closed-state capture (`out/<dir>/default(-before)/<demo>-opened.nz.png`).
+        if (theme === 'default' && arg('opened') !== null) {
+          const plan = openedShotPlan(dir, key, CLICK_TRIGGERS);
+          if (plan) {
+            try {
+              await page.click(plan.selector, { force: true, timeout: 1000 });
+              await page.waitForTimeout(800);
+              await page.screenshot({ path: path.join(folder, plan.file), fullPage: false });
+            } catch (error) {
+              console.warn(`${dir}/${key}: could not open the popup at "${plan.selector}" (${String(error)})`);
+            }
+            await page.keyboard.press('Escape');
+            await page.waitForTimeout(300);
+          }
+        }
         // `default` is the plain v4 theme, captured for the before/after diff a component task keeps
         // under `out/<dir>/default(-before)/`; there is no antd v6 pane to compare it against.
         if (theme === 'default') continue;
