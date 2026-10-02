@@ -62,8 +62,8 @@ whether a migrated ng-zorro component matches antd v6's visuals.
   only (no antd pane) for a component task's before/after diff; copy
   `out/<dir>/default/` to `out/<dir>/default-before/` by hand before the
   template change. `--opened` (with `--theme default`) also clicks each
-  demo's `CLICK_TRIGGERS` entry and saves a viewport shot of the opened
-  popup to `out/<dir>/default/<demo>-opened.nz.png`.
+  demo's `CLICK_TRIGGERS` entry (`triggers.ts`) and saves a viewport shot of
+  the opened popup to `out/<dir>/default/<demo>-opened.nz.png`.
 - `npx tsx tools/v6-compare/dump-dom.ts --component <dir> --demo <stem> [--side antd|nz] [--theme v6] [--selector <css>] [--click [<selector>]]` —
   prints a demo's rendered DOM (text, `style`, `id`, `aria-*` and `data-*` stripped, indented by
   depth). `--side antd` (default) reads the bundled antd demo from the out server it starts;
@@ -80,8 +80,9 @@ whether a migrated ng-zorro component matches antd v6's visuals.
   `ant-*` classes rendered on the doc-site page (`SITE_URL`) into
   `out/rendered-classes.json` for the style-coverage tests, with the popup
   triggers that opened something per component (hover `TRIGGERS` first, then
-  click-only `CLICK_TRIGGERS`); classes are attributed by `prefixCls` plus
-  `renderedPrefixes` (see `scripts/build/v6/components.ts`).
+  click-only `CLICK_TRIGGERS`, both from `triggers.ts`, which `capture.ts`
+  also imports); classes are attributed by `prefixCls` plus `renderedPrefixes`
+  (see `scripts/build/v6/components.ts`).
 - `npx vitest run --config scripts/vitest.config.mts scripts/build/v6/__tests__/v4-rule-guard.spec.ts` —
   fails a commit that emits a class the compiled v4 CSS also styles;
   `npm run v6:update-baseline` refreshes the baseline it diffs against.

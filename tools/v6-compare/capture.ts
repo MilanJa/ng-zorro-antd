@@ -8,9 +8,9 @@ import { chromium, Page } from 'playwright';
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 
-import { CLICK_TRIGGERS } from './collect-classes';
 import { pairDemos } from './pairing';
 import { startOutServer } from './serve-out';
+import { CLICK_TRIGGERS } from './triggers';
 import { v6ComponentDirs, v6Components, V6ComponentDir } from '../../scripts/build/v6/components';
 
 const repoRoot = path.resolve(__dirname, '../..');
@@ -280,7 +280,9 @@ async function main(): Promise<void> {
   console.log(`wrote ${writeIndex(report, map)}`);
 }
 
-main().catch(error => {
-  console.error(error);
-  process.exit(1);
-});
+if (require.main === module) {
+  main().catch(error => {
+    console.error(error);
+    process.exit(1);
+  });
+}

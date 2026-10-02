@@ -8,49 +8,13 @@ import { chromium } from 'playwright';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 
+import { CLICK_TRIGGERS, TRIGGERS } from './triggers';
 import { v6ComponentDirs, v6Components } from '../../scripts/build/v6/components';
 import { attributeRenderedClasses } from '../../scripts/build/v6/rendered-coverage';
 
 const outDir = path.join(__dirname, 'out');
 const outFile = path.join(outDir, 'rendered-classes.json');
 const siteUrl = process.env['SITE_URL'] ?? 'http://localhost:4200';
-// Elements whose activation opens a popup; best effort, each clicked/hovered once per page.
-export const TRIGGERS = [
-  '.ant-select-selector',
-  '[nz-tooltip]',
-  '[nz-popover]',
-  '[nz-popconfirm]',
-  '.ant-picker-input input',
-  '.ant-dropdown-trigger',
-  '.ant-cascader .ant-select-selector',
-  // Auto-complete's trigger directive opens its overlay on `(click)` (`handleClick`), same as on
-  // focus; `[nzAutocomplete]` is a property binding with no reflected DOM attribute, so the
-  // directive's own static host attribute is the selector that actually matches the rendered input.
-  'input[aria-autocomplete="list"]'
-];
-
-// Components whose popup only opens on click (not hover), scoped to the component's own demo
-// containers; clicked up to 4 times each, closed with Escape/close buttons between attempts.
-export const CLICK_TRIGGERS: Partial<Record<string, string>> = {
-  modal: '.ant-btn',
-  drawer: '.ant-btn',
-  message: '.ant-btn',
-  notification: '.ant-btn',
-  popconfirm: '.ant-btn',
-  'float-button': '.ant-float-btn-group-trigger, .ant-float-btn',
-  'color-picker': '.ant-color-picker-trigger',
-  'tree-select': '.ant-select-selector',
-  cascader: '.ant-select-selector',
-  upload: '.ant-upload button, .ant-upload-btn',
-  dropdown: '[nz-dropdown], .ant-dropdown-trigger',
-  // `nz-image` is a directive on the host `<img>`; it never emits antd's own `.ant-image-img`
-  // class (there is no wrapping component), so the trigger is the element selector itself.
-  image: 'img[nz-image]',
-  tabs: '.ant-tabs-nav-more',
-  table: '.ant-table-filter-trigger',
-  pagination: '.ant-pagination-options .ant-select-selector'
-  // 'context-menu': n/a -- right-click is not exercised by this harness.
-};
 
 async function main(): Promise<void> {
   const componentFlagIndex = process.argv.indexOf('--component');
@@ -142,7 +106,9 @@ async function main(): Promise<void> {
   );
 }
 
-main().catch(error => {
-  console.error(error);
-  process.exit(1);
-});
+if (require.main === module) {
+  main().catch(error => {
+    console.error(error);
+    process.exit(1);
+  });
+}
