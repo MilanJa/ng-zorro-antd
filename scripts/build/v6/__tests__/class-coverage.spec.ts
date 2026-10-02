@@ -11,7 +11,7 @@ import path from 'node:path';
 import { v6ComponentDirs, type V6ComponentDir } from '../components';
 import { emittedClasses } from '../emitted-classes';
 import { readManifest } from '../manifest';
-import { renderedCoverageGaps, styledClassesFor } from '../rendered-coverage';
+import { allowlistFor, renderedCoverageGaps, styledClassesFor } from '../rendered-coverage';
 
 const allowlist = JSON.parse(readFileSync(path.resolve(__dirname, '../class-allowlist.json'), 'utf8')) as Record<
   string,
@@ -23,7 +23,7 @@ describe('class coverage of migrated components', () => {
   for (const dir of v6ComponentDirs) {
     it(`${dir}: every emitted ant-* class is styled by v6 CSS or allowlisted`, () => {
       const dirStyled = styledClassesFor(dir, manifest);
-      const allowed = new Set(allowlist[dir] ?? []);
+      const allowed = allowlistFor(dir, allowlist);
       const missing = emittedClasses(dir).filter(c => !dirStyled.has(c) && !allowed.has(c));
       expect(missing, `unstyled classes emitted by ${dir}`).toEqual([]);
     });
@@ -85,6 +85,24 @@ describe('class coverage of migrated components', () => {
       'ant-btn-rtl',
       'ant-btn-text'
     ]);
+  });
+});
+
+describe('allowlistFor', () => {
+  it("credits a directory with its rendered-prefix owner's allowlist for that prefix", () => {
+    const rendered = { calendar: ['ant-picker-calendar', 'ant-select-selection-search-mirror'] };
+    const styled = new Set(['ant-picker-calendar']);
+    // calendar renders `ant-select`; select owns that prefix's styles and already explains every
+    // `ant-select-*` class on its own allowlist (both entries here), so calendar's own allowlist does
+    // not need to repeat either of them.
+    const allowlist = {
+      select: ['ant-select-selection-search-mirror', 'ant-select-unrelated'],
+      calendar: [] as string[]
+    };
+    expect(allowlistFor('calendar', allowlist)).toEqual(
+      new Set(['ant-select-selection-search-mirror', 'ant-select-unrelated'])
+    );
+    expect(renderedCoverageGaps(rendered, styled, allowlist, ['calendar'])).toEqual({ calendar: [] });
   });
 });
 

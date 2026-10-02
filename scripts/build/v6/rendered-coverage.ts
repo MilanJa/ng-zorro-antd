@@ -60,6 +60,25 @@ export function styledClassesFor(dir: V6ComponentDir, manifest: V6Manifest): Set
   return styled;
 }
 
+/**
+ * The allowlist entries that may explain a class rendered by `dir`: its own entries plus, for each
+ * prefix in its `renderedPrefixes`, the entries of that prefix's style owner that start with the
+ * prefix. A directory that mounts select, radio or pagination therefore does not re-list the
+ * owner's unstyled classes; the owner's `_<dir>_comment` is the single place that explains them.
+ */
+export function allowlistFor(dir: V6ComponentDir, allowlist: Record<string, string[]>): Set<string> {
+  const out = new Set(allowlist[dir] ?? []);
+  const entry: V6ComponentEntry = v6Components[dir];
+  for (const prefix of entry.renderedPrefixes ?? []) {
+    const owner = renderedPrefixStyleOwner(prefix);
+    if (!owner || owner === dir) continue;
+    for (const cls of allowlist[owner] ?? []) {
+      if (cls === prefix || cls.startsWith(`${prefix}-`)) out.add(cls);
+    }
+  }
+  return out;
+}
+
 export function renderedCoverageGaps(
   rendered: Record<string, string[]>,
   styled: Set<string>,
@@ -68,7 +87,7 @@ export function renderedCoverageGaps(
 ): Record<string, string[]> {
   const gaps: Record<string, string[]> = {};
   for (const dir of dirs) {
-    const allowed = new Set(allowlist[dir] ?? []);
+    const allowed = allowlistFor(dir as V6ComponentDir, allowlist);
     gaps[dir] = (rendered[dir] ?? []).filter(c => !styled.has(c) && !allowed.has(c)).sort();
   }
   return gaps;
