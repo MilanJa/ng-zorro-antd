@@ -23,7 +23,7 @@ import { NzImageScaleStep, NzImageUrl } from './image.directive';
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export interface NzImageService {
-  preview(images: NzImage[], option?: NzImagePreviewOptions): NzImagePreviewRef;
+  preview(images: NzImage[], options?: NzImagePreviewOptions): NzImagePreviewRef;
 }
 
 @Injectable()
@@ -36,8 +36,17 @@ export class NzImageService {
   preview(
     images: NzImage[],
     options?: NzImagePreviewOptions,
-    zoomMap?: Map<NzImageUrl, NzImageScaleStep>,
-    panelClasses?: string[]
+    zoomMap?: Map<NzImageUrl, NzImageScaleStep>
+  ): NzImagePreviewRef {
+    return this.display(images, options, zoomMap);
+  }
+
+  /** @internal Used by `NzImageDirective`, which knows the shared zoom map and the theme scope of its host. */
+  previewWithScope(
+    images: NzImage[],
+    options: NzImagePreviewOptions | undefined,
+    zoomMap: Map<NzImageUrl, NzImageScaleStep> | undefined,
+    panelClasses: string[]
   ): NzImagePreviewRef {
     return this.display(images, options, zoomMap, panelClasses);
   }

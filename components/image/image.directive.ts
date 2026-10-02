@@ -90,7 +90,7 @@ export class NzImageDirective implements OnInit, OnChanges {
           imageDirective.nzScaleStep ?? this.parentGroup!.nzScaleStep ?? this.nzScaleStep ?? NZ_DEFAULT_SCALE_STEP
         );
       });
-      const previewRef = this.nzImageService.preview(
+      const previewRef = this.nzImageService.previewWithScope(
         previewImages,
         {
           nzDirection: this.dir()
@@ -102,7 +102,7 @@ export class NzImageDirective implements OnInit, OnChanges {
     } else {
       // preview not inside image group
       const previewImages = [{ src: this.nzSrc, srcset: this.nzSrcset }];
-      this.nzImageService.preview(
+      this.nzImageService.previewWithScope(
         previewImages,
         {
           nzDirection: this.dir(),
