@@ -12,6 +12,8 @@ export interface EmittedClassesBaseline {
   generatedAt: string;
   base: string;
   classes: Record<string, string[]>;
+  /** Same snapshot, grouped by source file (path relative to `components/`), per directory. */
+  files: Record<string, Record<string, string[]>>;
 }
 
 /**
@@ -22,6 +24,12 @@ export interface EmittedClassesBaseline {
 export function emittedClassesBaseline(file: string = baselinePath): Record<string, string[]> {
   const baseline = JSON.parse(readFileSync(file, 'utf8')) as EmittedClassesBaseline;
   return baseline.classes;
+}
+
+/** Same baseline, grouped by source file per directory (`v4-rule-guard.spec.ts`'s per-file guard). */
+export function emittedClassesBaselineFiles(file: string = baselinePath): Record<string, Record<string, string[]>> {
+  const baseline = JSON.parse(readFileSync(file, 'utf8')) as EmittedClassesBaseline;
+  return baseline.files;
 }
 
 /**
@@ -43,4 +51,33 @@ export function v4StyledClasses(css: string): Set<string> {
     classes.add(m[1]);
   }
   return classes;
+}
+
+export interface RemovedV4Class {
+  file: string;
+  cls: string;
+}
+
+/** v4-styled classes a file emitted at the baseline and no longer emits, minus acknowledged relocations. */
+export function removedV4Classes(
+  baselineFiles: Record<string, string[]>,
+  current: Record<string, string[]>,
+  v4Styled: Set<string>,
+  allowlistComments: string[]
+): RemovedV4Class[] {
+  const acknowledged = new Set(
+    allowlistComments.flatMap(c =>
+      [...c.matchAll(/(ant-[a-z0-9-]+): v4-compat \(relocated: ([^)]+)\)/g)].map(m => `${m[2]}|${m[1]}`)
+    )
+  );
+  const out: RemovedV4Class[] = [];
+  for (const [file, classes] of Object.entries(baselineFiles)) {
+    const now = new Set(current[file] ?? []);
+    for (const cls of classes) {
+      if (v4Styled.has(cls) && !now.has(cls) && !acknowledged.has(`${file}|${cls}`)) {
+        out.push({ file, cls });
+      }
+    }
+  }
+  return out;
 }

@@ -9,8 +9,8 @@ import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 
 import { v6ComponentDirs } from '../components';
-import { emittedClasses } from '../emitted-classes';
-import { emittedClassesBaseline, v4StyledClasses } from '../v4-rules';
+import { emittedClasses, emittedClassesByFile } from '../emitted-classes';
+import { emittedClassesBaselineFiles, emittedClassesBaseline, removedV4Classes, v4StyledClasses } from '../v4-rules';
 
 // This guard only sees classes written as complete lowercase literals in a component's `.ts`/`.html`
 // sources (`emitted-classes.ts`'s regex): a template-literal or helper-built class name (e.g.
@@ -47,4 +47,51 @@ describe('v4StyledClasses', () => {
     const set = v4StyledClasses('.ant-x-y:hover > .ant-x-z::after{content:"ant-not-a-class"} .ant-q{}');
     expect([...set].sort()).toEqual(['ant-q', 'ant-x-y', 'ant-x-z']);
   });
+});
+
+describe('per-file removal guard', () => {
+  const v4 = new Set(['ant-qrcode-expired']);
+  const baselineFiles = { 'qr-code/qrcode.component.ts': ['ant-qrcode', 'ant-qrcode-expired'] };
+  it('fails when a v4-styled class disappears from a file that emitted it', () => {
+    const now = { 'qr-code/qrcode.component.ts': ['ant-qrcode', 'ant-qrcode-scanned'] };
+    expect(removedV4Classes(baselineFiles, now, v4, [])).toEqual([
+      { file: 'qr-code/qrcode.component.ts', cls: 'ant-qrcode-expired' }
+    ]);
+  });
+  it('accepts the removal when the allowlist records the relocation', () => {
+    const now = { 'qr-code/qrcode.component.ts': ['ant-qrcode', 'ant-qrcode-scanned'] };
+    const comment = ['ant-qrcode-expired: v4-compat (relocated: qr-code/qrcode.component.ts)'];
+    expect(removedV4Classes(baselineFiles, now, v4, comment)).toEqual([]);
+  });
+  it('ignores classes the compiled v4 CSS does not style', () => {
+    const now = { 'qr-code/qrcode.component.ts': ['ant-qrcode-expired'] };
+    expect(
+      removedV4Classes({ 'qr-code/qrcode.component.ts': ['ant-qrcode', 'ant-qrcode-expired'] }, now, v4, [])
+    ).toEqual([]);
+  });
+});
+
+describe.skipIf(skip)('no v4-styled class leaves the file that emitted it (run build-lib first)', () => {
+  const styledByV4 = v4StyledClasses(readFileSync(v4Css, 'utf8'));
+  const baselineFiles = emittedClassesBaselineFiles();
+  const allowlist = JSON.parse(readFileSync(path.resolve(__dirname, '../class-allowlist.json'), 'utf8')) as Record<
+    string,
+    string[] | string
+  >;
+  for (const dir of v6ComponentDirs) {
+    it(`${dir}: no v4-styled class left a file it was emitted from`, () => {
+      expect(dir in baselineFiles, `${dir} is missing from the per-file baseline; regenerate it`).toBe(true);
+      const comment = allowlist[`_${dir}_comment`];
+      const removed = removedV4Classes(
+        baselineFiles[dir] ?? {},
+        emittedClassesByFile(dir),
+        styledByV4,
+        [typeof comment === 'string' ? comment : ''].filter(Boolean)
+      );
+      expect(
+        removed,
+        'a v4-styled class left <file>; keep it on the element or record `v4-compat (relocated: <file>)` in the allowlist comment'
+      ).toEqual([]);
+    });
+  }
 });

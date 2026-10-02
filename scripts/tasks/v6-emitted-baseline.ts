@@ -7,7 +7,7 @@ import { execSync } from 'node:child_process';
 import { readdirSync, statSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 
-import { emittedClasses } from '../build/v6/emitted-classes';
+import { emittedClasses, emittedClassesByFile } from '../build/v6/emitted-classes';
 
 const componentsRoot = path.resolve(__dirname, '../../components');
 const baselinePath = path.resolve(__dirname, '../build/v6/emitted-classes-baseline.json');
@@ -49,8 +49,10 @@ function componentDirNames(): string[] {
  */
 function main(): void {
   const classes: Record<string, string[]> = {};
+  const files: Record<string, Record<string, string[]>> = {};
   for (const dir of componentDirNames()) {
     classes[dir] = emittedClasses(dir).sort();
+    files[dir] = emittedClassesByFile(dir);
   }
   const baseArg = process.argv.indexOf('--base');
   const base =
@@ -59,7 +61,7 @@ function main(): void {
       : execSync('git rev-parse HEAD', { cwd: path.resolve(__dirname, '../..') })
           .toString()
           .trim();
-  const baseline = { generatedAt: new Date().toISOString(), base, classes };
+  const baseline = { generatedAt: new Date().toISOString(), base, classes, files };
   writeFileSync(baselinePath, `${JSON.stringify(baseline, null, 2)}\n`);
   console.log(`Wrote ${baselinePath} at ${base} (${Object.keys(classes).length} directories).`);
 }

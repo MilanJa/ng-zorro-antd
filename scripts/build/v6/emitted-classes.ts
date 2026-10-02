@@ -45,3 +45,16 @@ export function emittedClasses(dir: string, root: string = componentsRoot): stri
   }
   return [...names].sort();
 }
+
+/** Same scan as `emittedClasses`, grouped by source file (path relative to `root`). */
+export function emittedClassesByFile(dir: string, root: string = componentsRoot): Record<string, string[]> {
+  const out: Record<string, string[]> = {};
+  for (const file of sourceFiles(dir, root)) {
+    const set = new Set<string>();
+    for (const m of readFileSync(file, 'utf8').matchAll(/\bant-[a-z][a-z0-9-]*[a-z0-9](?![a-zA-Z0-9-])/g)) {
+      set.add(m[0]);
+    }
+    out[path.relative(root, file).replace(/\\/g, '/')] = [...set].sort();
+  }
+  return out;
+}

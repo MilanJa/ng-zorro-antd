@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-10-01T15:07:46.169Z",
-  "base": "03d93c9d7b393c5331c15cd48adb89bbde72e050",
+  "generatedAt": "2026-10-02T08:29:12.184Z",
+  "base": "125d947634a440c71458b6107fb001bb105d6920",
   "classes": {
     "affix": [
       "ant-affix"
@@ -1797,5 +1797,2772 @@
       "ant-upload-wrapper"
     ],
     "watermark": []
+  },
+  "files": {
+    "affix": {
+      "affix/affix.component.ts": [
+        "ant-affix"
+      ],
+      "affix/affix.module.ts": [],
+      "affix/index.ts": [],
+      "affix/public-api.ts": [],
+      "affix/respond-events.ts": [],
+      "affix/utils.ts": []
+    },
+    "alert": {
+      "alert/alert-marquee.component.ts": [
+        "ant-alert-marquee",
+        "ant-alert-marquee-pause-on-hover",
+        "ant-alert-marquee-track"
+      ],
+      "alert/alert.component.ts": [
+        "ant-alert",
+        "ant-alert-action",
+        "ant-alert-actions",
+        "ant-alert-banner",
+        "ant-alert-closable",
+        "ant-alert-close-icon",
+        "ant-alert-close-text",
+        "ant-alert-content",
+        "ant-alert-description",
+        "ant-alert-error",
+        "ant-alert-icon",
+        "ant-alert-info",
+        "ant-alert-message",
+        "ant-alert-motion-leave",
+        "ant-alert-motion-leave-active",
+        "ant-alert-no-icon",
+        "ant-alert-rtl",
+        "ant-alert-section",
+        "ant-alert-success",
+        "ant-alert-title",
+        "ant-alert-warning",
+        "ant-alert-with-description"
+      ],
+      "alert/alert.module.ts": [],
+      "alert/index.ts": [],
+      "alert/public-api.ts": []
+    },
+    "anchor": {
+      "anchor/anchor-link.component.ts": [
+        "ant-anchor-link",
+        "ant-anchor-link-active",
+        "ant-anchor-link-title"
+      ],
+      "anchor/anchor.component.ts": [
+        "ant-anchor",
+        "ant-anchor-fixed",
+        "ant-anchor-ink",
+        "ant-anchor-ink-ball",
+        "ant-anchor-ink-ball-visible",
+        "ant-anchor-wrapper",
+        "ant-anchor-wrapper-horizontal"
+      ],
+      "anchor/anchor.module.ts": [],
+      "anchor/index.ts": [],
+      "anchor/public-api.ts": [],
+      "anchor/util.ts": []
+    },
+    "auto-complete": {
+      "auto-complete/autocomplete-optgroup.component.ts": [
+        "ant-select-item",
+        "ant-select-item-group"
+      ],
+      "auto-complete/autocomplete-option.component.ts": [
+        "ant-select-item",
+        "ant-select-item-option",
+        "ant-select-item-option-active",
+        "ant-select-item-option-content",
+        "ant-select-item-option-disabled",
+        "ant-select-item-option-grouped",
+        "ant-select-item-option-selected"
+      ],
+      "auto-complete/autocomplete-origin.directive.ts": [],
+      "auto-complete/autocomplete-trigger.directive.ts": [
+        "ant-select-dropdown"
+      ],
+      "auto-complete/autocomplete.component.ts": [
+        "ant-select-dropdown",
+        "ant-select-dropdown-content",
+        "ant-select-dropdown-content-wrapper",
+        "ant-select-dropdown-hidden",
+        "ant-select-dropdown-rtl"
+      ],
+      "auto-complete/autocomplete.module.ts": [],
+      "auto-complete/error.ts": [],
+      "auto-complete/index.ts": [],
+      "auto-complete/public-api.ts": []
+    },
+    "avatar": {
+      "avatar/avatar-group.component.ts": [
+        "ant-avatar-group"
+      ],
+      "avatar/avatar.component.ts": [
+        "ant-avatar",
+        "ant-avatar-circle",
+        "ant-avatar-icon",
+        "ant-avatar-image",
+        "ant-avatar-lg",
+        "ant-avatar-sm",
+        "ant-avatar-square",
+        "ant-avatar-string"
+      ],
+      "avatar/avatar.module.ts": [],
+      "avatar/index.ts": [],
+      "avatar/public-api.ts": [],
+      "avatar/types.ts": []
+    },
+    "badge": {
+      "badge/badge-sup.component.ts": [
+        "ant-badge-count",
+        "ant-badge-count-sm",
+        "ant-badge-dot",
+        "ant-badge-multiple-words",
+        "ant-scroll-number",
+        "ant-scroll-number-only",
+        "ant-scroll-number-only-unit"
+      ],
+      "badge/badge.component.ts": [
+        "ant-badge",
+        "ant-badge-not-a-wrapper",
+        "ant-badge-rtl",
+        "ant-badge-status",
+        "ant-badge-status-dot",
+        "ant-badge-status-text",
+        "ant-badge-zoom-enter",
+        "ant-badge-zoom-leave"
+      ],
+      "badge/badge.module.ts": [],
+      "badge/index.ts": [],
+      "badge/preset-colors.ts": [],
+      "badge/public-api.ts": [],
+      "badge/ribbon.component.ts": [
+        "ant-ribbon",
+        "ant-ribbon-content",
+        "ant-ribbon-corner",
+        "ant-ribbon-placement-end",
+        "ant-ribbon-placement-start",
+        "ant-ribbon-text",
+        "ant-ribbon-wrapper"
+      ],
+      "badge/types.ts": []
+    },
+    "breadcrumb": {
+      "breadcrumb/breadcrumb-item.component.ts": [
+        "ant-breadcrumb-link",
+        "ant-breadcrumb-overlay-link"
+      ],
+      "breadcrumb/breadcrumb-separator.component.ts": [
+        "ant-breadcrumb-separator"
+      ],
+      "breadcrumb/breadcrumb.component.ts": [
+        "ant-breadcrumb",
+        "ant-breadcrumb-rtl"
+      ],
+      "breadcrumb/breadcrumb.module.ts": [],
+      "breadcrumb/breadcrumb.ts": [],
+      "breadcrumb/index.ts": [],
+      "breadcrumb/public-api.ts": []
+    },
+    "button": {
+      "button/button.component.ts": [
+        "ant-btn",
+        "ant-btn-background-ghost",
+        "ant-btn-block",
+        "ant-btn-circle",
+        "ant-btn-color-dangerous",
+        "ant-btn-color-default",
+        "ant-btn-color-link",
+        "ant-btn-color-primary",
+        "ant-btn-dangerous",
+        "ant-btn-dashed",
+        "ant-btn-default",
+        "ant-btn-icon",
+        "ant-btn-icon-only",
+        "ant-btn-lg",
+        "ant-btn-link",
+        "ant-btn-loading",
+        "ant-btn-loading-icon",
+        "ant-btn-primary",
+        "ant-btn-round",
+        "ant-btn-rtl",
+        "ant-btn-sm",
+        "ant-btn-text",
+        "ant-btn-variant-dashed",
+        "ant-btn-variant-link",
+        "ant-btn-variant-outlined",
+        "ant-btn-variant-solid",
+        "ant-btn-variant-text"
+      ],
+      "button/button.module.ts": [],
+      "button/index.ts": [],
+      "button/public-api.ts": []
+    },
+    "calendar": {
+      "calendar/calendar-cells.ts": [],
+      "calendar/calendar-header.component.ts": [
+        "ant-picker-calendar-header",
+        "ant-picker-calendar-mode-switch",
+        "ant-picker-calendar-month-select",
+        "ant-picker-calendar-year-select"
+      ],
+      "calendar/calendar.component.ts": [
+        "ant-picker-body",
+        "ant-picker-calendar",
+        "ant-picker-calendar-full",
+        "ant-picker-calendar-mini",
+        "ant-picker-calendar-rtl",
+        "ant-picker-panel"
+      ],
+      "calendar/calendar.module.ts": [],
+      "calendar/index.ts": [],
+      "calendar/public-api.ts": []
+    },
+    "card": {
+      "card/card-grid.directive.ts": [
+        "ant-card-grid",
+        "ant-card-hoverable"
+      ],
+      "card/card-meta.component.ts": [
+        "ant-card-meta",
+        "ant-card-meta-avatar",
+        "ant-card-meta-description",
+        "ant-card-meta-detail",
+        "ant-card-meta-section",
+        "ant-card-meta-title"
+      ],
+      "card/card-tab.component.ts": [],
+      "card/card.component.ts": [
+        "ant-card",
+        "ant-card-actions",
+        "ant-card-body",
+        "ant-card-bordered",
+        "ant-card-contain-grid",
+        "ant-card-contain-tabs",
+        "ant-card-cover",
+        "ant-card-extra",
+        "ant-card-head",
+        "ant-card-head-title",
+        "ant-card-head-wrapper",
+        "ant-card-hoverable",
+        "ant-card-loading",
+        "ant-card-rtl",
+        "ant-card-small",
+        "ant-card-type-inner"
+      ],
+      "card/card.module.ts": [],
+      "card/index.ts": [],
+      "card/public-api.ts": []
+    },
+    "carousel": {
+      "carousel/carousel-content.directive.ts": [],
+      "carousel/carousel.component.ts": [
+        "ant-carousel",
+        "ant-carousel-rtl",
+        "ant-carousel-vertical"
+      ],
+      "carousel/carousel.module.ts": [],
+      "carousel/index.ts": [],
+      "carousel/public-api.ts": [],
+      "carousel/strategies/base-strategy.ts": [],
+      "carousel/strategies/experimental/flip-strategy.ts": [],
+      "carousel/strategies/experimental/transform-no-loop-strategy.ts": [],
+      "carousel/strategies/opacity-strategy.ts": [],
+      "carousel/strategies/transform-strategy.ts": [],
+      "carousel/typings.ts": []
+    },
+    "cascader": {
+      "cascader/cascader-display-render.pipe.ts": [],
+      "cascader/cascader-option.component.ts": [
+        "ant-cascader-checkbox",
+        "ant-cascader-checkbox-checked",
+        "ant-cascader-checkbox-disabled",
+        "ant-cascader-checkbox-indeterminate",
+        "ant-cascader-checkbox-inner",
+        "ant-cascader-menu-item",
+        "ant-cascader-menu-item-active",
+        "ant-cascader-menu-item-content",
+        "ant-cascader-menu-item-disabled",
+        "ant-cascader-menu-item-expand",
+        "ant-cascader-menu-item-expand-icon",
+        "ant-cascader-menu-item-expanded",
+        "ant-cascader-menu-item-keyword"
+      ],
+      "cascader/cascader-tree.service.ts": [],
+      "cascader/cascader.component.ts": [
+        "ant-cascader",
+        "ant-cascader-dropdown",
+        "ant-cascader-dropdown-rtl",
+        "ant-cascader-menu",
+        "ant-cascader-menu-empty",
+        "ant-cascader-menu-item",
+        "ant-cascader-menu-item-content",
+        "ant-cascader-menu-item-disabled",
+        "ant-cascader-menus",
+        "ant-cascader-menus-hidden",
+        "ant-cascader-picker-arrow-expand",
+        "ant-cascader-rtl",
+        "ant-select",
+        "ant-select-allow-clear",
+        "ant-select-arrow",
+        "ant-select-arrow-loading",
+        "ant-select-borderless",
+        "ant-select-disabled",
+        "ant-select-dropdown",
+        "ant-select-filled",
+        "ant-select-focused",
+        "ant-select-in-form-item",
+        "ant-select-lg",
+        "ant-select-multiple",
+        "ant-select-open",
+        "ant-select-outlined",
+        "ant-select-prefix",
+        "ant-select-rtl",
+        "ant-select-selection-overflow",
+        "ant-select-selection-overflow-item",
+        "ant-select-selection-overflow-item-suffix",
+        "ant-select-selection-wrap",
+        "ant-select-selector",
+        "ant-select-show-arrow",
+        "ant-select-show-search",
+        "ant-select-single",
+        "ant-select-sm",
+        "ant-select-underlined"
+      ],
+      "cascader/cascader.module.ts": [],
+      "cascader/cascader.service.ts": [],
+      "cascader/index.ts": [],
+      "cascader/public-api.ts": [],
+      "cascader/typings.ts": [],
+      "cascader/utils.ts": []
+    },
+    "check-list": {
+      "check-list/check-list-button.component.ts": [
+        "ant-btn",
+        "ant-btn-primary",
+        "ant-check-list-button"
+      ],
+      "check-list/check-list-content.component.ts": [
+        "ant-check-list-checked",
+        "ant-check-list-close-check",
+        "ant-check-list-close-check-action",
+        "ant-check-list-close-check-other",
+        "ant-check-list-close-check-title",
+        "ant-check-list-content",
+        "ant-check-list-footer",
+        "ant-check-list-header",
+        "ant-check-list-header-extra",
+        "ant-check-list-header-finish",
+        "ant-check-list-header-finish-icon",
+        "ant-check-list-header-finish-title",
+        "ant-check-list-header-title",
+        "ant-check-list-highlight",
+        "ant-check-list-steps",
+        "ant-check-list-steps-checkoutlined",
+        "ant-check-list-steps-content",
+        "ant-check-list-steps-item",
+        "ant-check-list-steps-item-arrows",
+        "ant-check-list-steps-item-circle",
+        "ant-check-list-steps-item-description",
+        "ant-check-list-steps-number"
+      ],
+      "check-list/check-list.component.ts": [
+        "ant-check-list",
+        "ant-check-list-description",
+        "ant-check-list-icon",
+        "ant-check-list-trigger-dot",
+        "ant-check-list-trigger-dot-text"
+      ],
+      "check-list/check-list.module.ts": [],
+      "check-list/index.ts": [],
+      "check-list/public-api.ts": [],
+      "check-list/typings.ts": []
+    },
+    "checkbox": {
+      "checkbox/checkbox-group.component.ts": [
+        "ant-checkbox-group",
+        "ant-checkbox-group-rtl"
+      ],
+      "checkbox/checkbox.component.ts": [
+        "ant-checkbox",
+        "ant-checkbox-checked",
+        "ant-checkbox-disabled",
+        "ant-checkbox-group-item",
+        "ant-checkbox-indeterminate",
+        "ant-checkbox-inner",
+        "ant-checkbox-input",
+        "ant-checkbox-rtl",
+        "ant-checkbox-wrapper",
+        "ant-checkbox-wrapper-checked",
+        "ant-checkbox-wrapper-disabled",
+        "ant-checkbox-wrapper-in-form-item"
+      ],
+      "checkbox/checkbox.module.ts": [],
+      "checkbox/index.ts": [],
+      "checkbox/public-api.ts": [],
+      "checkbox/tokens.ts": []
+    },
+    "code-editor": {
+      "code-editor/code-editor.component.ts": [
+        "ant-code-editor",
+        "ant-code-editor-loading",
+        "ant-code-editor-toolkit"
+      ],
+      "code-editor/code-editor.module.ts": [],
+      "code-editor/code-editor.service.ts": [],
+      "code-editor/index.ts": [],
+      "code-editor/public-api.ts": [],
+      "code-editor/typings.ts": []
+    },
+    "collapse": {
+      "collapse/collapse-panel.component.ts": [
+        "ant-collapse-arrow",
+        "ant-collapse-body",
+        "ant-collapse-collapsible-header",
+        "ant-collapse-collapsible-icon",
+        "ant-collapse-expand-icon",
+        "ant-collapse-extra",
+        "ant-collapse-header",
+        "ant-collapse-item",
+        "ant-collapse-item-active",
+        "ant-collapse-item-disabled",
+        "ant-collapse-no-arrow",
+        "ant-collapse-panel",
+        "ant-collapse-panel-active",
+        "ant-collapse-panel-hidden",
+        "ant-collapse-title"
+      ],
+      "collapse/collapse.component.ts": [
+        "ant-collapse",
+        "ant-collapse-borderless",
+        "ant-collapse-ghost",
+        "ant-collapse-icon-placement-end",
+        "ant-collapse-icon-placement-start",
+        "ant-collapse-large",
+        "ant-collapse-rtl",
+        "ant-collapse-small"
+      ],
+      "collapse/collapse.module.ts": [],
+      "collapse/index.ts": [],
+      "collapse/public-api.ts": []
+    },
+    "color-picker": {
+      "color-picker/color-block.component.ts": [
+        "ant-color-picker-inline",
+        "ant-color-picker-inline-lg",
+        "ant-color-picker-inline-sm"
+      ],
+      "color-picker/color-format.component.ts": [
+        "ant-color-picker-alpha-input",
+        "ant-color-picker-format-select",
+        "ant-color-picker-hex-input",
+        "ant-color-picker-hsb-input",
+        "ant-color-picker-input",
+        "ant-color-picker-input-container",
+        "ant-color-picker-rgb-input",
+        "ant-color-picker-steppers"
+      ],
+      "color-picker/color-picker.component.ts": [
+        "ant-color-picker",
+        "ant-color-picker-clear",
+        "ant-color-picker-clear-disabled",
+        "ant-color-picker-disabled",
+        "ant-color-picker-inline",
+        "ant-color-picker-inner",
+        "ant-color-picker-lg",
+        "ant-color-picker-operation",
+        "ant-color-picker-rtl",
+        "ant-color-picker-sm",
+        "ant-color-picker-title",
+        "ant-color-picker-title-content",
+        "ant-color-picker-trigger",
+        "ant-color-picker-trigger-active",
+        "ant-color-picker-trigger-disabled",
+        "ant-color-picker-trigger-text"
+      ],
+      "color-picker/color-picker.module.ts": [],
+      "color-picker/index.ts": [],
+      "color-picker/public-api.ts": [],
+      "color-picker/src/components/gradient.directive.ts": [
+        "ant-color-picker-gradient",
+        "ant-color-picker-slider-rail"
+      ],
+      "color-picker/src/components/handler.directive.ts": [
+        "ant-color-picker-handler",
+        "ant-color-picker-handler-sm",
+        "ant-color-picker-slider-handle"
+      ],
+      "color-picker/src/components/picker.component.ts": [
+        "ant-color-picker-palette",
+        "ant-color-picker-saturation",
+        "ant-color-picker-select",
+        "ant-color-picker-transform"
+      ],
+      "color-picker/src/components/slider.component.ts": [
+        "ant-color-picker-palette",
+        "ant-color-picker-slider",
+        "ant-color-picker-transform"
+      ],
+      "color-picker/src/interfaces/color.ts": [],
+      "color-picker/src/interfaces/type.ts": [],
+      "color-picker/src/ng-antd-color-block.component.ts": [
+        "ant-color-picker-color-block",
+        "ant-color-picker-color-block-inner",
+        "ant-color-picker-presets-color",
+        "ant-color-picker-presets-color-bright",
+        "ant-color-picker-presets-color-checked"
+      ],
+      "color-picker/src/ng-antd-color-picker.component.ts": [
+        "ant-color-picker-inner",
+        "ant-color-picker-inner-content",
+        "ant-color-picker-panel",
+        "ant-color-picker-panel-disabled",
+        "ant-color-picker-slider-container",
+        "ant-color-picker-slider-group",
+        "ant-color-picker-slider-group-disabled-alpha"
+      ],
+      "color-picker/src/ng-antd-color-picker.module.ts": [],
+      "color-picker/src/ng-antd-color-preset.component.ts": [
+        "ant-color-picker-presets",
+        "ant-color-picker-presets-empty",
+        "ant-color-picker-presets-items",
+        "ant-color-picker-presets-label",
+        "ant-color-picker-presets-wrapper"
+      ],
+      "color-picker/src/util/util.ts": [],
+      "color-picker/typings.ts": []
+    },
+    "comment": {
+      "comment/comment-cells.ts": [
+        "ant-comment-content-detail"
+      ],
+      "comment/comment.component.ts": [
+        "ant-comment",
+        "ant-comment-actions",
+        "ant-comment-avatar",
+        "ant-comment-content",
+        "ant-comment-content-author",
+        "ant-comment-content-author-name",
+        "ant-comment-content-author-time",
+        "ant-comment-inner",
+        "ant-comment-nested",
+        "ant-comment-rtl"
+      ],
+      "comment/comment.module.ts": [],
+      "comment/index.ts": [],
+      "comment/public-api.ts": []
+    },
+    "cron-expression": {
+      "cron-expression/cron-expression-input.component.ts": [
+        "ant-cron-expression-input"
+      ],
+      "cron-expression/cron-expression-label.component.ts": [
+        "ant-cron-expression-label",
+        "ant-cron-expression-label-foucs"
+      ],
+      "cron-expression/cron-expression-preview.component.ts": [
+        "ant-collapse",
+        "ant-collapse-borderless",
+        "ant-cron-expression-preview",
+        "ant-cron-expression-preview-content",
+        "ant-cron-expression-preview-icon",
+        "ant-cron-expression-preview-list"
+      ],
+      "cron-expression/cron-expression.component.ts": [
+        "ant-cron-expression",
+        "ant-cron-expression-content",
+        "ant-cron-expression-input-group",
+        "ant-cron-expression-label-group",
+        "ant-cron-expression-label-group-default",
+        "ant-cron-expression-map",
+        "ant-input",
+        "ant-input-borderless",
+        "ant-input-disabled",
+        "ant-input-focused",
+        "ant-input-lg",
+        "ant-input-sm"
+      ],
+      "cron-expression/cron-expression.module.ts": [],
+      "cron-expression/index.ts": [],
+      "cron-expression/public-api.ts": [],
+      "cron-expression/typings.ts": []
+    },
+    "date-picker": {
+      "date-picker/calendar-footer.component.ts": [],
+      "date-picker/date-picker.component.ts": [
+        "ant-input-disabled",
+        "ant-picker",
+        "ant-picker-active-left",
+        "ant-picker-active-right",
+        "ant-picker-borderless",
+        "ant-picker-disabled",
+        "ant-picker-dropdown-range",
+        "ant-picker-filled",
+        "ant-picker-focused",
+        "ant-picker-inline",
+        "ant-picker-large",
+        "ant-picker-outlined",
+        "ant-picker-range",
+        "ant-picker-rtl",
+        "ant-picker-small",
+        "ant-picker-underlined"
+      ],
+      "date-picker/date-picker.module.ts": [],
+      "date-picker/date-picker.service.ts": [],
+      "date-picker/date-range-popup.component.ts": [
+        "ant-picker-panel-rtl",
+        "ant-tag",
+        "ant-tag-blue"
+      ],
+      "date-picker/index.ts": [],
+      "date-picker/inner-popup.component.ts": [
+        "ant-picker-datetime-panel"
+      ],
+      "date-picker/lib/abstract-panel-header.html": [
+        "ant-picker-next-icon",
+        "ant-picker-prev-icon",
+        "ant-picker-super-next-icon",
+        "ant-picker-super-prev-icon"
+      ],
+      "date-picker/lib/abstract-panel-header.ts": [
+        "ant-picker-header"
+      ],
+      "date-picker/lib/abstract-table.html": [
+        "ant-picker",
+        "ant-picker-calendar",
+        "ant-picker-calendar-date-today",
+        "ant-picker-cell-inner",
+        "ant-picker-content"
+      ],
+      "date-picker/lib/abstract-table.ts": [
+        "ant-picker",
+        "ant-picker-cell",
+        "ant-picker-cell-disabled",
+        "ant-picker-cell-in-range",
+        "ant-picker-cell-in-view",
+        "ant-picker-cell-range-end",
+        "ant-picker-cell-range-end-near-hover",
+        "ant-picker-cell-range-end-single",
+        "ant-picker-cell-range-hover",
+        "ant-picker-cell-range-hover-edge-end",
+        "ant-picker-cell-range-hover-edge-start",
+        "ant-picker-cell-range-hover-end",
+        "ant-picker-cell-range-hover-start",
+        "ant-picker-cell-range-start",
+        "ant-picker-cell-range-start-near-hover",
+        "ant-picker-cell-range-start-single",
+        "ant-picker-cell-selected"
+      ],
+      "date-picker/lib/date-header.component.ts": [],
+      "date-picker/lib/date-table.component.ts": [
+        "ant-picker-cell-in-view",
+        "ant-picker-cell-today",
+        "ant-picker-week-panel-row",
+        "ant-picker-week-panel-row-selected"
+      ],
+      "date-picker/lib/decade-header.component.ts": [],
+      "date-picker/lib/decade-table.component.ts": [],
+      "date-picker/lib/index.ts": [],
+      "date-picker/lib/interface.ts": [],
+      "date-picker/lib/lib-packer.module.ts": [],
+      "date-picker/lib/month-header.component.ts": [],
+      "date-picker/lib/month-table.component.ts": [],
+      "date-picker/lib/public-api.ts": [],
+      "date-picker/lib/quarter-header.component.ts": [],
+      "date-picker/lib/quarter-table.component.ts": [],
+      "date-picker/lib/util.ts": [],
+      "date-picker/lib/year-header.component.ts": [],
+      "date-picker/lib/year-table.component.ts": [
+        "ant-picker-cell-in-view"
+      ],
+      "date-picker/month-picker.component.ts": [],
+      "date-picker/public-api.ts": [],
+      "date-picker/quarter-picker.component.ts": [],
+      "date-picker/range-picker.component.ts": [],
+      "date-picker/standard-types.ts": [],
+      "date-picker/util.ts": [
+        "ant-picker"
+      ],
+      "date-picker/week-picker.component.ts": [],
+      "date-picker/year-picker.component.ts": []
+    },
+    "descriptions": {
+      "descriptions/descriptions-item.component.ts": [],
+      "descriptions/descriptions.component.ts": [
+        "ant-descriptions",
+        "ant-descriptions-bordered",
+        "ant-descriptions-extra",
+        "ant-descriptions-header",
+        "ant-descriptions-item",
+        "ant-descriptions-item-container",
+        "ant-descriptions-item-content",
+        "ant-descriptions-item-label",
+        "ant-descriptions-item-no-colon",
+        "ant-descriptions-medium",
+        "ant-descriptions-middle",
+        "ant-descriptions-row",
+        "ant-descriptions-rtl",
+        "ant-descriptions-small",
+        "ant-descriptions-title",
+        "ant-descriptions-view"
+      ],
+      "descriptions/descriptions.module.ts": [],
+      "descriptions/index.ts": [],
+      "descriptions/public-api.ts": [],
+      "descriptions/typings.ts": []
+    },
+    "divider": {
+      "divider/divider.component.ts": [
+        "ant-divider",
+        "ant-divider-dashed",
+        "ant-divider-dotted",
+        "ant-divider-horizontal",
+        "ant-divider-inner-text",
+        "ant-divider-md",
+        "ant-divider-plain",
+        "ant-divider-sm",
+        "ant-divider-vertical",
+        "ant-divider-with-text",
+        "ant-divider-with-text-center",
+        "ant-divider-with-text-left",
+        "ant-divider-with-text-right"
+      ],
+      "divider/divider.module.ts": [],
+      "divider/index.ts": [],
+      "divider/public-api.ts": []
+    },
+    "drawer": {
+      "drawer/drawer-content.directive.ts": [],
+      "drawer/drawer-options.ts": [],
+      "drawer/drawer-ref.ts": [],
+      "drawer/drawer.component.ts": [
+        "ant-drawer",
+        "ant-drawer-body",
+        "ant-drawer-bottom",
+        "ant-drawer-close",
+        "ant-drawer-content",
+        "ant-drawer-content-wrapper",
+        "ant-drawer-extra",
+        "ant-drawer-footer",
+        "ant-drawer-header",
+        "ant-drawer-header-close-only",
+        "ant-drawer-header-title",
+        "ant-drawer-left",
+        "ant-drawer-mask",
+        "ant-drawer-mask-motion-enter",
+        "ant-drawer-mask-motion-leave",
+        "ant-drawer-open",
+        "ant-drawer-right",
+        "ant-drawer-rtl",
+        "ant-drawer-section",
+        "ant-drawer-title",
+        "ant-drawer-top",
+        "ant-drawer-wrapper-body"
+      ],
+      "drawer/drawer.module.ts": [],
+      "drawer/drawer.service.ts": [],
+      "drawer/index.ts": [],
+      "drawer/public-api.ts": []
+    },
+    "dropdown": {
+      "dropdown/context-menu.service.module.ts": [],
+      "dropdown/context-menu.service.ts": [
+        "ant-dropdown"
+      ],
+      "dropdown/dropdown-a.directive.ts": [
+        "ant-dropdown-link"
+      ],
+      "dropdown/dropdown-menu.component.ts": [
+        "ant-dropdown",
+        "ant-dropdown-arrow",
+        "ant-dropdown-placement-bottom",
+        "ant-dropdown-placement-top",
+        "ant-dropdown-rtl",
+        "ant-dropdown-show-arrow"
+      ],
+      "dropdown/dropdown.directive.ts": [
+        "ant-dropdown",
+        "ant-dropdown-trigger"
+      ],
+      "dropdown/dropdown.module.ts": [],
+      "dropdown/index.ts": [],
+      "dropdown/public-api.ts": []
+    },
+    "empty": {
+      "empty/config.ts": [],
+      "empty/embed-empty.component.ts": [
+        "ant-empty-normal",
+        "ant-empty-small"
+      ],
+      "empty/empty.component.ts": [
+        "ant-empty",
+        "ant-empty-description",
+        "ant-empty-footer",
+        "ant-empty-image",
+        "ant-empty-normal"
+      ],
+      "empty/empty.module.ts": [],
+      "empty/index.ts": [],
+      "empty/partial/default.ts": [
+        "ant-empty-img-default",
+        "ant-empty-img-default-ellipse",
+        "ant-empty-img-default-g",
+        "ant-empty-img-default-path-1",
+        "ant-empty-img-default-path-2",
+        "ant-empty-img-default-path-3",
+        "ant-empty-img-default-path-4",
+        "ant-empty-img-default-path-5"
+      ],
+      "empty/partial/simple.ts": [
+        "ant-empty-img-simple",
+        "ant-empty-img-simple-ellipse",
+        "ant-empty-img-simple-g",
+        "ant-empty-img-simple-path"
+      ],
+      "empty/public-api.ts": []
+    },
+    "flex": {
+      "flex/flex.module.ts": [],
+      "flex/index.ts": [],
+      "flex/nz-flex.directive.ts": [
+        "ant-flex",
+        "ant-flex-align-center",
+        "ant-flex-align-end",
+        "ant-flex-align-flex-end",
+        "ant-flex-align-flex-start",
+        "ant-flex-align-left",
+        "ant-flex-align-normal",
+        "ant-flex-align-right",
+        "ant-flex-align-space-around",
+        "ant-flex-align-space-between",
+        "ant-flex-align-space-evenly",
+        "ant-flex-align-start",
+        "ant-flex-align-stretch",
+        "ant-flex-justify-center",
+        "ant-flex-justify-end",
+        "ant-flex-justify-flex-end",
+        "ant-flex-justify-flex-start",
+        "ant-flex-justify-left",
+        "ant-flex-justify-normal",
+        "ant-flex-justify-right",
+        "ant-flex-justify-space-around",
+        "ant-flex-justify-space-between",
+        "ant-flex-justify-space-evenly",
+        "ant-flex-justify-start",
+        "ant-flex-justify-stretch",
+        "ant-flex-vertical",
+        "ant-flex-wrap-nowrap",
+        "ant-flex-wrap-wrap",
+        "ant-flex-wrap-wrap-reverse"
+      ],
+      "flex/public-api.ts": [],
+      "flex/typings.ts": []
+    },
+    "float-button": {
+      "float-button/float-button-content.component.ts": [
+        "ant-float-btn-body",
+        "ant-float-btn-content",
+        "ant-float-btn-description",
+        "ant-float-btn-icon"
+      ],
+      "float-button/float-button-group.component.ts": [
+        "ant-float-btn-group",
+        "ant-float-btn-group-list",
+        "ant-float-btn-group-menu-mode",
+        "ant-float-btn-group-trigger",
+        "ant-float-btn-group-wrap"
+      ],
+      "float-button/float-button-top.component.ts": [
+        "ant-btn",
+        "ant-float-btn"
+      ],
+      "float-button/float-button.component.ts": [
+        "ant-btn",
+        "ant-float-btn",
+        "ant-float-btn-default",
+        "ant-float-btn-icon-only",
+        "ant-float-btn-inner"
+      ],
+      "float-button/float-button.module.ts": [],
+      "float-button/index.ts": [],
+      "float-button/public-api.ts": [],
+      "float-button/typings.ts": []
+    },
+    "form": {
+      "form/form-control.component.ts": [
+        "ant-form-item-additional",
+        "ant-form-item-control",
+        "ant-form-item-control-input",
+        "ant-form-item-control-input-content",
+        "ant-form-item-explain",
+        "ant-form-item-explain-connected",
+        "ant-form-item-extra",
+        "ant-form-show-help",
+        "ant-form-validate"
+      ],
+      "form/form-item.component.ts": [
+        "ant-form-item",
+        "ant-form-item-has-error",
+        "ant-form-item-has-feedback",
+        "ant-form-item-has-success",
+        "ant-form-item-has-warning",
+        "ant-form-item-horizontal",
+        "ant-form-item-is-validating",
+        "ant-form-item-vertical",
+        "ant-form-item-with-help"
+      ],
+      "form/form-label.component.ts": [
+        "ant-design",
+        "ant-form-item-label",
+        "ant-form-item-label-left",
+        "ant-form-item-label-wrap",
+        "ant-form-item-no-colon",
+        "ant-form-item-optional",
+        "ant-form-item-required",
+        "ant-form-item-required-mark-hidden",
+        "ant-form-item-required-mark-optional",
+        "ant-form-item-tooltip"
+      ],
+      "form/form-split.component.ts": [
+        "ant-form-split"
+      ],
+      "form/form-text.component.ts": [
+        "ant-form-text"
+      ],
+      "form/form.directive.ts": [
+        "ant-design",
+        "ant-form",
+        "ant-form-horizontal",
+        "ant-form-inline",
+        "ant-form-large",
+        "ant-form-rtl",
+        "ant-form-small",
+        "ant-form-vertical"
+      ],
+      "form/form.module.ts": [],
+      "form/index.ts": [],
+      "form/public-api.ts": [],
+      "form/types.ts": []
+    },
+    "graph": {
+      "graph/core/minimap.ts": [],
+      "graph/core/utils.ts": [],
+      "graph/data-source/base-graph-source.ts": [],
+      "graph/data-source/graph-data-source.ts": [],
+      "graph/graph-defs.component.ts": [],
+      "graph/graph-edge.component.ts": [],
+      "graph/graph-edge.directive.ts": [],
+      "graph/graph-group-node.directive.ts": [],
+      "graph/graph-minimap.component.ts": [],
+      "graph/graph-node.component.ts": [],
+      "graph/graph-node.directive.ts": [],
+      "graph/graph-zoom.directive.ts": [],
+      "graph/graph.component.ts": [],
+      "graph/graph.module.ts": [],
+      "graph/graph.ts": [],
+      "graph/index.ts": [],
+      "graph/interface.ts": [],
+      "graph/public-api.ts": []
+    },
+    "grid": {
+      "grid/col.directive.ts": [
+        "ant-col",
+        "ant-col-rtl"
+      ],
+      "grid/grid.module.ts": [],
+      "grid/index.ts": [],
+      "grid/public-api.ts": [],
+      "grid/row.directive.ts": [
+        "ant-row",
+        "ant-row-no-wrap",
+        "ant-row-rtl"
+      ]
+    },
+    "hash-code": {
+      "hash-code/hash-code.component.ts": [
+        "ant-hash-code",
+        "ant-hash-code-code-value",
+        "ant-hash-code-code-value-block",
+        "ant-hash-code-contant",
+        "ant-hash-code-default",
+        "ant-hash-code-double",
+        "ant-hash-code-header",
+        "ant-hash-code-header-copy",
+        "ant-hash-code-header-logo",
+        "ant-hash-code-header-title",
+        "ant-hash-code-primary",
+        "ant-hash-code-rect",
+        "ant-hash-code-single",
+        "ant-hash-code-strip",
+        "ant-hash-code-texaure",
+        "ant-hash-code-texaure-double",
+        "ant-hash-code-texaure-rect",
+        "ant-hash-code-texaure-single",
+        "ant-hash-code-texaure-strip",
+        "ant-hash-code-value-default",
+        "ant-hash-code-value-primary"
+      ],
+      "hash-code/hash-code.module.ts": [],
+      "hash-code/index.ts": [],
+      "hash-code/public-api.ts": [],
+      "hash-code/typings.ts": []
+    },
+    "icon": {
+      "icon/icon.directive.ts": [
+        "ant-design"
+      ],
+      "icon/icon.module.ts": [
+        "ant-design"
+      ],
+      "icon/icon.service.ts": [
+        "ant-design"
+      ],
+      "icon/icons.ts": [
+        "ant-design"
+      ],
+      "icon/index.ts": [],
+      "icon/page/index.ts": [
+        "ant-design",
+        "ant-upload-drag-icon",
+        "ant-upload-hint",
+        "ant-upload-text"
+      ],
+      "icon/provide-icons.ts": [
+        "ant-design"
+      ],
+      "icon/public-api.ts": []
+    },
+    "image": {
+      "image/image-config.ts": [],
+      "image/image-group.component.ts": [],
+      "image/image-preview-options.ts": [],
+      "image/image-preview-ref.ts": [
+        "ant-image-preview"
+      ],
+      "image/image-preview.component.ts": [
+        "ant-image-preview",
+        "ant-image-preview-actions",
+        "ant-image-preview-actions-action",
+        "ant-image-preview-actions-action-disabled",
+        "ant-image-preview-body",
+        "ant-image-preview-close",
+        "ant-image-preview-content",
+        "ant-image-preview-focus-trap",
+        "ant-image-preview-footer",
+        "ant-image-preview-img",
+        "ant-image-preview-img-wrapper",
+        "ant-image-preview-mask",
+        "ant-image-preview-moving",
+        "ant-image-preview-operations",
+        "ant-image-preview-operations-icon",
+        "ant-image-preview-operations-operation",
+        "ant-image-preview-operations-operation-disabled",
+        "ant-image-preview-operations-progress",
+        "ant-image-preview-operations-wrapper",
+        "ant-image-preview-root",
+        "ant-image-preview-switch",
+        "ant-image-preview-switch-disabled",
+        "ant-image-preview-switch-left",
+        "ant-image-preview-switch-left-disabled",
+        "ant-image-preview-switch-next",
+        "ant-image-preview-switch-prev",
+        "ant-image-preview-switch-right",
+        "ant-image-preview-switch-right-disabled",
+        "ant-image-preview-wrap"
+      ],
+      "image/image.directive.ts": [],
+      "image/image.module.ts": [],
+      "image/image.service.ts": [],
+      "image/index.ts": [],
+      "image/public-api.ts": [],
+      "image/utils.ts": []
+    },
+    "input": {
+      "input/index.ts": [],
+      "input/input-addon.directive.ts": [],
+      "input/input-affix.directive.ts": [],
+      "input/input-otp.component.ts": [
+        "ant-otp",
+        "ant-otp-input"
+      ],
+      "input/input-password.directive.ts": [
+        "ant-input-password"
+      ],
+      "input/input-search.directive.ts": [
+        "ant-input-search",
+        "ant-input-search-large",
+        "ant-input-search-small",
+        "ant-input-search-with-button"
+      ],
+      "input/input-wrapper.component.ts": [
+        "ant-input",
+        "ant-input-affix-wrapper",
+        "ant-input-affix-wrapper-disabled",
+        "ant-input-affix-wrapper-focused",
+        "ant-input-affix-wrapper-lg",
+        "ant-input-affix-wrapper-readonly",
+        "ant-input-affix-wrapper-rtl",
+        "ant-input-affix-wrapper-sm",
+        "ant-input-affix-wrapper-textarea-with-clear-btn",
+        "ant-input-clear-icon",
+        "ant-input-clear-icon-has-suffix",
+        "ant-input-clear-icon-hidden",
+        "ant-input-disabled",
+        "ant-input-group",
+        "ant-input-group-addon",
+        "ant-input-group-wrapper",
+        "ant-input-group-wrapper-lg",
+        "ant-input-group-wrapper-rtl",
+        "ant-input-group-wrapper-sm",
+        "ant-input-out-of-range",
+        "ant-input-password-icon",
+        "ant-input-prefix",
+        "ant-input-search-btn",
+        "ant-input-search-button",
+        "ant-input-show-count-suffix",
+        "ant-input-suffix",
+        "ant-input-textarea-affix-wrapper",
+        "ant-input-wrapper"
+      ],
+      "input/input.directive.ts": [
+        "ant-input",
+        "ant-input-borderless",
+        "ant-input-disabled",
+        "ant-input-filled",
+        "ant-input-focused",
+        "ant-input-lg",
+        "ant-input-outlined",
+        "ant-input-rtl",
+        "ant-input-sm",
+        "ant-input-suffix",
+        "ant-input-underlined"
+      ],
+      "input/input.module.ts": [],
+      "input/public-api.ts": [],
+      "input/textarea-count.component.ts": [
+        "ant-input-textarea-show-count"
+      ],
+      "input/tokens.ts": []
+    },
+    "input-number": {
+      "input-number/index.ts": [],
+      "input-number/input-number.component.ts": [
+        "ant-input-number",
+        "ant-input-number-action",
+        "ant-input-number-action-down",
+        "ant-input-number-action-down-disabled",
+        "ant-input-number-action-up",
+        "ant-input-number-action-up-disabled",
+        "ant-input-number-actions",
+        "ant-input-number-addon",
+        "ant-input-number-affix-wrapper",
+        "ant-input-number-affix-wrapper-disabled",
+        "ant-input-number-affix-wrapper-focused",
+        "ant-input-number-affix-wrapper-readonly",
+        "ant-input-number-affix-wrapper-rtl",
+        "ant-input-number-disabled",
+        "ant-input-number-focused",
+        "ant-input-number-group",
+        "ant-input-number-group-addon",
+        "ant-input-number-group-wrapper",
+        "ant-input-number-group-wrapper-rtl",
+        "ant-input-number-handler",
+        "ant-input-number-handler-down",
+        "ant-input-number-handler-down-disabled",
+        "ant-input-number-handler-down-inner",
+        "ant-input-number-handler-up",
+        "ant-input-number-handler-up-disabled",
+        "ant-input-number-handler-up-inner",
+        "ant-input-number-handler-wrap",
+        "ant-input-number-in-form-item",
+        "ant-input-number-input",
+        "ant-input-number-input-wrap",
+        "ant-input-number-lg",
+        "ant-input-number-mode-input",
+        "ant-input-number-out-of-range",
+        "ant-input-number-prefix",
+        "ant-input-number-readonly",
+        "ant-input-number-rtl",
+        "ant-input-number-sm",
+        "ant-input-number-suffix",
+        "ant-input-number-without-controls",
+        "ant-input-number-wrapper"
+      ],
+      "input-number/input-number.module.ts": [],
+      "input-number/public-api.ts": []
+    },
+    "layout": {
+      "layout/content.component.ts": [
+        "ant-layout-content"
+      ],
+      "layout/footer.component.ts": [
+        "ant-layout-footer"
+      ],
+      "layout/header.component.ts": [
+        "ant-layout-header"
+      ],
+      "layout/index.ts": [],
+      "layout/layout.component.ts": [
+        "ant-layout",
+        "ant-layout-has-sider",
+        "ant-layout-rtl"
+      ],
+      "layout/layout.module.ts": [],
+      "layout/public-api.ts": [],
+      "layout/sider-trigger.component.ts": [
+        "ant-layout-sider-trigger",
+        "ant-layout-sider-zero-width-trigger",
+        "ant-layout-sider-zero-width-trigger-left",
+        "ant-layout-sider-zero-width-trigger-right"
+      ],
+      "layout/sider.component.ts": [
+        "ant-layout-sider",
+        "ant-layout-sider-children",
+        "ant-layout-sider-collapsed",
+        "ant-layout-sider-dark",
+        "ant-layout-sider-has-trigger",
+        "ant-layout-sider-light",
+        "ant-layout-sider-zero-width"
+      ]
+    },
+    "list": {
+      "list/index.ts": [],
+      "list/interface.ts": [],
+      "list/list-cell.ts": [
+        "ant-list-empty-text",
+        "ant-list-footer",
+        "ant-list-grid",
+        "ant-list-header",
+        "ant-list-pagination"
+      ],
+      "list/list-item-cell.ts": [
+        "ant-list-item-action",
+        "ant-list-item-action-split",
+        "ant-list-item-extra"
+      ],
+      "list/list-item-meta-cell.ts": [
+        "ant-list-item-meta-avatar",
+        "ant-list-item-meta-description",
+        "ant-list-item-meta-title"
+      ],
+      "list/list-item-meta.component.ts": [
+        "ant-list-item-meta",
+        "ant-list-item-meta-content"
+      ],
+      "list/list-item.component.ts": [
+        "ant-list-item",
+        "ant-list-item-main",
+        "ant-list-item-no-flex"
+      ],
+      "list/list.component.ts": [
+        "ant-list",
+        "ant-list-bordered",
+        "ant-list-items",
+        "ant-list-lg",
+        "ant-list-loading",
+        "ant-list-rtl",
+        "ant-list-sm",
+        "ant-list-something-after-last-item",
+        "ant-list-split",
+        "ant-list-vertical"
+      ],
+      "list/list.module.ts": [],
+      "list/public-api.ts": []
+    },
+    "mention": {
+      "mention/config.ts": [],
+      "mention/index.ts": [],
+      "mention/mention-suggestions.ts": [],
+      "mention/mention-trigger.ts": [],
+      "mention/mention.component.ts": [
+        "ant-mentions",
+        "ant-mentions-borderless",
+        "ant-mentions-clear-icon",
+        "ant-mentions-disabled",
+        "ant-mentions-dropdown",
+        "ant-mentions-dropdown-menu",
+        "ant-mentions-dropdown-menu-item",
+        "ant-mentions-dropdown-menu-item-active",
+        "ant-mentions-dropdown-menu-item-disabled",
+        "ant-mentions-dropdown-menu-item-selected",
+        "ant-mentions-filled",
+        "ant-mentions-focused",
+        "ant-mentions-outlined",
+        "ant-mentions-rtl",
+        "ant-mentions-suffix",
+        "ant-mentions-underlined"
+      ],
+      "mention/mention.module.ts": [],
+      "mention/public-api.ts": []
+    },
+    "menu": {
+      "menu/index.ts": [],
+      "menu/menu-divider.directive.ts": [
+        "ant-dropdown-menu-item-divider"
+      ],
+      "menu/menu-group.component.ts": [
+        "ant-dropdown-menu-item-group",
+        "ant-dropdown-menu-item-group-list",
+        "ant-dropdown-menu-item-group-title",
+        "ant-menu-item-group",
+        "ant-menu-item-group-list",
+        "ant-menu-item-group-title"
+      ],
+      "menu/menu-item.component.ts": [
+        "ant-dropdown-menu-item",
+        "ant-dropdown-menu-item-danger",
+        "ant-dropdown-menu-item-disabled",
+        "ant-dropdown-menu-item-selected",
+        "ant-menu-item",
+        "ant-menu-item-danger",
+        "ant-menu-item-disabled",
+        "ant-menu-item-selected",
+        "ant-menu-title-content"
+      ],
+      "menu/menu.directive.ts": [
+        "ant-dropdown-menu",
+        "ant-dropdown-menu-dark",
+        "ant-dropdown-menu-horizontal",
+        "ant-dropdown-menu-inline",
+        "ant-dropdown-menu-inline-collapsed",
+        "ant-dropdown-menu-light",
+        "ant-dropdown-menu-root",
+        "ant-dropdown-menu-vertical",
+        "ant-menu",
+        "ant-menu-dark",
+        "ant-menu-horizontal",
+        "ant-menu-inline",
+        "ant-menu-inline-collapsed",
+        "ant-menu-light",
+        "ant-menu-root",
+        "ant-menu-rtl",
+        "ant-menu-vertical"
+      ],
+      "menu/menu.module.ts": [],
+      "menu/menu.service.ts": [],
+      "menu/menu.token.ts": [],
+      "menu/menu.types.ts": [],
+      "menu/public-api.ts": [],
+      "menu/submenu-inline-child.component.ts": [
+        "ant-menu"
+      ],
+      "menu/submenu-non-inline-child.component.ts": [],
+      "menu/submenu-title.component.ts": [
+        "ant-dropdown-menu-submenu-arrow-icon",
+        "ant-dropdown-menu-submenu-expand-icon",
+        "ant-dropdown-menu-submenu-title",
+        "ant-menu-submenu-arrow",
+        "ant-menu-submenu-title",
+        "ant-menu-title-content"
+      ],
+      "menu/submenu.component.ts": [
+        "ant-dropdown-menu-submenu",
+        "ant-dropdown-menu-submenu-active",
+        "ant-dropdown-menu-submenu-disabled",
+        "ant-dropdown-menu-submenu-horizontal",
+        "ant-dropdown-menu-submenu-inline",
+        "ant-dropdown-menu-submenu-open",
+        "ant-dropdown-menu-submenu-selected",
+        "ant-dropdown-menu-submenu-vertical",
+        "ant-menu-submenu",
+        "ant-menu-submenu-active",
+        "ant-menu-submenu-disabled",
+        "ant-menu-submenu-hidden",
+        "ant-menu-submenu-horizontal",
+        "ant-menu-submenu-inline",
+        "ant-menu-submenu-open",
+        "ant-menu-submenu-rtl",
+        "ant-menu-submenu-selected",
+        "ant-menu-submenu-vertical"
+      ],
+      "menu/submenu.service.ts": []
+    },
+    "message": {
+      "message/base.ts": [],
+      "message/index.ts": [],
+      "message/message-container.component.ts": [
+        "ant-message",
+        "ant-message-list",
+        "ant-message-rtl",
+        "ant-message-top"
+      ],
+      "message/message.component.ts": [
+        "ant-message-custom-content",
+        "ant-message-move-up-enter",
+        "ant-message-move-up-leave",
+        "ant-message-notice",
+        "ant-message-notice-content",
+        "ant-message-notice-icon",
+        "ant-message-notice-icon-error",
+        "ant-message-notice-icon-info",
+        "ant-message-notice-icon-loading",
+        "ant-message-notice-icon-success",
+        "ant-message-notice-icon-warning",
+        "ant-message-notice-title",
+        "ant-message-notice-wrapper"
+      ],
+      "message/message.service.ts": [],
+      "message/public-api.ts": [],
+      "message/typings.ts": []
+    },
+    "modal": {
+      "modal/index.ts": [],
+      "modal/modal-close.component.ts": [
+        "ant-modal-close",
+        "ant-modal-close-icon",
+        "ant-modal-close-x"
+      ],
+      "modal/modal-config.ts": [
+        "ant-fade-enter",
+        "ant-fade-enter-active",
+        "ant-fade-leave",
+        "ant-fade-leave-active",
+        "ant-modal-mask",
+        "ant-zoom-enter",
+        "ant-zoom-enter-active",
+        "ant-zoom-leave",
+        "ant-zoom-leave-active"
+      ],
+      "modal/modal-confirm-container.component.ts": [
+        "ant-modal",
+        "ant-modal-body",
+        "ant-modal-centered",
+        "ant-modal-confirm-body",
+        "ant-modal-confirm-body-has-title",
+        "ant-modal-confirm-body-wrapper",
+        "ant-modal-confirm-btns",
+        "ant-modal-confirm-content",
+        "ant-modal-confirm-title",
+        "ant-modal-container",
+        "ant-modal-content",
+        "ant-modal-wrap",
+        "ant-modal-wrap-rtl"
+      ],
+      "modal/modal-container.component.ts": [
+        "ant-modal",
+        "ant-modal-body",
+        "ant-modal-centered",
+        "ant-modal-container",
+        "ant-modal-content",
+        "ant-modal-wrap",
+        "ant-modal-wrap-rtl"
+      ],
+      "modal/modal-container.directive.ts": [],
+      "modal/modal-content.directive.ts": [],
+      "modal/modal-footer.component.ts": [
+        "ant-modal-footer"
+      ],
+      "modal/modal-footer.directive.ts": [],
+      "modal/modal-legacy-api.ts": [],
+      "modal/modal-ref.ts": [],
+      "modal/modal-title.component.ts": [
+        "ant-modal-header",
+        "ant-modal-title"
+      ],
+      "modal/modal-title.directive.ts": [],
+      "modal/modal-types.ts": [],
+      "modal/modal.component.ts": [],
+      "modal/modal.module.ts": [],
+      "modal/modal.service.ts": [
+        "ant-modal-confirm"
+      ],
+      "modal/public-api.ts": [],
+      "modal/utils.ts": []
+    },
+    "notification": {
+      "notification/index.ts": [],
+      "notification/notification-container.component.ts": [
+        "ant-notification",
+        "ant-notification-bottom",
+        "ant-notification-rtl",
+        "ant-notification-top"
+      ],
+      "notification/notification.component.ts": [
+        "ant-notification-close-icon",
+        "ant-notification-fade-enter",
+        "ant-notification-fade-leave",
+        "ant-notification-notice",
+        "ant-notification-notice-actions",
+        "ant-notification-notice-btn",
+        "ant-notification-notice-closable",
+        "ant-notification-notice-close",
+        "ant-notification-notice-close-x",
+        "ant-notification-notice-content",
+        "ant-notification-notice-description",
+        "ant-notification-notice-error",
+        "ant-notification-notice-icon",
+        "ant-notification-notice-icon-error",
+        "ant-notification-notice-icon-info",
+        "ant-notification-notice-icon-success",
+        "ant-notification-notice-icon-warning",
+        "ant-notification-notice-info",
+        "ant-notification-notice-message",
+        "ant-notification-notice-section",
+        "ant-notification-notice-success",
+        "ant-notification-notice-title",
+        "ant-notification-notice-warning",
+        "ant-notification-notice-with-icon",
+        "ant-notification-notice-wrapper"
+      ],
+      "notification/notification.service.ts": [],
+      "notification/public-api.ts": [],
+      "notification/typings.ts": []
+    },
+    "page-header": {
+      "page-header/index.ts": [],
+      "page-header/page-header-cells.ts": [
+        "ant-page-header-content",
+        "ant-page-header-footer",
+        "ant-page-header-heading-extra",
+        "ant-page-header-heading-sub-title",
+        "ant-page-header-heading-tags",
+        "ant-page-header-heading-title"
+      ],
+      "page-header/page-header.component.ts": [
+        "ant-page-header",
+        "ant-page-header-back",
+        "ant-page-header-back-button",
+        "ant-page-header-compact",
+        "ant-page-header-ghost",
+        "ant-page-header-heading",
+        "ant-page-header-heading-left",
+        "ant-page-header-heading-sub-title",
+        "ant-page-header-heading-title",
+        "ant-page-header-rtl"
+      ],
+      "page-header/page-header.module.ts": [],
+      "page-header/public-api.ts": []
+    },
+    "pagination": {
+      "pagination/index.ts": [],
+      "pagination/pagination-default.component.ts": [
+        "ant-pagination-rtl",
+        "ant-pagination-total-text"
+      ],
+      "pagination/pagination-item.component.ts": [
+        "ant-pagination-disabled",
+        "ant-pagination-item",
+        "ant-pagination-item-active",
+        "ant-pagination-item-container",
+        "ant-pagination-item-ellipsis",
+        "ant-pagination-item-link",
+        "ant-pagination-item-link-icon",
+        "ant-pagination-jump-next",
+        "ant-pagination-jump-next-custom-icon",
+        "ant-pagination-jump-prev",
+        "ant-pagination-jump-prev-custom-icon",
+        "ant-pagination-next",
+        "ant-pagination-prev"
+      ],
+      "pagination/pagination-options.component.ts": [
+        "ant-pagination-options",
+        "ant-pagination-options-quick-jumper",
+        "ant-pagination-options-size-changer",
+        "ant-pagination-options-size-changer-select"
+      ],
+      "pagination/pagination-simple.component.ts": [
+        "ant-pagination-rtl",
+        "ant-pagination-simple-pager",
+        "ant-pagination-slash"
+      ],
+      "pagination/pagination.component.ts": [
+        "ant-pagination",
+        "ant-pagination-center",
+        "ant-pagination-disabled",
+        "ant-pagination-end",
+        "ant-pagination-mini",
+        "ant-pagination-rtl",
+        "ant-pagination-simple",
+        "ant-pagination-small",
+        "ant-pagination-start"
+      ],
+      "pagination/pagination.module.ts": [],
+      "pagination/pagination.types.ts": [],
+      "pagination/public-api.ts": []
+    },
+    "popconfirm": {
+      "popconfirm/index.ts": [],
+      "popconfirm/popconfirm-option.ts": [],
+      "popconfirm/popconfirm.module.ts": [],
+      "popconfirm/popconfirm.ts": [
+        "ant-popconfirm",
+        "ant-popconfirm-buttons",
+        "ant-popconfirm-inner-content",
+        "ant-popconfirm-message",
+        "ant-popconfirm-message-icon",
+        "ant-popconfirm-message-text",
+        "ant-popconfirm-title",
+        "ant-popover",
+        "ant-popover-arrow",
+        "ant-popover-buttons",
+        "ant-popover-container",
+        "ant-popover-content",
+        "ant-popover-inner",
+        "ant-popover-inner-content",
+        "ant-popover-message",
+        "ant-popover-message-icon",
+        "ant-popover-message-title",
+        "ant-popover-open",
+        "ant-popover-rtl",
+        "ant-zoom-big"
+      ],
+      "popconfirm/public-api.ts": []
+    },
+    "popover": {
+      "popover/index.ts": [],
+      "popover/popover.module.ts": [],
+      "popover/popover.ts": [
+        "ant-popover",
+        "ant-popover-arrow",
+        "ant-popover-container",
+        "ant-popover-content",
+        "ant-popover-inner",
+        "ant-popover-inner-content",
+        "ant-popover-open",
+        "ant-popover-rtl",
+        "ant-popover-title",
+        "ant-zoom-big"
+      ],
+      "popover/public-api.ts": []
+    },
+    "progress": {
+      "progress/index.ts": [],
+      "progress/progress.component.ts": [
+        "ant-progress",
+        "ant-progress-bg",
+        "ant-progress-body",
+        "ant-progress-circle",
+        "ant-progress-circle-gradient",
+        "ant-progress-circle-path",
+        "ant-progress-circle-rail",
+        "ant-progress-circle-trail",
+        "ant-progress-default",
+        "ant-progress-indicator",
+        "ant-progress-indicator-end",
+        "ant-progress-indicator-outer",
+        "ant-progress-inner",
+        "ant-progress-line",
+        "ant-progress-outer",
+        "ant-progress-rail",
+        "ant-progress-rtl",
+        "ant-progress-show-info",
+        "ant-progress-small",
+        "ant-progress-steps",
+        "ant-progress-steps-body",
+        "ant-progress-steps-item",
+        "ant-progress-steps-item-active",
+        "ant-progress-steps-outer",
+        "ant-progress-success-bg",
+        "ant-progress-text",
+        "ant-progress-track",
+        "ant-progress-track-success"
+      ],
+      "progress/progress.module.ts": [],
+      "progress/public-api.ts": [],
+      "progress/typings.ts": [],
+      "progress/utils.ts": []
+    },
+    "qr-code": {
+      "qr-code/index.ts": [],
+      "qr-code/public-api.ts": [],
+      "qr-code/qrcode-canvas.component.ts": [],
+      "qr-code/qrcode-data.ts": [],
+      "qr-code/qrcode-svg.component.ts": [],
+      "qr-code/qrcode.component.ts": [
+        "ant-qrcode",
+        "ant-qrcode-border",
+        "ant-qrcode-borderless",
+        "ant-qrcode-cover",
+        "ant-qrcode-expired",
+        "ant-qrcode-mask",
+        "ant-qrcode-scanned"
+      ],
+      "qr-code/qrcode.module.ts": [],
+      "qr-code/qrcodegen.ts": [],
+      "qr-code/typing.ts": [],
+      "qr-code/utils.ts": []
+    },
+    "radio": {
+      "radio/index.ts": [],
+      "radio/public-api.ts": [],
+      "radio/radio-group.component.ts": [
+        "ant-radio-group",
+        "ant-radio-group-large",
+        "ant-radio-group-rtl",
+        "ant-radio-group-small",
+        "ant-radio-group-solid"
+      ],
+      "radio/radio.component.ts": [
+        "ant-radio",
+        "ant-radio-button",
+        "ant-radio-button-checked",
+        "ant-radio-button-disabled",
+        "ant-radio-button-inner",
+        "ant-radio-button-input",
+        "ant-radio-button-wrapper",
+        "ant-radio-button-wrapper-checked",
+        "ant-radio-button-wrapper-disabled",
+        "ant-radio-button-wrapper-rtl",
+        "ant-radio-checked",
+        "ant-radio-disabled",
+        "ant-radio-inner",
+        "ant-radio-input",
+        "ant-radio-wrapper",
+        "ant-radio-wrapper-checked",
+        "ant-radio-wrapper-disabled",
+        "ant-radio-wrapper-in-form-item",
+        "ant-radio-wrapper-rtl"
+      ],
+      "radio/radio.module.ts": [],
+      "radio/radio.service.ts": []
+    },
+    "rate": {
+      "rate/index.ts": [],
+      "rate/public-api.ts": [],
+      "rate/rate-item.component.ts": [
+        "ant-rate-star-first",
+        "ant-rate-star-second"
+      ],
+      "rate/rate.component.ts": [
+        "ant-rate",
+        "ant-rate-disabled",
+        "ant-rate-rtl",
+        "ant-rate-star"
+      ],
+      "rate/rate.module.ts": []
+    },
+    "resizable": {
+      "resizable/index.ts": [],
+      "resizable/public-api.ts": [],
+      "resizable/resizable-utils.ts": [],
+      "resizable/resizable.directive.ts": [],
+      "resizable/resizable.module.ts": [],
+      "resizable/resizable.service.ts": [],
+      "resizable/resize-handle.component.ts": [],
+      "resizable/resize-handles.component.ts": []
+    },
+    "result": {
+      "result/index.ts": [],
+      "result/partial/not-found.ts": [],
+      "result/partial/server-error.component.ts": [],
+      "result/partial/unauthorized.ts": [],
+      "result/public-api.ts": [],
+      "result/result-cells.ts": [
+        "ant-result-body",
+        "ant-result-content",
+        "ant-result-extra",
+        "ant-result-subtitle",
+        "ant-result-title"
+      ],
+      "result/result.component.ts": [
+        "ant-result",
+        "ant-result-extra",
+        "ant-result-icon",
+        "ant-result-rtl",
+        "ant-result-subtitle",
+        "ant-result-title"
+      ],
+      "result/result.module.ts": []
+    },
+    "segmented": {
+      "segmented/index.ts": [],
+      "segmented/public-api.ts": [],
+      "segmented/segmented-item.component.ts": [
+        "ant-segmented-item",
+        "ant-segmented-item-disabled",
+        "ant-segmented-item-icon",
+        "ant-segmented-item-input",
+        "ant-segmented-item-label",
+        "ant-segmented-item-selected"
+      ],
+      "segmented/segmented.component.ts": [
+        "ant-segmented",
+        "ant-segmented-block",
+        "ant-segmented-disabled",
+        "ant-segmented-group",
+        "ant-segmented-lg",
+        "ant-segmented-rtl",
+        "ant-segmented-shape-round",
+        "ant-segmented-sm",
+        "ant-segmented-thumb",
+        "ant-segmented-thumb-motion-appear-active",
+        "ant-segmented-vertical"
+      ],
+      "segmented/segmented.module.ts": [],
+      "segmented/segmented.service.ts": [],
+      "segmented/types.ts": []
+    },
+    "select": {
+      "select/index.ts": [],
+      "select/option-container.component.ts": [
+        "ant-select-dropdown",
+        "ant-select-item-empty"
+      ],
+      "select/option-group.component.ts": [],
+      "select/option-item-group.component.ts": [
+        "ant-select-item",
+        "ant-select-item-group"
+      ],
+      "select/option-item.component.ts": [
+        "ant-select-item",
+        "ant-select-item-option",
+        "ant-select-item-option-active",
+        "ant-select-item-option-content",
+        "ant-select-item-option-disabled",
+        "ant-select-item-option-grouped",
+        "ant-select-item-option-selected",
+        "ant-select-item-option-state",
+        "ant-select-selected-icon"
+      ],
+      "select/option.component.ts": [],
+      "select/public-api.ts": [],
+      "select/select-arrow.component.ts": [
+        "ant-select-arrow",
+        "ant-select-arrow-loading"
+      ],
+      "select/select-clear.component.ts": [
+        "ant-select-clear",
+        "ant-select-close-icon"
+      ],
+      "select/select-item.component.ts": [
+        "ant-select-selection-item",
+        "ant-select-selection-item-content",
+        "ant-select-selection-item-disabled",
+        "ant-select-selection-item-remove"
+      ],
+      "select/select-placeholder.component.ts": [
+        "ant-select-placeholder",
+        "ant-select-selection-placeholder"
+      ],
+      "select/select-search.component.ts": [
+        "ant-select-input",
+        "ant-select-selection-search",
+        "ant-select-selection-search-input",
+        "ant-select-selection-search-mirror"
+      ],
+      "select/select-top-control.component.ts": [
+        "ant-select-content",
+        "ant-select-content-item",
+        "ant-select-content-item-suffix",
+        "ant-select-prefix",
+        "ant-select-selection-overflow",
+        "ant-select-selection-overflow-item",
+        "ant-select-selection-overflow-item-suffix",
+        "ant-select-selection-wrap",
+        "ant-select-selector"
+      ],
+      "select/select.component.ts": [
+        "ant-select",
+        "ant-select-allow-clear",
+        "ant-select-borderless",
+        "ant-select-disabled",
+        "ant-select-dropdown",
+        "ant-select-filled",
+        "ant-select-focused",
+        "ant-select-in-form-item",
+        "ant-select-lg",
+        "ant-select-multiple",
+        "ant-select-open",
+        "ant-select-outlined",
+        "ant-select-rtl",
+        "ant-select-show-arrow",
+        "ant-select-show-search",
+        "ant-select-single",
+        "ant-select-sm",
+        "ant-select-underlined"
+      ],
+      "select/select.module.ts": [],
+      "select/select.types.ts": []
+    },
+    "skeleton": {
+      "skeleton/index.ts": [],
+      "skeleton/public-api.ts": [],
+      "skeleton/skeleton-element.component.ts": [
+        "ant-skeleton",
+        "ant-skeleton-active",
+        "ant-skeleton-avatar",
+        "ant-skeleton-avatar-circle",
+        "ant-skeleton-avatar-lg",
+        "ant-skeleton-avatar-sm",
+        "ant-skeleton-avatar-square",
+        "ant-skeleton-block",
+        "ant-skeleton-button",
+        "ant-skeleton-button-circle",
+        "ant-skeleton-button-lg",
+        "ant-skeleton-button-round",
+        "ant-skeleton-button-sm",
+        "ant-skeleton-button-square",
+        "ant-skeleton-element",
+        "ant-skeleton-image",
+        "ant-skeleton-image-path",
+        "ant-skeleton-image-svg",
+        "ant-skeleton-input",
+        "ant-skeleton-input-lg",
+        "ant-skeleton-input-sm"
+      ],
+      "skeleton/skeleton.component.ts": [
+        "ant-skeleton",
+        "ant-skeleton-active",
+        "ant-skeleton-content",
+        "ant-skeleton-header",
+        "ant-skeleton-paragraph",
+        "ant-skeleton-round",
+        "ant-skeleton-section",
+        "ant-skeleton-title",
+        "ant-skeleton-with-avatar"
+      ],
+      "skeleton/skeleton.module.ts": [],
+      "skeleton/skeleton.type.ts": []
+    },
+    "slider": {
+      "slider/handle.component.ts": [
+        "ant-slider-handle"
+      ],
+      "slider/index.ts": [],
+      "slider/marks.component.ts": [
+        "ant-slider-mark",
+        "ant-slider-mark-active",
+        "ant-slider-mark-text"
+      ],
+      "slider/public-api.ts": [],
+      "slider/slider.component.ts": [
+        "ant-slider",
+        "ant-slider-disabled",
+        "ant-slider-horizontal",
+        "ant-slider-rail",
+        "ant-slider-rtl",
+        "ant-slider-vertical",
+        "ant-slider-with-marks"
+      ],
+      "slider/slider.module.ts": [],
+      "slider/step.component.ts": [
+        "ant-slider-dot",
+        "ant-slider-dot-active",
+        "ant-slider-step"
+      ],
+      "slider/track.component.ts": [
+        "ant-slider-track"
+      ],
+      "slider/typings.ts": []
+    },
+    "space": {
+      "space/index.ts": [],
+      "space/public-api.ts": [],
+      "space/space-compact-item.directive.ts": [],
+      "space/space-compact.component.ts": [
+        "ant-space-compact",
+        "ant-space-compact-block",
+        "ant-space-compact-rtl",
+        "ant-space-compact-vertical"
+      ],
+      "space/space-compact.token.ts": [],
+      "space/space-item.directive.ts": [],
+      "space/space.component.ts": [
+        "ant-space",
+        "ant-space-align-baseline",
+        "ant-space-align-center",
+        "ant-space-align-end",
+        "ant-space-align-start",
+        "ant-space-horizontal",
+        "ant-space-item",
+        "ant-space-item-separator",
+        "ant-space-rtl",
+        "ant-space-split",
+        "ant-space-vertical"
+      ],
+      "space/space.module.ts": [],
+      "space/types.ts": []
+    },
+    "spin": {
+      "spin/index.ts": [],
+      "spin/public-api.ts": [],
+      "spin/spin.component.ts": [
+        "ant-spin",
+        "ant-spin-blur",
+        "ant-spin-container",
+        "ant-spin-description",
+        "ant-spin-dot",
+        "ant-spin-dot-holder",
+        "ant-spin-dot-item",
+        "ant-spin-dot-spin",
+        "ant-spin-lg",
+        "ant-spin-nested-loading",
+        "ant-spin-rtl",
+        "ant-spin-section",
+        "ant-spin-show-text",
+        "ant-spin-sm",
+        "ant-spin-spinning",
+        "ant-spin-text"
+      ],
+      "spin/spin.module.ts": []
+    },
+    "splitter": {
+      "splitter/index.ts": [],
+      "splitter/public-api.ts": [],
+      "splitter/splitter-bar.component.ts": [
+        "ant-splitter-bar",
+        "ant-splitter-bar-collapse-bar",
+        "ant-splitter-bar-collapse-bar-end",
+        "ant-splitter-bar-collapse-bar-start",
+        "ant-splitter-bar-collapse-end",
+        "ant-splitter-bar-collapse-icon",
+        "ant-splitter-bar-collapse-start",
+        "ant-splitter-bar-dragger",
+        "ant-splitter-bar-dragger-active",
+        "ant-splitter-bar-dragger-disabled",
+        "ant-splitter-bar-preview",
+        "ant-splitter-bar-preview-active"
+      ],
+      "splitter/splitter-panel.component.ts": [],
+      "splitter/splitter.component.ts": [
+        "ant-splitter",
+        "ant-splitter-horizontal",
+        "ant-splitter-mask",
+        "ant-splitter-mask-horizontal",
+        "ant-splitter-mask-vertical",
+        "ant-splitter-panel",
+        "ant-splitter-panel-hidden",
+        "ant-splitter-rtl",
+        "ant-splitter-vertical"
+      ],
+      "splitter/splitter.module.ts": [],
+      "splitter/typings.ts": [],
+      "splitter/utils.ts": []
+    },
+    "statistic": {
+      "statistic/countdown.component.ts": [],
+      "statistic/index.ts": [],
+      "statistic/public-api.ts": [],
+      "statistic/statistic-content-value.component.ts": [
+        "ant-statistic-content-value",
+        "ant-statistic-content-value-decimal",
+        "ant-statistic-content-value-int"
+      ],
+      "statistic/statistic.component.ts": [
+        "ant-statistic",
+        "ant-statistic-content",
+        "ant-statistic-content-prefix",
+        "ant-statistic-content-suffix",
+        "ant-statistic-header",
+        "ant-statistic-rtl",
+        "ant-statistic-skeleton",
+        "ant-statistic-title"
+      ],
+      "statistic/statistic.module.ts": [],
+      "statistic/typings.ts": []
+    },
+    "steps": {
+      "steps/index.ts": [],
+      "steps/public-api.ts": [],
+      "steps/step.component.ts": [
+        "ant-steps-icon",
+        "ant-steps-icon-dot",
+        "ant-steps-item",
+        "ant-steps-item-active",
+        "ant-steps-item-container",
+        "ant-steps-item-content",
+        "ant-steps-item-custom",
+        "ant-steps-item-description",
+        "ant-steps-item-disabled",
+        "ant-steps-item-error",
+        "ant-steps-item-finish",
+        "ant-steps-item-icon",
+        "ant-steps-item-process",
+        "ant-steps-item-subtitle",
+        "ant-steps-item-tail",
+        "ant-steps-item-title",
+        "ant-steps-item-wait",
+        "ant-steps-next-error",
+        "ant-steps-progress-icon"
+      ],
+      "steps/steps.component.ts": [
+        "ant-steps",
+        "ant-steps-dot",
+        "ant-steps-horizontal",
+        "ant-steps-label-horizontal",
+        "ant-steps-label-vertical",
+        "ant-steps-navigation",
+        "ant-steps-rtl",
+        "ant-steps-small",
+        "ant-steps-vertical",
+        "ant-steps-with-progress"
+      ],
+      "steps/steps.module.ts": []
+    },
+    "switch": {
+      "switch/index.ts": [],
+      "switch/public-api.ts": [],
+      "switch/switch.component.ts": [
+        "ant-click-animating-node",
+        "ant-switch",
+        "ant-switch-checked",
+        "ant-switch-disabled",
+        "ant-switch-handle",
+        "ant-switch-inner",
+        "ant-switch-inner-checked",
+        "ant-switch-inner-unchecked",
+        "ant-switch-loading",
+        "ant-switch-loading-icon",
+        "ant-switch-rtl",
+        "ant-switch-small"
+      ],
+      "switch/switch.module.ts": []
+    },
+    "table": {
+      "table/index.ts": [],
+      "table/public-api.ts": [],
+      "table/src/addon/filter-trigger.component.ts": [
+        "ant-table-filter-open",
+        "ant-table-filter-trigger"
+      ],
+      "table/src/addon/filter.component.ts": [
+        "ant-table-column-title",
+        "ant-table-filter-column",
+        "ant-table-filter-dropdown",
+        "ant-table-filter-dropdown-btns"
+      ],
+      "table/src/addon/row-expand-button.directive.ts": [
+        "ant-table-row-expand-icon",
+        "ant-table-row-expand-icon-collapsed",
+        "ant-table-row-expand-icon-expanded",
+        "ant-table-row-expand-icon-spaced"
+      ],
+      "table/src/addon/row-indent.directive.ts": [
+        "ant-table-row-indent"
+      ],
+      "table/src/addon/selection.component.ts": [
+        "ant-table-selection",
+        "ant-table-selection-down",
+        "ant-table-selection-extra",
+        "ant-table-selection-menu",
+        "ant-table-selection-select-all-custom"
+      ],
+      "table/src/addon/sorters.component.ts": [
+        "ant-table-column-sorter",
+        "ant-table-column-sorter-down",
+        "ant-table-column-sorter-full",
+        "ant-table-column-sorter-inner",
+        "ant-table-column-sorter-up",
+        "ant-table-column-sorters",
+        "ant-table-column-title"
+      ],
+      "table/src/cell/cell-fixed.directive.ts": [
+        "ant-table-cell-fix",
+        "ant-table-cell-fix-end",
+        "ant-table-cell-fix-end-shadow",
+        "ant-table-cell-fix-left",
+        "ant-table-cell-fix-left-last",
+        "ant-table-cell-fix-right",
+        "ant-table-cell-fix-right-first",
+        "ant-table-cell-fix-start",
+        "ant-table-cell-fix-start-shadow"
+      ],
+      "table/src/cell/cell.directive.ts": [
+        "ant-table-cell"
+      ],
+      "table/src/cell/custom-column.directive.ts": [],
+      "table/src/cell/td-addon.component.ts": [
+        "ant-table-cell-with-append",
+        "ant-table-selection-column"
+      ],
+      "table/src/cell/th-addon.component.ts": [
+        "ant-table-column-has-sorters",
+        "ant-table-column-sort"
+      ],
+      "table/src/cell/th-measure.directive.ts": [],
+      "table/src/cell/th-selection.component.ts": [
+        "ant-table-selection-column"
+      ],
+      "table/src/styled/align.directive.ts": [],
+      "table/src/styled/ellipsis.directive.ts": [
+        "ant-table-cell-ellipsis"
+      ],
+      "table/src/styled/word-break.directive.ts": [],
+      "table/src/table/table-content.component.ts": [
+        "ant-table-fixed",
+        "ant-table-summary",
+        "ant-table-thead"
+      ],
+      "table/src/table/table-fixed-row.component.ts": [
+        "ant-table-cell",
+        "ant-table-expanded-row-fixed"
+      ],
+      "table/src/table/table-inner-default.component.ts": [
+        "ant-table-container",
+        "ant-table-content"
+      ],
+      "table/src/table/table-inner-scroll.component.ts": [
+        "ant-table-body",
+        "ant-table-cell-fix-end-shadow-show",
+        "ant-table-cell-fix-left-last",
+        "ant-table-cell-fix-right-first",
+        "ant-table-cell-fix-start-shadow-show",
+        "ant-table-container",
+        "ant-table-content",
+        "ant-table-fix-end-shadow-show",
+        "ant-table-fix-start-shadow-show",
+        "ant-table-header",
+        "ant-table-ping-left",
+        "ant-table-ping-right",
+        "ant-table-summary"
+      ],
+      "table/src/table/table-virtual-scroll.directive.ts": [],
+      "table/src/table/table.component.ts": [
+        "ant-table",
+        "ant-table-bordered",
+        "ant-table-custom-column",
+        "ant-table-fixed-column",
+        "ant-table-fixed-header",
+        "ant-table-has-fix-end",
+        "ant-table-has-fix-left",
+        "ant-table-has-fix-right",
+        "ant-table-has-fix-start",
+        "ant-table-medium",
+        "ant-table-middle",
+        "ant-table-pagination",
+        "ant-table-pagination-end",
+        "ant-table-pagination-right",
+        "ant-table-rtl",
+        "ant-table-small",
+        "ant-table-wrapper",
+        "ant-table-wrapper-rtl"
+      ],
+      "table/src/table/tbody.component.ts": [
+        "ant-table-placeholder",
+        "ant-table-tbody"
+      ],
+      "table/src/table/tfoot-summary.component.ts": [
+        "ant-table-summary"
+      ],
+      "table/src/table/thead.component.ts": [
+        "ant-table-thead"
+      ],
+      "table/src/table/title-footer.component.ts": [
+        "ant-table-footer",
+        "ant-table-title"
+      ],
+      "table/src/table/tr-expand.directive.ts": [
+        "ant-table-expanded-row"
+      ],
+      "table/src/table/tr-measure.component.ts": [
+        "ant-table-measure-now"
+      ],
+      "table/src/table/tr.directive.ts": [
+        "ant-table-row"
+      ],
+      "table/src/table-data.service.ts": [],
+      "table/src/table-style.service.ts": [],
+      "table/src/table.module.ts": [],
+      "table/src/table.types.ts": []
+    },
+    "tabs": {
+      "tabs/index.ts": [],
+      "tabs/interfaces.ts": [],
+      "tabs/public-api.ts": [],
+      "tabs/tab-add-button.component.ts": [
+        "ant-tabs-nav-add"
+      ],
+      "tabs/tab-bar-extra-content.directive.ts": [],
+      "tabs/tab-body.component.ts": [
+        "ant-tabs-content",
+        "ant-tabs-content-active",
+        "ant-tabs-content-hidden",
+        "ant-tabs-switch",
+        "ant-tabs-tabpane",
+        "ant-tabs-tabpane-active"
+      ],
+      "tabs/tab-close-button.component.ts": [
+        "ant-tabs-tab-remove"
+      ],
+      "tabs/tab-link.directive.ts": [],
+      "tabs/tab-nav-bar.component.ts": [
+        "ant-tabs-extra-content",
+        "ant-tabs-nav",
+        "ant-tabs-nav-list",
+        "ant-tabs-nav-wrap",
+        "ant-tabs-nav-wrap-ping-bottom",
+        "ant-tabs-nav-wrap-ping-left",
+        "ant-tabs-nav-wrap-ping-right",
+        "ant-tabs-nav-wrap-ping-top",
+        "ant-tabs-tab",
+        "ant-tabs-tab-btn"
+      ],
+      "tabs/tab-nav-item.directive.ts": [],
+      "tabs/tab-nav-operation.component.ts": [
+        "ant-tabs-dropdown-menu-item",
+        "ant-tabs-dropdown-menu-item-disabled",
+        "ant-tabs-nav-more",
+        "ant-tabs-nav-operations",
+        "ant-tabs-nav-operations-hidden"
+      ],
+      "tabs/tab-scroll-list.directive.ts": [],
+      "tabs/tab.component.ts": [],
+      "tabs/tab.directive.ts": [],
+      "tabs/tabs-ink-bar.directive.ts": [
+        "ant-tabs-ink-bar",
+        "ant-tabs-ink-bar-animated"
+      ],
+      "tabs/tabs.component.ts": [
+        "ant-tabs",
+        "ant-tabs-body",
+        "ant-tabs-body-animated",
+        "ant-tabs-body-bottom",
+        "ant-tabs-body-holder",
+        "ant-tabs-body-left",
+        "ant-tabs-body-right",
+        "ant-tabs-body-top",
+        "ant-tabs-bottom",
+        "ant-tabs-card",
+        "ant-tabs-centered",
+        "ant-tabs-content",
+        "ant-tabs-content-animated",
+        "ant-tabs-content-bottom",
+        "ant-tabs-content-holder",
+        "ant-tabs-content-left",
+        "ant-tabs-content-right",
+        "ant-tabs-content-top",
+        "ant-tabs-default",
+        "ant-tabs-editable",
+        "ant-tabs-editable-card",
+        "ant-tabs-large",
+        "ant-tabs-left",
+        "ant-tabs-right",
+        "ant-tabs-rtl",
+        "ant-tabs-small",
+        "ant-tabs-tab",
+        "ant-tabs-tab-active",
+        "ant-tabs-tab-btn",
+        "ant-tabs-tab-disabled",
+        "ant-tabs-top"
+      ],
+      "tabs/tabs.module.ts": []
+    },
+    "tag": {
+      "tag/index.ts": [],
+      "tag/public-api.ts": [],
+      "tag/tag.component.ts": [
+        "ant-tag",
+        "ant-tag-borderless",
+        "ant-tag-checkable",
+        "ant-tag-checkable-checked",
+        "ant-tag-close-icon",
+        "ant-tag-filled",
+        "ant-tag-has-color",
+        "ant-tag-rtl"
+      ],
+      "tag/tag.module.ts": [],
+      "tag/typings.ts": []
+    },
+    "time-picker": {
+      "time-picker/index.ts": [],
+      "time-picker/public-api.ts": [],
+      "time-picker/time-holder.ts": [],
+      "time-picker/time-picker-panel.component.ts": [
+        "ant-picker-content",
+        "ant-picker-footer",
+        "ant-picker-footer-extra",
+        "ant-picker-header",
+        "ant-picker-header-view",
+        "ant-picker-now",
+        "ant-picker-ok",
+        "ant-picker-ranges",
+        "ant-picker-time-panel",
+        "ant-picker-time-panel-cell",
+        "ant-picker-time-panel-cell-disabled",
+        "ant-picker-time-panel-cell-inner",
+        "ant-picker-time-panel-cell-selected",
+        "ant-picker-time-panel-column",
+        "ant-picker-time-panel-column-0",
+        "ant-picker-time-panel-column-1",
+        "ant-picker-time-panel-column-2",
+        "ant-picker-time-panel-column-3",
+        "ant-picker-time-panel-narrow"
+      ],
+      "time-picker/time-picker.component.ts": [
+        "ant-picker",
+        "ant-picker-borderless",
+        "ant-picker-clear",
+        "ant-picker-disabled",
+        "ant-picker-dropdown",
+        "ant-picker-filled",
+        "ant-picker-focused",
+        "ant-picker-input",
+        "ant-picker-large",
+        "ant-picker-outlined",
+        "ant-picker-panel",
+        "ant-picker-panel-container",
+        "ant-picker-prefix",
+        "ant-picker-rtl",
+        "ant-picker-small",
+        "ant-picker-suffix",
+        "ant-picker-underlined"
+      ],
+      "time-picker/time-picker.module.ts": []
+    },
+    "timeline": {
+      "timeline/index.ts": [],
+      "timeline/public-api.ts": [],
+      "timeline/timeline-item.component.ts": [
+        "ant-timeline-item",
+        "ant-timeline-item-content",
+        "ant-timeline-item-head",
+        "ant-timeline-item-head-blue",
+        "ant-timeline-item-head-custom",
+        "ant-timeline-item-head-gray",
+        "ant-timeline-item-head-green",
+        "ant-timeline-item-head-red",
+        "ant-timeline-item-label",
+        "ant-timeline-item-last",
+        "ant-timeline-item-left",
+        "ant-timeline-item-right",
+        "ant-timeline-item-tail"
+      ],
+      "timeline/timeline.component.ts": [
+        "ant-timeline",
+        "ant-timeline-alternate",
+        "ant-timeline-item",
+        "ant-timeline-item-content",
+        "ant-timeline-item-head",
+        "ant-timeline-item-head-blue",
+        "ant-timeline-item-head-custom",
+        "ant-timeline-item-pending",
+        "ant-timeline-item-tail",
+        "ant-timeline-label",
+        "ant-timeline-pending",
+        "ant-timeline-reverse",
+        "ant-timeline-right",
+        "ant-timeline-rtl"
+      ],
+      "timeline/timeline.module.ts": [],
+      "timeline/timeline.service.ts": [],
+      "timeline/typings.ts": []
+    },
+    "tooltip": {
+      "tooltip/base.ts": [
+        "ant-tooltip"
+      ],
+      "tooltip/index.ts": [],
+      "tooltip/public-api.ts": [],
+      "tooltip/tooltip.module.ts": [],
+      "tooltip/tooltip.ts": [
+        "ant-tooltip",
+        "ant-tooltip-arrow",
+        "ant-tooltip-container",
+        "ant-tooltip-inner",
+        "ant-tooltip-open",
+        "ant-tooltip-rtl",
+        "ant-zoom-big-fast"
+      ]
+    },
+    "transfer": {
+      "transfer/index.ts": [],
+      "transfer/interface.ts": [],
+      "transfer/public-api.ts": [],
+      "transfer/transfer-list.component.ts": [
+        "ant-transfer-list",
+        "ant-transfer-list-body",
+        "ant-transfer-list-body-customize-wrapper",
+        "ant-transfer-list-body-not-found",
+        "ant-transfer-list-body-search-wrapper",
+        "ant-transfer-list-body-with-search",
+        "ant-transfer-list-checkbox",
+        "ant-transfer-list-content",
+        "ant-transfer-list-content-item",
+        "ant-transfer-list-content-item-disabled",
+        "ant-transfer-list-content-item-remove",
+        "ant-transfer-list-content-item-text",
+        "ant-transfer-list-footer",
+        "ant-transfer-list-header",
+        "ant-transfer-list-header-selected",
+        "ant-transfer-list-header-title",
+        "ant-transfer-list-search",
+        "ant-transfer-list-with-footer"
+      ],
+      "transfer/transfer.component.ts": [
+        "ant-transfer",
+        "ant-transfer-actions",
+        "ant-transfer-customize-list",
+        "ant-transfer-disabled",
+        "ant-transfer-list",
+        "ant-transfer-operation",
+        "ant-transfer-rtl",
+        "ant-transfer-section"
+      ],
+      "transfer/transfer.module.ts": []
+    },
+    "tree": {
+      "tree/index.ts": [],
+      "tree/public-api.ts": [],
+      "tree/tree-drop-indicator.component.ts": [
+        "ant-tree-drop-indicator"
+      ],
+      "tree/tree-indent.component.ts": [
+        "ant-select-tree-indent",
+        "ant-select-tree-indent-unit",
+        "ant-select-tree-indent-unit-end",
+        "ant-select-tree-indent-unit-start",
+        "ant-tree-indent",
+        "ant-tree-indent-unit",
+        "ant-tree-indent-unit-end",
+        "ant-tree-indent-unit-start"
+      ],
+      "tree/tree-node-checkbox.component.ts": [
+        "ant-select-tree-checkbox",
+        "ant-select-tree-checkbox-checked",
+        "ant-select-tree-checkbox-disabled",
+        "ant-select-tree-checkbox-indeterminate",
+        "ant-select-tree-checkbox-inner",
+        "ant-tree-checkbox",
+        "ant-tree-checkbox-checked",
+        "ant-tree-checkbox-disabled",
+        "ant-tree-checkbox-indeterminate",
+        "ant-tree-checkbox-inner"
+      ],
+      "tree/tree-node-switcher.component.ts": [
+        "ant-select-tree-switcher",
+        "ant-select-tree-switcher-icon",
+        "ant-select-tree-switcher-noop",
+        "ant-tree-switcher",
+        "ant-tree-switcher-icon",
+        "ant-tree-switcher-line-icon",
+        "ant-tree-switcher-loading-icon",
+        "ant-tree-switcher-noop"
+      ],
+      "tree/tree-node-title.component.ts": [
+        "ant-select-tree-icon",
+        "ant-select-tree-node-content-wrapper",
+        "ant-select-tree-node-content-wrapper-close",
+        "ant-select-tree-node-content-wrapper-open",
+        "ant-select-tree-node-selected",
+        "ant-tree-icon",
+        "ant-tree-node-content-wrapper",
+        "ant-tree-node-content-wrapper-close",
+        "ant-tree-node-content-wrapper-open",
+        "ant-tree-node-selected",
+        "ant-tree-title"
+      ],
+      "tree/tree-node.component.ts": [
+        "ant-select-tree-treenode",
+        "ant-select-tree-treenode-checkbox-checked",
+        "ant-select-tree-treenode-checkbox-indeterminate",
+        "ant-select-tree-treenode-disabled",
+        "ant-select-tree-treenode-leaf-last",
+        "ant-select-tree-treenode-loading",
+        "ant-select-tree-treenode-selected",
+        "ant-select-tree-treenode-switcher-close",
+        "ant-select-tree-treenode-switcher-open",
+        "ant-tree-treenode",
+        "ant-tree-treenode-checkbox-checked",
+        "ant-tree-treenode-checkbox-indeterminate",
+        "ant-tree-treenode-disabled",
+        "ant-tree-treenode-leaf-last",
+        "ant-tree-treenode-loading",
+        "ant-tree-treenode-selected",
+        "ant-tree-treenode-switcher-close",
+        "ant-tree-treenode-switcher-open"
+      ],
+      "tree/tree.component.ts": [
+        "ant-select-tree",
+        "ant-select-tree-block-node",
+        "ant-select-tree-icon-hide",
+        "ant-select-tree-list",
+        "ant-select-tree-list-holder-inner",
+        "ant-select-tree-show-line",
+        "ant-tree",
+        "ant-tree-block-node",
+        "ant-tree-icon-hide",
+        "ant-tree-indent",
+        "ant-tree-indent-unit",
+        "ant-tree-list",
+        "ant-tree-list-holder-inner",
+        "ant-tree-rtl",
+        "ant-tree-show-line",
+        "ant-tree-treenode"
+      ],
+      "tree/tree.module.ts": [],
+      "tree/tree.service.ts": []
+    },
+    "tree-select": {
+      "tree-select/index.ts": [],
+      "tree-select/public-api.ts": [],
+      "tree-select/tree-select.component.ts": [
+        "ant-select",
+        "ant-select-allow-clear",
+        "ant-select-borderless",
+        "ant-select-content",
+        "ant-select-content-item",
+        "ant-select-content-item-suffix",
+        "ant-select-disabled",
+        "ant-select-dropdown",
+        "ant-select-filled",
+        "ant-select-focused",
+        "ant-select-in-form-item",
+        "ant-select-lg",
+        "ant-select-multiple",
+        "ant-select-not-found",
+        "ant-select-open",
+        "ant-select-outlined",
+        "ant-select-prefix",
+        "ant-select-rtl",
+        "ant-select-selection-overflow",
+        "ant-select-selection-overflow-item",
+        "ant-select-selection-overflow-item-suffix",
+        "ant-select-selection-wrap",
+        "ant-select-selector",
+        "ant-select-show-arrow",
+        "ant-select-show-search",
+        "ant-select-single",
+        "ant-select-sm",
+        "ant-select-tree-dropdown",
+        "ant-select-underlined",
+        "ant-tree-select",
+        "ant-tree-select-dropdown",
+        "ant-tree-select-dropdown-rtl"
+      ],
+      "tree-select/tree-select.module.ts": [],
+      "tree-select/tree-select.service.ts": []
+    },
+    "tree-view": {
+      "tree-view/checkbox.ts": [
+        "ant-tree-checkbox",
+        "ant-tree-checkbox-checked",
+        "ant-tree-checkbox-disabled",
+        "ant-tree-checkbox-indeterminate",
+        "ant-tree-checkbox-inner"
+      ],
+      "tree-view/flat-data-source.ts": [],
+      "tree-view/flattener.ts": [],
+      "tree-view/indent.ts": [
+        "ant-tree-indent",
+        "ant-tree-indent-unit",
+        "ant-tree-indent-unit-end",
+        "ant-tree-show-line",
+        "ant-tree-treenode-leaf-last"
+      ],
+      "tree-view/index.ts": [],
+      "tree-view/nested-data-source.ts": [],
+      "tree-view/node-base.ts": [],
+      "tree-view/node.ts": [
+        "ant-tree-switcher-leaf-line",
+        "ant-tree-treenode",
+        "ant-tree-treenode-disabled",
+        "ant-tree-treenode-selected",
+        "ant-tree-treenode-switcher-close",
+        "ant-tree-treenode-switcher-open"
+      ],
+      "tree-view/option.ts": [
+        "ant-tree-node-content-wrapper",
+        "ant-tree-node-content-wrapper-open",
+        "ant-tree-node-selected",
+        "ant-tree-title"
+      ],
+      "tree-view/outlet.ts": [],
+      "tree-view/padding.ts": [],
+      "tree-view/public-api.ts": [],
+      "tree-view/toggle.ts": [
+        "ant-tree-switcher",
+        "ant-tree-switcher-icon",
+        "ant-tree-switcher-loading-icon",
+        "ant-tree-switcher-noop"
+      ],
+      "tree-view/tree-view-testing.ts": [],
+      "tree-view/tree-view.module.ts": [],
+      "tree-view/tree-view.ts": [
+        "ant-tree",
+        "ant-tree-block-node",
+        "ant-tree-directory",
+        "ant-tree-list-holder",
+        "ant-tree-list-holder-inner",
+        "ant-tree-rtl"
+      ],
+      "tree-view/tree-virtual-scroll-view.ts": [
+        "ant-tree",
+        "ant-tree-block-node",
+        "ant-tree-directory",
+        "ant-tree-list",
+        "ant-tree-list-holder",
+        "ant-tree-rtl"
+      ],
+      "tree-view/tree.ts": [],
+      "tree-view/utils.ts": []
+    },
+    "typography": {
+      "typography/index.ts": [],
+      "typography/public-api.ts": [],
+      "typography/text-copy.component.ts": [
+        "ant-typography-copy",
+        "ant-typography-copy-success"
+      ],
+      "typography/text-edit.component.ts": [
+        "ant-typography-edit",
+        "ant-typography-edit-content-confirm"
+      ],
+      "typography/typography.component.ts": [
+        "ant-typography",
+        "ant-typography-danger",
+        "ant-typography-disabled",
+        "ant-typography-edit-content",
+        "ant-typography-ellipsis",
+        "ant-typography-ellipsis-multiple-line",
+        "ant-typography-ellipsis-single-line",
+        "ant-typography-expand",
+        "ant-typography-rtl",
+        "ant-typography-secondary",
+        "ant-typography-single-line",
+        "ant-typography-success",
+        "ant-typography-warning"
+      ],
+      "typography/typography.module.ts": []
+    },
+    "upload": {
+      "upload/index.ts": [],
+      "upload/interface.ts": [],
+      "upload/public-api.ts": [],
+      "upload/upload-btn.component.html": [],
+      "upload/upload-btn.component.ts": [
+        "ant-upload",
+        "ant-upload-disabled"
+      ],
+      "upload/upload-list.component.html": [
+        "ant-upload-icon",
+        "ant-upload-list-item",
+        "ant-upload-list-item-action",
+        "ant-upload-list-item-actions",
+        "ant-upload-list-item-card-actions",
+        "ant-upload-list-item-card-actions-btn",
+        "ant-upload-list-item-container",
+        "ant-upload-list-item-extra",
+        "ant-upload-list-item-file",
+        "ant-upload-list-item-image",
+        "ant-upload-list-item-info",
+        "ant-upload-list-item-name",
+        "ant-upload-list-item-progress",
+        "ant-upload-list-item-thumbnail",
+        "ant-upload-span",
+        "ant-upload-text-icon"
+      ],
+      "upload/upload-list.component.ts": [
+        "ant-upload-list"
+      ],
+      "upload/upload.component.html": [
+        "ant-upload-btn",
+        "ant-upload-drag-container",
+        "ant-upload-rtl"
+      ],
+      "upload/upload.component.ts": [
+        "ant-upload",
+        "ant-upload-picture-card-wrapper",
+        "ant-upload-wrapper"
+      ],
+      "upload/upload.module.ts": []
+    },
+    "watermark": {
+      "watermark/index.ts": [],
+      "watermark/public-api.ts": [],
+      "watermark/typings.ts": [],
+      "watermark/util.ts": [],
+      "watermark/watermark.component.ts": [],
+      "watermark/watermark.module.ts": []
+    }
   }
 }
