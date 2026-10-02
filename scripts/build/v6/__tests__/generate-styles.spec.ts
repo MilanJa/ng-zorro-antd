@@ -10,12 +10,14 @@ import os from 'node:os';
 import path from 'node:path';
 
 import { v6Components, v6ComponentDirs, type V6ComponentEntry } from '../components';
+import { joinTemplate, splitBlocks } from '../css-postprocess';
 import {
   assertEngineBudgets,
   buildComponentCss,
   componentBundlePatches,
   componentTemplate,
   componentTokenNamesFor,
+  dropStylesThroughSource,
   generateStyles,
   normalizeCssVarRootCls,
   type V6Algorithm
@@ -106,6 +108,21 @@ describe('componentTemplate with a stylesThrough entry', () => {
     // printing `componentTokenNames('Button')` while writing this test).
     expect(names).toEqual(expect.arrayContaining(['--ant-button-content-font-size']));
     expect(names.some(n => n.startsWith('--ant-avatar-'))).toBe(true);
+  });
+});
+
+describe('dropStylesThroughSource', () => {
+  it('filters a selector list item by item, keeping the own half of a mixed rule', () => {
+    const blocks = splitBlocks('.ant-timeline-x,.ant-steps-y{a:1}.ant-steps-z{b:2}.ant-timeline-w{c:3}');
+    const out = joinTemplate(dropStylesThroughSource(blocks, 'ant-steps'));
+    expect(out).toContain('.ant-timeline-x{a:1}');
+    expect(out).toContain('.ant-timeline-w{c:3}');
+    expect(out).not.toMatch(/\.ant-steps/);
+  });
+
+  it('drops a block entirely only once every selector in its list is filtered out', () => {
+    const blocks = splitBlocks('.ant-steps-a,.ant-steps-b{a:1}');
+    expect(dropStylesThroughSource(blocks, 'ant-steps')).toEqual([]);
   });
 });
 

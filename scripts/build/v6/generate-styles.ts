@@ -168,7 +168,25 @@ async function renderTokens(algorithm: V6Algorithm): Promise<string> {
  * of this component's own never needs the source's class name, since its own style module is written
  * entirely under its own `componentCls`).
  */
-function dropStylesThroughSource(blocks: CssBlock[], from: string): CssBlock[] {
+/** Splits a selector list on top-level commas only (a comma inside `:not(.a, .b)` stays put). */
+function splitSelectorList(selector: string): string[] {
+  const parts: string[] = [];
+  let depth = 0;
+  let start = 0;
+  for (let i = 0; i < selector.length; i++) {
+    const ch = selector[i];
+    if (ch === '(') depth++;
+    else if (ch === ')') depth--;
+    else if (ch === ',' && depth === 0) {
+      parts.push(selector.slice(start, i).trim());
+      start = i + 1;
+    }
+  }
+  parts.push(selector.slice(start).trim());
+  return parts;
+}
+
+export function dropStylesThroughSource(blocks: CssBlock[], from: string): CssBlock[] {
   const classToken = new RegExp(`\\.${from}(?=[^a-zA-Z0-9_-]|$)|\\.${from}-[a-zA-Z0-9_-]+`);
   const make = (selector: string, body: string): CssBlock => ({ selector, body, raw: `${selector}{${body}}` });
   const out: CssBlock[] = [];
@@ -182,8 +200,11 @@ function dropStylesThroughSource(blocks: CssBlock[], from: string): CssBlock[] {
       }
       continue;
     }
-    if (!classToken.test(block.selector)) {
-      out.push(block);
+    // A selector LIST can mix a genuine own rule with a source rule (`.ant-timeline-x,.ant-steps-y{…}`);
+    // filtering item by item keeps the own half instead of dropping the whole block.
+    const kept = splitSelectorList(block.selector).filter(sel => !classToken.test(sel));
+    if (kept.length > 0) {
+      out.push(make(kept.join(','), block.body));
     }
   }
   return out;

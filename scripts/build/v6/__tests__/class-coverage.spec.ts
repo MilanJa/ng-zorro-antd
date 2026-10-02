@@ -104,6 +104,11 @@ describe('allowlistFor', () => {
     );
     expect(renderedCoverageGaps(rendered, styled, allowlist, ['calendar'])).toEqual({ calendar: [] });
   });
+
+  it("returns just the dir's own allowlist entries, not a throw, for an unmapped directory", () => {
+    expect(allowlistFor('not-a-real-component', { 'not-a-real-component': ['ant-x-y'] })).toEqual(new Set(['ant-x-y']));
+    expect(allowlistFor('not-a-real-component', {})).toEqual(new Set());
+  });
 });
 
 describe('renderedCoverageGaps', () => {

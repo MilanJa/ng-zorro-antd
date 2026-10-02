@@ -3,23 +3,6 @@
  * found in the LICENSE file at https://github.com/NG-ZORRO/ng-zorro-antd/blob/master/LICENSE
  */
 
-/**
- * Components that have Ant Design v6 style output. Keys are directories under `components/`,
- * `antd` lists the antd component names passed to `@ant-design/static-style-extract`, and
- * `prefixCls` is the component's root class (antd's `prefixCls`, e.g. `ant-btn`). The root class
- * scopes alias-level tokens overridden for a single component (`components: { Button: { colorPrimary } }`)
- * to that component's elements instead of `:root`; it is generated into
- * `components/core/theme/generated/component-roots.ts` for every antd name of the entry.
- * Adding a component here is the first step of migrating it to v6 (see .claude/DEVELOPMENT.md).
- */
-/** Another mapped component whose extracted rules are copied under this component's prefix (`generate-styles.ts`'s `componentTemplate`). */
-export interface StylesThrough {
-  /** mapped directory whose extracted rules are copied under this component's prefix */
-  dir: V6ComponentDir;
-  from: string;
-  to: string;
-}
-
 export interface V6ComponentEntry {
   antd: readonly string[];
   prefixCls: string;
@@ -38,6 +21,23 @@ export interface V6ComponentEntry {
   stylesThrough?: StylesThrough;
 }
 
+/** Another mapped component whose extracted rules are copied under this component's prefix (`generate-styles.ts`'s `componentTemplate`). */
+export interface StylesThrough {
+  /** mapped directory whose extracted rules are copied under this component's prefix */
+  dir: V6ComponentDir;
+  from: string;
+  to: string;
+}
+
+/**
+ * Components that have Ant Design v6 style output. Keys are directories under `components/`,
+ * `antd` lists the antd component names passed to `@ant-design/static-style-extract`, and
+ * `prefixCls` is the component's root class (antd's `prefixCls`, e.g. `ant-btn`). The root class
+ * scopes alias-level tokens overridden for a single component (`components: { Button: { colorPrimary } }`)
+ * to that component's elements instead of `:root`; it is generated into
+ * `components/core/theme/generated/component-roots.ts` for every antd name of the entry.
+ * Adding a component here is the first step of migrating it to v6 (see .claude/DEVELOPMENT.md).
+ */
 export const v6Components = {
   alert: { antd: ['Alert'], prefixCls: 'ant-alert' },
   // AutoComplete has no style module of its own (`ANTD_STYLE_MODULE_OVERRIDES` below); it renders

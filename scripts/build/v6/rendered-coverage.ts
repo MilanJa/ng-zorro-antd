@@ -66,10 +66,13 @@ export function styledClassesFor(dir: V6ComponentDir, manifest: V6Manifest): Set
  * prefix. A directory that mounts select, radio or pagination therefore does not re-list the
  * owner's unstyled classes; the owner's `_<dir>_comment` is the single place that explains them.
  */
-export function allowlistFor(dir: V6ComponentDir, allowlist: Record<string, string[]>): Set<string> {
+export function allowlistFor(dir: string, allowlist: Record<string, string[]>): Set<string> {
   const out = new Set(allowlist[dir] ?? []);
-  const entry: V6ComponentEntry = v6Components[dir];
-  for (const prefix of entry.renderedPrefixes ?? []) {
+  // `dir` is not always a mapped directory (`renderedCoverageGaps` is called with every requested
+  // dir, mapped or not -- a later plan's unmapped component has no `renderedPrefixes` to credit
+  // from, not a bug to throw on).
+  const entry = (v6Components as Record<string, V6ComponentEntry>)[dir];
+  for (const prefix of entry?.renderedPrefixes ?? []) {
     const owner = renderedPrefixStyleOwner(prefix);
     if (!owner || owner === dir) continue;
     for (const cls of allowlist[owner] ?? []) {
@@ -87,7 +90,7 @@ export function renderedCoverageGaps(
 ): Record<string, string[]> {
   const gaps: Record<string, string[]> = {};
   for (const dir of dirs) {
-    const allowed = allowlistFor(dir as V6ComponentDir, allowlist);
+    const allowed = allowlistFor(dir, allowlist);
     gaps[dir] = (rendered[dir] ?? []).filter(c => !styled.has(c) && !allowed.has(c)).sort();
   }
   return gaps;
