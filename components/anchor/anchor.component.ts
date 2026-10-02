@@ -42,6 +42,11 @@ interface Section {
 }
 
 const VISIBLE_CLASSNAME = 'ant-anchor-ink-ball-visible';
+// antd v6 moved the visible-state hook from the ball to the ink bar itself
+// (`${prefixCls}-ink-visible`, node_modules/antd/es/anchor/Anchor.js's `inkClass`); toggled on the
+// same element and by the same code path as `VISIBLE_CLASSNAME` since ng-zorro keeps the ball as the
+// moving element.
+const V6_VISIBLE_CLASSNAME = 'ant-anchor-ink-visible';
 const NZ_CONFIG_MODULE_NAME: NzConfigKey = 'anchor';
 const sharpMatcherRegx = /#([^#]+)$/;
 
@@ -218,6 +223,13 @@ export class NzAnchorComponent implements AfterViewInit, OnChanges {
     } else {
       this.ink.nativeElement.style.left = `${linkNode.offsetLeft + linkNode.clientWidth / 2}px`;
     }
+    // antd v6 draws the horizontal indicator as a bar spanning the active title's full width, from
+    // its left edge (node_modules/antd/es/anchor/Anchor.js's `updateInk`: `inkStyle.left =
+    // offsetLeft`, `inkStyle.width = clientWidth`), instead of a dot centred under it. Written as
+    // custom properties so only `style/v6/patch.css` (`!important`, since it must win over the
+    // native `left` set above) reads them; the v4 `left` above is untouched for the default theme.
+    this.ink.nativeElement.style.setProperty('--nz-anchor-ink-left', `${linkNode.offsetLeft}px`);
+    this.ink.nativeElement.style.setProperty('--nz-anchor-ink-width', `${linkNode.clientWidth}px`);
     this.activeLink = (comp || targetComp).nzHref;
     if (originalActiveLink !== this.activeLink) {
       this.nzChange.emit(this.activeLink);
@@ -237,8 +249,10 @@ export class NzAnchorComponent implements AfterViewInit, OnChanges {
       const visible = this.visible;
       if (visible) {
         this.renderer.addClass(this.ink.nativeElement, VISIBLE_CLASSNAME);
+        this.renderer.addClass(this.ink.nativeElement, V6_VISIBLE_CLASSNAME);
       } else {
         this.renderer.removeClass(this.ink.nativeElement, VISIBLE_CLASSNAME);
+        this.renderer.removeClass(this.ink.nativeElement, V6_VISIBLE_CLASSNAME);
       }
     }
   }

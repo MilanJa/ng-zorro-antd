@@ -22,9 +22,10 @@ describe('renderThemeCss edge cases', () => {
   });
 
   it('ignores component overrides for components that are not in the registry', async () => {
-    const css = await r.renderThemeCss({ components: { Anchor: { linkPaddingBlock: '#123456' } } } as never);
+    // `Affix` has no map entry (plan F); any name genuinely absent from `v6Components` works here.
+    const css = await r.renderThemeCss({ components: { Affix: { zIndexPopup: '#123456' } } } as never);
     expect(css).not.toContain('#123456');
-    expect(css).not.toContain('--ant-anchor-');
+    expect(css).not.toContain('--ant-affix-');
   });
 
   it('keeps zero values (borderRadius: 0 renders as 0px)', async () => {

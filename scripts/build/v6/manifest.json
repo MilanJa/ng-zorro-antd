@@ -1,7 +1,7 @@
 {
   "antdVersion": "6.6.5",
   "engineCoreBytes": 42701,
-  "engineComponentsBytes": 373895,
+  "engineComponentsBytes": 376066,
   "components": {
     "alert": {
       "classes": [
@@ -29,6 +29,24 @@
         "--ant-alert-default-padding",
         "--ant-alert-with-description-icon-size",
         "--ant-alert-with-description-padding"
+      ]
+    },
+    "anchor": {
+      "classes": [
+        "ant-affix",
+        "ant-anchor",
+        "ant-anchor-fixed",
+        "ant-anchor-ink",
+        "ant-anchor-ink-visible",
+        "ant-anchor-link",
+        "ant-anchor-link-active",
+        "ant-anchor-link-title",
+        "ant-anchor-wrapper",
+        "ant-anchor-wrapper-horizontal"
+      ],
+      "tokens": [
+        "--ant-anchor-link-padding-block",
+        "--ant-anchor-link-padding-inline-start"
       ]
     },
     "auto-complete": {

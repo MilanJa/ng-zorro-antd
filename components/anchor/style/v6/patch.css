@@ -1,0 +1,96 @@
+/* `nz-link` is a custom element with no display handling of its own; v6 renders AnchorLink's wrapper
+   as a bare `<div>` (block by default, confirmed in node_modules/antd/es/anchor/AnchorLink.js). Port
+   of `style/patch.less`'s `nz-link { display: block }`. */
+nz-link {
+  display: block;
+}
+
+/* antd v6 has no separate ball element: `.ant-anchor-ink` IS the moving indicator, drawn with
+   `position: absolute; display: none; transform; transition; width; background-color` directly on
+   it (node_modules/antd/es/anchor/style/index.js's genSharedAnchorStyle/genSharedAnchorHorizontalStyle,
+   verifiable in components/core/theme/generated/test-css.ts). ng-zorro keeps `.ant-anchor-ink`
+   as a STATIC rail wrapping a separate `.ant-anchor-ink-ball` (anchor.component.ts's template), so
+   v6's own selector matches the wrong element in this DOM. Neutralise it back to the rail geometry
+   `style/index.less` gives it for the default stylesheet (equal specificity, source order after the
+   template CSS it overrides), and mirror v6's geometry onto the ball below instead. */
+.ant-anchor-wrapper:not(.ant-anchor-wrapper-horizontal) .ant-anchor .ant-anchor-ink {
+  position: absolute;
+  top: 0;
+  inset-inline-start: 0;
+  height: 100%;
+  width: auto;
+  display: block;
+  background-color: transparent;
+  transform: none;
+  transition: none;
+}
+
+.ant-anchor-wrapper-horizontal .ant-anchor .ant-anchor-ink {
+  position: absolute;
+  inset-inline-start: 0;
+  top: auto;
+  bottom: 0;
+  width: 100%;
+  height: auto;
+  background-color: transparent;
+  transition: none;
+}
+
+/* Mirrors v6's ink geometry (position, display toggle, width/height, colour) onto the ball, which is
+   the element ng-zorro actually moves (anchor.component.ts's `setActive`/`setVisible`). The vertical
+   `top` and horizontal centre-point `left` set by `setActive` for the default stylesheet are kept as
+   the ball's native inline styles; height is approximated from the link row (padding block twice
+   plus one text line) since antd v6's own per-element `clientHeight` match needs no DOM measurement
+   ng-zorro's formula doesn't already have a v4-safe equivalent for. */
+.ant-anchor-wrapper:not(.ant-anchor-wrapper-horizontal) .ant-anchor .ant-anchor-ink-ball {
+  position: absolute;
+  inset-inline-start: 0;
+  display: none;
+  width: var(--ant-line-width-bold);
+  height: calc(var(--ant-anchor-link-padding-block) * 2 + var(--ant-font-size) * var(--ant-line-height));
+  background-color: var(--ant-color-primary);
+  border: none;
+  border-radius: 0;
+  transform: translateY(-50%);
+  transition: top var(--ant-motion-duration-slow) ease-in-out;
+}
+
+.ant-anchor-wrapper:not(.ant-anchor-wrapper-horizontal) .ant-anchor .ant-anchor-ink-ball:dir(rtl) {
+  transform: translateY(-50%);
+}
+
+/* Horizontal: the bar spans the active title's width from its left edge, written by `setActive` as
+   `--nz-anchor-ink-left`/`--nz-anchor-ink-width` (anchor.component.ts) since the native `left` on
+   this element still carries the v4 centre-point formula; `!important` is the only way an author
+   stylesheet can out-rank that inline style. */
+.ant-anchor-wrapper-horizontal .ant-anchor .ant-anchor-ink-ball {
+  position: absolute;
+  bottom: 0;
+  inset-inline-start: 0;
+  left: var(--nz-anchor-ink-left, 0) !important;
+  width: var(--nz-anchor-ink-width, 0) !important;
+  display: none;
+  height: var(--ant-line-width-bold);
+  background-color: var(--ant-color-primary);
+  border: none;
+  border-radius: 0;
+  transform: none !important;
+  transition:
+    left var(--ant-motion-duration-slow) ease-in-out,
+    width var(--ant-motion-duration-slow) ease-in-out;
+}
+
+.ant-anchor-wrapper:not(.ant-anchor-wrapper-horizontal) .ant-anchor .ant-anchor-ink-ball.ant-anchor-ink-ball-visible,
+.ant-anchor-wrapper:not(.ant-anchor-wrapper-horizontal) .ant-anchor .ant-anchor-ink-ball.ant-anchor-ink-visible,
+.ant-anchor-wrapper-horizontal .ant-anchor .ant-anchor-ink-ball.ant-anchor-ink-ball-visible,
+.ant-anchor-wrapper-horizontal .ant-anchor .ant-anchor-ink-ball.ant-anchor-ink-visible {
+  display: inline-block;
+}
+
+/* `style/index.less`'s `&-fixed &-ink &-ink-ball { display: none }` (not loaded under the v6-only
+   theme); antd v6's own equivalent selector requires two nested `.ant-anchor-ink` elements, which its
+   own flat DOM never has either (node_modules/antd/es/anchor/style/index.js), so this stays a
+   straight port rather than a v6 mirror. */
+.ant-anchor-fixed .ant-anchor-ink .ant-anchor-ink-ball {
+  display: none;
+}

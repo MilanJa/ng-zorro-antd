@@ -554,6 +554,11 @@ export interface NzAlertToken {
   withDescriptionPadding: string;
 }
 
+export interface NzAnchorToken {
+  linkPaddingBlock: number;
+  linkPaddingInlineStart: number;
+}
+
 export interface NzAvatarToken {
   containerSize: number;
   containerSizeLG: number;
@@ -1306,6 +1311,7 @@ export interface NzUploadToken {
 
 export interface NzComponentTokenMap {
   Alert: NzAlertToken;
+  Anchor: NzAnchorToken;
   Avatar: NzAvatarToken;
   Badge: NzBadgeToken;
   Breadcrumb: NzBreadcrumbToken;

@@ -97,6 +97,9 @@
       "less": "./anchor/style/*.less",
       "style": "./anchor/style/index.min.css"
     },
+    "./anchor/style/v6/*": {
+      "style": "./anchor/style/v6/*"
+    },
     "./auto-complete/style/*": {
       "less": "./auto-complete/style/*.less",
       "style": "./auto-complete/style/index.min.css"

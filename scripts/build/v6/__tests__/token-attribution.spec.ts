@@ -24,7 +24,8 @@ describe('componentTokenNames', () => {
   });
 
   it('returns an empty list for an unregistered component', async () => {
-    expect(await componentTokenNames('Anchor')).toEqual([]);
+    // `Affix` has no map entry (plan F); any name genuinely absent from `v6Components` works here.
+    expect(await componentTokenNames('Affix')).toEqual([]);
   });
 });
 
