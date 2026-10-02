@@ -30,6 +30,10 @@ function installV6Css(): void {
         <nz-step nzTitle="In Progress" nzSubtitle="Left 00:00:08" nzDescription="d2" [nzPercentage]="percentage()" />
         <nz-step nzTitle="Waiting" nzDescription="d3" />
       </nz-steps>
+      <nz-steps id="clickable" [nzCurrent]="0" (nzIndexChange)="index.set($event)">
+        <nz-step nzTitle="A" />
+        <nz-step nzTitle="B" />
+      </nz-steps>
     </div>
   `
 })
@@ -38,6 +42,7 @@ class TestStepsComponent {
   readonly direction = signal<NzDirectionType>('horizontal');
   readonly size = signal<NzSizeDSType>('default');
   readonly percentage = signal<number | null>(null);
+  readonly index = signal(0);
 }
 
 describe('steps under antd v6 css', () => {
@@ -185,5 +190,32 @@ describe('steps under antd v6 css', () => {
     const iconRect = icon.getBoundingClientRect();
     expect(ringRect.left + ringRect.width / 2).toBeCloseTo(iconRect.left + iconRect.width / 2, 0);
     expect(ringRect.top + ringRect.height / 2).toBeCloseTo(iconRect.top + iconRect.height / 2, 0);
+
+    // nz-progress's circle fills that box and draws antd's ring: a stroke of `lineWidthBold` in
+    // viewBox units (100 / 40px * 2px = 5), butt caps, colorSplit rail.
+    const svg = ring.querySelector('svg.ant-progress-circle') as SVGElement;
+    const svgRect = svg.getBoundingClientRect();
+    expect(svgRect.width).toBeCloseTo(ringRect.width, 0);
+    expect(svgRect.left).toBeCloseTo(ringRect.left, 0);
+    const path = getComputedStyle(ring.querySelector('.ant-progress-circle-path')!);
+    expect(path.strokeWidth).toBe('5px');
+    expect(path.strokeLinecap).toBe('butt');
+    const trail = getComputedStyle(ring.querySelector('.ant-progress-circle-trail')!);
+    expect(trail.strokeWidth).toBe('5px');
+    expect(trail.stroke).toBe('rgba(5, 5, 5, 0.06)');
+  });
+
+  it('draws the focus ring of a clickable step around the item, not the wrapper', async () => {
+    await render();
+    const item = fixture.nativeElement.querySelector('#clickable .ant-steps-item:not(.ant-steps-item-active)');
+    const wrapper = item.querySelector('.ant-steps-item-wrapper') as HTMLElement;
+    expect(wrapper.getAttribute('role')).toBe('button');
+    wrapper.focus({ focusVisible: true } as FocusOptions);
+    expect(wrapper.matches(':focus-visible')).toBe(true);
+    const itemCs = getComputedStyle(item);
+    expect(itemCs.outlineStyle).toBe('solid');
+    expect(itemCs.outlineWidth).toBe('3px');
+    expect(itemCs.outlineColor).toBe('rgb(145, 202, 255)');
+    expect(getComputedStyle(wrapper).outlineStyle).toBe('none');
   });
 });

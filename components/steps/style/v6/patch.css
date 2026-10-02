@@ -127,13 +127,21 @@
  * Clickable steps: antd puts `role="button"` on the item; ng-zorro puts it on the wrapper, so antd's
  * `.ant-steps-item[role='button']` rules match the item that holds such a wrapper.
  */
-/* antd `.ant-steps .ant-steps-item[role='button']:focus-visible` */
-.ant-steps .ant-steps-item-wrapper[role='button']:focus-visible {
+/*
+ * antd `.ant-steps .ant-steps-item[role='button']:focus-visible`: the ring goes around the item (which
+ * is wider than the wrapper in navigation steps and taller in vertical ones), not around the focused
+ * wrapper, whose own UA ring is suppressed.
+ */
+.ant-steps .ant-steps-item:has(> .ant-steps-item-wrapper[role='button']:focus-visible) {
   outline: var(--ant-line-width-focus) solid var(--ant-color-primary-border);
   outline-offset: 1px;
   transition:
     outline-offset 0s,
     outline 0s;
+}
+
+.ant-steps .ant-steps-item-wrapper[role='button']:focus-visible {
+  outline: none;
 }
 
 /* antd `.ant-steps .ant-steps-item[role='button']:not(.ant-steps-item-active):hover` */
@@ -179,15 +187,51 @@
 
 /*
  * Progress ring: ng-zorro composes `nz-progress` inside `.ant-steps-progress-icon` where antd draws
- * its own SVG; the wrapper takes the box of antd's
- * `.ant-steps.ant-steps-with-progress .ant-steps-item-progress-icon-svg` (the icon plus two bold
- * line widths on every side), and `nz-progress`'s 40px / 32px (small) circle fills it.
+ * its own SVG. The wrapper takes the box and the sizing variables of antd's
+ * `.ant-steps.ant-steps-with-progress .ant-steps-item-progress-icon-svg` (the icon's padding box plus
+ * two bold line widths on every side; the variables are declared on antd's SVG class only).
  */
 .ant-steps.ant-steps-with-progress .ant-steps-progress-icon {
+  --ant-cmp-steps-svg-size: calc(
+    calc(var(--ant-line-width-bold) + var(--ant-line-width-bold)) * 2 + var(--ant-cmp-steps-icon-size)
+  );
+  --ant-cmp-steps-icon-size-ptg-unitless: calc(100 / tan(atan2(var(--ant-cmp-steps-svg-size), 1px)));
   position: absolute;
   inset: calc(calc(var(--ant-line-width-bold) + var(--ant-line-width-bold)) * -1);
   display: flex;
   align-items: center;
   justify-content: center;
   line-height: 0;
+}
+
+/*
+ * `nz-progress` sizes its circle with an inline 40px / 32px box; the static inner box lets the SVG fill
+ * the wrapper instead (beats progress' `.ant-progress-circle .ant-progress-body{position:relative}`).
+ */
+.ant-steps.ant-steps-with-progress .ant-steps-progress-icon .ant-progress-inner {
+  position: static;
+}
+
+.ant-steps.ant-steps-with-progress .ant-steps-progress-icon svg.ant-progress-circle {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/*
+ * antd `.ant-steps.ant-steps-with-progress .ant-steps-item-progress-icon-circle`: stroke in viewBox
+ * units that renders as `lineWidthBold`, butt caps; CSS overrides `nz-progress`'s presentation
+ * attributes.
+ */
+.ant-steps.ant-steps-with-progress .ant-steps-progress-icon .ant-progress-circle-path,
+.ant-steps.ant-steps-with-progress .ant-steps-progress-icon .ant-progress-circle-trail {
+  stroke-width: calc(var(--ant-cmp-steps-icon-size-ptg-unitless) * var(--ant-line-width-bold));
+  stroke-linecap: butt;
+}
+
+/* antd `.ant-steps.ant-steps-with-progress .ant-steps-item-progress-icon-circle-rail` */
+.ant-steps.ant-steps-with-progress .ant-steps-progress-icon .ant-progress-circle-trail {
+  stroke: var(--ant-color-split);
 }

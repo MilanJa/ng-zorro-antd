@@ -74,6 +74,7 @@ describe('v6PatchDependencies', () => {
       popconfirm: ['popover'],
       slider: ['tooltip'],
       statistic: ['skeleton'],
+      steps: ['progress'],
       table: ['checkbox', 'dropdown', 'empty', 'pagination', 'radio', 'select', 'spin', 'tree'],
       'time-picker': ['date-picker'],
       transfer: ['button', 'checkbox', 'input'],
