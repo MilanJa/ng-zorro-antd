@@ -53,6 +53,13 @@ describe('minify', () => {
   it('leaves identifiers that merely end in a math function name untouched', async () => {
     expect(await minify('.a{width:my-tan(1px)}')).toContain('my-tan(1px)');
   });
+  it('minifies a rule without shadowed functions exactly as Less + clean-css do', async () => {
+    // The output of `less.render` with `LessPluginCleanCSS({ advanced: true })` alone.
+    expect(await minify('.a { width: calc(1px + 2px) ; }')).toBe('.a{width:calc(1px + 2px)}');
+  });
+  it('rejects input that already contains the reserved token', async () => {
+    await expect(minify('.a{--x:nz-css-fn-tan(1)}')).rejects.toThrow('reserved token');
+  });
 });
 
 describe('componentBundlePatches', () => {
