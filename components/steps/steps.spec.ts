@@ -52,7 +52,9 @@ describe('steps', () => {
 
     it('should init className correct', async () => {
       await stabilize(fixture);
-      expect(outStep.nativeElement.className).toBe('ant-steps ant-steps-horizontal ant-steps-label-horizontal');
+      expect(outStep.nativeElement.className).toBe(
+        'ant-steps ant-steps-filled ant-steps-horizontal ant-steps-label-horizontal ant-steps-title-horizontal'
+      );
       expect(innerSteps[0].nativeElement.className).toBe('ant-steps-item ant-steps-item-active ant-steps-item-process');
       expect(innerSteps[1].nativeElement.className).toBe('ant-steps-item ant-steps-item-wait');
       expect(innerSteps[2].nativeElement.className).toBe('ant-steps-item ant-steps-item-wait');
@@ -130,7 +132,7 @@ describe('steps', () => {
       testComponent.cdr.markForCheck();
       fixture.detectChanges();
       expect(outStep.nativeElement.className).toBe(
-        'ant-steps ant-steps-horizontal ant-steps-label-horizontal ant-steps-small'
+        'ant-steps ant-steps-filled ant-steps-horizontal ant-steps-label-horizontal ant-steps-title-horizontal ant-steps-small'
       );
     });
 
@@ -139,7 +141,9 @@ describe('steps', () => {
       testComponent.direction = 'vertical';
       testComponent.cdr.markForCheck();
       fixture.detectChanges();
-      expect(outStep.nativeElement.className).toBe('ant-steps ant-steps-vertical');
+      expect(outStep.nativeElement.className).toBe(
+        'ant-steps ant-steps-filled ant-steps-title-horizontal ant-steps-vertical'
+      );
     });
 
     it('should label placement display correct', () => {
@@ -166,6 +170,27 @@ describe('steps', () => {
       await stabilize(fixture);
       expect(innerSteps[1].nativeElement.className).toBe('ant-steps-item ant-steps-item-error ant-steps-item-active');
       expect(innerSteps[0].nativeElement.className).toBe('ant-steps-item ant-steps-item-finish ant-steps-next-error');
+      // A rail takes the status of the step it leads to.
+      expect(innerSteps[0].nativeElement.querySelector('.ant-steps-item-tail').className).toBe(
+        'ant-steps-item-tail ant-steps-item-rail ant-steps-item-rail-error'
+      );
+      expect(innerSteps[1].nativeElement.querySelector('.ant-steps-item-tail').className).toBe(
+        'ant-steps-item-tail ant-steps-item-rail ant-steps-item-rail-wait'
+      );
+    });
+
+    it('should label placement map to the v6 title placement', async () => {
+      await stabilize(fixture);
+      testComponent.labelPlacement = 'vertical';
+      testComponent.cdr.markForCheck();
+      await stabilize(fixture);
+      expect(outStep.nativeElement.classList).toContain('ant-steps-title-vertical');
+      expect(outStep.nativeElement.classList).not.toContain('ant-steps-title-horizontal');
+      testComponent.direction = 'vertical';
+      testComponent.cdr.markForCheck();
+      await stabilize(fixture);
+      expect(outStep.nativeElement.classList).toContain('ant-steps-title-horizontal');
+      expect(outStep.nativeElement.classList).not.toContain('ant-steps-title-vertical');
     });
 
     it('should processDot display correct', async () => {
@@ -364,8 +389,13 @@ describe('steps', () => {
       innerSteps = fixture.debugElement.queryAll(By.directive(NzStepComponent));
       fixture.detectChanges();
       expect(innerSteps.length).toBe(3);
-      expect(innerSteps[0].nativeElement.className).toBe('ant-steps-item ant-steps-item-finish');
-      expect(innerSteps[1].nativeElement.className).toBe('ant-steps-item ant-steps-item-active ant-steps-item-process');
+      // These steps have neither title nor subtitle.
+      expect(innerSteps[0].nativeElement.className).toBe(
+        'ant-steps-item ant-steps-item-empty-header ant-steps-item-finish'
+      );
+      expect(innerSteps[1].nativeElement.className).toBe(
+        'ant-steps-item ant-steps-item-active ant-steps-item-empty-header ant-steps-item-process'
+      );
       expect(innerSteps[0].nativeElement.querySelector('.ant-steps-icon').innerText.trim()).toBe('');
       expect(innerSteps[1].nativeElement.querySelector('.ant-steps-icon').innerText.trim()).toBe('2');
       expect(innerSteps[2].nativeElement.querySelector('.ant-steps-icon').innerText.trim()).toBe('3');

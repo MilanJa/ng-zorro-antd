@@ -50,6 +50,7 @@ export const COMPONENT_ROOT_CLS: Record<string, string> = {
   Space: 'ant-space',
   Spin: 'ant-spin',
   Statistic: 'ant-statistic',
+  Steps: 'ant-steps',
   Switch: 'ant-switch',
   Table: 'ant-table',
   Tabs: 'ant-tabs',

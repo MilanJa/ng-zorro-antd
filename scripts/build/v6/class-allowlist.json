@@ -5,6 +5,19 @@
     "ant-anchor-ink-ball",
     "ant-anchor-ink-ball-visible"
   ],
+  "_steps_comment": "antd-emits: ant-steps-item-disabled (rc-steps `Step.js` adds `${itemCls}-disabled` for `disabled === true`; v6 CSS has no rule for it, a disabled step is simply not clickable). v4-compat: ant-steps-item-container (replacement: ant-steps-item-wrapper, on the same element), ant-steps-item-tail (replacement: ant-steps-item-rail plus ant-steps-item-rail-<next step's status>, on the same element), ant-steps-label-horizontal / ant-steps-label-vertical (replacement: ant-steps-title-horizontal / ant-steps-title-vertical on the root, resolved as antd's mergedTitlePlacement), ant-steps-next-error (no v6 counterpart: the rail before an error step takes ant-steps-item-rail-error instead). v4-compat (patch hook): ant-steps-item-description (antd's body slot is ant-steps-item-content, a name ng-zorro's section already carries for v4, so style/v6/patch.css mirrors the body rules onto the description), ant-steps-progress-icon (style/v6/patch.css gives it the box of antd's ant-steps-item-progress-icon-svg; ng-zorro composes nz-progress there instead of antd's own SVG), ant-steps-icon / ant-steps-icon-dot (inner spans ng-zorro keeps inside ant-steps-item-icon; style/v6/patch.css gives them the dot's hit area so a custom nzProgressDot template stays hoverable). Not emitted, so not listed: ant-steps-item-header (v4 pairs ant-steps-item-content > ant-steps-item-title, so no header element is inserted; style/v6/patch.css mirrors the header rules onto the title), ant-steps-item-icon-dot / -item-icon-dot-custom (antd 6.6.5 never emits them), ant-steps-item-progress-icon-* (antd's own SVG ring), and ant-steps-inline / -panel / -panel-arrow / -outlined / -ellipsis / -item-ellipsis / -max-count / -horizontal-alternate (no ng-zorro input; docs/v6-api-gaps.md).",
+  "steps": [
+    "ant-steps-icon",
+    "ant-steps-icon-dot",
+    "ant-steps-item-container",
+    "ant-steps-item-description",
+    "ant-steps-item-disabled",
+    "ant-steps-item-tail",
+    "ant-steps-label-horizontal",
+    "ant-steps-label-vertical",
+    "ant-steps-next-error",
+    "ant-steps-progress-icon"
+  ],
   "_button_comment": "button's entries are permanent, not pending alignment: antd v6's own React Button emits ant-btn-color-link and the legacy ant-btn-{default,dashed,link,text,dangerous,rtl} type/danger/rtl classes for backward compatibility, but its v6 CSS never styles them (verified against node_modules/antd/es/button/style). class-coverage.spec.ts pins this exact set so it can't silently grow. Button's compact-item classes (ant-btn-compact-first-item/-last-item) are not listed here: the per-directory audit (styledClassesFor) credits them from space's own manifest, since antd generates every component's compact rules once in Space's extraction (genCompactItemStyle).",
   "button": [
     "ant-btn-color-link",

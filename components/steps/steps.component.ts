@@ -41,11 +41,14 @@ export type NzProgressDotTemplate = TemplateRef<{ $implicit: TemplateRef<void>; 
   encapsulation: ViewEncapsulation.None,
   template: `<ng-content />`,
   host: {
-    class: 'ant-steps',
+    // `ant-steps-filled` is antd's default `variant`, which ng-zorro has no input to change.
+    class: 'ant-steps ant-steps-filled',
     '[class.ant-steps-horizontal]': `nzDirection === 'horizontal'`,
     '[class.ant-steps-vertical]': `nzDirection === 'vertical'`,
     '[class.ant-steps-label-horizontal]': `nzDirection === 'horizontal'`,
     '[class.ant-steps-label-vertical]': `(showProcessDot || nzLabelPlacement === 'vertical') && nzDirection === 'horizontal'`,
+    '[class.ant-steps-title-horizontal]': `titlePlacement === 'horizontal'`,
+    '[class.ant-steps-title-vertical]': `titlePlacement === 'vertical'`,
     '[class.ant-steps-dot]': 'showProcessDot',
     '[class.ant-steps-small]': `nzSize === 'small'`,
     '[class.ant-steps-navigation]': `nzType === 'navigation'`,
@@ -90,6 +93,20 @@ export class NzStepsComponent implements OnChanges, OnInit, AfterContentInit {
   showProgress = false;
   customProcessDotTemplate?: TemplateRef<{ $implicit: TemplateRef<void>; status: string; index: number }>;
 
+  /**
+   * Title placement as antd resolves it (`mergedTitlePlacement` in antd's `steps/index.js`): dot and
+   * vertical steps force it, navigation steps keep titles beside the icon.
+   */
+  get titlePlacement(): 'horizontal' | 'vertical' {
+    if (this.showProcessDot || this.nzDirection === 'vertical') {
+      return this.nzDirection === 'vertical' ? 'horizontal' : 'vertical';
+    }
+    if (this.nzType === 'navigation') {
+      return 'horizontal';
+    }
+    return this.nzLabelPlacement === 'vertical' ? 'vertical' : 'horizontal';
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
     const { nzStartIndex, nzDirection, nzStatus, nzCurrent, nzSize } = changes;
     if (nzStartIndex || nzDirection || nzStatus || nzCurrent || nzSize) {
@@ -119,8 +136,10 @@ export class NzStepsComponent implements OnChanges, OnInit, AfterContentInit {
   private updateChildrenSteps(): void {
     if (this.steps) {
       const length = this.steps.length;
-      this.steps.toArray().forEach((step, index) => {
+      const steps = this.steps.toArray();
+      steps.forEach((step, index) => {
         Promise.resolve().then(() => {
+          step.nextStep = steps[index + 1] ?? null;
           step.nzSize = this.nzSize;
           step.outStatus = this.nzStatus;
           step.showProcessDot = this.showProcessDot;

@@ -125,6 +125,7 @@ export const v6Components = {
   // The loading state renders a real `nz-skeleton` (`statistic.component.ts`), so statistic's own
   // v6 bundle carries skeleton's patch (`v6PatchDependencies`).
   statistic: { antd: ['Statistic'], prefixCls: 'ant-statistic', renderedPrefixes: ['ant-skeleton'] },
+  steps: { antd: ['Steps'], prefixCls: 'ant-steps' },
   switch: { antd: ['Switch'], prefixCls: 'ant-switch' },
   // Table's filter dropdown mounts a real `nz-dropdown` (dropdown's own classes), its selection
   // column mounts checkbox/radio, pagination mounts Pagination (which itself renders Select for

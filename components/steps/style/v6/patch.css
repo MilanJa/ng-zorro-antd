@@ -1,0 +1,193 @@
+/*
+ * ng-zorro's step keeps its v4 element tree for the default stylesheet:
+ *
+ *   nz-step.ant-steps-item
+ *     div.ant-steps-item-container.ant-steps-item-wrapper   (role="button" when clickable)
+ *       div.ant-steps-item-tail.ant-steps-item-rail          (not on the last step)
+ *       div.ant-steps-item-icon > span.ant-steps-icon | div.ant-steps-progress-icon
+ *       div.ant-steps-item-content.ant-steps-item-section
+ *         div.ant-steps-item-title > div.ant-steps-item-subtitle
+ *         div.ant-steps-item-description
+ *
+ * antd v6 renders `-item-wrapper > (-item-icon, -item-section > (-item-header > (-item-title,
+ * -item-subtitle, -item-rail), -item-content))` with `role="button"` on the item. The v4 stylesheet
+ * pairs `.ant-steps-item-content > .ant-steps-item-title` and `.ant-steps-item-container >
+ * .ant-steps-item-tail` with child combinators, so no header element is inserted and the rail stays
+ * the wrapper's first child. The rules below carry antd's header rules onto the title, antd's body
+ * (`-item-content`) rules onto the description, antd's item-level clickable rules onto the wrapper
+ * that holds the role, and place the rail after the title where antd's rail sits in flow.
+ */
+
+/* Header: antd `.ant-steps .ant-steps-item-header`; the title element also holds the subtitle. */
+.ant-steps .ant-steps-item-section > .ant-steps-item-title {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+}
+
+/* antd `.ant-steps-title-horizontal .ant-steps-item-header` */
+.ant-steps-title-horizontal .ant-steps-item-section > .ant-steps-item-title {
+  min-height: var(--ant-cmp-steps-heading-height);
+}
+
+/* antd `.ant-steps-title-horizontal.ant-steps-vertical .ant-steps-item-empty-header .ant-steps-item-header` */
+.ant-steps-title-horizontal.ant-steps-vertical .ant-steps-item-empty-header .ant-steps-item-section > .ant-steps-item-title {
+  min-height: auto;
+}
+
+/* antd `.ant-steps-title-vertical > .ant-steps-item .ant-steps-item-header` */
+.ant-steps-title-vertical > .ant-steps-item .ant-steps-item-section > .ant-steps-item-title {
+  flex-direction: column;
+  align-items: center;
+}
+
+/*
+ * Body text: antd's `-item-content` is the description slot, while ng-zorro's `-item-content` is the
+ * section (the v4 name). The description carries antd's body rules; antd's
+ * `.ant-steps-title-horizontal.ant-steps-vertical .ant-steps-item-empty-header .ant-steps-item-content`
+ * margin is not repeated here because it already lands on the section above the description.
+ */
+/* antd `.ant-steps .ant-steps-item-content` (base and status colour rules) */
+.ant-steps .ant-steps-item-description {
+  color: var(--ant-cmp-steps-item-content-color);
+  font-size: var(--ant-font-size);
+  line-height: var(--ant-line-height);
+  word-break: break-word;
+  transition: all var(--ant-motion-duration-slow);
+}
+
+/* antd `.ant-steps .ant-steps-item-active .ant-steps-item-content` */
+.ant-steps .ant-steps-item-active .ant-steps-item-description {
+  color: var(--ant-cmp-steps-item-content-active-color);
+}
+
+/* antd `.ant-steps-title-horizontal .ant-steps-item-content` */
+.ant-steps-title-horizontal .ant-steps-item-description {
+  max-width: var(--ant-steps-description-max-width);
+}
+
+/* antd's description width cap must not narrow the section that shares the `-item-content` name. */
+.ant-steps-title-horizontal .ant-steps-item-content.ant-steps-item-section {
+  max-width: none;
+}
+
+/* antd `.ant-steps-title-vertical > .ant-steps-item .ant-steps-item-content` */
+.ant-steps-title-vertical > .ant-steps-item .ant-steps-item-description {
+  text-align: center;
+  max-width: 100%;
+}
+
+/* antd `.ant-steps.ant-steps-navigation.ant-steps-vertical .ant-steps-item…ant-steps-item .ant-steps-item-content` */
+.ant-steps.ant-steps-navigation.ant-steps-vertical .ant-steps-item.ant-steps-item.ant-steps-item.ant-steps-item .ant-steps-item-description {
+  padding: 0;
+}
+
+/*
+ * Rail in flow (horizontal steps with titles beside the icon): antd draws the rail inside the header,
+ * after the title, as a flex item that fills the rest of the row. Here the rail is the wrapper's first
+ * child, so the wrapper becomes a grid: icon | title (header) | rail on the first row, the description
+ * under title and rail, and the section lets its children join the grid. The icon's end margin stands
+ * in for antd's wrapper `column-gap` (`.ant-steps-title-horizontal.ant-steps-horizontal
+ * .ant-steps-item-wrapper`), which would otherwise also open between title and rail. Every other
+ * layout positions the rail absolutely against the item, which works from the wrapper unchanged.
+ * Navigation steps hide the rail and keep antd's flex wrapper.
+ */
+.ant-steps.ant-steps-title-horizontal.ant-steps-horizontal:not(.ant-steps-navigation) .ant-steps-item-wrapper {
+  display: grid;
+  grid-template-columns: auto minmax(0, max-content) minmax(0, 1fr);
+  column-gap: 0;
+}
+
+.ant-steps.ant-steps-title-horizontal.ant-steps-horizontal:not(.ant-steps-navigation) .ant-steps-item-wrapper > .ant-steps-item-icon {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  margin-inline-end: var(--ant-margin-xs);
+}
+
+.ant-steps.ant-steps-title-horizontal.ant-steps-horizontal:not(.ant-steps-navigation) .ant-steps-item-wrapper > .ant-steps-item-section {
+  display: contents;
+}
+
+.ant-steps.ant-steps-title-horizontal.ant-steps-horizontal:not(.ant-steps-navigation) .ant-steps-item-section > .ant-steps-item-title {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.ant-steps.ant-steps-title-horizontal.ant-steps-horizontal:not(.ant-steps-navigation) .ant-steps-item-section > .ant-steps-item-description {
+  grid-column: 2 / -1;
+  grid-row: 2;
+}
+
+.ant-steps.ant-steps-title-horizontal.ant-steps-horizontal:not(.ant-steps-navigation) .ant-steps-item-wrapper > .ant-steps-item-rail {
+  grid-column: 3;
+  grid-row: 1;
+}
+
+/*
+ * Clickable steps: antd puts `role="button"` on the item; ng-zorro puts it on the wrapper, so antd's
+ * `.ant-steps-item[role='button']` rules match the item that holds such a wrapper.
+ */
+/* antd `.ant-steps .ant-steps-item[role='button']:focus-visible` */
+.ant-steps .ant-steps-item-wrapper[role='button']:focus-visible {
+  outline: var(--ant-line-width-focus) solid var(--ant-color-primary-border);
+  outline-offset: 1px;
+  transition:
+    outline-offset 0s,
+    outline 0s;
+}
+
+/* antd `.ant-steps .ant-steps-item[role='button']:not(.ant-steps-item-active):hover` */
+.ant-steps .ant-steps-item:has(> .ant-steps-item-wrapper[role='button']):not(.ant-steps-item-active):hover {
+  cursor: pointer;
+}
+
+/* antd `.ant-steps .ant-steps-item[role='button']:not(.ant-steps-item-active):hover .ant-steps-item-title, … .ant-steps-item-content` */
+.ant-steps .ant-steps-item:has(> .ant-steps-item-wrapper[role='button']):not(.ant-steps-item-active):hover .ant-steps-item-title,
+.ant-steps .ant-steps-item:has(> .ant-steps-item-wrapper[role='button']):not(.ant-steps-item-active):hover .ant-steps-item-description {
+  color: var(--ant-cmp-steps-item-text-hover-color);
+}
+
+/* antd `.ant-steps:not(.ant-steps-dot) .ant-steps-item:not(.ant-steps-item-custom)[role='button']:not(.ant-steps-item-active):hover .ant-steps-item-icon` */
+.ant-steps:not(.ant-steps-dot) .ant-steps-item:not(.ant-steps-item-custom):has(> .ant-steps-item-wrapper[role='button']):not(.ant-steps-item-active):hover .ant-steps-item-icon {
+  background: var(--ant-cmp-steps-item-icon-bg-hover-color);
+  border-color: var(--ant-cmp-steps-item-icon-border-hover-color);
+  color: var(--ant-cmp-steps-item-icon-text-hover-color);
+}
+
+/*
+ * Dot style: antd paints the dot on `.ant-steps-item-icon` itself and widens its hit area with
+ * `.ant-steps.ant-steps-dot .ant-steps-item-icon:after`; antd's custom dot render wraps that icon. A
+ * custom `nzProgressDot` template wraps ng-zorro's inner `.ant-steps-icon-dot` instead, so the inner
+ * span takes the same hit area (it paints nothing) and the dot fills it whatever the template's own
+ * wrapper does, keeping the template's hover target where the dot is.
+ */
+.ant-steps.ant-steps-dot .ant-steps-item-icon > .ant-steps-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--ant-steps-icon-size);
+  height: var(--ant-steps-icon-size);
+  transform: translate(-50%, -50%);
+  /* above the icon's own `::after`, which comes later in paint order and would take the hover */
+  z-index: 1;
+}
+
+.ant-steps.ant-steps-dot .ant-steps-item-icon .ant-steps-icon-dot {
+  position: absolute;
+  inset: 0;
+}
+
+/*
+ * Progress ring: ng-zorro composes `nz-progress` inside `.ant-steps-progress-icon` where antd draws
+ * its own SVG; the wrapper takes the box of antd's
+ * `.ant-steps.ant-steps-with-progress .ant-steps-item-progress-icon-svg` (the icon plus two bold
+ * line widths on every side), and `nz-progress`'s 40px / 32px (small) circle fills it.
+ */
+.ant-steps.ant-steps-with-progress .ant-steps-progress-icon {
+  position: absolute;
+  inset: calc(calc(var(--ant-line-width-bold) + var(--ant-line-width-bold)) * -1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+}

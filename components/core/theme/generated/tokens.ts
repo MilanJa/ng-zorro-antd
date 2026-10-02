@@ -1166,6 +1166,26 @@ export interface NzStatisticToken {
   titleFontSize: number;
 }
 
+export interface NzStepsToken {
+  customIconFontSize: number;
+  customIconSize: number;
+  customIconTop: number;
+  dotCurrentSize: number;
+  dotSize: number;
+  finishIconBgColor: string;
+  finishIconBorderColor: string;
+  iconFontSize: number;
+  iconSize: number;
+  iconSizeSM: number;
+  iconTop: number;
+  navArrowColor: string;
+  navContentMaxWidth: string;
+  titleLineHeight: number;
+  waitIconBgColor: string;
+  waitIconBorderColor: string;
+  waitIconColor: string;
+}
+
 export interface NzSwitchToken {
   handleBg: string;
   handleShadow: string;
@@ -1353,6 +1373,7 @@ export interface NzComponentTokenMap {
   Space: NzSpaceToken;
   Spin: NzSpinToken;
   Statistic: NzStatisticToken;
+  Steps: NzStepsToken;
   Switch: NzSwitchToken;
   Table: NzTableToken;
   Tabs: NzTabsToken;

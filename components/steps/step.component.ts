@@ -34,12 +34,19 @@ import { NzProgressFormatter, NzProgressModule } from 'ng-zorro-antd/progress';
   template: `
     <div
       #itemContainer
-      class="ant-steps-item-container"
+      class="ant-steps-item-container ant-steps-item-wrapper"
       [attr.role]="clickable && !nzDisabled ? 'button' : null"
       [tabindex]="clickable && !nzDisabled ? 0 : null"
     >
       @if (!last) {
-        <div class="ant-steps-item-tail"></div>
+        <!-- The rail takes the status of the step it leads to, as antd's rc-steps does. -->
+        <div
+          class="ant-steps-item-tail ant-steps-item-rail"
+          [class.ant-steps-item-rail-wait]="railStatus === 'wait'"
+          [class.ant-steps-item-rail-process]="railStatus === 'process'"
+          [class.ant-steps-item-rail-finish]="railStatus === 'finish'"
+          [class.ant-steps-item-rail-error]="railStatus === 'error'"
+        ></div>
       }
       <div class="ant-steps-item-icon">
         @if (!showProcessDot) {
@@ -89,7 +96,7 @@ import { NzProgressFormatter, NzProgressModule } from 'ng-zorro-antd/progress';
           </span>
         }
       </div>
-      <div class="ant-steps-item-content">
+      <div class="ant-steps-item-content ant-steps-item-section">
         <div class="ant-steps-item-title">
           <ng-container *nzStringTemplateOutlet="nzTitle">{{ nzTitle }}</ng-container>
           @if (nzSubtitle) {
@@ -113,6 +120,7 @@ import { NzProgressFormatter, NzProgressModule } from 'ng-zorro-antd/progress';
     '[class.ant-steps-item-active]': 'currentIndex === index',
     '[class.ant-steps-item-disabled]': 'nzDisabled',
     '[class.ant-steps-item-custom]': '!!nzIcon',
+    '[class.ant-steps-item-empty-header]': '!nzTitle && !nzSubtitle',
     '[class.ant-steps-next-error]': '(outStatus === "error") && (currentIndex === index + 1)'
   },
   imports: [NzProgressModule, NzIconModule, NzOutletModule, NgTemplateOutlet]
@@ -163,6 +171,8 @@ export class NzStepComponent implements OnInit {
   direction = 'horizontal';
   index = 0;
   last = false;
+  /** The following step, set by the parent; its status colours this step's rail. */
+  nextStep: NzStepComponent | null = null;
   outStatus = 'process';
   showProcessDot = false;
   clickable = false;
@@ -179,6 +189,10 @@ export class NzStepComponent implements OnInit {
       this.nzPercentage >= 0 &&
       this.nzPercentage <= 100
     );
+  }
+
+  get railStatus(): string | null {
+    return this.nextStep ? this.nextStep.nzStatus : null;
   }
 
   get currentIndex(): number {
