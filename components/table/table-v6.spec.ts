@@ -246,20 +246,29 @@ describe('table under antd v6 css', () => {
       rtlFixture.detectChanges();
 
       // "start" is the physically-right side under rtl: the nzRight cell is rc-table's logical
-      // start boundary and gets the start-shadow-show class, while the physically-left nzLeft cell
-      // (the logical end boundary here, since no end shadow is due with only 2 fixed sides and one
-      // scroll edge reached) carries neither.
+      // start boundary and gets the start-shadow-show class. The physically-left nzLeft cell is the
+      // logical END boundary here (scrolled 200px of a much wider ~840px range, so `showEnd` is
+      // also true) and gets the end-shadow-show class instead -- it does NOT carry neither class.
       const tableMain = root.querySelector('.ant-table') as HTMLElement;
       expect(tableMain.classList.contains('ant-table-fix-start-shadow-show')).toBe(true);
       const physicallyRightFixed = root.querySelector('.ant-table-cell-fix-right-first') as HTMLElement;
       expect(physicallyRightFixed).not.toBeNull();
       expect(physicallyRightFixed.classList.contains('ant-table-cell-fix-start-shadow-show')).toBe(true);
+      expect(physicallyRightFixed.classList.contains('ant-table-cell-fix-end-shadow-show')).toBe(false);
       const startShadow = getComputedStyle(physicallyRightFixed, '::after').boxShadow;
       expect(startShadow).not.toBe('none');
 
       const physicallyLeftFixed = root.querySelector('.ant-table-cell-fix-left-last') as HTMLElement;
       expect(physicallyLeftFixed).not.toBeNull();
       expect(physicallyLeftFixed.classList.contains('ant-table-cell-fix-start-shadow-show')).toBe(false);
+      expect(physicallyLeftFixed.classList.contains('ant-table-cell-fix-end-shadow-show')).toBe(true);
+      // antd's own generated rule gives `-start-shadow-show` an `inset 10px …` shadow and
+      // `-end-shadow-show` the mirrored `inset -10px …` (opposite horizontal offset sign), so the
+      // two sides' resolved `::after` box-shadow values must differ from each other, not just both
+      // be non-`none`.
+      const endShadow = getComputedStyle(physicallyLeftFixed, '::after').boxShadow;
+      expect(endShadow).not.toBe('none');
+      expect(endShadow).not.toBe(startShadow);
     });
   });
 
