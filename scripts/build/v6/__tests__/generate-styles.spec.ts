@@ -15,6 +15,7 @@ import {
   buildComponentCss,
   componentBundlePatches,
   componentTemplate,
+  componentTokenNamesFor,
   generateStyles,
   normalizeCssVarRootCls,
   type V6Algorithm
@@ -63,10 +64,10 @@ describe('componentBundlePatches', () => {
 });
 
 describe('componentTemplate with a stylesThrough entry', () => {
-  // Until a plan E task adds the real `timeline`/`steps` map entries, inject a fixture `steps` entry
-  // into the map for the duration of the test (there is no `v6Components` setter: this is a plain
-  // object at runtime despite its `as const` type).
-  it('gets the source component rules under its own prefix and the source tokens', () => {
+  // Until the map has real `timeline`/`steps` entries, inject a fixture `steps` entry into the map
+  // for the duration of the test (there is no `v6Components` setter: this is a plain object at
+  // runtime despite its `as const` type).
+  it('gets the source component rules under its own prefix', () => {
     const components = v6Components as unknown as Record<string, V6ComponentEntry>;
     const hadSteps = Object.prototype.hasOwnProperty.call(components, 'steps');
     const previousSteps = components['steps'];
@@ -87,6 +88,24 @@ describe('componentTemplate with a stylesThrough entry', () => {
         delete components['steps'];
       }
     }
+  });
+
+  // `componentTokenNamesFor`'s union needs a SOURCE whose antd name is actually registered in the
+  // engine (`componentTokenNames` reads `engine-components.ts`'s registry, built from the real map);
+  // `steps`/`Steps` is not registered until a later plan maps it for real, so this fixture borrows
+  // an already-mapped component (`button`) as the `stylesThrough` source to exercise the real union
+  // mechanism against real data, rather than asserting against Steps tokens that do not exist yet.
+  it("componentTokenNamesFor unions the entry's own tokens with the stylesThrough source's", async () => {
+    const fixtureEntry: V6ComponentEntry = {
+      antd: ['Avatar'],
+      prefixCls: 'ant-avatar',
+      stylesThrough: { dir: 'button', from: 'ant-btn', to: 'ant-avatar' }
+    };
+    const names = await componentTokenNamesFor('avatar', fixtureEntry);
+    // `--ant-button-content-font-size` is one of Button's real registered tokens (verified by
+    // printing `componentTokenNames('Button')` while writing this test).
+    expect(names).toEqual(expect.arrayContaining(['--ant-button-content-font-size']));
+    expect(names.some(n => n.startsWith('--ant-avatar-'))).toBe(true);
   });
 });
 

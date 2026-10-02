@@ -129,6 +129,25 @@ export async function componentTokenNames(component: string, prefix = 'ant'): Pr
     .sort();
 }
 
+/**
+ * The manifest token set for a map entry: the union of its own `componentTokenNames` and, for a
+ * `stylesThrough` entry, the source directory's -- the copied rules read the source's own
+ * component-token variables (e.g. timeline's copy of Steps' rules reads `--ant-steps-dot-size`),
+ * so the manifest must list them as tokens this entry depends on too.
+ */
+export async function componentTokenNamesFor(
+  dir: V6ComponentDir,
+  entry: V6ComponentEntry = v6Components[dir] as V6ComponentEntry
+): Promise<string[]> {
+  const names = await Promise.all(entry.antd.map(name => componentTokenNames(antdRegistryName(name))));
+  const through = entry.stylesThrough;
+  if (through) {
+    const source = v6Components[through.dir] as V6ComponentEntry;
+    names.push(...(await Promise.all(source.antd.map(name => componentTokenNames(antdRegistryName(name))))));
+  }
+  return [...new Set(names.flat())].sort();
+}
+
 async function renderTokens(algorithm: V6Algorithm): Promise<string> {
   const renderer = await import('../../../components/core/theme/render-theme-css');
   const core = await import(pathToFileURL(path.join(generatedDir, 'engine-core.ts')).href);
@@ -310,14 +329,7 @@ export async function generateStyles(options: GenerateStylesOptions): Promise<Ge
     compact: await renderTokens('compact')
   };
   for (const dir of v6ComponentDirs) {
-    const entry = v6Components[dir] as V6ComponentEntry;
-    const names = await Promise.all(entry.antd.map(name => componentTokenNames(antdRegistryName(name))));
-    const through = stylesThroughOf(dir);
-    if (through) {
-      const source = v6Components[through.dir] as V6ComponentEntry;
-      names.push(...(await Promise.all(source.antd.map(name => componentTokenNames(antdRegistryName(name))))));
-    }
-    manifest.components[dir].tokens = [...new Set(names.flat())].sort();
+    manifest.components[dir].tokens = await componentTokenNamesFor(dir);
   }
 
   const defaultBundle = await buildV6Bundle('default', componentsDir);
