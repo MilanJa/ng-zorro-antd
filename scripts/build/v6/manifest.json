@@ -1,7 +1,7 @@
 {
   "antdVersion": "6.6.5",
   "engineCoreBytes": 42701,
-  "engineComponentsBytes": 372195,
+  "engineComponentsBytes": 373895,
   "components": {
     "alert": {
       "classes": [
@@ -250,6 +250,25 @@
         "--ant-badge-text-font-size",
         "--ant-badge-text-font-size-sm",
         "--ant-badge-text-font-weight"
+      ]
+    },
+    "breadcrumb": {
+      "classes": [
+        "ant-breadcrumb",
+        "ant-breadcrumb-item",
+        "ant-breadcrumb-link",
+        "ant-breadcrumb-overlay-link",
+        "ant-breadcrumb-rtl",
+        "ant-breadcrumb-separator"
+      ],
+      "tokens": [
+        "--ant-breadcrumb-icon-font-size",
+        "--ant-breadcrumb-item-color",
+        "--ant-breadcrumb-last-item-color",
+        "--ant-breadcrumb-link-color",
+        "--ant-breadcrumb-link-hover-color",
+        "--ant-breadcrumb-separator-color",
+        "--ant-breadcrumb-separator-margin"
       ]
     },
     "button": {

@@ -581,6 +581,16 @@ export interface NzBadgeToken {
   textFontWeight: string;
 }
 
+export interface NzBreadcrumbToken {
+  iconFontSize: number;
+  itemColor: string;
+  lastItemColor: string;
+  linkColor: string;
+  linkHoverColor: string;
+  separatorColor: string;
+  separatorMargin: number;
+}
+
 export interface NzButtonToken {
   blueShadowColor: string;
   borderColorDisabled: string;
@@ -1298,6 +1308,7 @@ export interface NzComponentTokenMap {
   Alert: NzAlertToken;
   Avatar: NzAvatarToken;
   Badge: NzBadgeToken;
+  Breadcrumb: NzBreadcrumbToken;
   Button: NzButtonToken;
   Calendar: NzCalendarToken;
   Card: NzCardToken;

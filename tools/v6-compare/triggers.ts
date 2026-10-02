@@ -21,6 +21,10 @@ export const TRIGGERS = [
 // Components whose popup only opens on click (not hover), scoped to the component's own demo
 // containers; clicked up to 4 times each, closed with Escape/close buttons between attempts.
 export const CLICK_TRIGGERS: Partial<Record<string, string>> = {
+  // The dropdown-hosted crumb's trigger opens on hover (`nzTrigger`'s default), but a real
+  // Playwright click moves the pointer onto the element first, firing the same `mouseenter` the
+  // directive listens for (`dropdown.directive.ts`'s `hostMouseState$`).
+  breadcrumb: '.ant-breadcrumb-overlay-link',
   modal: '.ant-btn',
   drawer: '.ant-btn',
   message: '.ant-btn',

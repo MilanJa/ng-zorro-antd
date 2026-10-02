@@ -1,5 +1,13 @@
 {
   "_comment": "Pairs ng-zorro demo keys with antd demo file stems when the names differ; null marks an ng-zorro-only demo. `_antdDir` overrides the antd component directory.",
+  "breadcrumb": {
+    "_antdDir": "breadcrumb",
+    "with-icon": "withIcon",
+    "dropdown": "overlay",
+    "auto": null,
+    "router": null,
+    "separator-independent": null
+  },
   "cascader": {
     "_antdDir": "cascader",
     "change-on-function": "change-on-select",

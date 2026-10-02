@@ -122,6 +122,9 @@
       "less": "./breadcrumb/style/*.less",
       "style": "./breadcrumb/style/index.min.css"
     },
+    "./breadcrumb/style/v6/*": {
+      "style": "./breadcrumb/style/v6/*"
+    },
     "./button/style/*": {
       "less": "./button/style/*.less",
       "style": "./button/style/index.min.css"

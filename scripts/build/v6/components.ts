@@ -45,6 +45,10 @@ export const v6Components = {
   'auto-complete': { antd: ['AutoComplete'], prefixCls: 'ant-select' },
   avatar: { antd: ['Avatar'], prefixCls: 'ant-avatar' },
   badge: { antd: ['Badge'], prefixCls: 'ant-badge' },
+  // `breadcrumb-item.component.ts` wraps the dropdown-variant item's trigger in `nz-dropdown`
+  // (dropdown's own rendered DOM); `ant-dropdown` credits the `ant-dropdown*` classes breadcrumb's
+  // own demos render through that directive (see `manifest.json`'s `dropdown` entry for the set).
+  breadcrumb: { antd: ['Breadcrumb'], prefixCls: 'ant-breadcrumb', renderedPrefixes: ['ant-dropdown'] },
   button: { antd: ['Button'], prefixCls: 'ant-btn' },
   // Calendar is a picker panel rendered inline (`getPrefixCls('picker')` in antd's
   // `generateCalendar.js`), so it shares `ant-picker` with date-picker/time-picker; its header

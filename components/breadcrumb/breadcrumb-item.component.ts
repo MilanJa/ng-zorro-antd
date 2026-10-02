@@ -18,6 +18,9 @@ import { NzBreadCrumbSeparatorComponent } from './breadcrumb-separator.component
   exportAs: 'nzBreadcrumbItem',
   encapsulation: ViewEncapsulation.None,
   imports: [NgTemplateOutlet, NzBreadCrumbSeparatorComponent, NzDropdownModule, NzIconModule, NzOutletModule],
+  host: {
+    class: 'ant-breadcrumb-item'
+  },
   template: `
     @if (!!nzOverlay) {
       <span class="ant-breadcrumb-overlay-link" nz-dropdown [nzDropdownMenu]="nzOverlay">

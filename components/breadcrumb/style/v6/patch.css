@@ -1,0 +1,40 @@
+/* `nz-breadcrumb` is a custom element with no display handling of its own; v6's template CSS has a
+   rule for the `.ant-breadcrumb` class (box-sizing, margin, colour) but never sets `display` on the
+   element, relying in React on `<nav>`'s own default block rendering. Port of `style/patch.less`. */
+nz-breadcrumb {
+  display: block;
+}
+
+/* antd v6 never renders a `BreadcrumbSeparator` after the last crumb (`Breadcrumb.js`'s
+   `separator: isLastItem ? '' : mergedSeparator`), so its own CSS has no rule to hide one.
+   `breadcrumb-item.component.ts`'s template always projects a `<nz-breadcrumb-separator>` when
+   `nzSeparator` is set, regardless of position, so it is hidden here instead. Port of
+   `style/patch.less`'s `nz-breadcrumb-item:last-child .@{breadcrumb-prefix-cls}-separator`. */
+nz-breadcrumb-item:last-child .ant-breadcrumb-separator {
+  display: none;
+}
+
+/* ng-zorro's extra `nz-breadcrumb-item` layer needs its own bidi isolation under rtl; v6 only sets
+   `direction: rtl` on the root (`.ant-breadcrumb.ant-breadcrumb-rtl`), matching antd's flat `<li>`
+   list where no further isolation is needed. Port of `style/patch.less`'s `&-rtl > nz-breadcrumb-item`. */
+.ant-breadcrumb-rtl > nz-breadcrumb-item {
+  unicode-bidi: isolate;
+}
+
+/* v6 only spaces an icon from its following text when the icon is a DIRECT child of
+   `.ant-breadcrumb-link` (`.ant-breadcrumb-link >.anticon+span`, `components/core/theme/generated/
+   test-css.ts`); `breadcrumb-item.component.ts` projects user content (which can be an `<a>` wrapping
+   an icon and a label) straight into that span, putting the icon one level deeper. Mirror the
+   descendant form of `style/patch.less`'s `&-link .anticon + span` so the spacing still applies
+   through that extra level. */
+.ant-breadcrumb-link .anticon + span {
+  margin-inline-start: var(--ant-margin-xxs);
+}
+
+/* v6 colours only `.ant-breadcrumb-item:last-child` itself; a last crumb rendered as an `<a>` (as v4
+   supports and `style/patch.less`'s `& > nz-breadcrumb-item:last-child a` colours) keeps the plain
+   link colour from `.ant-breadcrumb .ant-breadcrumb-item a` otherwise, since that rule sets `color`
+   directly on the anchor at equal specificity. Mirror the last-item colour onto the anchor too. */
+.ant-breadcrumb > nz-breadcrumb-item:last-child a {
+  color: var(--ant-breadcrumb-last-item-color);
+}
