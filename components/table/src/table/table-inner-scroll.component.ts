@@ -3,6 +3,7 @@
  * found in the LICENSE file at https://github.com/NG-ZORRO/ng-zorro-antd/blob/master/LICENSE
  */
 
+import { Directionality } from '@angular/cdk/bidi';
 import { Platform } from '@angular/cdk/platform';
 import { CdkVirtualScrollViewport, ScrollingModule } from '@angular/cdk/scrolling';
 import { NgTemplateOutlet } from '@angular/common';
@@ -113,6 +114,7 @@ export class NzTableInnerScrollComponent<T> implements OnChanges, AfterViewInit 
   private platform = inject(Platform);
   private resizeService = inject(NzResizeService);
   private destroyRef = inject(DestroyRef);
+  private directionality = inject(Directionality);
 
   @Input() data: readonly T[] = [];
   @Input() scrollX: string | null = null;
@@ -168,34 +170,44 @@ export class NzTableInnerScrollComponent<T> implements OnChanges, AfterViewInit 
     const { scrollWidth, scrollLeft, clientWidth } = this.tableBodyElement.nativeElement;
     const leftClassName = 'ant-table-ping-left';
     const rightClassName = 'ant-table-ping-right';
-    let showLeft = false;
-    let showRight = false;
     if ((scrollWidth === clientWidth && scrollWidth !== 0) || clear) {
       this.renderer.removeClass(this.tableMainElement, leftClassName);
       this.renderer.removeClass(this.tableMainElement, rightClassName);
     } else if (scrollLeft === 0) {
       this.renderer.removeClass(this.tableMainElement, leftClassName);
       this.renderer.addClass(this.tableMainElement, rightClassName);
-      showRight = true;
     } else if (scrollWidth === scrollLeft + clientWidth) {
       this.renderer.removeClass(this.tableMainElement, rightClassName);
       this.renderer.addClass(this.tableMainElement, leftClassName);
-      showLeft = true;
     } else {
       this.renderer.addClass(this.tableMainElement, leftClassName);
       this.renderer.addClass(this.tableMainElement, rightClassName);
-      showLeft = true;
-      showRight = true;
     }
+
+    // rc-table (`Table.js:326-339`) computes its "more content past this edge" state from the
+    // DISTANCE scrolled, not the physical side: `absScrollStart = Math.abs(scrollLeft)` (Chromium
+    // reports a negative `scrollLeft` once a `dir="rtl"` container is scrolled), `showStart` is
+    // `absScrollStart > 0`, `showEnd` is `absScrollStart < scrollWidth - clientWidth - 1`. Under ltr
+    // "start" is the physically-left edge, so the selector/class pairing below matches the v4 ping
+    // classes above exactly; under rtl "start" is the physically-right edge, so only the SELECTOR
+    // used to find the boundary cell swaps sides -- the v4 ping classes above keep their existing
+    // physical left/right meaning unchanged.
+    const isRtl = this.directionality.valueSignal() === 'rtl';
+    const clearShadow = (scrollWidth === clientWidth && scrollWidth !== 0) || clear;
+    const absScrollStart = Math.abs(scrollLeft);
+    const showStart = !clearShadow && absScrollStart > 0;
+    const showEnd = !clearShadow && absScrollStart < scrollWidth - clientWidth - 1;
+    const startSelector = isRtl ? '.ant-table-cell-fix-right-first' : '.ant-table-cell-fix-left-last';
+    const endSelector = isRtl ? '.ant-table-cell-fix-left-last' : '.ant-table-cell-fix-right-first';
     this.setShadowShowClass(
-      showLeft,
-      '.ant-table-cell-fix-left-last',
+      showStart,
+      startSelector,
       'ant-table-fix-start-shadow-show',
       'ant-table-cell-fix-start-shadow-show'
     );
     this.setShadowShowClass(
-      showRight,
-      '.ant-table-cell-fix-right-first',
+      showEnd,
+      endSelector,
       'ant-table-fix-end-shadow-show',
       'ant-table-cell-fix-end-shadow-show'
     );

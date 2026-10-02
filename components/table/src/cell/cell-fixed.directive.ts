@@ -3,6 +3,7 @@
  * found in the LICENSE file at https://github.com/NG-ZORRO/ng-zorro-antd/blob/master/LICENSE
  */
 
+import { Directionality } from '@angular/cdk/bidi';
 import { Directive, ElementRef, inject, Input, OnChanges, Renderer2 } from '@angular/core';
 import { Subject } from 'rxjs';
 
@@ -15,16 +16,19 @@ import { Subject } from 'rxjs';
     // background) off `ant-table-cell-fix`/`-fix-start`/`-fix-end` rather than the v4
     // `-fix-left`/`-fix-right` pair, which v6 keeps only for a few compat selectors
     // (selection header background, sorter hover background) with no position/background rule
-    // of their own.
+    // of their own. Unlike `-fix-left`/`-fix-right`, which stay physical, `-fix-start`/`-fix-end`
+    // follow rc-table's own logical notion of "start"/"end" (`isFixedStart`/`isFixedEnd` below),
+    // which swaps under `dir="rtl"`.
     '[class.ant-table-cell-fix]': `isFixed`,
-    '[class.ant-table-cell-fix-start]': `isFixedLeft`,
-    '[class.ant-table-cell-fix-end]': `isFixedRight`,
+    '[class.ant-table-cell-fix-start]': `isFixedStart`,
+    '[class.ant-table-cell-fix-end]': `isFixedEnd`,
     '[style.position]': `isFixed? 'sticky' : null`
   }
 })
 export class NzCellFixedDirective implements OnChanges {
   private renderer = inject(Renderer2);
   private el: HTMLElement = inject(ElementRef<HTMLElement>).nativeElement;
+  private directionality = inject(Directionality);
 
   @Input() nzRight: string | boolean = false;
   @Input() nzLeft: string | boolean = false;
@@ -37,6 +41,21 @@ export class NzCellFixedDirective implements OnChanges {
   isFixedRight = false;
   isFixed = false;
 
+  /**
+   * rc-table's own notion of "start"/"end" (`Cell/index.js`'s `isFixedStart`/`isFixedEnd`): the
+   * physically-left fixed side in ltr, the physically-right one in rtl (and the other way for
+   * `isFixedEnd`) -- used by the `-fix-start`/`-fix-end` host classes above and by
+   * `setIsFirstRight`/`setIsLastLeft` below to pick which shadow-eligibility class a physical
+   * boundary cell gets.
+   */
+  get isFixedStart(): boolean {
+    return this.directionality.valueSignal() === 'rtl' ? this.isFixedRight : this.isFixedLeft;
+  }
+
+  get isFixedEnd(): boolean {
+    return this.directionality.valueSignal() === 'rtl' ? this.isFixedLeft : this.isFixedRight;
+  }
+
   setAutoLeftWidth(autoLeft: string | null): void {
     this.renderer.setStyle(this.el, 'left', autoLeft);
   }
@@ -47,16 +66,20 @@ export class NzCellFixedDirective implements OnChanges {
 
   setIsFirstRight(isFirstRight: boolean): void {
     this.setFixClass(isFirstRight, 'ant-table-cell-fix-right-first');
-    // v6's `fixedEndShadow` prop (eligibility for the end-side scroll shadow) is true only for the
-    // first fixed-right cell; the `-show` half that the ping state gates is toggled separately in
+    // v6's `fixedEndShadow`/`fixedStartShadow` props (eligibility for the scroll shadow) are true
+    // for the first fixed-right cell on rc-table's logical end side in ltr, its logical start side
+    // in rtl; the `-show` half that the ping state gates is toggled separately in
     // `NzTableInnerScrollComponent.setScrollPositionClassName`.
-    this.setFixClass(isFirstRight, 'ant-table-cell-fix-end-shadow');
+    this.setFixClass(isFirstRight && this.isFixedEnd, 'ant-table-cell-fix-end-shadow');
+    this.setFixClass(isFirstRight && this.isFixedStart, 'ant-table-cell-fix-start-shadow');
   }
 
   setIsLastLeft(isLastLeft: boolean): void {
     this.setFixClass(isLastLeft, 'ant-table-cell-fix-left-last');
-    // Same as `ant-table-cell-fix-end-shadow` above, mirrored for the start side.
-    this.setFixClass(isLastLeft, 'ant-table-cell-fix-start-shadow');
+    // Same as `ant-table-cell-fix-end-shadow`/`-start-shadow` above, mirrored for the last
+    // fixed-left cell (rc-table's logical start side in ltr, its logical end side in rtl).
+    this.setFixClass(isLastLeft && this.isFixedStart, 'ant-table-cell-fix-start-shadow');
+    this.setFixClass(isLastLeft && this.isFixedEnd, 'ant-table-cell-fix-end-shadow');
   }
 
   private setFixClass(flag: boolean, className: string): void {

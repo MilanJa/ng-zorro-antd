@@ -3,12 +3,13 @@
  * found in the LICENSE file at https://github.com/NG-ZORRO/ng-zorro-antd/blob/master/LICENSE
  */
 
+import { Directionality } from '@angular/cdk/bidi';
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 
-import { expectMotionSettled } from 'ng-zorro-antd/core/testing';
+import { expectMotionSettled, provideMockDirectionality } from 'ng-zorro-antd/core/testing';
 import { NzThemeDirective } from 'ng-zorro-antd/core/theme';
 import { V6_PATCH_CSS, V6_TEMPLATE_CSS, V6_TOKENS_DEFAULT_CSS } from 'ng-zorro-antd/core/theme/generated/test-css';
 import { provideNzIconsTesting } from 'ng-zorro-antd/icon/testing';
@@ -56,6 +57,37 @@ interface Row {
   `
 })
 class TestFixedColumnsComponent {
+  rows = signal<Row[]>(Array.from({ length: 20 }, (_, i) => ({ id: i, name: `Row ${i}`, a: `a${i}`, b: `b${i}` })));
+}
+
+@Component({
+  imports: [NzTableModule],
+  template: `
+    <div dir="rtl" style="width: 400px">
+      <nz-table id="host" #t [nzData]="rows()" [nzScroll]="{ x: '900px', y: '120px' }" [nzFrontPagination]="false">
+        <thead>
+          <tr>
+            <th nzLeft nzWidth="120px">Name</th>
+            <th nzWidth="500px">A</th>
+            <th nzWidth="500px">B</th>
+            <th nzRight nzWidth="120px">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (r of t.data; track r.id) {
+            <tr>
+              <td nzLeft>{{ r.name }}</td>
+              <td>{{ r.a }}</td>
+              <td>{{ r.b }}</td>
+              <td nzRight>x</td>
+            </tr>
+          }
+        </tbody>
+      </nz-table>
+    </div>
+  `
+})
+class TestFixedColumnsRtlComponent {
   rows = signal<Row[]>(Array.from({ length: 20 }, (_, i) => ({ id: i, name: `Row ${i}`, a: `a${i}`, b: `b${i}` })));
 }
 
@@ -131,7 +163,10 @@ describe('table under antd v6 css', () => {
 
     beforeEach(() => {
       installV6Css();
-      TestBed.configureTestingModule({ providers: [provideNzIconsTesting()], animationsEnabled: true });
+      TestBed.configureTestingModule({
+        providers: [provideNzIconsTesting(), provideMockDirectionality()],
+        animationsEnabled: true
+      });
       fixture = TestBed.createComponent(TestFixedColumnsComponent);
       fixture.detectChanges();
     });
@@ -190,6 +225,41 @@ describe('table under antd v6 css', () => {
       expect(afterShadow).not.toBe('none');
 
       expect(headerDiv.getBoundingClientRect().top).toBe(topBefore);
+    });
+
+    it('places the v6 fixed-column shadow on the logical start side under rtl', async () => {
+      const dir = TestBed.inject(Directionality);
+      dir.valueSignal.set('rtl');
+      const rtlFixture = TestBed.createComponent(TestFixedColumnsRtlComponent);
+      rtlFixture.detectChanges();
+      await rtlFixture.whenStable();
+      await new Promise(r => setTimeout(r, 50));
+      rtlFixture.detectChanges();
+
+      const root = rtlFixture.nativeElement as HTMLElement;
+      const bodyDiv = root.querySelector('.ant-table-body') as HTMLElement;
+      // Chromium reports a NEGATIVE `scrollLeft` once a `dir="rtl"` container is scrolled away from
+      // its (physically-right) start edge.
+      bodyDiv.scrollLeft = -200;
+      bodyDiv.dispatchEvent(new Event('scroll'));
+      await new Promise(r => setTimeout(r, 50));
+      rtlFixture.detectChanges();
+
+      // "start" is the physically-right side under rtl: the nzRight cell is rc-table's logical
+      // start boundary and gets the start-shadow-show class, while the physically-left nzLeft cell
+      // (the logical end boundary here, since no end shadow is due with only 2 fixed sides and one
+      // scroll edge reached) carries neither.
+      const tableMain = root.querySelector('.ant-table') as HTMLElement;
+      expect(tableMain.classList.contains('ant-table-fix-start-shadow-show')).toBe(true);
+      const physicallyRightFixed = root.querySelector('.ant-table-cell-fix-right-first') as HTMLElement;
+      expect(physicallyRightFixed).not.toBeNull();
+      expect(physicallyRightFixed.classList.contains('ant-table-cell-fix-start-shadow-show')).toBe(true);
+      const startShadow = getComputedStyle(physicallyRightFixed, '::after').boxShadow;
+      expect(startShadow).not.toBe('none');
+
+      const physicallyLeftFixed = root.querySelector('.ant-table-cell-fix-left-last') as HTMLElement;
+      expect(physicallyLeftFixed).not.toBeNull();
+      expect(physicallyLeftFixed.classList.contains('ant-table-cell-fix-start-shadow-show')).toBe(false);
     });
   });
 
