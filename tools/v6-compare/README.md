@@ -59,11 +59,12 @@ whether a migrated ng-zorro component matches antd v6's visuals.
   `--component` or `--theme` keeps the rest of the index. Starts `serve-out`
   itself on `HARNESS_URL`'s port (or reuses a running one) and reads the doc
   site from `SITE_URL`. `--theme default` captures the plain v4 ng-zorro page
-  only (no antd pane) for a component task's before/after diff; copy
-  `out/<dir>/default/` to `out/<dir>/default-before/` by hand before the
-  template change. `--opened` (with `--theme default`) also clicks each
-  demo's `CLICK_TRIGGERS` entry (`triggers.ts`) and saves a viewport shot of
-  the opened popup to `out/<dir>/default/<demo>-opened.nz.png`.
+  only (no antd pane) for a before/after diff; copy `out/<dir>/default/` to
+  `out/<dir>/default-before/` by hand first. `--opened` (with `--theme
+default`) also activates each demo's trigger from `CLICK_TRIGGERS` or
+  `HOVER_TRIGGERS` (`triggers.ts`; click wins if listed in both — unsafe
+  when the trigger wraps a real `<a href>`), saves a shot to
+  `<demo>-opened.nz.png`, and logs/undoes any navigation away.
 - `npx tsx tools/v6-compare/dump-dom.ts --component <dir> --demo <stem> [--side antd|nz] [--theme v6] [--selector <css>] [--click [<selector>]]` —
   prints a demo's rendered DOM (text, `style`, `id`, `aria-*` and `data-*` stripped, indented by
   depth). `--side antd` (default) reads the bundled antd demo from the out server it starts;
@@ -79,10 +80,9 @@ whether a migrated ng-zorro component matches antd v6's visuals.
 - `npx tsx tools/v6-compare/collect-classes.ts [--component <dir>]` — records
   `ant-*` classes rendered on the doc-site page (`SITE_URL`) into
   `out/rendered-classes.json` for the style-coverage tests, with the popup
-  triggers that opened something per component (hover `TRIGGERS` first, then
-  click-only `CLICK_TRIGGERS`, both from `triggers.ts`, which `capture.ts`
-  also imports); classes are attributed by `prefixCls` plus `renderedPrefixes`
-  (see `scripts/build/v6/components.ts`).
+  triggers that opened something per component (`TRIGGERS`, `CLICK_TRIGGERS`,
+  `HOVER_TRIGGERS`, all from `triggers.ts`, also used by `capture.ts`);
+  classes are attributed by `prefixCls` plus `renderedPrefixes`.
 - `npx vitest run --config scripts/vitest.config.mts scripts/build/v6/__tests__/v4-rule-guard.spec.ts` —
   fails a commit that emits a class the compiled v4 CSS also styles;
   `npm run v6:update-baseline` refreshes the baseline it diffs against.

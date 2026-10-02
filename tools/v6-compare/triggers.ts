@@ -21,10 +21,6 @@ export const TRIGGERS = [
 // Components whose popup only opens on click (not hover), scoped to the component's own demo
 // containers; clicked up to 4 times each, closed with Escape/close buttons between attempts.
 export const CLICK_TRIGGERS: Partial<Record<string, string>> = {
-  // The dropdown-hosted crumb's trigger opens on hover (`nzTrigger`'s default), but a real
-  // Playwright click moves the pointer onto the element first, firing the same `mouseenter` the
-  // directive listens for (`dropdown.directive.ts`'s `hostMouseState$`).
-  breadcrumb: '.ant-breadcrumb-overlay-link',
   modal: '.ant-btn',
   drawer: '.ant-btn',
   message: '.ant-btn',
@@ -43,4 +39,15 @@ export const CLICK_TRIGGERS: Partial<Record<string, string>> = {
   table: '.ant-table-filter-trigger',
   pagination: '.ant-pagination-options .ant-select-selector'
   // 'context-menu': n/a -- right-click is not exercised by this harness.
+};
+
+// Components whose popup opens on hover (not click), scoped to the component's own demo
+// containers; hovered once, closed with Escape. A `page.click` on these is unsafe when the
+// trigger element wraps a real `<a href>` (e.g. breadcrumb's dropdown-hosted crumb,
+// `components/breadcrumb/demo/dropdown.ts`): Playwright's click dispatches at the element's
+// visible point, which can land on the anchor and navigate the page away instead of opening the
+// popup, since the directive's own open path (`dropdown.directive.ts`'s `hostMouseState$`) never
+// needs a click at all.
+export const HOVER_TRIGGERS: Partial<Record<string, string>> = {
+  breadcrumb: '.ant-breadcrumb-overlay-link'
 };

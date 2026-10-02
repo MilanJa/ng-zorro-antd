@@ -8,7 +8,7 @@ import { chromium } from 'playwright';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 
-import { CLICK_TRIGGERS, TRIGGERS } from './triggers';
+import { CLICK_TRIGGERS, HOVER_TRIGGERS, TRIGGERS } from './triggers';
 import { v6ComponentDirs, v6Components } from '../../scripts/build/v6/components';
 import { attributeRenderedClasses } from '../../scripts/build/v6/rendered-coverage';
 
@@ -89,6 +89,34 @@ async function main(): Promise<void> {
         await page.waitForTimeout(400);
       }
       if (activated > 0) opened.push(`${CLICK_TRIGGERS[dir]} (${activated}/${clickable.length})`);
+      // A click can navigate the page away when the trigger wraps a real `<a href>` (see
+      // `HOVER_TRIGGERS`'s comment in `triggers.ts`); detect it and return to the component page
+      // instead of scraping classes off whatever page the click landed on afterward.
+      const componentUrl = `${siteUrl}/components/${dir}/en`;
+      if (!page.url().startsWith(componentUrl)) {
+        console.warn(`${dir}: page navigated away from ${componentUrl} to ${page.url()}, returning`);
+        await page.goto(`${componentUrl}?theme=v6`, { waitUntil: 'networkidle' });
+      }
+    }
+    if (HOVER_TRIGGERS[dir]) {
+      const hoverable = await page.$$(`[id^="components-${dir}-demo-"] ${HOVER_TRIGGERS[dir]}`);
+      let activated = 0;
+      for (const el of hoverable.slice(0, 1)) {
+        const before = new Set(await page.evaluate(collect, dir));
+        try {
+          await el.scrollIntoViewIfNeeded();
+          await el.hover({ timeout: 1000 });
+        } catch {
+          continue; // not hoverable: skip
+        }
+        await page.waitForTimeout(800);
+        const after = await page.evaluate(collect, dir);
+        after.forEach(c => seen.add(c));
+        if (after.some(c => !before.has(c))) activated++;
+        await page.keyboard.press('Escape');
+        await page.waitForTimeout(400);
+      }
+      if (activated > 0) opened.push(`${HOVER_TRIGGERS[dir]} (hover, ${activated}/${hoverable.length})`);
     }
     triggers[dir] = opened;
     // Keep only classes owned by this component (its prefixCls, its `renderedPrefixes`, minus classes of a

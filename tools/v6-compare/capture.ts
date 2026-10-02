@@ -10,7 +10,7 @@ import path from 'node:path';
 
 import { pairDemos } from './pairing';
 import { startOutServer } from './serve-out';
-import { CLICK_TRIGGERS } from './triggers';
+import { CLICK_TRIGGERS, HOVER_TRIGGERS } from './triggers';
 import { v6ComponentDirs, v6Components, V6ComponentDir } from '../../scripts/build/v6/components';
 
 const repoRoot = path.resolve(__dirname, '../..');
@@ -35,25 +35,34 @@ function ngDemoKeys(dir: string): string[] {
 }
 
 /**
- * Which element to click to open `dir`'s popup for its `demo`, and where to save the screenshot of
- * the opened state, scoped to that demo's own container the same way `collect-classes.ts` scopes its
- * click triggers. `null` when `dir` has no registered click trigger (`CLICK_TRIGGERS`): not every
- * mapped component opens a popup on click.
+ * Which element to activate to open `dir`'s popup for its `demo`, how to activate it, and where to
+ * save the screenshot of the opened state, scoped to that demo's own container the same way
+ * `collect-classes.ts` scopes its triggers. `null` when `dir` has no registered trigger in either
+ * map: not every mapped component opens a popup this way. A directory listed in both maps uses its
+ * `clickTriggers` entry (click wins) — none are, as of this writing, but the precedence is explicit
+ * rather than accidental.
  */
 export function openedShotPlan(
   dir: string,
   demo: string,
-  clickTriggers: Partial<Record<string, string>>
-): { selector: string; file: string } | null {
-  const trigger = clickTriggers[dir];
+  clickTriggers: Partial<Record<string, string>>,
+  hoverTriggers: Partial<Record<string, string>>
+): { selector: string; file: string; action: 'click' | 'hover' } | null {
+  const click = clickTriggers[dir];
+  const hover = hoverTriggers[dir];
+  const trigger = click ?? hover;
+  const action: 'click' | 'hover' = click ? 'click' : 'hover';
   return trigger
-    ? { selector: `[id^="components-${dir}-demo-${demo}"] ${trigger}`, file: `${demo}-opened.nz.png` }
+    ? { selector: `[id^="components-${dir}-demo-${demo}"] ${trigger}`, file: `${demo}-opened.nz.png`, action }
     : null;
 }
 
-async function shotElement(page: Page, selector: string, file: string): Promise<boolean> {
+async function shotElement(page: Page, selector: string, file: string, what?: string): Promise<boolean> {
   const el = await page.waitForSelector(selector, { timeout: 5000, state: 'attached' }).catch(() => null);
-  if (!el) return false;
+  if (!el) {
+    if (what) console.warn(`${what}: demo container not found, shot skipped`);
+    return false;
+  }
   await el.scrollIntoViewIfNeeded();
   await page.waitForTimeout(300);
   await el.screenshot({ path: file });
@@ -244,15 +253,20 @@ async function main(): Promise<void> {
       const folder = path.join(outDir, dir, theme);
       mkdirSync(folder, { recursive: true });
       await page.goto(`${siteUrl}/components/${dir}/en?theme=${theme}`, { waitUntil: 'networkidle' });
+      const componentUrl = `${siteUrl}/components/${dir}/en`;
       for (const { key, antd } of pairing.pairs) {
-        await shotElement(page, `#components-${dir}-demo-${key}`, path.join(folder, `${key}.nz.png`));
+        await shotElement(page, `#components-${dir}-demo-${key}`, path.join(folder, `${key}.nz.png`), `${dir}/${key}`);
         // Default-theme opened state of a popup demo, for the before/after diff popup components keep
         // next to their closed-state capture (`out/<dir>/default(-before)/<demo>-opened.nz.png`).
         if (theme === 'default' && arg('opened') !== null) {
-          const plan = openedShotPlan(dir, key, CLICK_TRIGGERS);
+          const plan = openedShotPlan(dir, key, CLICK_TRIGGERS, HOVER_TRIGGERS);
           if (plan) {
             try {
-              await page.click(plan.selector, { force: true, timeout: 1000 });
+              if (plan.action === 'hover') {
+                await page.hover(plan.selector, { timeout: 1000 });
+              } else {
+                await page.click(plan.selector, { force: true, timeout: 1000 });
+              }
               await page.waitForTimeout(800);
               await page.screenshot({ path: path.join(folder, plan.file), fullPage: false });
             } catch (error) {
@@ -260,6 +274,13 @@ async function main(): Promise<void> {
             }
             await page.keyboard.press('Escape');
             await page.waitForTimeout(300);
+            // A click (and, in principle, a hover landing on a nested link) can navigate the page
+            // away from the component route (see `HOVER_TRIGGERS`'s comment); detect it and go back
+            // instead of silently producing wrong screenshots for every demo captured afterward.
+            if (!page.url().startsWith(componentUrl)) {
+              console.warn(`${dir}/${key}: page navigated away from ${componentUrl} to ${page.url()}, returning`);
+              await page.goto(`${componentUrl}?theme=${theme}`, { waitUntil: 'networkidle' });
+            }
           }
         }
         // `default` is the plain v4 theme, captured for the before/after diff a component task keeps
@@ -270,7 +291,12 @@ async function main(): Promise<void> {
           waitUntil: 'networkidle'
         });
         await assertNoAntdRuntimeStyles(antdPage, `${dir}/${antd} (${theme})`);
-        await shotElement(antdPage, `.cmp-demo[data-demo="${antd}"]`, path.join(folder, `${key}.antd.png`));
+        await shotElement(
+          antdPage,
+          `.cmp-demo[data-demo="${antd}"]`,
+          path.join(folder, `${key}.antd.png`),
+          `${dir}/${antd} (antd)`
+        );
         await antdPage.close();
       }
     }
