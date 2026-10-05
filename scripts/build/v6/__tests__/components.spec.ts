@@ -13,7 +13,7 @@ import {
   ANTD_STYLE_MODULE_OVERRIDES,
   antdRegistryName,
   antdStyleModuleDir,
-  ownsStyleModule,
+  entryOwnsStyleModule,
   stylesThroughOf,
   v6ComponentDirs,
   v6Components,
@@ -81,10 +81,10 @@ describe('v6 component map', () => {
   });
 
   it("treats an entry whose names share their own directory's style module as that module's owner", () => {
-    expect(ownsStyleModule('grid', { antd: ['Row', 'Col'], prefixCls: 'ant-row' })).toBe(true);
-    expect(ownsStyleModule('button', { antd: ['Button'], prefixCls: 'ant-btn' })).toBe(true);
-    expect(ownsStyleModule('auto-complete', { antd: ['AutoComplete'], prefixCls: 'ant-select' })).toBe(false);
-    expect(ownsStyleModule('time-picker', { antd: ['TimePicker'], prefixCls: 'ant-picker' })).toBe(false);
+    expect(entryOwnsStyleModule('grid', { antd: ['Row', 'Col'], prefixCls: 'ant-row' })).toBe(true);
+    expect(entryOwnsStyleModule('button', { antd: ['Button'], prefixCls: 'ant-btn' })).toBe(true);
+    expect(entryOwnsStyleModule('auto-complete', { antd: ['AutoComplete'], prefixCls: 'ant-select' })).toBe(false);
+    expect(entryOwnsStyleModule('time-picker', { antd: ['TimePicker'], prefixCls: 'ant-picker' })).toBe(false);
   });
 });
 

@@ -89,6 +89,25 @@ describe('recorder shim registry guard', () => {
     expect(shim.registry.get('Grid').getDefaultToken({})).toEqual({ a: 1, b: 2 });
   });
 
+  it("throws when a merged Grid registration's options carry unitless/ignore/deprecatedTokens", async () => {
+    const shim = await freshShim();
+    const utils = shim.genStyleUtils({ getCompUnitless: () => ({}) });
+    utils.genStyleHooks(
+      'Grid',
+      () => [],
+      (): Record<string, number> => ({ rowOnly: 1 }),
+      {}
+    );
+    expect(() =>
+      utils.genStyleHooks(
+        'Grid',
+        () => [],
+        (): Record<string, number> => ({ colOnly: 2 }),
+        { unitless: { colOnly: true } }
+      )
+    ).toThrow(/v6 recorder: merged Grid registration carries options the merge does not combine/);
+  });
+
   it('still throws for any other name, even when both factories return no tokens', async () => {
     const shim = await freshShim();
     const utils = shim.genStyleUtils({ getCompUnitless: () => ({}) });

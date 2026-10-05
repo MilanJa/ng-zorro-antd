@@ -19,6 +19,11 @@ const MERGED_FACTORY_NAMES = new Set(['Grid']);
 
 const tokensOf = (factory, token) => (typeof factory === 'function' ? factory(token) : (factory ?? {}));
 
+// `options.unitless`/`ignore`/`deprecatedTokens` are per-registration and the merge branch below only
+// combines `getDefaultToken`; a non-empty value here would be silently dropped on the merged entry.
+const hasMergeableOptions = options =>
+  !!options && [options.unitless, options.ignore, options.deprecatedTokens].some(v => v && Object.keys(v).length > 0);
+
 export function genStyleUtils(config) {
   const getCompUnitless = config.getCompUnitless;
 
@@ -31,6 +36,9 @@ export function genStyleUtils(config) {
           throw new Error(
             `v6 recorder: conflicting default-token factories for ${String(name)} (sub-styles: ${[...existing.subStyles, subStyle].join(', ')})`
           );
+        }
+        if (hasMergeableOptions(options)) {
+          throw new Error(`v6 recorder: merged ${name} registration carries options the merge does not combine`);
         }
         const first = existing.getDefaultToken;
         existing.getDefaultToken = token => ({ ...tokensOf(first, token), ...tokensOf(getDefaultToken, token) });

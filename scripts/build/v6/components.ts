@@ -294,15 +294,21 @@ const RENDERED_PREFIX_OWNERS: Record<string, V6ComponentDir> = {
 };
 
 /**
- * True for an entry whose antd names all have their style module in the entry's own antd directory:
- * each name's own (`Button` -> `button`) or the directory's shared one (`Row`/`Col` -> `grid`). A
- * preset alias (`AutoComplete` -> `select`) does not own the styles of its prefix.
+ * True for an entry whose antd names all have their style module in `dir`: each name's own
+ * (`Button` -> `button`) or the directory's shared one (`Row`/`Col` -> `grid`). A preset alias
+ * (`AutoComplete` -> `select`) does not own the styles of its prefix. Pure so tests can pass a fake
+ * entry for a `dir` that is not in `v6Components`.
  */
-export function ownsStyleModule(dir: string, entry: V6ComponentEntry = v6Components[dir as V6ComponentDir]): boolean {
+export function entryOwnsStyleModule(dir: string, entry: V6ComponentEntry): boolean {
   return entry.antd.every(name => {
     const moduleDir = antdStyleModuleDir(name);
     return moduleDir === kebabCase(name) || moduleDir === dir;
   });
+}
+
+/** `entryOwnsStyleModule` for a mapped `dir`, resolving its entry from `v6Components`. */
+export function ownsStyleModule(dir: V6ComponentDir): boolean {
+  return entryOwnsStyleModule(dir, v6Components[dir]);
 }
 
 /**
