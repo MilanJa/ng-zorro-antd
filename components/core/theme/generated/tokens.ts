@@ -547,6 +547,10 @@ export interface NzAliasToken extends NzSeedToken {
   yellowHover: string;
 }
 
+export interface NzAffixToken {
+  zIndexPopup: number;
+}
+
 export interface NzAlertToken {
   borderRadius: number;
   defaultPadding: string;
@@ -1460,6 +1464,7 @@ export interface NzUploadToken {
 }
 
 export interface NzComponentTokenMap {
+  Affix: NzAffixToken;
   Alert: NzAlertToken;
   Anchor: NzAnchorToken;
   Avatar: NzAvatarToken;

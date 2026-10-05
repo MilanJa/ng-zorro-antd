@@ -130,3 +130,51 @@ describe('anchor under antd v6 css', () => {
     expect(parseFloat(ballCs.width)).toBeCloseTo(activeTitle.clientWidth, 0);
   });
 });
+
+@Component({
+  imports: [NzAnchorModule],
+  template: `
+    <div #box2 id="box2" style="height: 200px; overflow: auto; position: relative;">
+      <div style="height: 60px"></div>
+      <nz-anchor id="host2" [nzContainer]="box2">
+        <nz-link nzHref="#c" nzTitle="C" />
+      </nz-anchor>
+      <h2 id="c">C</h2>
+      <div style="height: 1000px"></div>
+    </div>
+  `
+})
+class TestAffixedAnchorComponent {
+  @ViewChild('box2', { static: true }) boxRef!: ElementRef<HTMLElement>;
+  get box(): HTMLElement {
+    return this.boxRef.nativeElement;
+  }
+}
+
+describe('affixed anchor under antd v6 css', () => {
+  let fixture: ComponentFixture<TestAffixedAnchorComponent>;
+
+  beforeEach(() => {
+    installV6Css();
+    TestBed.configureTestingModule({ providers: [provideNzIconsTesting()], animationsEnabled: true });
+    fixture = TestBed.createComponent(TestAffixedAnchorComponent);
+    fixture.detectChanges();
+  });
+
+  afterEach(() => {
+    style.remove();
+  });
+
+  it('gives the composed nz-affix wrapper antd v6 z-index once scrolled, not auto', async () => {
+    const box = fixture.componentInstance.box;
+
+    box.scrollTop = 300;
+    box.dispatchEvent(new Event('scroll'));
+    // affix handles scroll through throttleTime(20, trailing) (affix.component.ts:39,128).
+    await new Promise(resolve => setTimeout(resolve, 100));
+    fixture.detectChanges();
+
+    const fixedEl = fixture.debugElement.query(By.css('#host2 .ant-affix')).nativeElement as HTMLElement;
+    expect(getComputedStyle(fixedEl).zIndex).toBe('10');
+  });
+});

@@ -1,8 +1,16 @@
 {
   "antdVersion": "6.6.5",
   "engineCoreBytes": 42701,
-  "engineComponentsBytes": 430529,
+  "engineComponentsBytes": 430796,
   "components": {
+    "affix": {
+      "classes": [
+        "ant-affix"
+      ],
+      "tokens": [
+        "--ant-affix-z-index-popup"
+      ]
+    },
     "alert": {
       "classes": [
         "ant-alert",

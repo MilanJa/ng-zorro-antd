@@ -86,6 +86,9 @@
       "less": "./affix/style/*.less",
       "style": "./affix/style/index.min.css"
     },
+    "./affix/style/v6/*": {
+      "style": "./affix/style/v6/*"
+    },
     "./alert/style/*": {
       "less": "./alert/style/*.less",
       "style": "./alert/style/index.min.css"

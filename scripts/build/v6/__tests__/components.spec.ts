@@ -94,6 +94,7 @@ describe('v6PatchDependencies', () => {
       v6ComponentDirs.map(dir => [dir, v6PatchDependencies(dir)]).filter(([, list]) => list.length)
     );
     expect(deps).toEqual({
+      anchor: ['affix'],
       'auto-complete': ['select'],
       breadcrumb: ['dropdown'],
       calendar: ['badge', 'radio', 'select', 'typography'],

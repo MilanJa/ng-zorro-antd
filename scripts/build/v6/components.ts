@@ -44,8 +44,11 @@ export interface StylesThrough {
  * Adding a component here is the first step of migrating it to v6 (see .claude/DEVELOPMENT.md).
  */
 export const v6Components = {
+  affix: { antd: ['Affix'], prefixCls: 'ant-affix' },
   alert: { antd: ['Alert'], prefixCls: 'ant-alert' },
-  anchor: { antd: ['Anchor'], prefixCls: 'ant-anchor' },
+  // `anchor.component.ts:58-63` composes `nz-affix` when `nzAffix` is set (default); `ant-affix` is
+  // also in anchor's own manifest because Anchor's extraction renders Affix.
+  anchor: { antd: ['Anchor'], prefixCls: 'ant-anchor', renderedPrefixes: ['ant-affix'] },
   // AutoComplete has no style module of its own (`ANTD_STYLE_MODULE_OVERRIDES` below); it renders
   // Select's DOM in combobox mode, so its CSS is Select's class set under Select's `prefixCls`.
   'auto-complete': { antd: ['AutoComplete'], prefixCls: 'ant-select' },

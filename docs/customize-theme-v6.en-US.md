@@ -11,6 +11,7 @@ Only the components below have v6 styles so far. Others keep rendering with the 
 
 <!-- prettier-ignore-start -->
 <!-- v6-components:start -->
+- `affix`
 - `alert`
 - `anchor`
 - `auto-complete`
