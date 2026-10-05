@@ -144,9 +144,10 @@ describe('breadcrumb overlay item under antd v6 css', () => {
   // The dropdown-hosted variant wraps the overlay trigger in `nz-dropdown` (dropdown's own
   // directive, `components/dropdown/dropdown.directive.ts`) with no theme wiring of its own; the
   // default trigger is `hover` (`nzTrigger = 'hover'`), so the open state is reached with a
-  // `mouseenter` dispatch, not a click, and settles after the directive's `auditTime(150)`.
+  // `mouseenter` dispatch, not a click, and settles after the directive's `auditTime(150)` (300 ms
+  // leaves headroom for a loaded machine).
   async function waitForOpen(): Promise<void> {
-    await new Promise(resolve => setTimeout(resolve, 200));
+    await new Promise(resolve => setTimeout(resolve, 300));
     fixture.detectChanges();
     await fixture.whenStable();
     fixture.detectChanges();
