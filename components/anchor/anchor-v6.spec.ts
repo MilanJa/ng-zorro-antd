@@ -89,11 +89,12 @@ describe('anchor under antd v6 css', () => {
 
     const ball = fixture.debugElement.query(By.css('.ant-anchor-ink-ball')).nativeElement as HTMLElement;
     expect(getComputedStyle(ball).backgroundColor).toBe('rgb(22, 119, 255)');
-    // The ball's `top` is the active link title's offset within `.ant-anchor` (centre of the title
-    // row, anchor.component.ts's `setActive`); probe both sides to confirm they agree rather than
-    // asserting a hard-coded pixel value.
-    const expectedTop = activeTitle.offsetTop + activeTitle.clientHeight / 2 - 4.5;
-    expect(parseFloat(ball.style.top)).toBeCloseTo(expectedTop, 1);
+    // antd v6 spans the indicator over exactly the active title (Anchor.js's `updateInk`: centred
+    // on it, `height = clientHeight`), so the rendered boxes must coincide.
+    const ballRect = ball.getBoundingClientRect();
+    const titleRect = activeTitle.getBoundingClientRect();
+    expect(Math.abs(ballRect.top - titleRect.top)).toBeLessThanOrEqual(1);
+    expect(Math.abs(ballRect.height - titleRect.height)).toBeLessThanOrEqual(1);
 
     // antd v6 moves the visible-state hook to `.ant-anchor-ink` itself (`${prefixCls}-ink-visible`);
     // ng-zorro keeps the ball, not the rail, as the moving element (anchor.component.ts's

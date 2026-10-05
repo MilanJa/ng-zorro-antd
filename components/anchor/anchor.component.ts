@@ -220,6 +220,16 @@ export class NzAnchorComponent implements AfterViewInit, OnChanges {
     const linkNode = targetComp.getLinkTitleElement();
     if (this.nzDirection === 'vertical') {
       this.ink.nativeElement.style.top = `${linkNode.offsetTop + linkNode.clientHeight / 2 - 4.5}px`;
+      // antd v6 sizes the vertical indicator to the active title and centres it there
+      // (node_modules/antd/es/anchor/Anchor.js's `updateInk`: `inkStyle.top = offsetTop +
+      // clientHeight / 2`, `inkStyle.height = clientHeight`, plus `translateY(-50%)` in its CSS).
+      // Written as custom properties for the same reason as the horizontal pair below: only
+      // `style/v6/patch.css` reads them, so the v4 `top` above stays the default theme's position.
+      this.ink.nativeElement.style.setProperty(
+        '--nz-anchor-ink-top',
+        `${linkNode.offsetTop + linkNode.clientHeight / 2}px`
+      );
+      this.ink.nativeElement.style.setProperty('--nz-anchor-ink-height', `${linkNode.clientHeight}px`);
     } else {
       this.ink.nativeElement.style.left = `${linkNode.offsetLeft + linkNode.clientWidth / 2}px`;
     }

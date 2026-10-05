@@ -37,26 +37,23 @@ nz-link {
 }
 
 /* Mirrors v6's ink geometry (position, display toggle, width/height, colour) onto the ball, which is
-   the element ng-zorro actually moves (anchor.component.ts's `setActive`/`setVisible`). The vertical
-   `top` and horizontal centre-point `left` set by `setActive` for the default stylesheet are kept as
-   the ball's native inline styles; height is approximated from the link row (padding block twice
-   plus one text line) since antd v6's own per-element `clientHeight` match needs no DOM measurement
-   ng-zorro's formula doesn't already have a v4-safe equivalent for. */
+   the element ng-zorro actually moves (anchor.component.ts's `setActive`/`setVisible`). Vertical: the
+   bar is centred on the active title and as tall as it (antd's `updateInk`: `top = offsetTop +
+   clientHeight / 2`, `height = clientHeight`), written by `setActive` as `--nz-anchor-ink-top`/
+   `--nz-anchor-ink-height` since the native `top` on this element still carries the v4 formula;
+   `!important` is the only way an author stylesheet can out-rank that inline style. */
 .ant-anchor-wrapper:not(.ant-anchor-wrapper-horizontal) .ant-anchor .ant-anchor-ink-ball {
   position: absolute;
   inset-inline-start: 0;
+  top: var(--nz-anchor-ink-top, 0) !important;
   display: none;
   width: var(--ant-line-width-bold);
-  height: calc(var(--ant-anchor-link-padding-block) * 2 + var(--ant-font-size) * var(--ant-line-height));
+  height: var(--nz-anchor-ink-height, 0);
   background-color: var(--ant-color-primary);
   border: none;
   border-radius: 0;
   transform: translateY(-50%);
   transition: top var(--ant-motion-duration-slow) ease-in-out;
-}
-
-.ant-anchor-wrapper:not(.ant-anchor-wrapper-horizontal) .ant-anchor .ant-anchor-ink-ball:dir(rtl) {
-  transform: translateY(-50%);
 }
 
 /* Horizontal: the bar spans the active title's width from its left edge, written by `setActive` as
@@ -74,7 +71,7 @@ nz-link {
   background-color: var(--ant-color-primary);
   border: none;
   border-radius: 0;
-  transform: none !important;
+  transform: none;
   transition:
     left var(--ant-motion-duration-slow) ease-in-out,
     width var(--ant-motion-duration-slow) ease-in-out;
