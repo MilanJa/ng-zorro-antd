@@ -24,9 +24,24 @@ describe('antdPaneCss', () => {
     expect(bundle.componentPatches.join('\n')).toContain('.ant-select {');
     expect(css).not.toContain(bundle.globalPatch);
 
-    expect(css).toContain(bundle.template);
+    expect(css).toContain(bundle.antdTemplate);
     expect(css).toContain(bundle.tokens);
     expect(css).toContain('.ant-select');
     expect(css).toContain('--ant-color-primary');
+  });
+
+  it("leaves a stylesThrough copy (Steps' rules under ant-timeline) off the pane but keeps antd's own rules", async () => {
+    const bundle = await buildV6Bundle('default', componentsDir);
+    const css = antdPaneCss(bundle);
+    // antd's Timeline root is `ant-steps … ant-steps-dot ant-timeline` with no `ant-timeline-dot`, so this
+    // copied rule would paint every antd dot with the filled-icon background and border.
+    const copied =
+      '.ant-timeline:not(.ant-timeline-dot) .ant-timeline-item:not(.ant-timeline-item-custom) .ant-timeline-item-icon{';
+
+    expect(bundle.template).toContain(copied);
+    expect(css).not.toContain(copied);
+    expect(css).toContain(bundle.antdTemplate);
+    expect(css).toContain('.ant-steps.ant-steps-dot .ant-steps-item-icon{');
+    expect(css).toContain('.ant-timeline .ant-timeline-item.ant-timeline-item.ant-timeline-item-color-red{');
   });
 });

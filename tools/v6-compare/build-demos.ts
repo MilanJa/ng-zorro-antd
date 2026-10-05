@@ -72,8 +72,10 @@ function assertAntdVersions(): void {
 // the select box's border/radius/height off `.ant-select` and onto `.ant-select-selector`), so on the
 // antd pane — real antd markup — they strip or relocate rules antd itself depends on. The antd pane
 // gets the extracted template and the theme tokens only, the same two pieces antd's own DOM needs.
-export function antdPaneCss(bundle: Pick<V6Bundle, 'template' | 'tokens'>): string {
-  return [bundle.template, bundle.tokens].join('\n');
+// The template is antd's own (`antdTemplate`): a `stylesThrough` copy (Steps' rules under
+// `ant-timeline`) is ng-zorro-only and would match antd's dual-prefixed Timeline markup.
+export function antdPaneCss(bundle: Pick<V6Bundle, 'antdTemplate' | 'tokens'>): string {
+  return [bundle.antdTemplate, bundle.tokens].join('\n');
 }
 
 export function antdDirFor(dir: string): string {

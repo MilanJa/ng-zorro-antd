@@ -106,6 +106,8 @@ export type V6Algorithm = 'default' | 'dark' | 'compact';
 
 export interface V6Bundle {
   template: string;
+  /** `template` without the `stylesThrough` copies (`buildAntdOwnTemplate`), for styling real antd markup */
+  antdTemplate: string;
   componentPatches: string[];
   tokens: string;
   globalPatch: string;
@@ -235,6 +237,28 @@ export function componentTemplate(
   return normalizeCssVarRootCls(joinTemplate(blocks));
 }
 
+let templateCache: { full: string; antdOwn: string } | null = null;
+
+function v6Templates(): { full: string; antdOwn: string } {
+  if (templateCache === null) {
+    const allRaw = extractAntdCss({ includes: allAntdComponentNames(), key: KEY });
+    const shared = dropForeignCssVarBlocks(partitionBlocks(allRaw, KEY).template, KEY);
+    // The shared extraction above never includes a `stylesThrough` source's rules under the COPY's
+    // prefix (it only extracts each antd name once, under its own name): add the rewritten copy for
+    // every `stylesThrough` entry here, once, BEFORE the shared extraction, as `componentTemplate`
+    // does. antd injects the inner component's styles first (Steps renders inside Timeline and React
+    // runs the child's insertion effect first), so the outer component's equal-specificity overrides
+    // win, e.g. Timeline's `--ant-cmp-steps-item-process-rail-line-style: dotted` over Steps' default.
+    const copies = stylesThroughCopyBlocks();
+    templateCache = {
+      full: normalizeCssVarRootCls(joinTemplate([...copies, ...shared])),
+      antdOwn: normalizeCssVarRootCls(joinTemplate(shared))
+    };
+    assertNoAntdScoping(templateCache.full);
+  }
+  return templateCache;
+}
+
 /**
  * Every `stylesThrough` entry's source extraction rewritten onto the entry's prefix, in map order: the
  * rules `buildV6Template` (and the browser-spec CSS) put before the shared extraction.
@@ -250,24 +274,20 @@ export function stylesThroughCopyBlocks(): CssBlock[] {
     });
 }
 
-let templateCache: string | null = null;
-
 /** The full v6 template (all mapped components, one extraction, shared reset rules emitted once). */
 export function buildV6Template(): string {
-  if (templateCache === null) {
-    const allRaw = extractAntdCss({ includes: allAntdComponentNames(), key: KEY });
-    const shared = dropForeignCssVarBlocks(partitionBlocks(allRaw, KEY).template, KEY);
-    // The shared extraction above never includes a `stylesThrough` source's rules under the COPY's
-    // prefix (it only extracts each antd name once, under its own name): add the rewritten copy for
-    // every `stylesThrough` entry here, once, BEFORE the shared extraction, as `componentTemplate`
-    // does. antd injects the inner component's styles first (Steps renders inside Timeline and React
-    // runs the child's insertion effect first), so the outer component's equal-specificity overrides
-    // win, e.g. Timeline's `--ant-cmp-steps-item-process-rail-line-style: dotted` over Steps' default.
-    const copies = stylesThroughCopyBlocks();
-    templateCache = normalizeCssVarRootCls(joinTemplate([...copies, ...shared]));
-    assertNoAntdScoping(templateCache);
-  }
-  return templateCache;
+  return v6Templates().full;
+}
+
+/**
+ * The template without the `stylesThrough` copies: exactly the rules antd's own render pass ships.
+ * Real antd markup carries BOTH prefixes on a copied component (Timeline's items are
+ * `ant-steps-item ant-timeline-item`, its root `ant-steps ant-timeline` without `ant-timeline-dot`),
+ * so the copy's rules would match antd's own DOM where antd never applies them (e.g. the copied
+ * `.ant-timeline:not(.ant-timeline-dot) … .ant-timeline-item-icon` fill rule repaints every dot).
+ */
+export function buildAntdOwnTemplate(): string {
+  return v6Templates().antdOwn;
 }
 
 /** Everything an application needs for one algorithm; used by publish and by the doc site. */
@@ -280,6 +300,7 @@ export async function buildV6Bundle(algorithm: V6Algorithm, componentsDir: strin
   const globalPatch = readFileSync(path.join(componentsDir, 'style/v6/patch.css'), 'utf8');
   return {
     template,
+    antdTemplate: buildAntdOwnTemplate(),
     componentPatches,
     tokens,
     globalPatch,
