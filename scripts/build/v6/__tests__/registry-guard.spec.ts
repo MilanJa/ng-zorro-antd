@@ -55,4 +55,56 @@ describe('recorder shim registry guard', () => {
     );
     expect(shim.registry.get('Button').subStyles).toEqual(['Button']);
   });
+
+  it("merges Grid's two default-token factories (Row's and Col's hooks share the name)", async () => {
+    const shim = await freshShim();
+    const utils = shim.genStyleUtils({ getCompUnitless: () => ({}) });
+    utils.genStyleHooks(
+      'Grid',
+      () => [],
+      (): Record<string, number> => ({ rowOnly: 1 }),
+      {}
+    );
+    utils.genStyleHooks(
+      'Grid',
+      () => [],
+      (): Record<string, number> => ({ colOnly: 2 }),
+      {}
+    );
+    const entry = shim.registry.get('Grid');
+    expect(entry.getDefaultToken({})).toEqual({ rowOnly: 1, colOnly: 2 });
+    expect(entry.subStyles).toEqual(['Grid', 'Grid']);
+  });
+
+  it('accepts an object default token on either side of the Grid merge', async () => {
+    const shim = await freshShim();
+    const utils = shim.genStyleUtils({ getCompUnitless: () => ({}) });
+    utils.genStyleHooks('Grid', () => [], { a: 1 }, {});
+    utils.genStyleHooks(
+      'Grid',
+      () => [],
+      (): Record<string, number> => ({ b: 2 }),
+      {}
+    );
+    expect(shim.registry.get('Grid').getDefaultToken({})).toEqual({ a: 1, b: 2 });
+  });
+
+  it('still throws for any other name, even when both factories return no tokens', async () => {
+    const shim = await freshShim();
+    const utils = shim.genStyleUtils({ getCompUnitless: () => ({}) });
+    utils.genStyleHooks(
+      'Row',
+      () => [],
+      (): Record<string, never> => ({}),
+      {}
+    );
+    expect(() =>
+      utils.genStyleHooks(
+        'Row',
+        () => [],
+        (): Record<string, never> => ({}),
+        {}
+      )
+    ).toThrow(/conflicting default-token factories for Row \(sub-styles: Row, Row\)/);
+  });
 });

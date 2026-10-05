@@ -10,6 +10,15 @@ export { merge as mergeToken, default as statisticToken, statistic } from '@ant-
 
 export const registry = new Map();
 
+// antd's grid style module (`antd/es/grid/style/index.js:143-169`) registers Row's and Col's hooks
+// under the one name `Grid`, each with its own default-token factory (both return no tokens); their
+// tokens are merged. Any other name arriving with a second, different factory is a mapping error and
+// still throws. The recorder runs inside the bundled engine and never sees which module registered a
+// hook, so the exception is keyed by name.
+const MERGED_FACTORY_NAMES = new Set(['Grid']);
+
+const tokensOf = (factory, token) => (typeof factory === 'function' ? factory(token) : (factory ?? {}));
+
 export function genStyleUtils(config) {
   const getCompUnitless = config.getCompUnitless;
 
@@ -18,9 +27,13 @@ export function genStyleUtils(config) {
     const existing = registry.get(name);
     if (existing) {
       if (existing.getDefaultToken !== getDefaultToken) {
-        throw new Error(
-          `v6 recorder: conflicting default-token factories for ${String(name)} (sub-styles: ${[...existing.subStyles, subStyle].join(', ')})`
-        );
+        if (!MERGED_FACTORY_NAMES.has(name)) {
+          throw new Error(
+            `v6 recorder: conflicting default-token factories for ${String(name)} (sub-styles: ${[...existing.subStyles, subStyle].join(', ')})`
+          );
+        }
+        const first = existing.getDefaultToken;
+        existing.getDefaultToken = token => ({ ...tokensOf(first, token), ...tokensOf(getDefaultToken, token) });
       }
       existing.subStyles.push(subStyle);
       return;
