@@ -82,6 +82,12 @@ class LayoutCompactHost {
   readonly compact = nzCompactAlgorithm;
 }
 
+@Component({
+  imports: [NzLayoutModule],
+  template: `<nz-content id="solo">standalone</nz-content>`
+})
+class LayoutStandaloneContentHost {}
+
 function el(id: string): HTMLElement {
   return document.getElementById(id) as HTMLElement;
 }
@@ -129,6 +135,16 @@ describe('nz-layout (v6 styles)', () => {
     // The hosts are custom elements (inline by default); style/v6/patch.css makes them block.
     expect(getComputedStyle(el('content')).display).toBe('block');
     expect(header.display).toBe('block');
+  });
+
+  it('blockifies a standalone nz-content outside any nz-layout', () => {
+    // Inside nz-layout, flex blockification already gives every child `display: block`, so this
+    // assertion only discriminates when the patch rule (patch.css:3-7) is removed on an element
+    // that is not a flex child of anything.
+    const fixture = TestBed.createComponent(LayoutStandaloneContentHost);
+    fixture.detectChanges();
+
+    expect(getComputedStyle(el('solo')).display).toBe('block');
   });
 
   describe('collapsible sider', () => {
