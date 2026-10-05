@@ -183,6 +183,9 @@
     "validate-static": "validate-other",
     "validate-template": null
   },
+  "grid": {
+    "_antdDir": "grid"
+  },
   "modal": {
     "_antdDir": "modal",
     "footer2": null,

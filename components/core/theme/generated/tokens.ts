@@ -842,6 +842,9 @@ export interface NzFormToken {
   verticalLabelPadding: string;
 }
 
+export interface NzGridToken {
+}
+
 export interface NzImageToken {
   previewOperationColor: string;
   previewOperationColorDisabled: string;
@@ -1439,6 +1442,7 @@ export interface NzComponentTokenMap {
   Empty: NzEmptyToken;
   FloatButton: NzFloatButtonToken;
   Form: NzFormToken;
+  Grid: NzGridToken;
   Image: NzImageToken;
   Input: NzInputToken;
   InputNumber: NzInputNumberToken;

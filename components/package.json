@@ -253,6 +253,9 @@
       "less": "./grid/style/*.less",
       "style": "./grid/style/index.min.css"
     },
+    "./grid/style/v6/*": {
+      "style": "./grid/style/v6/*"
+    },
     "./icon/style/*": {
       "less": "./icon/style/*.less",
       "style": "./icon/style/index.min.css"
