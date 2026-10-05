@@ -1,7 +1,7 @@
 {
   "antdVersion": "6.6.5",
   "engineCoreBytes": 42701,
-  "engineComponentsBytes": 422601,
+  "engineComponentsBytes": 423792,
   "components": {
     "alert": {
       "classes": [
@@ -1391,6 +1391,43 @@
         "ant-empty-image",
         "ant-empty-normal",
         "ant-empty-small"
+      ],
+      "tokens": []
+    },
+    "flex": {
+      "classes": [
+        "ant-flex",
+        "ant-flex-align-baseline",
+        "ant-flex-align-center",
+        "ant-flex-align-end",
+        "ant-flex-align-flex-end",
+        "ant-flex-align-flex-start",
+        "ant-flex-align-normal",
+        "ant-flex-align-self-end",
+        "ant-flex-align-self-start",
+        "ant-flex-align-start",
+        "ant-flex-align-stretch",
+        "ant-flex-gap-large",
+        "ant-flex-gap-medium",
+        "ant-flex-gap-middle",
+        "ant-flex-gap-small",
+        "ant-flex-justify-center",
+        "ant-flex-justify-end",
+        "ant-flex-justify-flex-end",
+        "ant-flex-justify-flex-start",
+        "ant-flex-justify-left",
+        "ant-flex-justify-normal",
+        "ant-flex-justify-right",
+        "ant-flex-justify-space-around",
+        "ant-flex-justify-space-between",
+        "ant-flex-justify-space-evenly",
+        "ant-flex-justify-start",
+        "ant-flex-justify-stretch",
+        "ant-flex-rtl",
+        "ant-flex-vertical",
+        "ant-flex-wrap-nowrap",
+        "ant-flex-wrap-wrap",
+        "ant-flex-wrap-wrap-reverse"
       ],
       "tokens": []
     },

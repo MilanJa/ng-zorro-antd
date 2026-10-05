@@ -3,7 +3,8 @@
  * found in the LICENSE file at https://github.com/NG-ZORRO/ng-zorro-antd/blob/master/LICENSE
  */
 
-import { Directive, Input, booleanAttribute } from '@angular/core';
+import { Directionality } from '@angular/cdk/bidi';
+import { Directive, Input, booleanAttribute, inject } from '@angular/core';
 
 import { NzAlign, NzFlex, NzGap, NzJustify, NzWrap } from './typings';
 
@@ -12,6 +13,10 @@ import { NzAlign, NzFlex, NzGap, NzJustify, NzWrap } from './typings';
   exportAs: 'nzFlex',
   host: {
     class: 'ant-flex',
+    '[class.ant-flex-rtl]': `dir() === 'rtl'`,
+    '[class.ant-flex-gap-small]': `nzGap === 'small'`,
+    '[class.ant-flex-gap-middle]': `nzGap === 'middle'`,
+    '[class.ant-flex-gap-large]': `nzGap === 'large'`,
     '[class.ant-flex-vertical]': `nzVertical`,
     '[class.ant-flex-justify-flex-start]': `nzJustify === 'flex-start'`,
     '[class.ant-flex-justify-center]': `nzJustify === 'center'`,
@@ -45,6 +50,8 @@ import { NzAlign, NzFlex, NzGap, NzJustify, NzWrap } from './typings';
   }
 })
 export class NzFlexDirective {
+  protected readonly dir = inject(Directionality).valueSignal;
+
   @Input({ transform: booleanAttribute }) nzVertical: boolean = false;
   @Input() nzJustify: NzJustify = 'normal';
   @Input() nzAlign: NzAlign = 'normal';
@@ -52,14 +59,16 @@ export class NzFlexDirective {
   @Input() nzWrap: NzWrap = 'nowrap';
   @Input() nzFlex: NzFlex = 'unset';
 
+  // Preset gaps read antd v6's padding tokens with the v4 pixel value as fallback; no v4 stylesheet
+  // defines `--ant-padding*`.
   protected get gap(): string {
     switch (this.nzGap) {
       case 'small':
-        return '8px';
+        return 'var(--ant-padding-xs, 8px)';
       case 'middle':
-        return '16px';
+        return 'var(--ant-padding, 16px)';
       case 'large':
-        return '24px';
+        return 'var(--ant-padding-lg, 24px)';
       default:
         if (typeof this.nzGap === 'number') {
           return `${this.nzGap}px`;

@@ -26,6 +26,7 @@ export const COMPONENT_ROOT_CLS: Record<string, string> = {
   Drawer: 'ant-drawer',
   Dropdown: 'ant-dropdown',
   Empty: 'ant-empty',
+  Flex: 'ant-flex',
   FloatButton: 'ant-float-btn',
   Form: 'ant-form',
   Grid: 'ant-row',

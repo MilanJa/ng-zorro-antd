@@ -235,6 +235,9 @@
     "./empty/style/v6/*": {
       "style": "./empty/style/v6/*"
     },
+    "./flex/style/v6/*": {
+      "style": "./flex/style/v6/*"
+    },
     "./float-button/style/v6/*": {
       "style": "./float-button/style/v6/*"
     },

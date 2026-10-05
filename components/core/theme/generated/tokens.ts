@@ -825,6 +825,9 @@ export interface NzDropdownToken {
 export interface NzEmptyToken {
 }
 
+export interface NzFlexToken {
+}
+
 export interface NzFloatButtonToken {
 }
 
@@ -1462,6 +1465,7 @@ export interface NzComponentTokenMap {
   Drawer: NzDrawerToken;
   Dropdown: NzDropdownToken;
   Empty: NzEmptyToken;
+  Flex: NzFlexToken;
   FloatButton: NzFloatButtonToken;
   Form: NzFormToken;
   Grid: NzGridToken;

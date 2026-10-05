@@ -105,6 +105,13 @@ describe('flex', () => {
     expect(getComputedStyle(element).getPropertyValue('gap')).toEqual(`${10 * 16}px`);
   });
 
+  it('should keep the fixed px gap under v4, with the v6 token as an unresolved fallback source', () => {
+    component.gap.set('small');
+    fixture.detectChanges();
+    expect(element.style.gap).toEqual('var(--ant-padding-xs, 8px)');
+    expect(getComputedStyle(element).getPropertyValue('gap')).toEqual('8px');
+  });
+
   it('should have correct wrap value', () => {
     const listOfWraps: NzWrap[] = ['wrap', 'nowrap', 'wrap-reverse'];
     listOfWraps.forEach(wrap => {
