@@ -158,3 +158,4 @@ The theme service writes a `<style id="nz-theme">` element through Angular's `DO
 - A component-level alias override set globally still applies inside a scope that does not inherit: it is written as a class-scoped rule on `:root`, and CSS variables inherit through the DOM regardless of `nzThemeInherit`.
 - `cssVar.prefix` values other than `ant` are not supported by the generated CSS, which references `--ant-*` variables.
 - Token names follow antd exactly (`--ant-color-primary`, `--ant-button-default-bg`); overriding them directly in CSS works for static values but is not re-derived, prefer `NzConfig.theme`.
+- A text Divider's rails are drawn on `.ant-divider-rail` elements under v6, not on the host's `::before`/`::after` pseudo-elements that v4 uses; a stylesheet that colours `nz-divider::before`/`::after` needs a matching `.ant-divider-rail` rule to stay colored under v6.

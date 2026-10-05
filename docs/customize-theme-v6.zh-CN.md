@@ -158,3 +158,4 @@ chart.color = token.colorPrimary;
 - 全局设置的组件级别名覆盖，即使在不继承主题的局部作用域内也仍然生效：它以类作用域规则的形式写在 `:root` 上，而 CSS 变量的继承不受 `nzThemeInherit` 影响，会沿 DOM 正常传递。
 - 生成的 CSS 引用的是 `--ant-*` 变量，因此不支持 `ant` 以外的 `cssVar.prefix` 取值。
 - 令牌名称与 antd 完全一致（例如 `--ant-color-primary`、`--ant-button-default-bg`）；直接在 CSS 中覆盖它们对静态值有效，但不会被重新推导，建议优先使用 `NzConfig.theme`。
+- 在 v6 下，带文字的 Divider 的分隔线绘制在 `.ant-divider-rail` 元素上，而不是 v4 使用的宿主 `::before`/`::after` 伪元素上；如果样式表给 `nz-divider::before`/`::after` 上色，需要补充一条匹配 `.ant-divider-rail` 的规则，才能在 v6 下保持颜色一致。
