@@ -563,6 +563,7 @@
     "nz-empty-simple"
   ],
   "_empty_comment": "v4-compat (patch hook): the 12 ant-empty-img-* classes (empty.js/simple.js element+condition: the 12 static class names on partial/default.ts and partial/simple.ts svg shapes) have no v6 CSS rule at all (antd 6 colours these shapes via inline styles resolved from theme tokens in React, not CSS classes); compiled v4 CSS still styles every one of them (hex fills), so style/v6/patch.css re-targets the same literal class names with the equivalent v6 token mapping (empty.js/simple.js shadowColor/borderColor/panelBgColor/detailColor/iconColor/contentColor) to keep the illustrations visible under the v6 theme. nz-only: nz-empty-rtl is a marker class (empty.component.ts host binding on Directionality) mirroring antd 6 own ant-empty-rtl state hook (Empty/index.js clsx condition direction === rtl) which v6 CSS itself does not style (ant-empty uses only logical properties); the literal antd class name ant-empty-rtl is not emitted because compiled v4 CSS already has a .ant-empty-rtl{direction:rtl} rule ng-zorro never previously reached (v4-rule-guard would flag it), so a differently-named, unstyled-under-v6 marker is used instead with no patch rule (matching its null visual effect in real antd 6). nz-only: nz-empty-simple (empty.component.ts host binding, nzNotFoundImage === 'simple') is a v4-inert hook standing in for antd's literal ant-empty-normal class on the public API path -- compiled v4 CSS already styles ant-empty-normal and ng-zorro never emitted it for a bare nzNotFoundImage=\"simple\" caller before, so emitting the literal class now would newly change v4's existing rendering there (confirmed by a default-theme capture of the simple demo); style/v6/patch.css mirrors the same v6 sizing/colour onto this hook instead.",
+  "_flex_comment": "nz-only: ant-flex-align-left, ant-flex-align-right, ant-flex-align-space-around, ant-flex-align-space-between, ant-flex-align-space-evenly (NzAlign reuses NzJustify's value union; none of the five is a valid align-items keyword, so they are runtime state hooks that neither the compiled v4 CSS nor the v6 CSS targets). scan-artefact: ant-padding, ant-padding-lg, ant-padding-xs (the static class scanner's `ant-[\\w-]+` pattern matches the custom-property names inside `nz-flex.directive.ts`'s `var(--ant-padding-xs, 8px)`-style gap strings; none is ever a class).",
   "flex": [
     "ant-flex-align-left",
     "ant-flex-align-right",
@@ -573,7 +574,6 @@
     "ant-padding-lg",
     "ant-padding-xs"
   ],
-  "_flex_comment": "nz-only: ant-flex-align-left, ant-flex-align-right, ant-flex-align-space-around, ant-flex-align-space-between, ant-flex-align-space-evenly (NzAlign reuses NzJustify's value union; none of the five is a valid align-items keyword, so they are runtime state hooks that neither the compiled v4 CSS nor the v6 CSS targets). scan-artefact: ant-padding, ant-padding-lg, ant-padding-xs (the static class scanner's `ant-[\\w-]+` pattern matches the custom-property names inside `nz-flex.directive.ts`'s `var(--ant-padding-xs, 8px)`-style gap strings; none is ever a class).",
   "list": [
     "ant-list-rtl"
   ],

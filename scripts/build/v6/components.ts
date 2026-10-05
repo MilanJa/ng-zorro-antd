@@ -286,10 +286,14 @@ export function allAntdComponentNames(): string[] {
  * Tree's DOM under Select's prefix (antd's TreeSelect renders rc-tree with `${selectPrefixCls}-tree`),
  * and its `-inner` checkbox box mirror lives in tree's `style/v6/patch.css`.
  */
+// `ant-col*` is generated only by rendering Col, under Grid's style module; the grid entry's
+// `prefixCls` is `ant-row`. Both this map (bundle patch dependencies) and
+// `RENDERED_PREFIX_STYLE_OWNERS` (style credit) need their own `'ant-col': 'grid'` entry: they
+// answer different questions (which patches a bundle pulls in vs. which directory's manifest
+// classes style a rendered prefix) and are read independently, so neither can be derived from
+// the other.
 const RENDERED_PREFIX_OWNERS: Record<string, V6ComponentDir> = {
   'ant-select-tree': 'tree',
-  // `ant-col*` is generated only by rendering Col, under Grid's style module; the grid entry's
-  // `prefixCls` is `ant-row`.
   'ant-col': 'grid'
 };
 
@@ -325,8 +329,8 @@ const RENDERED_PREFIX_STYLE_OWNERS: Record<string, V6ComponentDir> = {
   // `ant-picker`, not `ant-picker-calendar`), but date-picker's shared `lib/abstract-table.html`
   // renders the same cell markup under that prefix for Calendar's benefit.
   'ant-picker-calendar': 'calendar',
-  // `ant-col*` is generated only by rendering Col, under Grid's style module; the grid entry's
-  // `prefixCls` is `ant-row`.
+  // See `RENDERED_PREFIX_OWNERS`'s comment on this same entry: the two maps answer different
+  // questions and each needs its own `'ant-col': 'grid'`.
   'ant-col': 'grid'
 };
 
