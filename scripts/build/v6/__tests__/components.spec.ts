@@ -84,6 +84,7 @@ describe('v6PatchDependencies', () => {
       cascader: ['empty', 'select'],
       'color-picker': ['collapse', 'input-number', 'popover', 'select'],
       list: ['empty', 'pagination', 'select', 'spin'],
+      menu: ['dropdown', 'tooltip', 'typography'],
       pagination: ['select'],
       popconfirm: ['popover'],
       slider: ['tooltip'],

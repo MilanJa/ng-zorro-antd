@@ -107,6 +107,17 @@ export const v6Components = {
   // template typically composes a real `nz-pagination` -- all three are mapped.
   list: { antd: ['List'], prefixCls: 'ant-list', renderedPrefixes: ['ant-empty', 'ant-spin', 'ant-pagination'] },
   mention: { antd: ['Mentions'], prefixCls: 'ant-mentions' },
+  // Menu's own extracted CSS styles `ant-typography-ellipsis-single-line` (an ellipsis label inside
+  // `.ant-menu-title-content`) and the tooltip a collapsed inline menu's item opens (`nz-tooltip`,
+  // `ant-menu-inline-collapsed-tooltip`). `ant-dropdown` is listed because `[nz-menu]`,
+  // `[nz-menu-item]`, `[nz-submenu]` and `[nz-menu-group]` RENDER dropdown's menu vocabulary
+  // (`ant-dropdown-menu-*`, switched on `NzIsMenuInsideDropdownToken`) when hosted in
+  // `nz-dropdown-menu`; those classes are styled by dropdown's CSS, not menu's.
+  menu: {
+    antd: ['Menu'],
+    prefixCls: 'ant-menu',
+    renderedPrefixes: ['ant-dropdown', 'ant-tooltip', 'ant-typography']
+  },
   message: { antd: ['message'], prefixCls: 'ant-message' },
   modal: { antd: ['Modal'], prefixCls: 'ant-modal' },
   notification: { antd: ['notification'], prefixCls: 'ant-notification' },

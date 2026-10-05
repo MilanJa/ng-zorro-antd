@@ -12,6 +12,7 @@ import {
   booleanAttribute,
   ChangeDetectorRef,
   Component,
+  computed,
   ContentChildren,
   DestroyRef,
   ElementRef,
@@ -34,6 +35,7 @@ import { map, startWith, switchMap } from 'rxjs/operators';
 
 import { NzNoAnimationDirective } from 'ng-zorro-antd/core/animation';
 import { getPlacementName, POSITION_MAP, POSITION_TYPE_HORIZONTAL } from 'ng-zorro-antd/core/overlay';
+import { nzThemeScopeClasses } from 'ng-zorro-antd/core/theme';
 
 import { NzMenuItemComponent } from './menu-item.component';
 import { MenuService } from './menu.service';
@@ -99,6 +101,7 @@ const listOfHorizontalPositions = [
         [cdkConnectedOverlayOrigin]="origin"
         [cdkConnectedOverlayWidth]="triggerWidth!"
         [cdkConnectedOverlayOpen]="nzOpen"
+        [cdkConnectedOverlayPanelClass]="overlayPanelClasses()"
         cdkConnectedOverlayTransformOriginOn=".ant-menu-submenu"
         (overlayOutsideClick)="setMouseEnterState(false)"
         (detach)="setMouseEnterState(false)"
@@ -161,6 +164,12 @@ export class NzSubMenuComponent implements OnInit, AfterContentInit, OnChanges {
   private readonly nzMenuService = inject(MenuService);
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly platform = inject(Platform);
+  private readonly themeScopeClasses = nzThemeScopeClasses();
+  /**
+   * The enclosing `[nzTheme]` scope classes for the popup's CDK pane, which is attached to the overlay
+   * container outside the scope element; user classes (`nzMenuClassName`) stay on the inner menu.
+   */
+  protected readonly overlayPanelClasses = computed(() => [...this.themeScopeClasses()]);
 
   @Input() nzMenuClassName: string = '';
   @Input() nzPaddingLeft: number | null = null;

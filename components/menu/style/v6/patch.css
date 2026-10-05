@@ -1,0 +1,63 @@
+/* CDK overlay pane positioning: v6 sets `.ant-menu-submenu-popup { position: absolute }` (rc-trigger
+   positions the popup itself), which would collapse the CDK pane that already places the popup next
+   to its title. ng-zorro's popup root (`submenu-non-inline-child.component.ts`) carries
+   `ant-menu-submenu ant-menu-submenu-popup` in both hosts, also when the submenu is nested in a
+   `nz-dropdown-menu` (whose inner list carries dropdown's `ant-dropdown-menu*` classes instead), so the
+   rule is not scoped to either. Port of `style/patch.less`'s `position: relative`. */
+.ant-menu-submenu.ant-menu-submenu-popup {
+  position: relative;
+}
+
+/* Gap between the title and the popup. antd puts `paddingXS` on the popup root through rc-trigger's
+   placement class (`.ant-menu-submenu-placement-rightTop` / `-leftTop` / `-bottomLeft`, ...), names
+   ng-zorro does not emit: the compiled v4 stylesheet already styles `-placement-rightTop`, and ng-zorro
+   keeps v4's coarse `-placement-right` / `-left` / `-bottom` (resolved from the CDK position in
+   `submenu.component.ts`'s `onPositionChange`). This replaces `style/patch.less`'s `top: 6px` and
+   `inset-inline-start` / `-end: 4px` offsets with v6's padding (the root's transparent `::before`
+   covers the gap, so the pointer can cross it). Scoped to a menu-hosted popup (`> .ant-menu`): antd's
+   dropdown submenu popup has no such padding, and `nz-dropdown-menu`'s nested popup keeps its v6
+   geometry. Transform origin is set inline by the CDK (`cdkConnectedOverlayTransformOriginOn`). */
+.ant-menu-submenu-popup.ant-menu-submenu-placement-right:has(> .ant-menu) {
+  padding-inline-start: var(--ant-padding-xs);
+}
+.ant-menu-submenu-popup.ant-menu-submenu-placement-left:has(> .ant-menu) {
+  padding-inline-end: var(--ant-padding-xs);
+}
+.ant-menu-submenu-popup.ant-menu-submenu-placement-bottom:has(> .ant-menu) {
+  padding-top: var(--ant-padding-xs);
+}
+
+/* Collapsed inline menu: antd renders an item's icon BEFORE `.ant-menu-title-content`
+   (`antd/es/menu/MenuItem.js`) and hides the title content with
+   `.ant-menu-inline-collapsed > .ant-menu-item > .ant-menu-title-content { width: 0; opacity: 0;
+   overflow: hidden }`. `[nz-menu-item]` projects its whole content, icon included, into that span
+   (`menu-item.component.ts`), so the same rule would hide the icon too. When the title content holds
+   an icon, keep it visible; the label after the icon is still hidden by v6's own
+   `.ant-menu-inline-collapsed > .ant-menu-item .anticon + span` rule. Specificity is one class above
+   each v6 selector it overrides (the item and the item-group-list item forms). */
+.ant-menu-inline-collapsed > .ant-menu-item > .ant-menu-title-content:has(> .anticon),
+.ant-menu-inline-collapsed
+  > .ant-menu-item-group
+  > .ant-menu-item-group-list
+  > .ant-menu-item
+  > .ant-menu-title-content:has(> .anticon) {
+  width: auto;
+  opacity: 1;
+  overflow: visible;
+}
+
+/* `[nz-menu-divider]` always renders dropdown's `ant-dropdown-menu-item-divider`
+   (`menu-divider.directive.ts`); v6 styles that class only inside a dropdown (`.ant-dropdown
+   .ant-dropdown-menu .ant-dropdown-menu-item-divider`), and the menu's own `ant-menu-item-divider` is
+   styled by the compiled v4 stylesheet, so it is not added. Mirror of antd's
+   `.ant-menu .ant-menu-item-divider` onto the divider of a plain menu. */
+.ant-menu .ant-dropdown-menu-item-divider {
+  overflow: hidden;
+  line-height: 0;
+  border-color: var(--ant-color-split);
+  border-style: var(--ant-line-type);
+  border-width: 0;
+  border-top-width: var(--ant-line-width);
+  margin-block: var(--ant-line-width);
+  padding: 0;
+}

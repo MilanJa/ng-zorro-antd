@@ -49,5 +49,9 @@ export const CLICK_TRIGGERS: Partial<Record<string, string>> = {
 // popup, since the directive's own open path (`dropdown.directive.ts`'s `hostMouseState$`) never
 // needs a click at all.
 export const HOVER_TRIGGERS: Partial<Record<string, string>> = {
-  breadcrumb: '.ant-breadcrumb-overlay-link'
+  breadcrumb: '.ant-breadcrumb-overlay-link',
+  // A root-level submenu title of a vertical or horizontal menu (`nzTriggerSubMenuAction` defaults
+  // to hover); an inline submenu toggles on click in place and opens no popup. One `:is()` selector,
+  // since the callers prefix the demo container to the whole string.
+  menu: ':is(.ant-menu-vertical, .ant-menu-horizontal) > .ant-menu-submenu > .ant-menu-submenu-title'
 };

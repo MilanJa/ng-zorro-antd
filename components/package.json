@@ -300,6 +300,9 @@
       "less": "./menu/style/*.less",
       "style": "./menu/style/index.min.css"
     },
+    "./menu/style/v6/*": {
+      "style": "./menu/style/v6/*"
+    },
     "./message/style/*": {
       "less": "./message/style/*.less",
       "style": "./message/style/index.min.css"
