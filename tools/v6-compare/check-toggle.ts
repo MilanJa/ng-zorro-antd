@@ -30,6 +30,11 @@ const OVERLAY_ONLY: readonly string[] = [
   'color-picker'
 ];
 
+// Components whose root class is applied only once the page scrolls past an offset, which the
+// generic probe (no scrolling) never triggers: `.ant-affix` is added by `affix.component.ts` only
+// after a scroll listener fires past `nzOffsetTop`/`nzOffsetBottom` (affix.component.ts:170-178).
+const SCROLL_ONLY: readonly string[] = ['affix'];
+
 type ProbeProperty = 'backgroundColor' | 'borderRadius' | 'columnGap' | 'lineHeight';
 
 interface ExactProbe {
@@ -175,6 +180,8 @@ async function main(): Promise<void> {
       if (isV6 && !exact && state.element === null) {
         if (OVERLAY_ONLY.includes(dir)) {
           console.log(`${dir} ${theme}: generic probe found no element (overlay-only, skipped)`);
+        } else if (SCROLL_ONLY.includes(dir)) {
+          console.log(`${dir} ${theme}: generic probe found no element (scroll-only, skipped)`);
         } else {
           failures.push(`${dir} ${theme}: generic probe found no element carrying .${prefixCls} or .${prefixCls}-*`);
         }
