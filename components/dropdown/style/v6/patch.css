@@ -1,18 +1,19 @@
 /* CDK overlay pane positioning: v6's own base rule (`V6_TEMPLATE_CSS`) sets `position: absolute` plus
    `top`/`left: -9999px` (an offscreen-measurement trick from the React implementation), which would
-   collapse or mis-locate the pane the CDK overlay already positions. Port of `style/patch.less`; its
-   `&:not(:has(.ant-dropdown-arrow)) { margin-block: ... }` compensation is dropped because ng-zorro
-   already offsets the connected position strategy itself when the arrow is shown
-   (`dropdown.directive.ts`'s `setConnectedPositionOffset`/`TOOLTIP_OFFSET_MAP`, applied to every
-   position pair before `withPositions`), so no CSS margin correction on the root is needed; the
-   `.ant-dropdown-menu > ul { margin: 0; padding: 0; list-style: inherit }` rule is dropped because
-   `[nz-menu]` (`components/menu/menu.directive.ts`) puts the `.ant-dropdown-menu` class on the `<ul>`
-   element itself, never on a wrapper with a further child `<ul>` — the one nested `<ul>` ng-zorro does
-   render, `nz-menu-group`'s item list, already carries `.ant-dropdown-menu-item-group-list`, styled by
-   both stylesheets. */
+   collapse or mis-locate the pane the CDK overlay already positions. Port of `style/patch.less`. */
 .ant-dropdown {
   position: relative;
   inset: 0;
+}
+
+/* antd v6 places an arrowless dropdown `marginXXS` away from its trigger
+   (node_modules/antd/es/dropdown/dropdown.js's `getPlacements({ offset: token.marginXXS })`).
+   ng-zorro offsets the connected position strategy only when the arrow is shown
+   (`dropdown.directive.ts`'s `setConnectedPositionOffset`/`TOOLTIP_OFFSET_MAP`), so the arrowless
+   gap comes from the root's block margins, as `style/patch.less`'s `&:not(:has(.ant-dropdown-arrow))`
+   rule does for the default stylesheet (4px there too). */
+.ant-dropdown:not(:has(.ant-dropdown-arrow)) {
+  margin-block: var(--ant-margin-xxs);
 }
 
 /* v6 styles `.ant-dropdown-menu-title-content` (`components/core/theme/generated/test-css.ts`), but the

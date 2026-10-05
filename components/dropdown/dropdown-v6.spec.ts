@@ -123,9 +123,11 @@ describe('dropdown under antd v6 css', () => {
     expect(pane.className).toContain(enclosingScopeClass());
     expect(getComputedStyle(root).getPropertyValue('--ant-color-primary').trim()).toBe('#00b96b');
 
+    // antd v6 offsets an arrowless dropdown by `marginXXS` (4px) from its trigger
+    // (node_modules/antd/es/dropdown/dropdown.js's `getPlacements({ offset: token.marginXXS })`).
     const triggerRect = trigger.getBoundingClientRect();
     const rootRect = root.getBoundingClientRect();
-    expect(rootRect.top).toBeGreaterThanOrEqual(triggerRect.bottom - 1);
+    expect(rootRect.top - triggerRect.bottom).toBeCloseTo(4, 0);
 
     const menu = root.querySelector('.ant-dropdown-menu') as HTMLElement;
     const menuCs = getComputedStyle(menu);
