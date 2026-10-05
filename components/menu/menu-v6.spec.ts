@@ -217,13 +217,13 @@ describe('menu under antd v6 css', () => {
     const fixture = TestBed.createComponent(TestMenuStylesComponent);
     fixture.detectChanges();
     (fixture.nativeElement.querySelector('#ddTrigger') as HTMLElement).click();
-    // dropdown's own `auditTime(150)` before it attaches its overlay.
-    await settle(fixture, 200);
+    // dropdown's own `auditTime(150)` before it attaches its overlay, with headroom for a loaded machine.
+    await settle(fixture, 300);
     const title = overlay.getContainerElement().querySelector('.ant-dropdown-menu-submenu-title') as HTMLElement;
     expect(title).not.toBeNull();
 
     dispatchFakeEvent(title, 'mouseenter');
-    await settle(fixture, 200);
+    await settle(fixture, 300);
     const root = popupRoots()[0];
     expect(root).toBeDefined();
     await expectMotionSettled(root);
