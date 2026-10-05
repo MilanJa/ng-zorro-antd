@@ -42,6 +42,23 @@ function installV6Css(): void {
 class TestScopedVerticalComponent {}
 
 @Component({
+  imports: [NzMenuModule, NzThemeDirective],
+  template: `
+    <div [nzTheme]="{ token: { colorPrimary: '#00b96b' } }">
+      <ul id="horizontalScoped" nz-menu nzMode="horizontal">
+        <li nz-submenu nzTitle="Navigation Three" nzIcon="setting">
+          <ul>
+            <li nz-menu-item>Option 1</li>
+            <li nz-menu-item>Option 2</li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  `
+})
+class TestScopedHorizontalComponent {}
+
+@Component({
   imports: [NzMenuModule, NzIconModule, NzDropdownModule],
   template: `
     <ul id="inline" nz-menu nzMode="inline" style="width: 256px">
@@ -161,6 +178,38 @@ describe('menu under antd v6 css', () => {
     await settle(fixture, 200);
     await settle(fixture, 400);
     expect(popupRoots().length).toBe(0);
+  });
+
+  it('opens a themed horizontal submenu popup below its title with the v6 gap', async () => {
+    const fixture = TestBed.createComponent(TestScopedHorizontalComponent);
+    fixture.detectChanges();
+    const title = fixture.nativeElement.querySelector('#horizontalScoped .ant-menu-submenu-title') as HTMLElement;
+
+    dispatchFakeEvent(title, 'mouseenter');
+    // auditTime(150) before the submenu opens, with headroom for a loaded machine.
+    await settle(fixture, 300);
+
+    const root = popupRoots()[0];
+    expect(root).toBeDefined();
+    await expectMotionSettled(root);
+
+    const pane = root.closest('.cdk-overlay-pane') as HTMLElement;
+    const scope = fixture.debugElement.query(By.directive(NzThemeDirective)).injector.get(NzThemeDirective).scopeClass;
+    expect(pane.className).toMatch(/\bnz-theme-\d+\b/);
+    expect(pane.className).toContain(scope);
+    expect(getComputedStyle(root).getPropertyValue('--ant-color-primary').trim()).toBe('#00b96b');
+    expect(getComputedStyle(root).position).toBe('relative');
+
+    // antd v6 (`bottomLeft`): the popup root starts at the title's bottom edge and its
+    // `padding-top: paddingXS` (8px) is the gap above the list.
+    const sub = root.querySelector('.ant-menu-sub') as HTMLElement;
+    const titleRect = title.getBoundingClientRect();
+    const rootRect = root.getBoundingClientRect();
+    expect(Math.abs(rootRect.top - titleRect.bottom)).toBeLessThanOrEqual(1);
+    expect(Math.abs(rootRect.left - titleRect.left)).toBeLessThanOrEqual(1);
+    expect(getComputedStyle(root).paddingTop).toBe('8px');
+    expect(Math.round(sub.getBoundingClientRect().top - titleRect.bottom)).toBe(8);
+    expect(getComputedStyle(sub).backgroundColor).toBe('rgb(255, 255, 255)');
   });
 
   it('paints inline, horizontal, dark and collapsed menus with the default v6 tokens', async () => {
