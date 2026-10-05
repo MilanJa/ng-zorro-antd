@@ -52,16 +52,16 @@ whether a migrated ng-zorro component matches antd v6's visuals.
 - `npx tsx tools/v6-compare/serve-out.ts` — serves `tools/v6-compare/out` on
   `127.0.0.1` (loopback only, confined to `out/`), on the port of `HARNESS_URL`
   (default `http://localhost:4301`).
-- `npx tsx tools/v6-compare/capture.ts [--component <dir>] [--theme v6]` —
-  screenshots antd/ng-zorro demo pairs into `out/<dir>/<theme>/<key>.{antd,nz}.png`,
-  then rebuilds `out/index.html` from every image on disk (all components and
-  themes, `default` and `default-before` included), so a run limited by
-  `--component` or `--theme` keeps the rest of the index. Starts `serve-out`
-  itself on `HARNESS_URL`'s port (or reuses a running one) and reads the doc
-  site from `SITE_URL`. `--theme default` captures the plain v4 ng-zorro page
-  only (no antd pane) for a before/after diff; copy `out/<dir>/default/` to
-  `out/<dir>/default-before/` by hand first. `--opened` (with `--theme
-default`) also activates each demo's trigger from `CLICK_TRIGGERS` or
+- `npx tsx tools/v6-compare/capture.ts [--component <dir>] [--theme v6] [--viewport <px>]` —
+  screenshots antd/ng-zorro demo pairs into `out/<dir>/<theme>/<key>.{antd,nz}.png`, then rebuilds
+  `out/index.html` from every image on disk (all components and themes, `default` and
+  `default-before` included), so a run limited by `--component` or `--theme` keeps the rest of the
+  index. Starts `serve-out` itself on `HARNESS_URL`'s port (or reuses a running one) and reads the doc
+  site from `SITE_URL`. `--viewport <px>` (320–2560, default 900) sets both panes' page width and writes
+  to `out/<dir>/<theme>@<px>/` (grid's responsive demos: `--viewport 375`, `--viewport 1280`,
+  `--viewport 1920`). `--theme default` captures the plain v4 ng-zorro page only (no antd pane) for a
+  before/after diff; copy `out/<dir>/default/` to `out/<dir>/default-before/` by hand first.
+  `--opened` (with `--theme default`) also activates each demo's trigger from `CLICK_TRIGGERS` or
   `HOVER_TRIGGERS` (`triggers.ts`; click wins if listed in both — unsafe
   when the trigger wraps a real `<a href>`), saves a shot to
   `<demo>-opened.nz.png`, and logs/undoes any navigation away.

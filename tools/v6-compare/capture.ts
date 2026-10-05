@@ -18,6 +18,22 @@ const outDir = path.join(__dirname, 'out');
 const siteUrl = process.env['SITE_URL'] ?? 'http://localhost:4200';
 const harnessUrl = process.env['HARNESS_URL'] ?? 'http://localhost:4301';
 const THEMES = ['v6', 'v6-dark', 'v6-compact'] as const;
+const DEFAULT_VIEWPORT_WIDTH = 900;
+
+/** `--viewport <px>`: the page width both panes are captured at (responsive demos such as grid's). */
+export function viewportWidth(raw: string | null): number {
+  if (raw === null) return DEFAULT_VIEWPORT_WIDTH;
+  const width = Number(raw);
+  if (!Number.isInteger(width) || width < 320 || width > 2560) {
+    throw new Error(`--viewport takes an integer width in px between 320 and 2560, got "${raw}"`);
+  }
+  return width;
+}
+
+/** Folder under `out/<dir>/`: the theme, suffixed with `@<width>` for a non-default width. */
+export function captureFolderName(theme: string, width: number): string {
+  return width === DEFAULT_VIEWPORT_WIDTH ? theme : `${theme}@${width}`;
+}
 
 function arg(name: string): string | null {
   const i = process.argv.indexOf(`--${name}`);
@@ -247,6 +263,7 @@ function writeIndex(
 async function main(): Promise<void> {
   const only = arg('component');
   const themes = arg('theme') ? [arg('theme')!] : [...THEMES];
+  const width = viewportWidth(arg('viewport'));
   const report = JSON.parse(readFileSync(path.join(outDir, 'build-report.json'), 'utf8')) as Record<
     string,
     { demos: string[]; skipped: unknown[] }
@@ -258,14 +275,14 @@ async function main(): Promise<void> {
   const harnessPort = Number(new URL(harnessUrl).port || 80);
   const stopServer = await startOutServer(outDir, harnessPort);
   const browser = await chromium.launch();
-  const page = await browser.newPage({ viewport: { width: 900, height: 800 } });
+  const page = await browser.newPage({ viewport: { width, height: 800 } });
 
   for (const dir of v6ComponentDirs) {
     if (only && dir !== only) continue;
     const pairing = pairDemos(dir, ngDemoKeys(dir), report[dir]?.demos ?? [], map);
     for (const theme of themes) {
       if (theme !== 'default') assertAntdPaneFresh(dir, theme);
-      const folder = path.join(outDir, dir, theme);
+      const folder = path.join(outDir, dir, captureFolderName(theme, width));
       mkdirSync(folder, { recursive: true });
       await page.goto(`${siteUrl}/components/${dir}/en?theme=${theme}`, { waitUntil: 'networkidle' });
       const componentUrl = `${siteUrl}/components/${dir}/en`;
@@ -304,7 +321,7 @@ async function main(): Promise<void> {
         // `default` is the plain v4 theme, captured for the before/after diff a component task keeps
         // under `out/<dir>/default(-before)/`; there is no antd v6 pane to compare it against.
         if (theme === 'default') continue;
-        const antdPage = await browser.newPage({ viewport: { width: 900, height: 800 } });
+        const antdPage = await browser.newPage({ viewport: { width, height: 800 } });
         await antdPage.goto(`${harnessUrl}/compare.html?component=${dir}&demo=${antd}&theme=${theme}`, {
           waitUntil: 'networkidle'
         });
