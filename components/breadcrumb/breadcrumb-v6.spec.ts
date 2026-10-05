@@ -86,6 +86,15 @@ describe('breadcrumb under antd v6 css', () => {
     const separator = host.querySelector('.ant-breadcrumb-separator') as HTMLElement;
     expect(separator).not.toBeNull();
     expect(getComputedStyle(separator).marginInline).toBe('8px');
+    // antd v6 renders the separator as a flex item of its own (`<li>` in `ol { display: flex }`), so
+    // the whitespace the item template puts around `/` takes no width and the box is one line tall.
+    const glyph = document.createElement('span');
+    glyph.textContent = '/';
+    separator.parentElement!.appendChild(glyph);
+    const separatorRect = separator.getBoundingClientRect();
+    expect(Math.abs(separatorRect.width - glyph.getBoundingClientRect().width)).toBeLessThanOrEqual(0.5);
+    expect(separatorRect.height).toBeCloseTo(22, 0);
+    glyph.remove();
 
     // the last item's separator is hidden (`style/v6/patch.css` mirror of `style/patch.less`'s
     // `nz-breadcrumb-item:last-child .ant-breadcrumb-separator { display: none }`; antd v6 never

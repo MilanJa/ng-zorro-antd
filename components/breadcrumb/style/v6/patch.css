@@ -38,3 +38,12 @@ nz-breadcrumb-item:last-child .ant-breadcrumb-separator {
 .ant-breadcrumb > nz-breadcrumb-item:last-child a {
   color: var(--ant-breadcrumb-last-item-color);
 }
+
+/* antd v6 renders each separator as an `<li>` flex item of `.ant-breadcrumb ol` (node_modules/antd/es/breadcrumb/
+   BreadcrumbSeparator.js), so the box is exactly its glyph and one line tall. ng-zorro's separator is
+   an inline element inside the item, whose template puts whitespace around `nzSeparator`
+   (`breadcrumb-item.component.ts`); an inline-block drops that leading and trailing whitespace at its
+   own line edges, as the flex item does, without touching the template the default theme renders. */
+.ant-breadcrumb .ant-breadcrumb-separator {
+  display: inline-block;
+}
