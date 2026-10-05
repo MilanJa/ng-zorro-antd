@@ -149,6 +149,14 @@ export const v6Components = {
   tabs: { antd: ['Tabs'], prefixCls: 'ant-tabs' },
   tag: { antd: ['Tag'], prefixCls: 'ant-tag' },
   'time-picker': { antd: ['TimePicker'], prefixCls: 'ant-picker' },
+  // antd 6 renders Timeline as a dot-type Steps: Steps' extracted rules are copied onto the
+  // `ant-timeline` prefix, so the timeline DOM never carries a literal `ant-steps-*` class (those
+  // would turn on v4 steps rules).
+  timeline: {
+    antd: ['Timeline'],
+    prefixCls: 'ant-timeline',
+    stylesThrough: { dir: 'steps', from: 'ant-steps', to: 'ant-timeline' }
+  },
   tooltip: { antd: ['Tooltip'], prefixCls: 'ant-tooltip' },
   // `ant-btn`, `ant-checkbox` and `ant-input` are listed because Transfer's own extracted CSS
   // relies on those already-mapped components' classes being styled by their own entries. Real

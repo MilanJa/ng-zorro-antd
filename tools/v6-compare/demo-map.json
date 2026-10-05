@@ -6,6 +6,12 @@
     "start-index": null,
     "vertical-small": null
   },
+  "timeline": {
+    "_antdDir": "timeline",
+    "label": "title",
+    "position": "horizontal",
+    "right": "end"
+  },
   "anchor": {
     "_antdDir": "anchor",
     "customize-highlight": "customizeHighlight",

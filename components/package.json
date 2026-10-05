@@ -480,6 +480,9 @@
       "less": "./timeline/style/*.less",
       "style": "./timeline/style/index.min.css"
     },
+    "./timeline/style/v6/*": {
+      "style": "./timeline/style/v6/*"
+    },
     "./tooltip/style/*": {
       "less": "./tooltip/style/*.less",
       "style": "./tooltip/style/index.min.css"

@@ -1277,6 +1277,13 @@ export interface NzTagToken {
   solidTextColor: string;
 }
 
+export interface NzTimelineToken {
+  dotBorderWidth: number;
+  itemPaddingBottom: number;
+  tailColor: string;
+  tailWidth: number;
+}
+
 export interface NzTooltipToken {
   arrowOffsetHorizontal: number;
   arrowOffsetVertical: number;
@@ -1378,6 +1385,7 @@ export interface NzComponentTokenMap {
   Table: NzTableToken;
   Tabs: NzTabsToken;
   Tag: NzTagToken;
+  Timeline: NzTimelineToken;
   Tooltip: NzTooltipToken;
   Transfer: NzTransferToken;
   Tree: NzTreeToken;

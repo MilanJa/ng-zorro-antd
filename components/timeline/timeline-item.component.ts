@@ -18,7 +18,7 @@ import {
 import { NzOutletModule } from 'ng-zorro-antd/core/outlet';
 
 import { TimelineService } from './timeline.service';
-import { NzTimelineItemColor, NzTimelinePosition, TimelineTimeDefaultColors } from './typings';
+import { NzTimelineItemColor, NzTimelineNodeState, NzTimelinePosition, TimelineTimeDefaultColors } from './typings';
 
 function isDefaultColor(color?: string): boolean {
   return TimelineTimeDefaultColors.findIndex(i => i === color) !== -1;
@@ -30,19 +30,34 @@ function isDefaultColor(color?: string): boolean {
   template: `
     <ng-template #template>
       <li
-        class="ant-timeline-item"
+        class="ant-timeline-item ant-timeline-item-wrapper ant-timeline-item-finish"
         [class.ant-timeline-item-right]="(nzPosition || position) === 'right'"
         [class.ant-timeline-item-left]="(nzPosition || position) === 'left'"
         [class.ant-timeline-item-last]="isLast"
+        [class.ant-timeline-item-placement-start]="(nzPosition || position) !== 'right'"
+        [class.ant-timeline-item-placement-end]="(nzPosition || position) === 'right'"
+        [class.ant-timeline-item-color-red]="nzColor === 'red'"
+        [class.ant-timeline-item-color-blue]="nzColor === 'blue'"
+        [class.ant-timeline-item-color-green]="nzColor === 'green'"
+        [class.ant-timeline-item-color-gray]="nzColor === 'gray' || nzColor === 'grey'"
+        [class.ant-timeline-item-custom]="!!nzDot"
+        [class.ant-timeline-item-empty-header]="!nzLabel"
+        [class.ant-timeline-item-active]="node.active"
+        [style.--ant-cmp-steps-item-icon-dot-color]="borderColor"
       >
         @if (nzLabel) {
-          <div class="ant-timeline-item-label">
+          <div class="ant-timeline-item-label ant-timeline-item-header ant-timeline-item-title">
             <ng-container *nzStringTemplateOutlet="nzLabel">{{ nzLabel }}</ng-container>
           </div>
         }
-        <div class="ant-timeline-item-tail"></div>
         <div
-          class="ant-timeline-item-head"
+          class="ant-timeline-item-tail"
+          [class.ant-timeline-item-rail]="!!node.rail"
+          [class.ant-timeline-item-rail-finish]="node.rail === 'finish'"
+          [class.ant-timeline-item-rail-process]="node.rail === 'process'"
+        ></div>
+        <div
+          class="ant-timeline-item-head ant-timeline-item-icon"
           [class.ant-timeline-item-head-red]="nzColor === 'red'"
           [class.ant-timeline-item-head-blue]="nzColor === 'blue'"
           [class.ant-timeline-item-head-green]="nzColor === 'green'"
@@ -75,6 +90,7 @@ export class NzTimelineItemComponent implements OnChanges {
   isLast = false;
   borderColor: string | null = null;
   position?: NzTimelinePosition;
+  node: NzTimelineNodeState = { active: false, rail: null };
 
   ngOnChanges(changes: SimpleChanges): void {
     this.timelineService.markForCheck();

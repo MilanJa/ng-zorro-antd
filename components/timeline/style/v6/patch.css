@@ -1,0 +1,53 @@
+/*
+ * ng-zorro's timeline item keeps its v4 element tree for the default stylesheet:
+ *
+ *   li.ant-timeline-item.ant-timeline-item-wrapper
+ *     div.ant-timeline-item-label.ant-timeline-item-header.ant-timeline-item-title   (when labelled)
+ *     div.ant-timeline-item-tail.ant-timeline-item-rail                              (not on the last node)
+ *     div.ant-timeline-item-head.ant-timeline-item-icon
+ *     div.ant-timeline-item-content
+ *
+ * antd v6 renders Timeline as a dot-type Steps: `li.-item > -item-wrapper > (-item-icon, -item-section >
+ * (-item-header > (-item-title, -item-rail), -item-content))`, styled by Steps' rules copied onto the
+ * `ant-timeline` prefix. The v4 stylesheet pairs `.ant-timeline-item-last > .ant-timeline-item-tail` and
+ * `.ant-timeline-item-last > .ant-timeline-item-content`, so no wrapper or section element is inserted:
+ * the item itself carries `-item-wrapper`, and the rules below give the content antd's section box and
+ * the item antd's section layout in the alternate layout. The rail and the icon are absolutely
+ * positioned against the item in both trees.
+ */
+
+/* antd draws no rail under the last node shown (`@rc-component/steps` Step.js: `!last && <Rail>`); the
+   kept v4 tail would otherwise be an in-flow flex item adding a column gap before the icon. */
+.ant-timeline .ant-timeline-item-tail:not(.ant-timeline-item-rail) {
+  display: none;
+}
+
+/* antd `.ant-timeline-title-horizontal .ant-timeline-item-section`: the section takes the row beside the
+   icon. The content is the section's only in-flow part here (antd's header holds only the rail and is
+   empty without a title, and a labelled item always uses the alternate layout below). */
+.ant-timeline-title-horizontal .ant-timeline-item-wrapper > .ant-timeline-item-content {
+  flex: 1;
+  min-width: 0;
+}
+
+/* antd `.ant-timeline:not(.ant-timeline-horizontal).ant-timeline-layout-alternate .ant-timeline-item
+   .ant-timeline-item-section { display: flex; flex-wrap: nowrap; gap: … }`: the item is the flex row
+   holding the header (label) and the content; the icon and the rail are absolute there. */
+.ant-timeline:not(.ant-timeline-horizontal).ant-timeline-layout-alternate .ant-timeline-item-wrapper {
+  column-gap: var(--ant-timeline-alternate-gap);
+}
+
+/* antd always renders `-item-header` (empty without a title), so the header's flex share keeps the
+   content on its own side of the dot; ng-zorro renders the label only when set, so a pseudo-element
+   takes the empty header's place. Values: antd's alternate `-item-header` flex basis and, for
+   `-item-placement-end`, its `order: 1`. */
+.ant-timeline:not(.ant-timeline-horizontal).ant-timeline-layout-alternate
+  .ant-timeline-item-wrapper.ant-timeline-item-empty-header::before {
+  content: '';
+  flex: 1 1 calc(var(--ant-timeline-head-span-ptg) - var(--ant-timeline-alternate-gap) / 2);
+}
+
+.ant-timeline:not(.ant-timeline-horizontal).ant-timeline-layout-alternate
+  .ant-timeline-item-wrapper.ant-timeline-item-empty-header.ant-timeline-item-placement-end::before {
+  order: 1;
+}

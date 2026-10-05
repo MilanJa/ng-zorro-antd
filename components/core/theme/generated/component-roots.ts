@@ -55,6 +55,7 @@ export const COMPONENT_ROOT_CLS: Record<string, string> = {
   Table: 'ant-table',
   Tabs: 'ant-tabs',
   Tag: 'ant-tag',
+  Timeline: 'ant-timeline',
   Tooltip: 'ant-tooltip',
   Transfer: 'ant-transfer',
   Tree: 'ant-tree',

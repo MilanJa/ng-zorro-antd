@@ -61,6 +61,7 @@ NG-ZORRO 提供了一份基于 Ant Design v6 生成的可选样式表。它将 v
 - `tabs`
 - `tag`
 - `time-picker`
+- `timeline`
 - `tooltip`
 - `transfer`
 - `tree`

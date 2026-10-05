@@ -61,6 +61,7 @@ Only the components below have v6 styles so far. Others keep rendering with the 
 - `tabs`
 - `tag`
 - `time-picker`
+- `timeline`
 - `tooltip`
 - `transfer`
 - `tree`
