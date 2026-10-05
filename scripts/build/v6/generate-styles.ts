@@ -157,19 +157,6 @@ async function renderTokens(algorithm: V6Algorithm): Promise<string> {
   return renderer.renderThemeCss(algorithms[algorithm] ? { algorithm: algorithms[algorithm] } : {}, ':root');
 }
 
-/**
- * antd's own render pass for a component with a `stylesThrough` source genuinely mounts that source
- * component too (Timeline's `Timeline.js` imports and renders the real `Steps`, with no `prefixCls`
- * override, since only its semantic slot classNames are overridden), so the raw per-directory
- * extraction for `entry.antd` alone already carries the source's real, unrewritten rules (literal
- * `.ant-steps-*` selectors) next to the ones genuinely authored for this component. They would
- * duplicate the rewritten copy `componentTemplate` prepends (and defeat the point of rewriting them
- * at all: NG-ZORRO never emits the literal source class on this component's elements), so every block
- * whose selector names a `from`-prefixed class anywhere is dropped first, recursing into
- * `@media`/`@supports`/`@container` the same way `rewriteClassPrefix` does (an unrelated genuine rule
- * of this component's own never needs the source's class name, since its own style module is written
- * entirely under its own `componentCls`).
- */
 /** Splits a selector list on top-level commas only (a comma inside `:not(.a, .b)` stays put). */
 function splitSelectorList(selector: string): string[] {
   const parts: string[] = [];
@@ -188,6 +175,19 @@ function splitSelectorList(selector: string): string[] {
   return parts;
 }
 
+/**
+ * antd's own render pass for a component with a `stylesThrough` source genuinely mounts that source
+ * component too (Timeline's `Timeline.js` imports and renders the real `Steps`, with no `prefixCls`
+ * override, since only its semantic slot classNames are overridden), so the raw per-directory
+ * extraction for `entry.antd` alone already carries the source's real, unrewritten rules (literal
+ * `.ant-steps-*` selectors) next to the ones genuinely authored for this component. They would
+ * duplicate the rewritten copy `componentTemplate` prepends (and defeat the point of rewriting them
+ * at all: NG-ZORRO never emits the literal source class on this component's elements), so every block
+ * whose selector names a `from`-prefixed class anywhere is dropped first, recursing into
+ * `@media`/`@supports`/`@container` the same way `rewriteClassPrefix` does (an unrelated genuine rule
+ * of this component's own never needs the source's class name, since its own style module is written
+ * entirely under its own `componentCls`).
+ */
 export function dropStylesThroughSource(blocks: CssBlock[], from: string): CssBlock[] {
   const classToken = new RegExp(`\\.${from}(?=[^a-zA-Z0-9_-]|$)|\\.${from}-[a-zA-Z0-9_-]+`);
   const make = (selector: string, body: string): CssBlock => ({ selector, body, raw: `${selector}{${body}}` });

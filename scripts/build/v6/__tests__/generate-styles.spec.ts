@@ -9,7 +9,7 @@ import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'no
 import os from 'node:os';
 import path from 'node:path';
 
-import { v6Components, v6ComponentDirs, type V6ComponentEntry } from '../components';
+import { v6Components, v6ComponentDirs } from '../components';
 import { joinTemplate, splitBlocks } from '../css-postprocess';
 import {
   assertEngineBudgets,
@@ -89,48 +89,17 @@ describe('componentBundlePatches', () => {
 });
 
 describe('componentTemplate with a stylesThrough entry', () => {
-  // Until the map has real `timeline`/`steps` entries, inject a fixture `steps` entry into the map
-  // for the duration of the test (there is no `v6Components` setter: this is a plain object at
-  // runtime despite its `as const` type).
   it('gets the source component rules under its own prefix', () => {
-    const components = v6Components as unknown as Record<string, V6ComponentEntry>;
-    const hadSteps = Object.prototype.hasOwnProperty.call(components, 'steps');
-    const previousSteps = components['steps'];
-    components['steps'] = { antd: ['Steps'], prefixCls: 'ant-steps' };
-    try {
-      const fixtureEntry: V6ComponentEntry = {
-        antd: ['Timeline'],
-        prefixCls: 'ant-timeline',
-        stylesThrough: { dir: 'steps' as never, from: 'ant-steps', to: 'ant-timeline' }
-      };
-      const css = componentTemplate('timeline' as never, fixtureEntry);
-      expect(css).toMatch(/\.ant-timeline-item-icon\{/);
-      expect(css).not.toMatch(/\.ant-steps/);
-    } finally {
-      if (hadSteps) {
-        components['steps'] = previousSteps;
-      } else {
-        delete components['steps'];
-      }
-    }
+    const css = componentTemplate('timeline', v6Components.timeline);
+    expect(css).toMatch(/\.ant-timeline-item-icon\{/);
+    expect(css).not.toMatch(/\.ant-steps/);
   });
 
-  // `componentTokenNamesFor`'s union needs a SOURCE whose antd name is actually registered in the
-  // engine (`componentTokenNames` reads `engine-components.ts`'s registry, built from the real map);
-  // `steps`/`Steps` is not registered until a later plan maps it for real, so this fixture borrows
-  // an already-mapped component (`button`) as the `stylesThrough` source to exercise the real union
-  // mechanism against real data, rather than asserting against Steps tokens that do not exist yet.
   it("componentTokenNamesFor unions the entry's own tokens with the stylesThrough source's", async () => {
-    const fixtureEntry: V6ComponentEntry = {
-      antd: ['Avatar'],
-      prefixCls: 'ant-avatar',
-      stylesThrough: { dir: 'button', from: 'ant-btn', to: 'ant-avatar' }
-    };
-    const names = await componentTokenNamesFor('avatar', fixtureEntry);
-    // `--ant-button-content-font-size` is one of Button's real registered tokens (verified by
-    // printing `componentTokenNames('Button')` while writing this test).
-    expect(names).toEqual(expect.arrayContaining(['--ant-button-content-font-size']));
-    expect(names.some(n => n.startsWith('--ant-avatar-'))).toBe(true);
+    const names = await componentTokenNamesFor('timeline', v6Components.timeline);
+    // `--ant-steps-dot-current-size` is one of Steps' registered tokens (manifest `steps.tokens`).
+    expect(names).toEqual(expect.arrayContaining(['--ant-steps-dot-current-size']));
+    expect(names.some(n => n.startsWith('--ant-timeline-'))).toBe(true);
   });
 });
 

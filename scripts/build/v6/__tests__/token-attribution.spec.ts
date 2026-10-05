@@ -6,6 +6,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { kebabCase } from '../bundle-engine';
+import { allAntdComponentNames } from '../components';
 import { componentTokenNames } from '../generate-styles';
 
 describe('componentTokenNames', () => {
@@ -24,8 +25,10 @@ describe('componentTokenNames', () => {
   });
 
   it('returns an empty list for an unregistered component', async () => {
-    // `Affix` has no map entry (plan F); any name genuinely absent from `v6Components` works here.
-    expect(await componentTokenNames('Affix')).toEqual([]);
+    // A name no antd component will ever have, so mapping a real component later cannot turn this
+    // into a registered one; the first assertion keeps that premise checked.
+    expect(allAntdComponentNames()).not.toContain('NotAComponent');
+    expect(await componentTokenNames('NotAComponent')).toEqual([]);
   });
 });
 

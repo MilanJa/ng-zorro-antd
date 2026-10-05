@@ -22,10 +22,12 @@ describe('renderThemeCss edge cases', () => {
   });
 
   it('ignores component overrides for components that are not in the registry', async () => {
-    // `Affix` has no map entry (plan F); any name genuinely absent from `v6Components` works here.
-    const css = await r.renderThemeCss({ components: { Affix: { zIndexPopup: '#123456' } } } as never);
+    // A name no antd component will ever have, so mapping a real component later cannot turn this
+    // into a registered one; the first assertion keeps that premise checked.
+    expect(allAntdComponentNames()).not.toContain('NotAComponent');
+    const css = await r.renderThemeCss({ components: { NotAComponent: { zIndexPopup: '#123456' } } } as never);
     expect(css).not.toContain('#123456');
-    expect(css).not.toContain('--ant-affix-');
+    expect(css).not.toContain('--ant-not-a-component-');
   });
 
   it('keeps zero values (borderRadius: 0 renders as 0px)', async () => {
