@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-10-05T10:57:54.501Z",
-  "base": "5801b2eeefd9eda49bdfe7f02abd3802fc4a3647",
+  "generatedAt": "2026-10-05T20:55:00.870Z",
+  "base": "45e0b366b0b517b253cce0126df0af5f5a3c689d",
   "classes": {
     "affix": [
       "ant-affix"
@@ -468,12 +468,17 @@
       "ant-divider-inner-text",
       "ant-divider-md",
       "ant-divider-plain",
+      "ant-divider-rail",
+      "ant-divider-rail-end",
+      "ant-divider-rail-start",
       "ant-divider-sm",
       "ant-divider-vertical",
       "ant-divider-with-text",
       "ant-divider-with-text-center",
+      "ant-divider-with-text-end",
       "ant-divider-with-text-left",
-      "ant-divider-with-text-right"
+      "ant-divider-with-text-right",
+      "ant-divider-with-text-start"
     ],
     "drawer": [
       "ant-drawer",
@@ -543,6 +548,9 @@
       "ant-flex-align-space-evenly",
       "ant-flex-align-start",
       "ant-flex-align-stretch",
+      "ant-flex-gap-large",
+      "ant-flex-gap-middle",
+      "ant-flex-gap-small",
       "ant-flex-justify-center",
       "ant-flex-justify-end",
       "ant-flex-justify-flex-end",
@@ -555,10 +563,14 @@
       "ant-flex-justify-space-evenly",
       "ant-flex-justify-start",
       "ant-flex-justify-stretch",
+      "ant-flex-rtl",
       "ant-flex-vertical",
       "ant-flex-wrap-nowrap",
       "ant-flex-wrap-wrap",
-      "ant-flex-wrap-wrap-reverse"
+      "ant-flex-wrap-wrap-reverse",
+      "ant-padding",
+      "ant-padding-lg",
+      "ant-padding-xs"
     ],
     "float-button": [
       "ant-btn",
@@ -1299,6 +1311,7 @@
       "ant-splitter-bar",
       "ant-splitter-bar-collapse-bar",
       "ant-splitter-bar-collapse-bar-end",
+      "ant-splitter-bar-collapse-bar-hover-only",
       "ant-splitter-bar-collapse-bar-start",
       "ant-splitter-bar-collapse-end",
       "ant-splitter-bar-collapse-icon",
@@ -2559,12 +2572,17 @@
         "ant-divider-inner-text",
         "ant-divider-md",
         "ant-divider-plain",
+        "ant-divider-rail",
+        "ant-divider-rail-end",
+        "ant-divider-rail-start",
         "ant-divider-sm",
         "ant-divider-vertical",
         "ant-divider-with-text",
         "ant-divider-with-text-center",
+        "ant-divider-with-text-end",
         "ant-divider-with-text-left",
-        "ant-divider-with-text-right"
+        "ant-divider-with-text-right",
+        "ant-divider-with-text-start"
       ],
       "divider/divider.module.ts": [],
       "divider/index.ts": [],
@@ -2677,6 +2695,9 @@
         "ant-flex-align-space-evenly",
         "ant-flex-align-start",
         "ant-flex-align-stretch",
+        "ant-flex-gap-large",
+        "ant-flex-gap-middle",
+        "ant-flex-gap-small",
         "ant-flex-justify-center",
         "ant-flex-justify-end",
         "ant-flex-justify-flex-end",
@@ -2689,10 +2710,14 @@
         "ant-flex-justify-space-evenly",
         "ant-flex-justify-start",
         "ant-flex-justify-stretch",
+        "ant-flex-rtl",
         "ant-flex-vertical",
         "ant-flex-wrap-nowrap",
         "ant-flex-wrap-wrap",
-        "ant-flex-wrap-wrap-reverse"
+        "ant-flex-wrap-wrap-reverse",
+        "ant-padding",
+        "ant-padding-lg",
+        "ant-padding-xs"
       ],
       "flex/public-api.ts": [],
       "flex/typings.ts": []
@@ -3842,6 +3867,7 @@
         "ant-splitter-bar",
         "ant-splitter-bar-collapse-bar",
         "ant-splitter-bar-collapse-bar-end",
+        "ant-splitter-bar-collapse-bar-hover-only",
         "ant-splitter-bar-collapse-bar-start",
         "ant-splitter-bar-collapse-end",
         "ant-splitter-bar-collapse-icon",
