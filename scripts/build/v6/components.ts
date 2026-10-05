@@ -197,13 +197,17 @@ export const v6Components = {
 } as const satisfies Record<string, V6ComponentEntry>;
 
 /**
- * antd components that are presets of another component and have no style module of their own
- * (`antd/es/auto-complete/style` does not exist: AutoComplete is Select with `mode="combobox"`;
- * TimePicker is DatePicker with `picker="time"`). Their CSS is extracted by rendering them, but the
- * engine bundles and registers the host component's style module.
+ * antd components whose style module lives under another antd directory: presets with no style
+ * module of their own (`antd/es/auto-complete/style` does not exist: AutoComplete is Select with
+ * `mode="combobox"`; TimePicker is DatePicker with `picker="time"`), and Row/Col, whose
+ * `antd/es/row/style`/`antd/es/col/style` are empty `export default {}` stubs for babel-plugin-import
+ * while both hooks live in `antd/es/grid/style`. Their CSS is extracted by rendering them; the engine
+ * bundles and registers the module named here.
  */
 export const ANTD_STYLE_MODULE_OVERRIDES: Record<string, string> = {
   AutoComplete: 'select',
+  Col: 'grid',
+  Row: 'grid',
   TimePicker: 'date-picker'
 };
 
@@ -238,12 +242,15 @@ export const v6ComponentDirs = Object.keys(v6Components) as V6ComponentDir[];
  *
  * `AutoComplete`/`TimePicker` need the same translation for a different reason: they have no style
  * module of their own (`ANTD_STYLE_MODULE_OVERRIDES` above), so the engine only ever registers their
- * host component (`Select`/`DatePicker`) under the registry.
+ * host component (`Select`/`DatePicker`) under the registry. `Row`/`Col` register under `Grid`
+ * (`genStyleHooks('Grid', …)` twice in `grid/style`).
  */
 const ANTD_REGISTRY_NAME_OVERRIDES: Record<string, string> = {
   message: 'Message',
   notification: 'Notification',
   AutoComplete: 'Select',
+  Col: 'Grid',
+  Row: 'Grid',
   TimePicker: 'DatePicker'
 };
 
@@ -266,9 +273,16 @@ const RENDERED_PREFIX_OWNERS: Record<string, V6ComponentDir> = {
   'ant-select-tree': 'tree'
 };
 
-/** True for an entry whose antd names all have a style module of their own (no preset alias). */
-function ownsStyleModule(dir: V6ComponentDir): boolean {
-  return v6Components[dir].antd.every(name => antdStyleModuleDir(name) === kebabCase(name));
+/**
+ * True for an entry whose antd names all have their style module in the entry's own antd directory:
+ * each name's own (`Button` -> `button`) or the directory's shared one (`Row`/`Col` -> `grid`). A
+ * preset alias (`AutoComplete` -> `select`) does not own the styles of its prefix.
+ */
+export function ownsStyleModule(dir: string, entry: V6ComponentEntry = v6Components[dir as V6ComponentDir]): boolean {
+  return entry.antd.every(name => {
+    const moduleDir = antdStyleModuleDir(name);
+    return moduleDir === kebabCase(name) || moduleDir === dir;
+  });
 }
 
 /**
@@ -322,7 +336,7 @@ export function v6PatchDependencies(dir: V6ComponentDir): V6ComponentDir[] {
     const direct = new Set<string>();
     for (const name of entry.antd) {
       const host = antdStyleModuleDir(name);
-      if (host !== kebabCase(name)) {
+      if (host !== kebabCase(name) && host !== current) {
         direct.add(host);
       }
     }

@@ -27,9 +27,11 @@ const shimPlugin: esbuild.Plugin = {
     build.onResolve({ filter: /^@ant-design\/cssinjs-utils$/ }, () => ({
       path: path.join(shimsDir, 'cssinjs-utils.js')
     }));
-    // antd/es/modal/style/index.js imports only `getMediaSize` from grid/style; the real module also
-    // registers two conflicting `Grid` default-token factories (Row + Col) at module scope, which the
-    // recorder above rejects (see shims/grid-style.js).
+    // antd/es/modal/style/index.js imports only `getMediaSize` from grid/style; the real module registers
+    // Grid's hooks at module scope, which would add a `Grid` registry entry to every bundle that maps
+    // Modal (the `registers exactly the requested components` test). The grid map entry imports the real
+    // module directly (`STYLE_MODULE_NAMED_EXPORTS`); this resolver only matches importers under
+    // `antd/es/modal/style/`.
     build.onResolve({ filter: /^\.\.\/\.\.\/grid\/style$/ }, args => {
       if (args.importer.replace(/\\/g, '/').includes('/antd/es/modal/style/')) {
         return { path: path.join(shimsDir, 'grid-style.js') };
@@ -48,6 +50,15 @@ export { default as formatToken } from 'antd/es/theme/util/alias.js';
 export { unitless, ignore } from 'antd/es/theme/useToken.js';
 export { token2CSSVar, transformToken } from '@ant-design/cssinjs/es/util/css-variables.js';
 `;
+
+/**
+ * Style modules with no default export, imported by their named hooks instead. `antd/es/grid/style`
+ * exports `useRowStyle` and `useColStyle`, both `genStyleHooks('Grid', …)` calls at module scope, so
+ * importing them records Grid without a call (the recorder merges the two factories).
+ */
+const STYLE_MODULE_NAMED_EXPORTS: Record<string, readonly string[]> = {
+  'antd/es/grid/style/index.js': ['useRowStyle', 'useColStyle']
+};
 
 export function componentsEntry(antdNames: string[]): string {
   // Import (rather than bare side-effect import) each style module's default so esbuild's real
@@ -72,13 +83,21 @@ export function componentsEntry(antdNames: string[]): string {
   // Deduped by module path, not by name: `AutoComplete`/`TimePicker` share `Select`/`DatePicker`'s style
   // module (`ANTD_STYLE_MODULE_OVERRIDES` in `components.ts`), which must be imported only once.
   const modulePaths = [...new Set(antdNames.map(antdStyleModulePath))];
-  const lines = modulePaths.map((p, i) =>
-    [
+  const lines = modulePaths.map((p, i) => {
+    const named = STYLE_MODULE_NAMED_EXPORTS[p];
+    if (named) {
+      const locals = named.map((_, j) => `_c${i}_${j}`);
+      return [
+        `import { ${named.map((n, j) => `${n} as ${locals[j]}`).join(', ')} } from '${p}';`,
+        `export { ${locals.join(', ')} };`
+      ].join('\n');
+    }
+    return [
       `import { default as _c${i} } from '${p}';`,
       `export { _c${i} };`,
       `try { _c${i}(); } catch (e) { console.warn('v6 engine: calling the default export of ${p} threw', e); }`
-    ].join('\n')
-  );
+    ].join('\n');
+  });
   return `${lines.join('\n')}\nexport { registry } from '${path.join(shimsDir, 'cssinjs-utils.js').replace(/\\/g, '/')}';\n`;
 }
 

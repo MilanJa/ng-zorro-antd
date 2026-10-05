@@ -13,6 +13,7 @@ import {
   ANTD_STYLE_MODULE_OVERRIDES,
   antdRegistryName,
   antdStyleModuleDir,
+  ownsStyleModule,
   stylesThroughOf,
   v6ComponentDirs,
   v6Components,
@@ -69,6 +70,21 @@ describe('v6 component map', () => {
     expect(antdStyleModuleDir('InputNumber')).toBe('input-number');
     expect(antdRegistryName('AutoComplete')).toBe('Select');
     expect(antdRegistryName('TimePicker')).toBe('DatePicker');
+  });
+
+  it("points Row and Col at Grid's style module and registry name", () => {
+    // antd/es/row/style and antd/es/col/style are `export default {}` stubs; the hooks live in grid/style.
+    expect(antdStyleModuleDir('Row')).toBe('grid');
+    expect(antdStyleModuleDir('Col')).toBe('grid');
+    expect(antdRegistryName('Row')).toBe('Grid');
+    expect(antdRegistryName('Col')).toBe('Grid');
+  });
+
+  it("treats an entry whose names share their own directory's style module as that module's owner", () => {
+    expect(ownsStyleModule('grid', { antd: ['Row', 'Col'], prefixCls: 'ant-row' })).toBe(true);
+    expect(ownsStyleModule('button', { antd: ['Button'], prefixCls: 'ant-btn' })).toBe(true);
+    expect(ownsStyleModule('auto-complete', { antd: ['AutoComplete'], prefixCls: 'ant-select' })).toBe(false);
+    expect(ownsStyleModule('time-picker', { antd: ['TimePicker'], prefixCls: 'ant-picker' })).toBe(false);
   });
 });
 

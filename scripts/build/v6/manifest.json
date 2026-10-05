@@ -1,7 +1,7 @@
 {
   "antdVersion": "6.6.5",
   "engineCoreBytes": 42701,
-  "engineComponentsBytes": 419103,
+  "engineComponentsBytes": 419252,
   "components": {
     "alert": {
       "classes": [

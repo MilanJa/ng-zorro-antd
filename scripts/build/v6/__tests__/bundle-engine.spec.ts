@@ -119,3 +119,31 @@ describe('bundleEngine', () => {
     }
   });
 });
+
+describe('componentsEntry for a style module without a default export', () => {
+  it('imports antd/es/grid/style once, by its named hooks, for Row and Col', () => {
+    const entry = componentsEntry(['Button', 'Row', 'Col']);
+    expect(entry.match(/from 'antd\/es\/grid\/style\/index\.js'/g)).toHaveLength(1);
+    expect(entry).toContain(
+      "import { useRowStyle as _c1_0, useColStyle as _c1_1 } from 'antd/es/grid/style/index.js';"
+    );
+    expect(entry).toContain('export { _c1_0, _c1_1 };');
+    expect(entry).not.toMatch(/_c1\(\)/);
+    expect(entry).toContain("import { default as _c0 } from 'antd/es/button/style/index.js';");
+  });
+});
+
+describe('bundleEngine with Row and Col', () => {
+  const outDir = mkdtempSync(path.join(os.tmpdir(), 'nz-v6-engine-grid-'));
+  afterAll(() => rmSync(outDir, { recursive: true, force: true }));
+
+  it('registers Grid once from the real module while Modal keeps its getMediaSize shim', async () => {
+    await bundleEngine({ outDir, antdNames: ['Modal', 'Row', 'Col'], minify: true });
+    const comps = await import(pathToFileURL(path.join(outDir, 'engine-components.ts')).href);
+    const registry: Map<string, { getDefaultToken: (t: unknown) => unknown; subStyles: string[] }> = comps.registry;
+    expect(registry.has('Modal')).toBe(true);
+    // exactly Row's and Col's hooks: the modal-scoped shim (shims/grid-style.js) registers nothing
+    expect(registry.get('Grid')!.subStyles).toEqual(['Grid', 'Grid']);
+    expect(registry.get('Grid')!.getDefaultToken({})).toEqual({});
+  });
+});
