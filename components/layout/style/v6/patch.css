@@ -1,0 +1,7 @@
+/* Port of layout/style/patch.less: the nz-header/nz-content/nz-footer hosts are custom elements
+   (inline by default); antd renders <header>/<main>/<footer>, which are block. */
+nz-content,
+nz-header,
+nz-footer {
+  display: block;
+}

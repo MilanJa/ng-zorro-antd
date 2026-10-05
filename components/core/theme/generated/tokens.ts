@@ -907,6 +907,28 @@ export interface NzInputNumberToken {
   warningActiveShadow: string;
 }
 
+export interface NzLayoutToken {
+  bodyBg: string;
+  colorBgBody: string;
+  colorBgHeader: string;
+  colorBgTrigger: string;
+  footerBg: string;
+  footerPadding: string;
+  headerBg: string;
+  headerColor: string;
+  headerHeight: number;
+  headerPadding: string;
+  lightSiderBg: string;
+  lightTriggerBg: string;
+  lightTriggerColor: string;
+  siderBg: string;
+  triggerBg: string;
+  triggerColor: string;
+  triggerHeight: number;
+  zeroTriggerHeight: number;
+  zeroTriggerWidth: number;
+}
+
 export interface NzListToken {
   avatarMarginRight: number;
   contentWidth: number;
@@ -1446,6 +1468,7 @@ export interface NzComponentTokenMap {
   Image: NzImageToken;
   Input: NzInputToken;
   InputNumber: NzInputNumberToken;
+  Layout: NzLayoutToken;
   List: NzListToken;
   Mentions: NzMentionsToken;
   Menu: NzMenuToken;

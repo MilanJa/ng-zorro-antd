@@ -32,6 +32,7 @@ export const COMPONENT_ROOT_CLS: Record<string, string> = {
   Image: 'ant-image',
   Input: 'ant-input',
   InputNumber: 'ant-input-number',
+  Layout: 'ant-layout',
   List: 'ant-list',
   Mentions: 'ant-mentions',
   Menu: 'ant-menu',

@@ -36,6 +36,7 @@ Only the components below have v6 styles so far. Others keep rendering with the 
 - `image`
 - `input`
 - `input-number`
+- `layout`
 - `list`
 - `mention`
 - `menu`

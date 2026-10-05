@@ -104,6 +104,9 @@ export const v6Components = {
   image: { antd: ['Image'], prefixCls: 'ant-image' },
   input: { antd: ['Input'], prefixCls: 'ant-input' },
   'input-number': { antd: ['InputNumber'], prefixCls: 'ant-input-number' },
+  // `Layout` and `Layout.Sider` share antd's `layout/style` module (one `prepareComponentToken`); the
+  // nz-header/nz-content/nz-footer hosts are custom elements, made block in style/v6/patch.css.
+  layout: { antd: ['Layout'], prefixCls: 'ant-layout' },
   // The empty-data-source state mounts a real `nz-embed-empty`/`nz-empty` (`list-cell.ts`'s
   // `NzListEmptyComponent`), the loading state wraps content in a real `nz-spin`, and a `nzPagination`
   // template typically composes a real `nz-pagination` -- all three are mapped. `nzGrid` renders

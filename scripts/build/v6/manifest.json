@@ -1,7 +1,7 @@
 {
   "antdVersion": "6.6.5",
   "engineCoreBytes": 42701,
-  "engineComponentsBytes": 421173,
+  "engineComponentsBytes": 422601,
   "components": {
     "alert": {
       "classes": [
@@ -2869,6 +2869,48 @@
         "--ant-input-number-padding-inline-lg",
         "--ant-input-number-padding-inline-sm",
         "--ant-input-number-warning-active-shadow"
+      ]
+    },
+    "layout": {
+      "classes": [
+        "ant-layout",
+        "ant-layout-content",
+        "ant-layout-footer",
+        "ant-layout-has-sider",
+        "ant-layout-header",
+        "ant-layout-rtl",
+        "ant-layout-sider",
+        "ant-layout-sider-children",
+        "ant-layout-sider-has-trigger",
+        "ant-layout-sider-light",
+        "ant-layout-sider-right",
+        "ant-layout-sider-trigger",
+        "ant-layout-sider-zero-width",
+        "ant-layout-sider-zero-width-trigger",
+        "ant-layout-sider-zero-width-trigger-right",
+        "ant-menu",
+        "ant-menu-inline-collapsed"
+      ],
+      "tokens": [
+        "--ant-layout-body-bg",
+        "--ant-layout-color-bg-body",
+        "--ant-layout-color-bg-header",
+        "--ant-layout-color-bg-trigger",
+        "--ant-layout-footer-bg",
+        "--ant-layout-footer-padding",
+        "--ant-layout-header-bg",
+        "--ant-layout-header-color",
+        "--ant-layout-header-height",
+        "--ant-layout-header-padding",
+        "--ant-layout-light-sider-bg",
+        "--ant-layout-light-trigger-bg",
+        "--ant-layout-light-trigger-color",
+        "--ant-layout-sider-bg",
+        "--ant-layout-trigger-bg",
+        "--ant-layout-trigger-color",
+        "--ant-layout-trigger-height",
+        "--ant-layout-zero-trigger-height",
+        "--ant-layout-zero-trigger-width"
       ]
     },
     "list": {

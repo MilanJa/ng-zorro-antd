@@ -285,6 +285,9 @@
       "less": "./layout/style/*.less",
       "style": "./layout/style/index.min.css"
     },
+    "./layout/style/v6/*": {
+      "style": "./layout/style/v6/*"
+    },
     "./list/style/*": {
       "less": "./list/style/*.less",
       "style": "./list/style/index.min.css"
