@@ -7,6 +7,8 @@ import { OverlayContainer } from '@angular/cdk/overlay';
 import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
+import { page } from 'vitest/browser';
+
 import { V6_PATCH_CSS, V6_TEMPLATE_CSS, V6_TOKENS_DEFAULT_CSS } from 'ng-zorro-antd/core/theme/generated/test-css';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { provideNzIconsTesting } from 'ng-zorro-antd/icon/testing';
@@ -113,13 +115,23 @@ describe('grid under antd v6 css', () => {
     expect(Math.abs(parseFloat(getComputedStyle(el('c6')).marginLeft) - 0.25 * rowWidth)).toBeLessThanOrEqual(0.5);
   });
 
-  it('applies the breakpoint span that matches the viewport', () => {
+  it('applies the breakpoint span that matches the viewport', async () => {
     const fixture = TestBed.createComponent(GridResponsiveHost);
     fixture.detectChanges();
 
-    // The runner's viewport width is not fixed: read the `md` media query antd's sheet uses.
-    const expected = matchMedia('(min-width: 768px)').matches ? '50%' : '100%';
-    expect(getComputedStyle(el('resp')).maxWidth).toBe(expected);
+    try {
+      // Below the `md` breakpoint (768px, antd's `grid/style/index.js` media query), only `nzXs` applies.
+      await page.viewport(375, 800);
+      expect(getComputedStyle(el('resp')).maxWidth).toBe('100%');
+
+      // At or above it, `nzMd` applies.
+      await page.viewport(1280, 800);
+      expect(getComputedStyle(el('resp')).maxWidth).toBe('50%');
+    } finally {
+      // Restore the runner's configured viewport (components/project.json `browserViewport`) so later
+      // specs in this file are not affected by this test's resize.
+      await page.viewport(1000, 1000);
+    }
   });
 
   it('maps nzJustify and nzAlign to the row flex alignment', () => {
