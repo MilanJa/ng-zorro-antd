@@ -136,6 +136,27 @@ describe('divider', () => {
       expect(dl.query(By.css('.ant-divider-with-text'))).toBeNull();
     });
   });
+
+  describe('#rails', () => {
+    it('renders the two rails for a horizontal text divider only', () => {
+      const railCount = (): number => dl.queryAll(By.css('.ant-divider-rail-start, .ant-divider-rail-end')).length;
+      context.nzText.set('text');
+      fixture.detectChanges();
+      expect(railCount()).toBe(2);
+      expect(
+        dl.query(By.css('.ant-divider-rail-start + .ant-divider-inner-text + .ant-divider-rail-end'))
+      ).not.toBeNull();
+
+      context.nzType.set('vertical');
+      fixture.detectChanges();
+      expect(railCount()).toBe(0);
+
+      context.nzType.set('horizontal');
+      context.nzText.set(undefined);
+      fixture.detectChanges();
+      expect(railCount()).toBe(0);
+    });
+  });
 });
 
 @Component({

@@ -74,11 +74,12 @@ export const v6Components = {
   collapse: { antd: ['Collapse'], prefixCls: 'ant-collapse' },
   // `ant-popover` is ColorPicker's own popup chrome; `ant-collapse` is styled by ColorPicker's own
   // extracted CSS for the presets accordion; `ant-input-number` and `ant-select` are the
-  // format-input row's mapped components.
+  // format-input row's mapped components; `ant-divider` is the `nz-divider` between the picker
+  // panel and the presets, which ColorPicker's own CSS targets as `-inner-content>.ant-divider`.
   'color-picker': {
     antd: ['ColorPicker'],
     prefixCls: 'ant-color-picker',
-    renderedPrefixes: ['ant-popover', 'ant-collapse', 'ant-input-number', 'ant-select']
+    renderedPrefixes: ['ant-popover', 'ant-collapse', 'ant-input-number', 'ant-select', 'ant-divider']
   },
   // DatePicker and TimePicker share one style module and registry entry (`ANTD_STYLE_MODULE_OVERRIDES`,
   // `ANTD_REGISTRY_NAME_OVERRIDES` above): TimePicker is a DatePicker preset (`picker="time"`) with no
@@ -88,6 +89,7 @@ export const v6Components = {
   // `RENDERED_PREFIX_STYLE_OWNERS` below).
   'date-picker': { antd: ['DatePicker'], prefixCls: 'ant-picker', renderedPrefixes: ['ant-picker-calendar'] },
   descriptions: { antd: ['Descriptions'], prefixCls: 'ant-descriptions' },
+  divider: { antd: ['Divider'], prefixCls: 'ant-divider' },
   drawer: { antd: ['Drawer'], prefixCls: 'ant-drawer' },
   dropdown: { antd: ['Dropdown'], prefixCls: 'ant-dropdown' },
   empty: { antd: ['Empty'], prefixCls: 'ant-empty' },

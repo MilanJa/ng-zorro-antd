@@ -805,6 +805,12 @@ export interface NzDescriptionsToken {
   titleMarginBottom: number;
 }
 
+export interface NzDividerToken {
+  orientationMargin: number;
+  textPaddingInline: string;
+  verticalMarginInline: number;
+}
+
 export interface NzDrawerToken {
   draggerSize: number;
   footerPaddingBlock: number;
@@ -1462,6 +1468,7 @@ export interface NzComponentTokenMap {
   ColorPicker: NzColorPickerToken;
   DatePicker: NzDatePickerToken;
   Descriptions: NzDescriptionsToken;
+  Divider: NzDividerToken;
   Drawer: NzDrawerToken;
   Dropdown: NzDropdownToken;
   Empty: NzEmptyToken;

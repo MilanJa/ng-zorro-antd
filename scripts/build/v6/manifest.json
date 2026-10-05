@@ -1,7 +1,7 @@
 {
   "antdVersion": "6.6.5",
   "engineCoreBytes": 42701,
-  "engineComponentsBytes": 423792,
+  "engineComponentsBytes": 426672,
   "components": {
     "alert": {
       "classes": [
@@ -1188,6 +1188,32 @@
         "--ant-descriptions-label-color",
         "--ant-descriptions-title-color",
         "--ant-descriptions-title-margin-bottom"
+      ]
+    },
+    "divider": {
+      "classes": [
+        "ant-divider",
+        "ant-divider-dashed",
+        "ant-divider-dotted",
+        "ant-divider-horizontal",
+        "ant-divider-inner-text",
+        "ant-divider-md",
+        "ant-divider-no-default-orientation-margin-end",
+        "ant-divider-no-default-orientation-margin-start",
+        "ant-divider-plain",
+        "ant-divider-rail",
+        "ant-divider-rail-end",
+        "ant-divider-rail-start",
+        "ant-divider-sm",
+        "ant-divider-vertical",
+        "ant-divider-with-text",
+        "ant-divider-with-text-end",
+        "ant-divider-with-text-start"
+      ],
+      "tokens": [
+        "--ant-divider-orientation-margin",
+        "--ant-divider-text-padding-inline",
+        "--ant-divider-vertical-margin-inline"
       ]
     },
     "drawer": {

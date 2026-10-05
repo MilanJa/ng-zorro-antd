@@ -281,6 +281,10 @@
     "_antdDir": "descriptions",
     "custom-size": "size"
   },
+  "divider": {
+    "_antdDir": "divider",
+    "orientation": "with-text"
+  },
   "typography": {
     "_antdDir": "typography",
     "interactive": "copyable"

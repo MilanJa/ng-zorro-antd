@@ -98,7 +98,7 @@ describe('v6PatchDependencies', () => {
       breadcrumb: ['dropdown'],
       calendar: ['badge', 'radio', 'select', 'typography'],
       cascader: ['empty', 'select'],
-      'color-picker': ['collapse', 'input-number', 'popover', 'select'],
+      'color-picker': ['collapse', 'divider', 'input-number', 'popover', 'select'],
       form: ['grid'],
       list: ['empty', 'grid', 'pagination', 'select', 'spin'],
       menu: ['dropdown', 'tooltip', 'typography'],

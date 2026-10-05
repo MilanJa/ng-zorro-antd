@@ -214,6 +214,9 @@
       "less": "./divider/style/*.less",
       "style": "./divider/style/index.min.css"
     },
+    "./divider/style/v6/*": {
+      "style": "./divider/style/v6/*"
+    },
     "./drawer/style/*": {
       "less": "./drawer/style/*.less",
       "style": "./drawer/style/index.min.css"
