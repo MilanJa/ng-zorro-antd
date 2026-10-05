@@ -144,7 +144,7 @@ export async function componentTokenNamesFor(
   const names = await Promise.all(entry.antd.map(name => componentTokenNames(antdRegistryName(name))));
   const through = entry.stylesThrough;
   if (through) {
-    const source = v6Components[through.dir] as V6ComponentEntry;
+    const source = v6Components[through.dir as V6ComponentDir] as V6ComponentEntry;
     names.push(...(await Promise.all(source.antd.map(name => componentTokenNames(antdRegistryName(name))))));
   }
   return [...new Set(names.flat())].sort();
@@ -228,7 +228,7 @@ export function componentTemplate(
   const through = entry.stylesThrough;
   if (through) {
     blocks = dropStylesThroughSource(blocks, through.from);
-    const source = v6Components[through.dir] as V6ComponentEntry;
+    const source = v6Components[through.dir as V6ComponentDir] as V6ComponentEntry;
     const sourceBlocks = partitionBlocks(extractAntdCss({ includes: [...source.antd], key: KEY }), KEY).template;
     // Keep the source's own component token block: the copied rules read it (manifest tokens for a
     // `stylesThrough` entry are its own `componentTokenNames` union the source's, computed below).
@@ -268,7 +268,7 @@ export function stylesThroughCopyBlocks(): CssBlock[] {
     .filter(dir => stylesThroughOf(dir))
     .flatMap(dir => {
       const through = stylesThroughOf(dir)!;
-      const source = v6Components[through.dir] as V6ComponentEntry;
+      const source = v6Components[through.dir as V6ComponentDir] as V6ComponentEntry;
       const sourceBlocks = partitionBlocks(extractAntdCss({ includes: [...source.antd], key: KEY }), KEY).template;
       return rewriteClassPrefix(dropForeignCssVarBlocks(sourceBlocks, KEY), through.from, through.to);
     });

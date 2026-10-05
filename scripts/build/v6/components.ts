@@ -23,8 +23,13 @@ export interface V6ComponentEntry {
 
 /** Another mapped component whose extracted rules are copied under this component's prefix (`generate-styles.ts`'s `componentTemplate`). */
 export interface StylesThrough {
-  /** mapped directory whose extracted rules are copied under this component's prefix */
-  dir: V6ComponentDir;
+  /**
+   * mapped directory whose extracted rules are copied under this component's prefix. Typed `string`
+   * rather than `V6ComponentDir`: `v6Components` is the source of `V6ComponentDir`, so the narrower type
+   * would make the map's type refer to itself. `components.spec.ts` checks that it names a mapped
+   * directory whose `prefixCls` is `from`.
+   */
+  dir: string;
   from: string;
   to: string;
 }

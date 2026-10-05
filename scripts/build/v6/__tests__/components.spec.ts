@@ -13,6 +13,7 @@ import {
   ANTD_STYLE_MODULE_OVERRIDES,
   antdRegistryName,
   antdStyleModuleDir,
+  stylesThroughOf,
   v6ComponentDirs,
   v6Components,
   v6PatchDependencies
@@ -31,6 +32,19 @@ describe('v6 component map', () => {
     const antd = await import('antd');
     for (const name of allAntdComponentNames()) {
       expect(typeof (antd as Record<string, unknown>)[name], `antd.${name}`).not.toBe('undefined');
+    }
+  });
+
+  it("names a mapped directory whose prefixCls is `from` in every stylesThrough entry, and the entry's own prefix as `to`", () => {
+    const entries = v6ComponentDirs.filter(dir => stylesThroughOf(dir));
+    expect(entries).toContain('timeline');
+    for (const dir of entries) {
+      const through = stylesThroughOf(dir)!;
+      expect(v6ComponentDirs as readonly string[], `${dir}: stylesThrough.dir`).toContain(through.dir);
+      expect(through.dir, `${dir}: stylesThrough.dir must not be the entry itself`).not.toBe(dir);
+      const source = v6Components[through.dir as (typeof v6ComponentDirs)[number]];
+      expect(through.from, `${dir}: stylesThrough.from`).toBe(source.prefixCls);
+      expect(through.to, `${dir}: stylesThrough.to`).toBe(v6Components[dir].prefixCls);
     }
   });
 
