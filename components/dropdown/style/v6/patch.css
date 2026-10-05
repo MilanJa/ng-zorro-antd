@@ -78,7 +78,10 @@
    source order after the template decides). Selectors naming a class ng-zorro's menu never emits
    (`-title-content`, `-item-icon`, `-item-extra`, `-item-label`, `-item-active`, `-submenu-title-*`
    states) are left out; the `.ant-menu-title-content` mirrors above already cover nested items. The
-   one `!important` is antd's own, kept as extracted. */
+   one `!important` is antd's own, kept as extracted. Regenerate after an antd upgrade: take the
+   template part of `publish/dropdown/style/v6/index.css`, keep the selectors that start with
+   `.ant-dropdown-menu-submenu .ant-dropdown-menu` and name only emitted classes, replace that prefix
+   with `.ant-menu-submenu-popup > .ant-dropdown-menu`, and compare the rule count (23) here. */
 .ant-menu-submenu-popup > .ant-dropdown-menu {
   padding: var(--ant-padding-xxs);
   list-style-type: none;
