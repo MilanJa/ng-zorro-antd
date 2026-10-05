@@ -61,6 +61,25 @@ class TestDropdownComponent {
   @ViewChild('ctx', { static: true }) ctx!: NzDropdownMenuComponent;
 }
 
+@Component({
+  imports: [NzDropdownModule],
+  template: `
+    <button id="nestedTrg" nz-dropdown [nzDropdownMenu]="nested" nzTrigger="click">Menu</button>
+    <nz-dropdown-menu #nested="nzDropdownMenu">
+      <ul nz-menu>
+        <li nz-menu-item>Item 1</li>
+        <li nz-submenu nzTitle="sub menu">
+          <ul>
+            <li id="nestedItem" nz-menu-item>Nested item</li>
+            <li nz-menu-item>Nested item 2</li>
+          </ul>
+        </li>
+      </ul>
+    </nz-dropdown-menu>
+  `
+})
+class TestNestedDropdownComponent {}
+
 describe('dropdown under antd v6 css', () => {
   let fixture: ComponentFixture<TestDropdownComponent>;
   let overlay: OverlayContainer;
@@ -231,5 +250,44 @@ describe('dropdown under antd v6 css', () => {
     item.appendChild(probe);
     expect(getComputedStyle(probe).backgroundColor).toBe('rgba(0, 0, 0, 0.04)');
     probe.remove();
+  });
+
+  it('paints the nested submenu popup like the root list', async () => {
+    const nestedFixture = TestBed.createComponent(TestNestedDropdownComponent);
+    nestedFixture.detectChanges();
+    (nestedFixture.nativeElement.querySelector('#nestedTrg') as HTMLElement).click();
+    await waitForOpen(nestedFixture);
+    const title = overlay.getContainerElement().querySelector('.ant-dropdown-menu-submenu-title') as HTMLElement;
+    expect(title).not.toBeNull();
+
+    // The submenu opens through its own `auditTime(150)` (menu's submenu service).
+    dispatchEvent(title, new MouseEvent('mouseenter'));
+    await waitForOpen(nestedFixture);
+    const root = overlay.getContainerElement().querySelector('.ant-menu-submenu-popup') as HTMLElement;
+    expect(root).not.toBeNull();
+    await expectMotionSettled(root);
+    // Wait past the items' `transition: all var(--ant-motion-duration-mid)` (0.2s).
+    await new Promise(resolve => setTimeout(resolve, 350));
+
+    // antd v6 values for its `.ant-dropdown-menu-submenu-popup > .ant-dropdown-menu` (default tokens).
+    const list = root.querySelector('.ant-dropdown-menu-sub') as HTMLElement;
+    const listCs = getComputedStyle(list);
+    expect(listCs.backgroundColor).toBe('rgb(255, 255, 255)');
+    expect(listCs.borderRadius).toBe('8px');
+    expect(listCs.padding).toBe('4px');
+    expect(listCs.boxShadow).toBe(
+      'rgba(0, 0, 0, 0.08) 0px 6px 16px 0px, rgba(0, 0, 0, 0.12) 0px 3px 6px -4px, rgba(0, 0, 0, 0.05) 0px 9px 28px 8px'
+    );
+    expect(getComputedStyle(root).backgroundColor).toBe('rgba(0, 0, 0, 0)');
+
+    const item = root.querySelector('#nestedItem') as HTMLElement;
+    const itemCs = getComputedStyle(item);
+    expect(itemCs.color).toBe('rgba(0, 0, 0, 0.88)');
+    expect(itemCs.paddingInlineStart).toBe('12px');
+    expect(itemCs.borderRadius).toBe('4px');
+    expect(item.getBoundingClientRect().height).toBe(32);
+    // The list's 4px padding is the only inset (the submenu's projected `<ul>` adds none).
+    expect(item.getBoundingClientRect().left - list.getBoundingClientRect().left).toBeCloseTo(4, 0);
+    expect(item.getBoundingClientRect().top - list.getBoundingClientRect().top).toBeCloseTo(4, 0);
   });
 });
