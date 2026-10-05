@@ -116,7 +116,10 @@ async function assertNoAntdRuntimeStyles(page: Page, what: string): Promise<void
 /**
  * A class of `dir`'s own prefix is "styled" when the antd-pane CSS has a selector that names it as a
  * literal class (a `:where()`-wrapped or antd-hashed form still contains the plain class token inside
- * it, so a substring match after the leading dot is enough; no need to parse selector lists).
+ * it, so a substring match after the leading dot is enough; no need to parse selector lists). The manifest
+ * records class names in lowercase only, so a camelCase name is cut at its first capital (rc-trigger's
+ * `.ant-menu-submenu-placement-rightTop` is listed as `ant-menu-submenu-placement-right`); a capital right
+ * after the token therefore also counts as the class.
  */
 export function ownClassesStyled(
   css: string,
@@ -127,7 +130,7 @@ export function ownClassesStyled(
   const own = classes.filter(c => c === prefixCls || c.startsWith(`${prefixCls}-`));
   const styledAs = (cls: string): boolean => {
     const escaped = cls.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
-    return new RegExp(`\\.${escaped}(?:[.:,\\s{~>+)]|$)`).test(css);
+    return new RegExp(`\\.${escaped}(?:[.:,\\s{~>+)A-Z]|$)`).test(css);
   };
   let styled = 0;
   for (const cls of own) {

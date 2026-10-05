@@ -20,6 +20,12 @@ describe('ownClassesStyled', () => {
     expect(result).toEqual({ own: 2, styled: 2 });
   });
 
+  it('credits a manifest name cut at a camelCase capital, but not a longer lowercase class', () => {
+    const css = '.ant-menu-submenu-placement-rightTop{padding:0} .ant-menu-submenu-popup{}';
+    const classes = ['ant-menu-submenu-placement-right', 'ant-menu-submenu', 'ant-menu-submenu-placement-left'];
+    expect(ownClassesStyled(css, classes, 'ant-menu')).toEqual({ own: 3, styled: 1 });
+  });
+
   it('ignores classes that belong to a different prefix', () => {
     const css = '.ant-select-selector { border: 1px solid; }';
     const result = ownClassesStyled(css, ['ant-select-selector', 'ant-tabs-tab'], 'ant-tabs');
