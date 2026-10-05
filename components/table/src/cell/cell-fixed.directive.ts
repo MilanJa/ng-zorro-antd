@@ -4,7 +4,7 @@
  */
 
 import { Directionality } from '@angular/cdk/bidi';
-import { Directive, ElementRef, inject, Input, OnChanges, Renderer2 } from '@angular/core';
+import { Directive, effect, ElementRef, inject, Input, OnChanges, Renderer2, untracked } from '@angular/core';
 import { Subject } from 'rxjs';
 
 @Directive({
@@ -40,6 +40,18 @@ export class NzCellFixedDirective implements OnChanges {
   isFixedLeft = false;
   isFixedRight = false;
   isFixed = false;
+  private isFirstRight = false;
+  private isLastLeft = false;
+
+  constructor() {
+    // The shadow-eligibility classes depend on the direction (`isFixedStart`/`isFixedEnd`) but are
+    // set imperatively, only when the row recomputes its boundary cells; re-derive them when the
+    // direction changes at runtime so they follow the `-fix-start`/`-fix-end` host bindings.
+    effect(() => {
+      this.directionality.valueSignal();
+      untracked(() => this.updateShadowClasses());
+    });
+  }
 
   /**
    * rc-table's own notion of "start"/"end" (`Cell/index.js`'s `isFixedStart`/`isFixedEnd`): the
@@ -65,21 +77,28 @@ export class NzCellFixedDirective implements OnChanges {
   }
 
   setIsFirstRight(isFirstRight: boolean): void {
+    this.isFirstRight = isFirstRight;
     this.setFixClass(isFirstRight, 'ant-table-cell-fix-right-first');
-    // v6's `fixedEndShadow`/`fixedStartShadow` props (eligibility for the scroll shadow) are true
-    // for the first fixed-right cell on rc-table's logical end side in ltr, its logical start side
-    // in rtl; the `-show` half that the ping state gates is toggled separately in
-    // `NzTableInnerScrollComponent.setScrollPositionClassName`.
-    this.setFixClass(isFirstRight && this.isFixedEnd, 'ant-table-cell-fix-end-shadow');
-    this.setFixClass(isFirstRight && this.isFixedStart, 'ant-table-cell-fix-start-shadow');
+    this.updateShadowClasses();
   }
 
   setIsLastLeft(isLastLeft: boolean): void {
+    this.isLastLeft = isLastLeft;
     this.setFixClass(isLastLeft, 'ant-table-cell-fix-left-last');
-    // Same as `ant-table-cell-fix-end-shadow`/`-start-shadow` above, mirrored for the last
-    // fixed-left cell (rc-table's logical start side in ltr, its logical end side in rtl).
-    this.setFixClass(isLastLeft && this.isFixedStart, 'ant-table-cell-fix-start-shadow');
-    this.setFixClass(isLastLeft && this.isFixedEnd, 'ant-table-cell-fix-end-shadow');
+    this.updateShadowClasses();
+  }
+
+  /**
+   * v6's `fixedStartShadow`/`fixedEndShadow` props (eligibility for the scroll shadow) are true for a
+   * physical boundary cell on rc-table's logical side: the first fixed-right cell is the logical end
+   * in ltr and the start in rtl, the last fixed-left cell the other way round. The `-show` half
+   * that the ping state gates is toggled separately in
+   * `NzTableInnerScrollComponent.setScrollPositionClassName`.
+   */
+  private updateShadowClasses(): void {
+    const isBoundary = this.isFirstRight || this.isLastLeft;
+    this.setFixClass(isBoundary && this.isFixedStart, 'ant-table-cell-fix-start-shadow');
+    this.setFixClass(isBoundary && this.isFixedEnd, 'ant-table-cell-fix-end-shadow');
   }
 
   private setFixClass(flag: boolean, className: string): void {

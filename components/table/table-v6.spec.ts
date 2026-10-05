@@ -227,6 +227,30 @@ describe('table under antd v6 css', () => {
       expect(headerDiv.getBoundingClientRect().top).toBe(topBefore);
     });
 
+    it('moves the v6 shadow eligibility classes when the direction changes at runtime', async () => {
+      await fixture.whenStable();
+      await new Promise(r => setTimeout(r, 50));
+      fixture.detectChanges();
+      const root = fixture.nativeElement as HTMLElement;
+      const lastLeft = root.querySelector('.ant-table-tbody .ant-table-cell-fix-left-last') as HTMLElement;
+      const firstRight = root.querySelector('.ant-table-tbody .ant-table-cell-fix-right-first') as HTMLElement;
+      expect(lastLeft.classList.contains('ant-table-cell-fix-start-shadow')).toBe(true);
+      expect(firstRight.classList.contains('ant-table-cell-fix-end-shadow')).toBe(true);
+
+      // Under rtl the physically-left boundary is rc-table's logical end and the right one its start.
+      TestBed.inject(Directionality).valueSignal.set('rtl');
+      fixture.detectChanges();
+      await fixture.whenStable();
+      fixture.detectChanges();
+      expect(lastLeft.classList.contains('ant-table-cell-fix-start-shadow')).toBe(false);
+      expect(lastLeft.classList.contains('ant-table-cell-fix-end-shadow')).toBe(true);
+      expect(firstRight.classList.contains('ant-table-cell-fix-end-shadow')).toBe(false);
+      expect(firstRight.classList.contains('ant-table-cell-fix-start-shadow')).toBe(true);
+      // The physical v4 boundary classes stay where they are.
+      expect(lastLeft.classList.contains('ant-table-cell-fix-left-last')).toBe(true);
+      expect(firstRight.classList.contains('ant-table-cell-fix-right-first')).toBe(true);
+    });
+
     it('places the v6 fixed-column shadow on the logical start side under rtl', async () => {
       const dir = TestBed.inject(Directionality);
       dir.valueSignal.set('rtl');
