@@ -113,8 +113,14 @@ describe('timeline under antd v6 css', () => {
     expect(icon(green).backgroundColor).toBe('rgba(0, 0, 0, 0)');
     expect(icon(green).borderTopColor).toBe('rgb(82, 196, 26)');
     expect(icon(red).borderTopColor).toBe('rgb(255, 77, 79)');
+    // The border colour of an arbitrary colour is also the kept v4 inline `border-color`; the icon's
+    // `color` comes only from the v6 rule `.ant-timeline-dot .ant-timeline-item-icon { color:
+    // var(--ant-cmp-steps-item-icon-dot-color) }`, fed by the custom property on the item.
     expect(icon(custom).borderTopColor).toBe('rgb(0, 0, 255)');
     expect(custom.style.getPropertyValue('--ant-cmp-steps-item-icon-dot-color')).toBe('#00f');
+    expect(icon(custom).getPropertyValue('--ant-cmp-steps-item-icon-dot-color').trim()).toBe('#00f');
+    expect(icon(custom).color).toBe('rgb(0, 0, 255)');
+    expect(icon(green).color).toBe('rgb(82, 196, 26)');
     expect(green.classList).toContain('ant-timeline-item-color-green');
     expect(part(green, '.ant-timeline-item-icon').classList).toContain('ant-timeline-item-head-green');
 

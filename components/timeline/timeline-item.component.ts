@@ -90,6 +90,10 @@ export class NzTimelineItemComponent implements OnChanges {
   isLast = false;
   borderColor: string | null = null;
   position?: NzTimelinePosition;
+  /**
+   * Steps state antd 6 gives this node (active, rail status), set by the parent timeline.
+   * @internal
+   */
   node: NzTimelineNodeState = { active: false, rail: null };
 
   ngOnChanges(changes: SimpleChanges): void {
