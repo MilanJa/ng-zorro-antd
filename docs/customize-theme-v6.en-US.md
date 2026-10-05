@@ -7,7 +7,7 @@ NG-ZORRO ships an opt-in stylesheet generated from Ant Design v6. It uses the v6
 
 ## Components covered
 
-Only the components below have v6 styles so far. Others keep rendering with the v4 stylesheet you load.
+Every NG-ZORRO component that Ant Design v6 ships styles for is listed below. Watermark is not listed: antd 6 draws it on a canvas with inline styles, so there is no v6 CSS to port and it renders the same under either stylesheet. The NG-ZORRO-only components (check-list, code-editor, comment, cron-expression, graph, hash-code, page-header, resizable, tree-view) have no antd v6 counterpart and no v6 styles; the icon's `.anticon` rule ships in the shared template.
 
 <!-- prettier-ignore-start -->
 <!-- v6-components:start -->

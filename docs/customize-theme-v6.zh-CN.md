@@ -7,7 +7,7 @@ NG-ZORRO 提供了一份基于 Ant Design v6 生成的可选样式表。它将 v
 
 ## 已覆盖的组件
 
-目前只有以下组件拥有 v6 样式。其余组件仍会使用你加载的 v4 样式表渲染。
+下面列出了 Ant Design v6 提供样式的全部 NG-ZORRO 组件。水印（watermark）不在列表中：antd 6 使用 canvas 和内联样式绘制水印，没有可移植的 v6 CSS，因此在两套样式表下渲染一致。NG-ZORRO 独有的组件（check-list、code-editor、comment、cron-expression、graph、hash-code、page-header、resizable、tree-view）在 antd v6 中没有对应组件，也没有 v6 样式；图标的 `.anticon` 规则包含在共享模板中。
 
 <!-- prettier-ignore-start -->
 <!-- v6-components:start -->
