@@ -11,7 +11,7 @@ import path from 'node:path';
 import { pairDemos } from './pairing';
 import { startOutServer } from './serve-out';
 import { CLICK_TRIGGERS, HOVER_TRIGGERS } from './triggers';
-import { v6ComponentDirs, v6Components, V6ComponentDir } from '../../scripts/build/v6/components';
+import { stylesThroughOf, v6ComponentDirs, v6Components, V6ComponentDir } from '../../scripts/build/v6/components';
 
 const repoRoot = path.resolve(__dirname, '../..');
 const outDir = path.join(__dirname, 'out');
@@ -118,12 +118,24 @@ async function assertNoAntdRuntimeStyles(page: Page, what: string): Promise<void
  * literal class (a `:where()`-wrapped or antd-hashed form still contains the plain class token inside
  * it, so a substring match after the leading dot is enough; no need to parse selector lists).
  */
-export function ownClassesStyled(css: string, classes: string[], prefixCls: string): { own: number; styled: number } {
+export function ownClassesStyled(
+  css: string,
+  classes: string[],
+  prefixCls: string,
+  through?: { from: string; to: string }
+): { own: number; styled: number } {
   const own = classes.filter(c => c === prefixCls || c.startsWith(`${prefixCls}-`));
+  const styledAs = (cls: string): boolean => {
+    const escaped = cls.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+    return new RegExp(`\\.${escaped}(?:[.:,\\s{~>+)]|$)`).test(css);
+  };
   let styled = 0;
   for (const cls of own) {
-    const escaped = cls.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
-    if (new RegExp(`\\.${escaped}(?:[.:,\\s{~>+)]|$)`).test(css)) styled++;
+    // A `stylesThrough` entry's manifest lists the source's classes under its own prefix; the antd pane
+    // carries antd's own extraction only, where those rules keep the source prefix (antd's Timeline DOM
+    // carries both `ant-steps-*` and `ant-timeline-*` names).
+    const sourceName = through && cls.startsWith(through.to) ? through.from + cls.slice(through.to.length) : null;
+    if (styledAs(cls) || (sourceName !== null && styledAs(sourceName))) styled++;
   }
   return { own: own.length, styled };
 }
@@ -148,7 +160,7 @@ function assertAntdPaneFresh(dir: V6ComponentDir, theme: string): void {
     components: Record<string, { classes: string[] }>;
   };
   const classes = manifest.components[dir]?.classes ?? [];
-  const { own, styled } = ownClassesStyled(readFileSync(cssPath, 'utf8'), classes, prefixCls);
+  const { own, styled } = ownClassesStyled(readFileSync(cssPath, 'utf8'), classes, prefixCls, stylesThroughOf(dir));
   if (own === 0) return;
   const tolerance = Math.max(2, Math.ceil(own * 0.05));
   if (own - styled > tolerance) {

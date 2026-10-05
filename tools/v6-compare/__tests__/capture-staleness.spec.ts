@@ -36,4 +36,19 @@ describe('ownClassesStyled', () => {
     const tolerance = Math.max(2, Math.ceil(result.own * 0.05));
     expect(result.own - result.styled).toBeGreaterThan(tolerance);
   });
+
+  it("credits a stylesThrough entry's copied classes when the antd pane styles them under the source prefix", () => {
+    const css = '.ant-steps.ant-steps-dot .ant-steps-item-icon{} .ant-timeline .ant-timeline-item-color-red{}';
+    const classes = [
+      'ant-timeline-dot',
+      'ant-timeline-item-icon',
+      'ant-timeline-item-color-red',
+      'ant-timeline-item-rail'
+    ];
+    expect(ownClassesStyled(css, classes, 'ant-timeline')).toEqual({ own: 4, styled: 1 });
+    expect(ownClassesStyled(css, classes, 'ant-timeline', { from: 'ant-steps', to: 'ant-timeline' })).toEqual({
+      own: 4,
+      styled: 3
+    });
+  });
 });
