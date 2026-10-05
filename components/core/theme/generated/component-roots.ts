@@ -54,6 +54,7 @@ export const COMPONENT_ROOT_CLS: Record<string, string> = {
   Slider: 'ant-slider',
   Space: 'ant-space',
   Spin: 'ant-spin',
+  Splitter: 'ant-splitter',
   Statistic: 'ant-statistic',
   Steps: 'ant-steps',
   Switch: 'ant-switch',

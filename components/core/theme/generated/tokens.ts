@@ -1277,6 +1277,13 @@ export interface NzSpinToken {
   dotSizeSM: number;
 }
 
+export interface NzSplitterToken {
+  resizeSpinnerSize: number;
+  splitBarDraggableSize: number;
+  splitBarSize: number;
+  splitTriggerSize: number;
+}
+
 export interface NzStatisticToken {
   contentFontSize: number;
   titleFontSize: number;
@@ -1500,6 +1507,7 @@ export interface NzComponentTokenMap {
   Slider: NzSliderToken;
   Space: NzSpaceToken;
   Spin: NzSpinToken;
+  Splitter: NzSplitterToken;
   Statistic: NzStatisticToken;
   Steps: NzStepsToken;
   Switch: NzSwitchToken;

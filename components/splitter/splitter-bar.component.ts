@@ -33,7 +33,10 @@ import { NzSplitterCollapseOption } from './typings';
     ></div>
 
     @if (collapsible()?.start) {
-      <div class="ant-splitter-bar-collapse-bar ant-splitter-bar-collapse-bar-start" (click)="collapseEvent('start')">
+      <div
+        class="ant-splitter-bar-collapse-bar ant-splitter-bar-collapse-bar-start ant-splitter-bar-collapse-bar-hover-only"
+        (click)="collapseEvent('start')"
+      >
         <nz-icon
           [nzType]="vertical() ? 'up' : 'left'"
           class="ant-splitter-bar-collapse-icon ant-splitter-bar-collapse-start"
@@ -42,7 +45,10 @@ import { NzSplitterCollapseOption } from './typings';
     }
 
     @if (collapsible()?.end) {
-      <div class="ant-splitter-bar-collapse-bar ant-splitter-bar-collapse-bar-end" (click)="collapseEvent('end')">
+      <div
+        class="ant-splitter-bar-collapse-bar ant-splitter-bar-collapse-bar-end ant-splitter-bar-collapse-bar-hover-only"
+        (click)="collapseEvent('end')"
+      >
         <nz-icon
           [nzType]="vertical() ? 'down' : 'right'"
           class="ant-splitter-bar-collapse-icon ant-splitter-bar-collapse-end"

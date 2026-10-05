@@ -442,6 +442,9 @@
     "./spin/style/v6/*": {
       "style": "./spin/style/v6/*"
     },
+    "./splitter/style/v6/*": {
+      "style": "./splitter/style/v6/*"
+    },
     "./statistic/style/*": {
       "less": "./statistic/style/*.less",
       "style": "./statistic/style/index.min.css"

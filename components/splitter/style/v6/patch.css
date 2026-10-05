@@ -1,0 +1,5 @@
+/* Port of splitter/style/patch.less: the nz-splitter host is a custom element (inline by default);
+   .ant-splitter's display:flex applies once the class is present, this covers the host before. */
+nz-splitter {
+  display: block;
+}

@@ -1,7 +1,7 @@
 {
   "antdVersion": "6.6.5",
   "engineCoreBytes": 42701,
-  "engineComponentsBytes": 426672,
+  "engineComponentsBytes": 430529,
   "components": {
     "alert": {
       "classes": [
@@ -4198,6 +4198,41 @@
         "--ant-spin-dot-size",
         "--ant-spin-dot-size-lg",
         "--ant-spin-dot-size-sm"
+      ]
+    },
+    "splitter": {
+      "classes": [
+        "ant-splitter",
+        "ant-splitter-bar",
+        "ant-splitter-bar-collapse-bar",
+        "ant-splitter-bar-collapse-bar-always-hidden",
+        "ant-splitter-bar-collapse-bar-always-visible",
+        "ant-splitter-bar-collapse-bar-customize",
+        "ant-splitter-bar-collapse-bar-end",
+        "ant-splitter-bar-collapse-bar-hover-only",
+        "ant-splitter-bar-collapse-bar-start",
+        "ant-splitter-bar-collapse-icon",
+        "ant-splitter-bar-dragger",
+        "ant-splitter-bar-dragger-active",
+        "ant-splitter-bar-dragger-customize",
+        "ant-splitter-bar-dragger-disabled",
+        "ant-splitter-bar-dragger-icon",
+        "ant-splitter-bar-preview",
+        "ant-splitter-bar-preview-active",
+        "ant-splitter-horizontal",
+        "ant-splitter-mask",
+        "ant-splitter-mask-horizontal",
+        "ant-splitter-mask-vertical",
+        "ant-splitter-panel",
+        "ant-splitter-panel-hidden",
+        "ant-splitter-panel-transition",
+        "ant-splitter-vertical"
+      ],
+      "tokens": [
+        "--ant-splitter-resize-spinner-size",
+        "--ant-splitter-split-bar-draggable-size",
+        "--ant-splitter-split-bar-size",
+        "--ant-splitter-split-trigger-size"
       ]
     },
     "statistic": {

@@ -160,6 +160,12 @@
     "ant-spin-show-text",
     "ant-spin-text"
   ],
+  "_splitter_comment": "antd-emits: -bar-collapse-start, -bar-collapse-end (SplitBar.js puts them on the collapse icon span next to -bar-collapse-icon; v6 CSS styles only -bar-collapse-icon and the -bar-collapse-bar-start/-end buttons), -rtl (Splitter.js sets `${prefixCls}-rtl` from direction === 'rtl'; v6 CSS has no rule for it, the compiled v4 CSS sets direction: rtl, which the dir attribute Directionality reads from already provides).",
+  "splitter": [
+    "ant-splitter-bar-collapse-end",
+    "ant-splitter-bar-collapse-start",
+    "ant-splitter-rtl"
+  ],
   "_statistic_comment": "antd-emits: -content-value-int, -content-value-decimal (`Number.js`'s `StatisticNumber` emits these exact class names on the digit/decimal spans; v6 CSS styles only their ancestor `.ant-statistic-content-value`, so the split spans inherit colour/size with no rule of their own), -rtl (`Statistic.js` sets `${prefixCls}-rtl` from `direction === 'rtl'`; v6 CSS has no dedicated rtl rule for statistic, the class is a plain state hook). The ant-skeleton-content class statistic's loading-state nz-skeleton renders is not repeated here: skeleton's own `_skeleton_comment` already explains it, and `allowlistFor` credits statistic with skeleton's entries for the `ant-skeleton` prefix.",
   "statistic": [
     "ant-statistic-content-value-decimal",

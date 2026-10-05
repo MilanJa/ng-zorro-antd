@@ -59,6 +59,7 @@ Only the components below have v6 styles so far. Others keep rendering with the 
 - `slider`
 - `space`
 - `spin`
+- `splitter`
 - `statistic`
 - `steps`
 - `switch`

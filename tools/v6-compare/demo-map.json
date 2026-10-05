@@ -285,6 +285,11 @@
     "_antdDir": "divider",
     "orientation": "with-text"
   },
+  "splitter": {
+    "_antdDir": "splitter",
+    "basic": "size",
+    "complex": "group"
+  },
   "typography": {
     "_antdDir": "typography",
     "interactive": "copyable"
