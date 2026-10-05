@@ -10,7 +10,7 @@ import { bundleEngine, BundleEngineResult } from './bundle-engine';
 import { allAntdComponentNames, v6ComponentDirs } from './components';
 import { joinTemplate, normalizeCssVarRootCls, partitionBlocks } from './css-postprocess';
 import { extractAntdCss } from './extract-styles';
-import { readPatch } from './generate-styles';
+import { readPatch, stylesThroughCopyBlocks } from './generate-styles';
 import { generateTypes } from './generate-types';
 import { generatedDir } from './paths';
 
@@ -25,9 +25,14 @@ export async function generateEngine(): Promise<BundleEngineResult> {
 }
 
 /** Writes `generated/test-css.ts` (gitignored) so browser specs can install real antd CSS without a build. */
-async function writeTestCss(dir: string): Promise<void> {
+export async function writeTestCss(dir: string): Promise<void> {
   const raw = extractAntdCss({ includes: allAntdComponentNames(), key: 'nz-root' });
-  const template = normalizeCssVarRootCls(joinTemplate(partitionBlocks(raw, 'nz-root').template));
+  // The `stylesThrough` copies (Steps' rules under `ant-timeline`) precede the shared extraction in
+  // every v6 bundle (`buildV6Template`); without them a copied component's spec would run against none
+  // of the rules its DOM relies on.
+  const template = normalizeCssVarRootCls(
+    joinTemplate([...stylesThroughCopyBlocks(), ...partitionBlocks(raw, 'nz-root').template])
+  );
   const renderer = await import('../../../components/core/theme/render-theme-css');
   const tokens = await renderer.renderThemeCss({}, ':root');
   const componentsDir = path.resolve(__dirname, '../../../components');

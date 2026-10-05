@@ -235,6 +235,21 @@ export function componentTemplate(
   return normalizeCssVarRootCls(joinTemplate(blocks));
 }
 
+/**
+ * Every `stylesThrough` entry's source extraction rewritten onto the entry's prefix, in map order: the
+ * rules `buildV6Template` (and the browser-spec CSS) put before the shared extraction.
+ */
+export function stylesThroughCopyBlocks(): CssBlock[] {
+  return v6ComponentDirs
+    .filter(dir => stylesThroughOf(dir))
+    .flatMap(dir => {
+      const through = stylesThroughOf(dir)!;
+      const source = v6Components[through.dir] as V6ComponentEntry;
+      const sourceBlocks = partitionBlocks(extractAntdCss({ includes: [...source.antd], key: KEY }), KEY).template;
+      return rewriteClassPrefix(dropForeignCssVarBlocks(sourceBlocks, KEY), through.from, through.to);
+    });
+}
+
 let templateCache: string | null = null;
 
 /** The full v6 template (all mapped components, one extraction, shared reset rules emitted once). */
@@ -243,17 +258,13 @@ export function buildV6Template(): string {
     const allRaw = extractAntdCss({ includes: allAntdComponentNames(), key: KEY });
     const shared = dropForeignCssVarBlocks(partitionBlocks(allRaw, KEY).template, KEY);
     // The shared extraction above never includes a `stylesThrough` source's rules under the COPY's
-    // prefix (it only extracts each antd name once, under its own name): append the rewritten copy for
-    // every `stylesThrough` entry here, once, after the shared extraction.
-    const copies = v6ComponentDirs
-      .filter(dir => stylesThroughOf(dir))
-      .flatMap(dir => {
-        const through = stylesThroughOf(dir)!;
-        const source = v6Components[through.dir] as V6ComponentEntry;
-        const sourceBlocks = partitionBlocks(extractAntdCss({ includes: [...source.antd], key: KEY }), KEY).template;
-        return rewriteClassPrefix(dropForeignCssVarBlocks(sourceBlocks, KEY), through.from, through.to);
-      });
-    templateCache = normalizeCssVarRootCls(joinTemplate([...shared, ...copies]));
+    // prefix (it only extracts each antd name once, under its own name): add the rewritten copy for
+    // every `stylesThrough` entry here, once, BEFORE the shared extraction, as `componentTemplate`
+    // does. antd injects the inner component's styles first (Steps renders inside Timeline and React
+    // runs the child's insertion effect first), so the outer component's equal-specificity overrides
+    // win, e.g. Timeline's `--ant-cmp-steps-item-process-rail-line-style: dotted` over Steps' default.
+    const copies = stylesThroughCopyBlocks();
+    templateCache = normalizeCssVarRootCls(joinTemplate([...copies, ...shared]));
     assertNoAntdScoping(templateCache);
   }
   return templateCache;
