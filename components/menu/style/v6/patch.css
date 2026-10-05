@@ -32,18 +32,30 @@
    `.ant-menu-inline-collapsed > .ant-menu-item > .ant-menu-title-content { width: 0; opacity: 0;
    overflow: hidden }`. `[nz-menu-item]` projects its whole content, icon included, into that span
    (`menu-item.component.ts`), so the same rule would hide the icon too. When the title content holds
-   an icon, keep it visible; the label after the icon is still hidden by v6's own
-   `.ant-menu-inline-collapsed > .ant-menu-item .anticon + span` rule. Specificity is one class above
-   each v6 selector it overrides (the item and the item-group-list item forms). */
+   an icon, `display: contents` drops its box (and with it the box-level `width`/`opacity`/`overflow`),
+   so the icon and label become flex items of the collapsed `li` (`display: flex; align-items: center`)
+   exactly as antd's are: the icon is centred by the item's own padding, and the label after it is still
+   hidden by v6's `.ant-menu-inline-collapsed > .ant-menu-item .anticon + span` rule. Specificity is one
+   class above each v6 selector it competes with (the item and the item-group-list item forms). */
 .ant-menu-inline-collapsed > .ant-menu-item > .ant-menu-title-content:has(> .anticon),
 .ant-menu-inline-collapsed
   > .ant-menu-item-group
   > .ant-menu-item-group-list
   > .ant-menu-item
   > .ant-menu-title-content:has(> .anticon) {
-  width: auto;
-  opacity: 1;
-  overflow: visible;
+  display: contents;
+}
+
+/* antd clones `ant-menu-item-icon` onto every item/submenu-title icon and styles it at
+   `.ant-menu .ant-menu-item .ant-menu-item-icon { display: inline-flex; ... }` (0,3,0), which outranks the
+   collapsed menu's `.ant-menu-inline-collapsed .anticon { display: inline-block }` (0,2,0). ng-zorro's
+   `nz-icon` carries only `anticon` (`ant-menu-item-icon` is styled by the compiled v4 stylesheet, so it is
+   not added), whose own `display: inline-flex` is (0,1,0) and loses: the icon would become a 40px-tall
+   inline block with its glyph on the baseline. Mirror the display at the `-item-icon` rule's specificity;
+   the other declarations of that rule match the global `.anticon` rule already. */
+.ant-menu .ant-menu-item .anticon,
+.ant-menu .ant-menu-submenu-title .anticon {
+  display: inline-flex;
 }
 
 /* `[nz-menu-divider]` always renders dropdown's `ant-dropdown-menu-item-divider`

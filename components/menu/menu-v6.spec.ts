@@ -199,9 +199,14 @@ describe('menu under antd v6 css', () => {
     const icon = el.querySelector('#collapsedItem .anticon') as HTMLElement;
     expect(getComputedStyle(icon).fontSize).toBe('16px');
     // ng-zorro projects the item icon inside `.ant-menu-title-content`, which v6 collapses to
-    // `width: 0; opacity: 0`; the icon stays visible and only the label after it is hidden.
-    expect(icon.getBoundingClientRect().width).toBe(16);
-    expect(getComputedStyle(el.querySelector('#collapsedItem .ant-menu-title-content')!).opacity).toBe('1');
+    // `width: 0; opacity: 0`; the icon stays visible, centred in the 72x40 item as antd's flex-item
+    // icon is (28px inline padding, 12px above and below), and only the label after it is hidden.
+    const iconRect = icon.getBoundingClientRect();
+    const itemRect = el.querySelector('#collapsedItem')!.getBoundingClientRect();
+    expect(iconRect.width).toBe(16);
+    expect(iconRect.height).toBe(16);
+    expect(Math.round(iconRect.left - itemRect.left)).toBe(28);
+    expect(Math.round(iconRect.top - itemRect.top)).toBe(12);
     const text = getComputedStyle(el.querySelector('#collapsedText')!);
     expect(text.opacity).toBe('0');
     expect(text.width).toBe('0px');
