@@ -285,6 +285,9 @@ async function main(): Promise<void> {
               console.warn(`${dir}/${key}: could not open the popup at "${plan.selector}" (${String(error)})`);
             }
             await page.keyboard.press('Escape');
+            // A hover-opened popup closes on mouseleave, not on Escape: park the pointer in the page
+            // corner so it neither keeps the popup open nor hovers the next demo's closed-state shot.
+            await page.mouse.move(0, 0);
             await page.waitForTimeout(300);
             // A click (and, in principle, a hover landing on a nested link) can navigate the page
             // away from the component route (see `HOVER_TRIGGERS`'s comment); detect it and go back
