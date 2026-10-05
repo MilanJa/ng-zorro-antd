@@ -125,7 +125,8 @@ describe('menu under antd v6 css', () => {
     const title = fixture.nativeElement.querySelector('#vertical .ant-menu-submenu-title') as HTMLElement;
 
     dispatchFakeEvent(title, 'mouseenter');
-    await settle(fixture, 200);
+    // auditTime(150) before the submenu opens, with headroom for a loaded machine.
+    await settle(fixture, 300);
 
     const root = popupRoots()[0];
     expect(root).toBeDefined();

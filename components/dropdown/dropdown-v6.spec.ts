@@ -135,6 +135,11 @@ describe('dropdown under antd v6 css', () => {
 
     const selected = menu.querySelector('.ant-dropdown-menu-item-selected') as HTMLElement;
     expect(selected).not.toBeNull();
+    // The item has its own `transition: all var(--ant-motion-duration-mid)` (0.2s). `[nzTheme]` writes its
+    // scope CSS asynchronously (`render-theme-css.ts` loads the engine lazily), which can land after the
+    // pane is attached, so the item may still be transitioning from the default to the scoped colour
+    // when the root's motion has settled; wait past that transition before reading the colour.
+    await new Promise(resolve => setTimeout(resolve, 350));
     // colorPrimary '#00b96b' -> rgb(0, 185, 107).
     expect(getComputedStyle(selected).color).toBe('rgb(0, 185, 107)');
     const controlItemBgActive = getComputedStyle(root).getPropertyValue('--ant-control-item-bg-active').trim();

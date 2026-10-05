@@ -36,7 +36,10 @@
    so the icon and label become flex items of the collapsed `li` (`display: flex; align-items: center`)
    exactly as antd's are: the icon is centred by the item's own padding, and the label after it is still
    hidden by v6's `.ant-menu-inline-collapsed > .ant-menu-item .anticon + span` rule. Specificity is one
-   class above each v6 selector it competes with (the item and the item-group-list item forms). */
+   class above each v6 selector it competes with (the item and the item-group-list item forms). Only an
+   icon that is a direct child of the title content is detected: an icon nested in projected markup (an
+   `<a>` wrapping `<nz-icon>` and its label) stays hidden with the title content under v6, as an antd
+   item's label does (docs/v6-api-gaps.md). */
 .ant-menu-inline-collapsed > .ant-menu-item > .ant-menu-title-content:has(> .anticon),
 .ant-menu-inline-collapsed
   > .ant-menu-item-group
