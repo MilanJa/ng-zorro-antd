@@ -37,7 +37,8 @@ import { NzSegmentedModule } from 'ng-zorro-antd/segmented';
 
     .btn-wrappers {
       block-size: 10rem;
-      border: 1px solid var(--ant-primary-6);
+      /* --ant-color-primary is unset under v4, so the v4 ramp colour is the fallback there. */
+      border: 1px solid var(--ant-color-primary, var(--ant-primary-6));
     }
   `
 })

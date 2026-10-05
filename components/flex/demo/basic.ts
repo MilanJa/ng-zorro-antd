@@ -28,11 +28,12 @@ import { NzRadioModule } from 'ng-zorro-antd/radio';
     .flex-item {
       inline-size: 25%;
       block-size: 54px;
-      background-color: var(--ant-primary-6);
+      /* --ant-color-primary is unset under v4, so the v4 ramp colour is the fallback there. */
+      background-color: var(--ant-color-primary, var(--ant-primary-6));
     }
 
     .even {
-      background-color: var(--ant-primary-5);
+      background-color: var(--ant-color-primary-hover, var(--ant-primary-5));
     }
   `
 })
