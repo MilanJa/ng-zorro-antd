@@ -9,10 +9,10 @@ import { By } from '@angular/platform-browser';
 
 import {
   NzAlign,
-  NzCustomGap,
   NzFlex,
   NzFlexBasis,
   NzFlexGrow,
+  NzFlexOrientation,
   NzFlexShrink,
   NzGap,
   NzJustify,
@@ -157,6 +157,74 @@ describe('flex', () => {
   it('should have initial value for flex', () => {
     expect(getComputedStyle(element).getPropertyValue('--flex')).toEqual('');
   });
+
+  it('should map the v6 align values to their classes and keep align-items: normal without the v6 stylesheet', () => {
+    const v6Only: NzAlign[] = ['baseline', 'self-start', 'self-end'];
+    v6Only.forEach(alignment => {
+      component.align.set(alignment);
+      fixture.detectChanges();
+      expect(element.classList).toContain(`ant-flex-align-${alignment}`);
+      expect(element.classList).not.toContain('ant-flex-align-normal');
+      // v4 safety: no stylesheet styles the class, the browser default stays in place
+      expect(getComputedStyle(element).alignItems).toBe('normal');
+    });
+  });
+
+  it('should treat gap "medium" like "middle" and keep "middle" as a synonym', () => {
+    component.gap.set('medium');
+    fixture.detectChanges();
+    expect(element.classList).toContain('ant-flex-gap-medium');
+    expect(element.classList).not.toContain('ant-flex-gap-middle');
+    expect(element.style.gap).toBe('var(--ant-padding, 16px)');
+    expect(getComputedStyle(element).gap).toBe('16px');
+
+    component.gap.set('middle');
+    fixture.detectChanges();
+    expect(element.classList).toContain('ant-flex-gap-middle');
+    expect(element.classList).not.toContain('ant-flex-gap-medium');
+    expect(element.style.gap).toBe('var(--ant-padding, 16px)');
+  });
+
+  it('should accept a boolean nzWrap', () => {
+    component.wrap.set(true);
+    fixture.detectChanges();
+    expect(element.classList).toContain('ant-flex-wrap-wrap');
+    expect(element.classList).not.toContain('ant-flex-wrap-nowrap');
+
+    component.wrap.set(false);
+    fixture.detectChanges();
+    expect(element.classList).toContain('ant-flex-wrap-nowrap');
+    expect(element.classList).not.toContain('ant-flex-wrap-wrap');
+  });
+
+  describe('nzOrientation', () => {
+    let orientationFixture: ComponentFixture<TestFlexOrientationComponent>;
+    let host: TestFlexOrientationComponent;
+    let flexEl: HTMLElement;
+
+    beforeEach(() => {
+      orientationFixture = TestBed.createComponent(TestFlexOrientationComponent);
+      host = orientationFixture.componentInstance;
+      flexEl = orientationFixture.debugElement.query(By.directive(NzFlexDirective)).nativeElement;
+      orientationFixture.detectChanges();
+    });
+
+    // antd useOrientation: a valid orientation decides; otherwise the vertical boolean does
+    it.each([
+      { vertical: false, orientation: undefined, isVertical: false },
+      { vertical: true, orientation: undefined, isVertical: true },
+      { vertical: false, orientation: 'vertical', isVertical: true },
+      { vertical: false, orientation: 'horizontal', isVertical: false },
+      { vertical: true, orientation: 'horizontal', isVertical: false },
+      { vertical: true, orientation: 'vertical', isVertical: true },
+      { vertical: true, orientation: 'diagonal', isVertical: true }
+    ] as const)('vertical=$vertical orientation=$orientation -> vertical class $isVertical', c => {
+      host.vertical.set(c.vertical);
+      host.orientation.set(c.orientation as NzFlexOrientation | undefined);
+      orientationFixture.detectChanges();
+      expect(flexEl.classList.contains('ant-flex-vertical')).toBe(c.isVertical);
+    });
+  });
 });
 
 @Component({
@@ -181,7 +249,16 @@ export class TestFlexComponent {
   readonly isVertical = signal(false);
   readonly justify = signal<NzJustify>('normal');
   readonly align = signal<NzAlign>('normal');
-  readonly gap = signal<'small' | 'middle' | 'large' | NzCustomGap>(0);
-  readonly wrap = signal<'wrap' | 'nowrap' | 'wrap-reverse'>('nowrap');
+  readonly gap = signal<NzGap>(0);
+  readonly wrap = signal<NzWrap | boolean>('nowrap');
   readonly flex = signal<`${NzFlexShrink} ${NzFlexGrow} ${NzFlexBasis}` | 'unset'>('unset');
+}
+
+@Component({
+  imports: [NzFlexModule],
+  template: `<div nz-flex [nzVertical]="vertical()" [nzOrientation]="orientation()"></div>`
+})
+export class TestFlexOrientationComponent {
+  readonly vertical = signal(false);
+  readonly orientation = signal<NzFlexOrientation | undefined>(undefined);
 }

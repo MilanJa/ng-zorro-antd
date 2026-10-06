@@ -10,7 +10,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { nzCompactAlgorithm, NzThemeDirective } from 'ng-zorro-antd/core/theme';
 import { V6_PATCH_CSS, V6_TEMPLATE_CSS, V6_TOKENS_DEFAULT_CSS } from 'ng-zorro-antd/core/theme/generated/test-css';
-import { NzGap } from 'ng-zorro-antd/flex';
+import { NzAlign, NzFlexOrientation, NzGap, NzWrap } from 'ng-zorro-antd/flex';
 import { NzFlexModule } from 'ng-zorro-antd/flex/flex.module';
 import { provideNzIconsTesting } from 'ng-zorro-antd/icon/testing';
 
@@ -67,6 +67,34 @@ class FlexRtlHost {}
 class FlexCompactHost {
   readonly compact = nzCompactAlgorithm;
   readonly gap = signal<NzGap>('small');
+}
+
+@Component({
+  imports: [NzFlexModule],
+  template: `
+    <nz-flex id="a" [nzAlign]="align()" style="height: 80px">
+      <span style="font-size: 12px">a</span>
+      <span style="font-size: 24px">b</span>
+    </nz-flex>
+  `
+})
+class FlexAlignHost {
+  readonly align = signal<NzAlign>('baseline');
+}
+
+@Component({
+  imports: [NzFlexModule],
+  template: `
+    <nz-flex id="o" [nzVertical]="vertical()" [nzOrientation]="orientation()" [nzWrap]="wrap()">
+      <span>a</span>
+      <span>b</span>
+    </nz-flex>
+  `
+})
+class FlexOrientationHost {
+  readonly vertical = signal(false);
+  readonly orientation = signal<NzFlexOrientation | undefined>(undefined);
+  readonly wrap = signal<NzWrap | boolean>(false);
 }
 
 function el(id: string): HTMLElement {
@@ -150,5 +178,64 @@ describe('flex (v6 styles)', () => {
     host.gap.set('large');
     fixture.detectChanges();
     expect(getComputedStyle(c).getPropertyValue('gap')).toBe('16px');
+  });
+
+  it('maps gap "medium" and its "middle" synonym to the padding token', () => {
+    const fixture: ComponentFixture<FlexGapHost> = TestBed.createComponent(FlexGapHost);
+    const host = fixture.componentInstance;
+    host.gap.set('medium');
+    fixture.detectChanges();
+    const f = el('f');
+    expect(f.classList).toContain('ant-flex-gap-medium');
+    expect(getComputedStyle(f).gap).toBe('16px');
+
+    host.gap.set('middle');
+    fixture.detectChanges();
+    expect(getComputedStyle(f).gap).toBe('16px');
+  });
+
+  it('applies the v6 align-items values', () => {
+    const fixture: ComponentFixture<FlexAlignHost> = TestBed.createComponent(FlexAlignHost);
+    fixture.detectChanges();
+    const host = fixture.componentInstance;
+    const a = el('a');
+    for (const value of ['baseline', 'self-start', 'self-end'] as const) {
+      host.align.set(value);
+      fixture.detectChanges();
+      expect(getComputedStyle(a).alignItems).toBe(value);
+    }
+    host.align.set('baseline');
+    fixture.detectChanges();
+    const [small, large] = Array.from(a.children) as HTMLElement[];
+    // baseline alignment pushes the smaller text down relative to the larger one
+    expect(small.getBoundingClientRect().top).toBeGreaterThan(large.getBoundingClientRect().top);
+  });
+
+  it('lets a valid nzOrientation decide the direction and accepts a boolean nzWrap', () => {
+    const fixture: ComponentFixture<FlexOrientationHost> = TestBed.createComponent(FlexOrientationHost);
+    fixture.detectChanges();
+    const host = fixture.componentInstance;
+    const o = el('o');
+    expect(getComputedStyle(o).flexDirection).toBe('row');
+
+    host.orientation.set('vertical');
+    fixture.detectChanges();
+    expect(getComputedStyle(o).flexDirection).toBe('column');
+
+    host.vertical.set(true);
+    host.orientation.set('horizontal');
+    fixture.detectChanges();
+    expect(getComputedStyle(o).flexDirection).toBe('row');
+
+    host.orientation.set(undefined);
+    fixture.detectChanges();
+    expect(getComputedStyle(o).flexDirection).toBe('column');
+
+    host.wrap.set(true);
+    fixture.detectChanges();
+    expect(getComputedStyle(o).flexWrap).toBe('wrap');
+    host.wrap.set(false);
+    fixture.detectChanges();
+    expect(getComputedStyle(o).flexWrap).toBe('nowrap');
   });
 });

@@ -17,7 +17,7 @@ const DELIVERED: Record<string, string[]> = {
   Timeline: [],
   Menu: [],
   Splitter: [],
-  Flex: [],
+  Flex: ['orientation', 'gap', 'align', 'wrap'],
   Divider: []
 };
 

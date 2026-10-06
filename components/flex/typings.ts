@@ -29,12 +29,18 @@ export type NzAlign =
   | 'right'
   | 'left'
   | 'stretch'
-  | 'normal';
+  | 'normal'
+  | 'baseline'
+  | 'self-start'
+  | 'self-end';
 
-export type NzGap = 'small' | 'middle' | 'large' | NzCustomGap;
+/** `'middle'` is kept as a synonym of `'medium'` (antd 6 accepts both). */
+export type NzGap = 'small' | 'medium' | 'middle' | 'large' | NzCustomGap;
 export type NzCustomGap = number | string;
 
 export type NzWrap = 'wrap' | 'nowrap' | 'wrap-reverse';
+
+export type NzFlexOrientation = 'horizontal' | 'vertical';
 
 export type NzFlex = `${NzFlexShrink} ${NzFlexGrow} ${NzFlexBasis}` | 'unset';
 export type NzFlexShrink = number;
