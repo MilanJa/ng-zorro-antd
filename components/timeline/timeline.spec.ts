@@ -7,12 +7,15 @@ import { Component, DebugElement, signal, ViewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 
+import { vi } from 'vitest';
+
+import { environment } from 'ng-zorro-antd/core/environments';
 import { testDirectionality } from 'ng-zorro-antd/core/testing';
 
 import { NzDemoTimelineLabelComponent } from './demo/label';
 import { NzTimelineComponent } from './timeline.component';
 import { NzTimelineModule } from './timeline.module';
-import { NzTimelineMode } from './typings';
+import { NzTimelineMode, NzTimelineOrientation, NzTimelinePlacement, NzTimelineVariant } from './typings';
 
 describe('nz-timeline', () => {
   describe('basic', () => {
@@ -212,6 +215,178 @@ describe('nz-timeline', () => {
       fixture.detectChanges();
       expect(timeline.timelineItems.length).toBe(0);
     });
+  });
+});
+
+@Component({
+  imports: [NzTimelineModule],
+  template: `
+    <nz-timeline
+      [nzMode]="mode()"
+      [nzOrientation]="orientation()"
+      [nzVariant]="variant()"
+      [nzTitleSpan]="titleSpan()"
+      [nzPending]="pending()"
+    >
+      <nz-timeline-item [nzTitle]="title()" [nzIcon]="icon()" [nzPlacement]="placement()">a</nz-timeline-item>
+      <nz-timeline-item nzLabel="old" nzDot="o" nzPosition="right">b</nz-timeline-item>
+      <nz-timeline-item [nzLoading]="loading()">c</nz-timeline-item>
+    </nz-timeline>
+  `
+})
+class NzTestTimelineV6Component {
+  readonly mode = signal<NzTimelineMode>('start');
+  readonly orientation = signal<NzTimelineOrientation>('vertical');
+  readonly variant = signal<NzTimelineVariant>('outlined');
+  readonly titleSpan = signal<number | string | undefined>(undefined);
+  readonly pending = signal<string | undefined>(undefined);
+  readonly title = signal<string | undefined>(undefined);
+  readonly icon = signal<string | undefined>(undefined);
+  readonly placement = signal<NzTimelinePlacement | 'left' | 'right' | undefined>(undefined);
+  readonly loading = signal(false);
+}
+
+describe('nz-timeline antd v6 inputs', () => {
+  let fixture: ComponentFixture<NzTestTimelineV6Component>;
+  let host: NzTestTimelineV6Component;
+  const root = (): HTMLElement => fixture.nativeElement.querySelector('.ant-timeline');
+  const items = (): HTMLElement[] => Array.from(fixture.nativeElement.querySelectorAll('.ant-timeline > li'));
+  const update = (fn: () => void): void => {
+    fn();
+    fixture.detectChanges();
+  };
+  async function expectWarnOnce(message: string, act: () => void): Promise<void> {
+    environment.isTestMode = false;
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => void 0);
+    try {
+      act();
+      fixture.detectChanges();
+      expect(warn.mock.calls.filter(args => args.some(a => String(a).includes(message)))).toHaveLength(1);
+    } finally {
+      warn.mockRestore();
+      environment.isTestMode = false; // the browser runner's default; never leave it true
+    }
+  }
+
+  beforeEach(() => {
+    fixture = TestBed.createComponent(NzTestTimelineV6Component);
+    host = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  // the warn-once assertion for `nzMode="left|right"` lives in timeline-deprecation.spec.ts: this
+  // file's own earlier tests already bind nzMode="right" and would consume the one-time warning.
+  it('nzMode start/end place every item; left/right still map to them', () => {
+    expect(items()[0].classList).toContain('ant-timeline-item-placement-start');
+    expect(items()[0].classList).toContain('ant-timeline-item-left');
+    update(() => host.mode.set('end'));
+    expect(items()[0].classList).toContain('ant-timeline-item-placement-end');
+    expect(items()[0].classList).toContain('ant-timeline-item-right');
+    update(() => host.mode.set('left'));
+    expect(items()[0].classList).toContain('ant-timeline-item-placement-start');
+    update(() => host.mode.set('right'));
+    expect(items()[0].classList).toContain('ant-timeline-item-placement-end');
+  });
+
+  it('nzOrientation and nzVariant set the Steps root classes', () => {
+    expect(root().classList).toContain('ant-timeline-vertical');
+    expect(root().classList).toContain('ant-timeline-title-horizontal');
+    expect(root().classList).toContain('ant-timeline-outlined');
+    update(() => {
+      host.orientation.set('horizontal');
+      host.variant.set('filled');
+    });
+    expect(root().classList).toContain('ant-timeline-horizontal');
+    expect(root().classList).toContain('ant-timeline-title-vertical');
+    expect(root().classList).not.toContain('ant-timeline-vertical');
+    expect(root().classList).toContain('ant-timeline-filled');
+    expect(root().classList).not.toContain('ant-timeline-outlined');
+    // horizontal: antd's tree with the v4 classes kept on their counterparts
+    const wrapper = items()[0].querySelector(':scope > .ant-timeline-item-wrapper') as HTMLElement;
+    expect(wrapper.querySelector(':scope > .ant-timeline-item-icon.ant-timeline-item-head')).toBeTruthy();
+    expect(
+      wrapper.querySelector(
+        '.ant-timeline-item-section > .ant-timeline-item-header > .ant-timeline-item-rail.ant-timeline-item-tail'
+      )
+    ).toBeTruthy();
+    expect(wrapper.querySelector('.ant-timeline-item-section > .ant-timeline-item-content')!.textContent).toContain(
+      'a'
+    );
+    expect(items()[2].querySelector('.ant-timeline-item-rail')).toBeNull();
+  });
+
+  it('nzTitleSpan sets one head-span variable by type, never in alternate mode', () => {
+    update(() => host.titleSpan.set(6));
+    expect(root().style.getPropertyValue('--ant-timeline-head-span')).toBe('6');
+    expect(root().style.getPropertyValue('--ant-timeline-head-span-ptg')).toBe('');
+    update(() => host.titleSpan.set('30%'));
+    expect(root().style.getPropertyValue('--ant-timeline-head-span')).toBe('');
+    expect(root().style.getPropertyValue('--ant-timeline-head-span-ptg')).toBe('30%');
+    update(() => host.mode.set('alternate'));
+    expect(root().style.getPropertyValue('--ant-timeline-head-span-ptg')).toBe('');
+  });
+
+  it('nzLabel/nzDot/nzPosition alias nzTitle/nzIcon/nzPlacement; the new inputs win', () => {
+    const old = items()[1];
+    expect(old.querySelector('.ant-timeline-item-title')!.textContent).toContain('old');
+    expect(old.querySelector('.ant-timeline-item-head-custom')!.textContent).toContain('o');
+    expect(old.classList).toContain('ant-timeline-item-placement-end');
+    expect(root().classList).toContain('ant-timeline-label');
+    update(() => {
+      host.title.set('new');
+      host.icon.set('n');
+      host.placement.set('end');
+    });
+    const first = items()[0];
+    expect(first.querySelector('.ant-timeline-item-title')!.textContent).toContain('new');
+    expect(first.classList).toContain('ant-timeline-item-custom');
+    expect(first.classList).toContain('ant-timeline-item-placement-end');
+  });
+
+  it('nzPlacement accepts left/right with a one-time warning', async () => {
+    await expectWarnOnce(
+      '`nzPlacement="left|right"` on `nz-timeline-item` is deprecated, use `nzPlacement="start|end"` instead.',
+      () => host.placement.set('left')
+    );
+    expect(items()[0].classList).toContain('ant-timeline-item-placement-start');
+  });
+
+  it('nzLoading renders the loading node and makes the rail before it a process rail', () => {
+    update(() => host.loading.set(true));
+    const [, second, third] = items();
+    expect(third.classList).toContain('ant-timeline-item-process');
+    expect(third.classList).not.toContain('ant-timeline-item-finish');
+    expect(third.classList).toContain('ant-timeline-item-custom');
+    expect(third.classList).toContain('ant-timeline-item-active');
+    expect(third.querySelector('.ant-timeline-item-head-custom .anticon-loading')).toBeTruthy();
+    expect(second.querySelector('.ant-timeline-item-tail')!.classList).toContain('ant-timeline-item-rail-process');
+    update(() => host.loading.set(false));
+    expect(second.querySelector('.ant-timeline-item-tail')!.classList).toContain('ant-timeline-item-rail-finish');
+    expect(items()[2].querySelector('.anticon-loading')).toBeNull();
+  });
+
+  // the warn-once assertion for `nzPending` lives in timeline-deprecation.spec.ts: this file's own
+  // earlier tests already bind nzPending and would consume the one-time warning.
+  it('nzPending still works', () => {
+    update(() => host.pending.set('Recording...'));
+    expect(items()).toHaveLength(4);
+    expect(items()[3].classList).toContain('ant-timeline-item-pending');
+  });
+
+  it('v4 stylesheet: horizontal, filled and loading keep every v4 class', () => {
+    update(() => {
+      host.orientation.set('horizontal');
+      host.variant.set('filled');
+      host.loading.set(true);
+    });
+    const list = items();
+    expect(list.every(li => li.classList.contains('ant-timeline-item'))).toBe(true);
+    expect(
+      list.every(li => li.querySelector('.ant-timeline-item-head') && li.querySelector('.ant-timeline-item-content'))
+    ).toBe(true);
+    expect(list[0].querySelector('.ant-timeline-item-tail')).toBeTruthy();
+    expect(list[2].classList).toContain('ant-timeline-item-last');
+    expect(list[2].querySelector('.ant-timeline-item-head-custom')).toBeTruthy();
   });
 });
 

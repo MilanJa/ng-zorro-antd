@@ -14,7 +14,7 @@ import path from 'node:path';
  */
 const DELIVERED: Record<string, string[]> = {
   Steps: ['descriptionMaxWidth'],
-  Timeline: [],
+  Timeline: ['mode', 'orientation', 'variant', 'titleSpan', 'placement', 'title', 'icon', 'loading'],
   Menu: [],
   Splitter: [
     'orientation',

@@ -3,9 +3,17 @@
  * found in the LICENSE file at https://github.com/NG-ZORRO/ng-zorro-antd/blob/master/LICENSE
  */
 
-export type NzTimelineMode = 'left' | 'alternate' | 'right' | 'custom';
-
+export type NzTimelinePlacement = 'start' | 'end';
+/** `'left'` and `'right'` are deprecated, use `'start'` and `'end'`. */
+export type NzTimelineMode = NzTimelinePlacement | 'alternate' | 'custom' | 'left' | 'right';
+/** @deprecated Use `NzTimelinePlacement` instead. This will be removed in v23.0.0. */
 export type NzTimelinePosition = 'left' | 'right';
+export type NzTimelineOrientation = 'horizontal' | 'vertical';
+export type NzTimelineVariant = 'filled' | 'outlined';
+
+export function toTimelinePlacement(value: NzTimelinePlacement | NzTimelinePosition): NzTimelinePlacement {
+  return value === 'left' ? 'start' : value === 'right' ? 'end' : value;
+}
 
 export const TimelineTimeDefaultColors = ['red', 'blue', 'green', 'grey', 'gray'] as const;
 export type NzTimelineItemColor = (typeof TimelineTimeDefaultColors)[number] | string;

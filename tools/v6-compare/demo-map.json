@@ -15,7 +15,9 @@
   "timeline": {
     "_antdDir": "timeline",
     "label": "title",
-    "position": "horizontal",
+    "loading": "pending",
+    "pending": "pending-legacy",
+    "position": "custom",
     "right": "end"
   },
   "anchor": {

@@ -7,10 +7,10 @@ import { NzTimelineModule } from 'ng-zorro-antd/timeline';
   selector: 'nz-demo-timeline-right',
   imports: [NzIconModule, NzTimelineModule],
   template: `
-    <nz-timeline nzMode="right">
+    <nz-timeline nzMode="end">
       <nz-timeline-item>Create a services site 2015-09-01</nz-timeline-item>
       <nz-timeline-item>Solve initial network problems 2015-09-01</nz-timeline-item>
-      <nz-timeline-item [nzDot]="dotTemplate" nzColor="red">Technical testing 2015-09-01</nz-timeline-item>
+      <nz-timeline-item [nzIcon]="dotTemplate" nzColor="red">Technical testing 2015-09-01</nz-timeline-item>
       <nz-timeline-item>Network problems being solved 2015-09-01</nz-timeline-item>
     </nz-timeline>
     <ng-template #dotTemplate>

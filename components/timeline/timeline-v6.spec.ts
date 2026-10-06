@@ -11,7 +11,7 @@ import { V6_PATCH_CSS, V6_TEMPLATE_CSS, V6_TOKENS_DEFAULT_CSS } from 'ng-zorro-a
 import { provideNzIconsTesting } from 'ng-zorro-antd/icon/testing';
 
 import { NzTimelineModule } from './timeline.module';
-import { NzTimelineMode } from './typings';
+import { NzTimelineMode, NzTimelineOrientation, NzTimelineVariant } from './typings';
 
 let style: HTMLStyleElement;
 function installV6Css(): void {
@@ -56,6 +56,33 @@ class TestTimelineModesComponent {
   readonly label = signal<string | undefined>(undefined);
 }
 
+@Component({
+  imports: [NzTimelineModule],
+  template: `
+    <div style="width: 600px">
+      <nz-timeline
+        id="v6api"
+        [nzMode]="mode()"
+        [nzOrientation]="orientation()"
+        [nzVariant]="variant()"
+        [nzTitleSpan]="span()"
+      >
+        <nz-timeline-item [nzTitle]="title()">a</nz-timeline-item>
+        <nz-timeline-item [nzTitle]="title()">b</nz-timeline-item>
+        <nz-timeline-item [nzLoading]="loading()">c</nz-timeline-item>
+      </nz-timeline>
+    </div>
+  `
+})
+class TestTimelineV6ApiComponent {
+  readonly mode = signal<NzTimelineMode>('start');
+  readonly orientation = signal<NzTimelineOrientation>('vertical');
+  readonly variant = signal<NzTimelineVariant>('outlined');
+  readonly span = signal<number | string | undefined>(undefined);
+  readonly title = signal<string | undefined>(undefined);
+  readonly loading = signal(false);
+}
+
 describe('timeline under antd v6 css', () => {
   beforeEach(() => {
     installV6Css();
@@ -87,6 +114,67 @@ describe('timeline under antd v6 css', () => {
   function part(item: HTMLElement, selector: string): HTMLElement {
     return item.querySelector(selector) as HTMLElement;
   }
+
+  async function api(setup: (host: TestTimelineV6ApiComponent) => void): Promise<HTMLElement[]> {
+    const fixture = TestBed.createComponent(TestTimelineV6ApiComponent);
+    setup(fixture.componentInstance);
+    await render(fixture);
+    return items(fixture, 'v6api');
+  }
+
+  it('horizontal: items side by side on one rail, content centred under the dot', async () => {
+    const [first, second, third] = await api(h => h.orientation.set('horizontal'));
+    expect(first.getBoundingClientRect().top).toBeCloseTo(second.getBoundingClientRect().top, 0);
+    expect(second.getBoundingClientRect().left).toBeGreaterThan(first.getBoundingClientRect().right - 1);
+    const rail = getComputedStyle(part(first, '.ant-timeline-item-rail'));
+    expect([rail.borderTopWidth, rail.borderTopStyle, rail.borderTopColor]).toEqual([
+      '2px',
+      'solid',
+      'rgba(5, 5, 5, 0.06)'
+    ]);
+    expect(getComputedStyle(part(first, '.ant-timeline-item-wrapper')).flexDirection).toBe('column');
+    expect(getComputedStyle(part(first, '.ant-timeline-item-content')).textAlign).toBe('center');
+    expect(third.querySelector('.ant-timeline-item-rail')).toBeNull();
+  });
+
+  it('horizontal end: the item puts the dot under the content (column-reverse)', async () => {
+    const [first] = await api(h => {
+      h.orientation.set('horizontal');
+      h.mode.set('end');
+    });
+    expect(getComputedStyle(first).alignItems).toBe('flex-end');
+    expect(getComputedStyle(part(first, '.ant-timeline-item-wrapper')).flexDirection).toBe('column-reverse');
+  });
+
+  it('filled: solid primary dots without a ring', async () => {
+    const [first] = await api(h => h.variant.set('filled'));
+    const icon = getComputedStyle(part(first, '.ant-timeline-item-icon'));
+    expect(icon.backgroundColor).toBe('rgb(22, 119, 255)');
+    expect(icon.borderTopColor).toBe('rgba(0, 0, 0, 0)');
+  });
+
+  it('nzTitleSpan moves the dot to span/24 of the row (number) or to the given percentage', async () => {
+    for (const [span, ratio] of [
+      [6, 0.25],
+      ['30%', 0.3]
+    ] as const) {
+      const [first] = await api(h => {
+        h.title.set('2015-09-01');
+        h.span.set(span);
+      });
+      const li = first.getBoundingClientRect();
+      const dot = part(first, '.ant-timeline-item-icon').getBoundingClientRect();
+      expect(dot.left + dot.width / 2).toBeCloseTo(li.left + li.width * ratio, 0);
+    }
+  });
+
+  it('nzLoading: a spinning custom icon and a dotted process rail before it', async () => {
+    const [, second, third] = await api(h => h.loading.set(true));
+    expect(third.classList).toContain('ant-timeline-item-process');
+    expect(getComputedStyle(part(third, '.ant-timeline-item-icon')).borderTopWidth).toBe('0px');
+    expect(part(third, '.ant-timeline-item-icon .anticon-loading')).toBeTruthy();
+    expect(getComputedStyle(part(second, '.ant-timeline-item-tail')).borderLeftStyle).toBe('dotted');
+  });
 
   it('paints dot items as antd: 10px outlined dots in the preset or custom colour, a 2px rail', async () => {
     const fixture = TestBed.createComponent(TestTimelineComponent);

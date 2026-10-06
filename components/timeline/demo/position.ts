@@ -7,10 +7,10 @@ import { NzTimelineModule } from 'ng-zorro-antd/timeline';
   imports: [NzTimelineModule],
   template: `
     <nz-timeline nzMode="custom">
-      <nz-timeline-item nzPosition="left" [nzDot]="soccerTemplate">Alice 20'</nz-timeline-item>
-      <nz-timeline-item nzPosition="left" [nzDot]="soccerTemplate">Susan 28'</nz-timeline-item>
-      <nz-timeline-item nzPosition="right" nzColor="red" [nzDot]="soccerTemplate">Tim 45'</nz-timeline-item>
-      <nz-timeline-item nzPosition="left" [nzDot]="soccerTemplate">Bob 79'</nz-timeline-item>
+      <nz-timeline-item nzPlacement="start" [nzIcon]="soccerTemplate">Alice 20'</nz-timeline-item>
+      <nz-timeline-item nzPlacement="start" [nzIcon]="soccerTemplate">Susan 28'</nz-timeline-item>
+      <nz-timeline-item nzPlacement="end" nzColor="red" [nzIcon]="soccerTemplate">Tim 45'</nz-timeline-item>
+      <nz-timeline-item nzPlacement="start" [nzIcon]="soccerTemplate">Bob 79'</nz-timeline-item>
     </nz-timeline>
     <ng-template #soccerTemplate>⚽</ng-template>
   `

@@ -35,7 +35,7 @@ const INTERNAL_FILES: Partial<Record<Dir, readonly string[]>> = {
 const V6_ONLY: Record<Dir, readonly string[]> = {
   menu: [],
   steps: [],
-  timeline: [],
+  timeline: ['nzOrientation', 'nzVariant', 'nzTitleSpan'],
   splitter: ['nzCollapsible', 'nzDraggerIcon'],
   flex: [],
   divider: ['nzTitleMargin']

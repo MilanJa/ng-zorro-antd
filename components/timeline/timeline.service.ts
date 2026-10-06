@@ -4,13 +4,18 @@
  */
 
 import { Injectable } from '@angular/core';
-import { ReplaySubject } from 'rxjs';
+import { ReplaySubject, Subject } from 'rxjs';
 
 @Injectable()
 export class TimelineService {
   check$ = new ReplaySubject<void>(1);
+  refresh$ = new Subject<void>();
 
   markForCheck(): void {
     this.check$.next();
+  }
+
+  refresh(): void {
+    this.refresh$.next();
   }
 }

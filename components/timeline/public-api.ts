@@ -7,4 +7,11 @@ export * from './timeline-item.component';
 export * from './timeline.component';
 export * from './timeline.module';
 export * from './timeline.service';
-export type { NzTimelineMode, NzTimelinePosition, NzTimelineItemColor } from './typings';
+export type {
+  NzTimelineMode,
+  NzTimelinePosition,
+  NzTimelinePlacement,
+  NzTimelineOrientation,
+  NzTimelineVariant,
+  NzTimelineItemColor
+} from './typings';
