@@ -51,6 +51,7 @@ More layouts with navigation: [layout](/components/layout/en).
 | `[nzMatchRouter]`      | whether auto set `nzSelected` according to [routerLink](https://www.angular.io/api/router/RouterLink)                                                        | `boolean` | `false`       |
 | `[nzMatchRouterExact]` | only match when the url matches the link exactly, same as [routerLinkActiveOptions](https://angular.dev/api/router/RouterLinkActive#routerLinkActiveOptions) | `boolean` | `false`       |
 | `[nzDanger]`           | display the danger style                                                                                                                                     | `boolean` | `false`       |
+| `[nzPaddingLeft]`      | padding-left of the item in px; overrides the indent computed from `nzInlineIndent` and the level                                                            | `number`  | -             |
 
 ### [nz-submenu]
 
@@ -73,16 +74,17 @@ You can set the title of `[nz-submenu]` in the following ways.
 </ng-template>
 ```
 
-| Param                      | Description                                     | Type                                                                                        | Default value  |
-| -------------------------- | ----------------------------------------------- | ------------------------------------------------------------------------------------------- | -------------- |
-| `[nzPlacement]`            | placement of pop menu                           | `'bottomLeft' \| 'bottomCenter' \| 'bottomRight' \| 'topLeft' \| 'topCenter' \| 'topRight'` | `'bottomLeft'` |
-| `[nzOpen]`                 | whether sub menu is open or not, double binding | `boolean`                                                                                   | `false`        |
-| `[nzDisabled]`             | whether sub menu is disabled or not             | `boolean`                                                                                   | `false`        |
-| `[nzTitle]`                | set submenu title                               | `string \| TemplateRef<void>`                                                               | -              |
-| `[nzIcon]`                 | `icon` type in title                            | `string`                                                                                    | -              |
-| `[nzMenuClassName]`        | Custom the submenu container's class name       | `string`                                                                                    | -              |
-| `[nzTriggerSubMenuAction]` | Which action can trigger submenu open/close     | `'hover' \| 'click'`                                                                        | `'hover'`      |
-| `(nzOpenChange)`           | nzOpen callback                                 | `EventEmitter<boolean>`                                                                     | -              |
+| Param                      | Description                                                                                                | Type                                                                                        | Default value  |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- | -------------- |
+| `[nzPlacement]`            | placement of pop menu                                                                                      | `'bottomLeft' \| 'bottomCenter' \| 'bottomRight' \| 'topLeft' \| 'topCenter' \| 'topRight'` | `'bottomLeft'` |
+| `[nzOpen]`                 | whether sub menu is open or not, double binding                                                            | `boolean`                                                                                   | `false`        |
+| `[nzDisabled]`             | whether sub menu is disabled or not                                                                        | `boolean`                                                                                   | `false`        |
+| `[nzTitle]`                | set submenu title                                                                                          | `string \| TemplateRef<void>`                                                               | -              |
+| `[nzIcon]`                 | `icon` type in title                                                                                       | `string`                                                                                    | -              |
+| `[nzMenuClassName]`        | Custom the submenu container's class name                                                                  | `string`                                                                                    | -              |
+| `[nzTriggerSubMenuAction]` | Which action can trigger submenu open/close                                                                | `'hover' \| 'click'`                                                                        | `'hover'`      |
+| `[nzPaddingLeft]`          | padding-left of the submenu title in px; overrides the indent computed from `nzInlineIndent` and the level | `number`                                                                                    | -              |
+| `(nzOpenChange)`           | nzOpen callback                                                                                            | `EventEmitter<boolean>`                                                                     | -              |
 
 ### [nz-menu-group]
 
