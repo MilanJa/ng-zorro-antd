@@ -23,6 +23,7 @@ import { testDirectionality, updateNonSignalsInput } from 'ng-zorro-antd/core/te
 import { BooleanInput, NzDirectionVHType, NzSizeDSType } from 'ng-zorro-antd/core/types';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { provideNzIconsTesting } from 'ng-zorro-antd/icon/testing';
+import { NzTooltipDirective } from 'ng-zorro-antd/tooltip';
 
 import { NzDemoStepsClickableComponent } from './demo/clickable';
 import { NzDemoStepsNavComponent } from './demo/nav';
@@ -566,6 +567,104 @@ describe('steps', () => {
       expect(first.getAttribute('role')).toBeNull();
     });
   });
+  describe('v6 layouts', () => {
+    let fixture: ComponentFixture<NzTestStepsLayoutComponent>;
+    let host: NzTestStepsLayoutComponent;
+    const root = (): HTMLElement => fixture.nativeElement.querySelector('#layout');
+    const items = (): HTMLElement[] => Array.from(root().querySelectorAll('.ant-steps-item'));
+    const rail = (i: number): DOMTokenList => items()[i].querySelector('.ant-steps-item-rail')!.classList;
+    const click = (i: number): void => items()[i].querySelector<HTMLElement>('.ant-steps-item-container')!.click();
+    beforeEach(() => {
+      fixture = TestBed.createComponent(NzTestStepsLayoutComponent);
+      host = fixture.componentInstance;
+    });
+    it('windows the steps around nzCurrent with an ellipsis item', async () => {
+      await stabilize(fixture);
+      expect(root().classList).toContain('ant-steps-max-count');
+      expect(items()[4].style.display).toBe('none');
+      const ellipsis = items()[3];
+      for (const c of [
+        'ant-steps-item-ellipsis',
+        'ant-steps-item-disabled',
+        'ant-steps-item-custom',
+        'ant-steps-item-wait'
+      ]) {
+        expect(ellipsis.classList).toContain(c);
+      }
+      expect(ellipsis.querySelector('.ant-steps-icon .anticon-ellipsis')).toBeTruthy();
+      expect(ellipsis.querySelector('.ant-steps-item-title')!.textContent!.trim()).toBe('');
+      expect(rail(2)).toContain('ant-steps-item-rail-wait');
+      const shown = items().filter(i => i.style.display !== 'none');
+      expect(shown.map(i => i.querySelector('.ant-steps-icon')!.textContent!.trim())).toEqual([
+        '1',
+        '2',
+        '3',
+        '',
+        '6',
+        '7'
+      ]);
+    });
+    it('marks a range before the current step finish, or error when a hidden step errs', async () => {
+      host.current.set(6);
+      await stabilize(fixture);
+      expect(items()[2].classList).toContain('ant-steps-item-finish');
+      expect(items()[3].style.display).toBe('none');
+      expect(rail(1)).toContain('ant-steps-item-rail-finish');
+      host.errorAt.set(3);
+      await stabilize(fixture);
+      expect(items()[2].classList).toContain('ant-steps-item-error');
+      expect(rail(1)).toContain('ant-steps-item-rail-error');
+    });
+    it('windows on the offset current and reports original indexes with nzStartIndex', async () => {
+      host.start.set(3);
+      host.current.set(5);
+      await stabilize(fixture);
+      expect(items()[4].classList).toContain('ant-steps-item-ellipsis');
+      expect(items()[3].querySelector('.ant-steps-icon')!.textContent!.trim()).toBe('7');
+      click(4); // the ellipsis item is disabled
+      click(6);
+      expect(host.changed).toEqual([9]);
+    });
+    it('warns and shows every step when nzMaxCount is below 3', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      host.max.set(2);
+      await stabilize(fixture);
+      expect(warn.mock.calls.some(c => c.join(' ').includes('`nzMaxCount` on `nz-steps` should be at least 3'))).toBe(
+        true
+      );
+      expect(root().classList).not.toContain('ant-steps-max-count');
+      expect(items().filter(i => i.style.display === 'none').length).toBe(0);
+      warn.mockRestore();
+    });
+    it('renders inline as dots with the content as tooltip title, panel with an inert arrow, nzEllipsis', async () => {
+      const titles = (): unknown[] =>
+        fixture.debugElement
+          .queryAll(By.directive(NzTooltipDirective))
+          .map(d => d.injector.get(NzTooltipDirective).title);
+      host.max.set(undefined);
+      await stabilize(fixture);
+      expect(titles().every(t => t === null)).toBe(true);
+      host.type.set('inline');
+      await stabilize(fixture);
+      expect([...root().classList]).toEqual(
+        expect.arrayContaining(['ant-steps-inline', 'ant-steps-dot', 'ant-steps-title-vertical'])
+      );
+      expect(titles()).toEqual(Array(7).fill('c'));
+      host.type.set('panel');
+      host.orientation.set('vertical'); // antd: panel is always horizontal
+      host.ellipsis.set(true);
+      await stabilize(fixture);
+      expect([...root().classList]).toEqual(
+        expect.arrayContaining(['ant-steps-panel', 'ant-steps-horizontal', 'ant-steps-ellipsis'])
+      );
+      const arrows = root().querySelectorAll<SVGElement>('nz-step > svg.ant-steps-panel-arrow');
+      expect(arrows.length).toBe(7);
+      expect(getComputedStyle(arrows[0]).display).toBe('none'); // v4 safety: inert without the v6 patch
+      host.type.set('default');
+      await stabilize(fixture);
+      expect(root().querySelector('.ant-steps-panel-arrow')).toBeNull();
+    });
+  });
   testDirectionality(() => NzTestOuterStepsComponent, By.directive(NzStepsComponent), 'ant-steps');
 });
 
@@ -734,4 +833,39 @@ export class NzTestStepsV6InputsComponent {
   readonly legacyDot = signal(false);
   readonly disabled = signal(false);
   readonly clicked: number[] = [];
+}
+
+@Component({
+  imports: [NzStepsModule],
+  template: `
+    <nz-steps
+      id="layout"
+      [nzCurrent]="current()"
+      [nzStartIndex]="start()"
+      [nzMaxCount]="max()"
+      [nzType]="type()"
+      [nzOrientation]="orientation()"
+      [nzEllipsis]="ellipsis()"
+      (nzIndexChange)="changed.push($event)"
+    >
+      @for (i of steps; track i) {
+        @if (i === errorAt()) {
+          <nz-step [nzTitle]="'S' + i" nzStatus="error" nzContent="c" />
+        } @else {
+          <nz-step [nzTitle]="'S' + i" nzContent="c" />
+        }
+      }
+    </nz-steps>
+  `
+})
+export class NzTestStepsLayoutComponent {
+  readonly steps = [0, 1, 2, 3, 4, 5, 6];
+  readonly current = signal(0);
+  readonly start = signal(0);
+  readonly max = signal<number | undefined>(5);
+  readonly type = signal<NzStepsType>('default');
+  readonly orientation = signal<NzStepsOrientation>('horizontal');
+  readonly ellipsis = signal(false);
+  readonly errorAt = signal(-1);
+  readonly changed: number[] = [];
 }

@@ -124,6 +124,20 @@
 }
 
 /*
+ * nzEllipsis: the title's track is sized to `max-content` above so the title never needs to shrink;
+ * with `ant-steps-ellipsis` the track becomes flexible (and the title's own grid-item minimum, which
+ * defaults to its content size, is cleared) so the `overflow: hidden; text-overflow: ellipsis` that
+ * antd's own `.ant-steps.ant-steps-ellipsis .ant-steps-item-title` rule sets can actually truncate it.
+ */
+.ant-steps.ant-steps-ellipsis.ant-steps-title-horizontal.ant-steps-horizontal:not(.ant-steps-navigation) .ant-steps-item-wrapper {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+}
+
+.ant-steps.ant-steps-ellipsis.ant-steps-title-horizontal.ant-steps-horizontal:not(.ant-steps-navigation) .ant-steps-item-section > .ant-steps-item-title {
+  min-width: 0;
+}
+
+/*
  * Clickable steps: antd puts `role="button"` on the item; ng-zorro puts it on the wrapper, so antd's
  * `.ant-steps-item[role='button']` rules match the item that holds such a wrapper.
  */
@@ -234,4 +248,32 @@
 /* antd `.ant-steps.ant-steps-with-progress .ant-steps-item-progress-icon-circle-rail` */
 .ant-steps.ant-steps-with-progress .ant-steps-progress-icon .ant-progress-circle-trail {
   stroke: var(--ant-color-split);
+}
+
+/*
+ * Inline: antd `.ant-steps-inline .ant-steps-item-content { display: none }` hides antd's body slot; ng-zorro's
+ * section carries that v4 name, so the section is shown again and the description hidden instead.
+ */
+.ant-steps.ant-steps-inline .ant-steps-item-content.ant-steps-item-section {
+  display: block;
+}
+.ant-steps.ant-steps-inline .ant-steps-item-description {
+  display: none;
+}
+/* antd `.ant-steps.ant-steps-panel .ant-steps-item-header { min-height: auto }`, onto the title. */
+.ant-steps.ant-steps-panel .ant-steps-item-section > .ant-steps-item-title {
+  min-height: auto;
+}
+/*
+ * The arrow carries `display="none"` so that it is inert without this stylesheet; the presentation attribute
+ * loses to this rule, and antd's `.ant-steps-item:last-child .ant-steps-panel-arrow` still hides the last one.
+ */
+.ant-steps.ant-steps-panel .ant-steps-panel-arrow {
+  display: block;
+}
+/* antd `.ant-steps.ant-steps-ellipsis .ant-steps-item-content` body rule, onto the description. */
+.ant-steps.ant-steps-ellipsis .ant-steps-item-description {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }

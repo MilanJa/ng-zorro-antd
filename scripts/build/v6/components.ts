@@ -159,8 +159,8 @@ export const v6Components = {
   // v6 bundle carries skeleton's patch (`v6PatchDependencies`).
   statistic: { antd: ['Statistic'], prefixCls: 'ant-statistic', renderedPrefixes: ['ant-skeleton'] },
   // `nzPercentage` composes a real `nz-progress`; a standalone steps bundle needs progress' v6 bundle too
-  // (antd's Steps extraction has no progress rules).
-  steps: { antd: ['Steps'], prefixCls: 'ant-steps', renderedPrefixes: ['ant-progress'] },
+  // (antd's Steps extraction has no progress rules). The inline type composes `nz-tooltip`.
+  steps: { antd: ['Steps'], prefixCls: 'ant-steps', renderedPrefixes: ['ant-progress', 'ant-tooltip'] },
   switch: { antd: ['Switch'], prefixCls: 'ant-switch' },
   // Table's filter dropdown mounts a real `nz-dropdown` (dropdown's own classes), its selection
   // column mounts checkbox/radio, pagination mounts Pagination (which itself renders Select for

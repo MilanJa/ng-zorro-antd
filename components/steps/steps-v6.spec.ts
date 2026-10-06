@@ -7,6 +7,8 @@ import { OverlayContainer } from '@angular/cdk/overlay';
 import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
+import { page } from 'vitest/browser';
+
 import { V6_PATCH_CSS, V6_TEMPLATE_CSS, V6_TOKENS_DEFAULT_CSS } from 'ng-zorro-antd/core/theme/generated/test-css';
 import { NzSizeDSType } from 'ng-zorro-antd/core/types';
 import { provideNzIconsTesting } from 'ng-zorro-antd/icon/testing';
@@ -307,5 +309,135 @@ describe('steps v6 inputs under antd v6 css', () => {
     const body = root().querySelector('.ant-steps-item-description') as HTMLElement;
     expect(body.textContent!.trim()).toBe('d1');
     expect(getComputedStyle(body).color).toBe('rgba(0, 0, 0, 0.45)');
+  });
+});
+
+@Component({
+  imports: [NzStepsModule],
+  template: `
+    <div style="width: 900px">
+      <nz-steps
+        id="b"
+        [nzCurrent]="current()"
+        [nzType]="type()"
+        [nzMaxCount]="max()"
+        [nzEllipsis]="ellipsis()"
+        [nzResponsive]="responsive()"
+      >
+        @for (t of titles(); track $index) {
+          <nz-step [nzTitle]="t" [nzContent]="'c' + $index" />
+        }
+      </nz-steps>
+    </div>
+  `
+})
+class TestStepsLayoutV6Component {
+  readonly current = signal(1);
+  readonly type = signal<NzStepsType>('default');
+  readonly max = signal<number | undefined>(undefined);
+  readonly ellipsis = signal(false);
+  readonly responsive = signal(true);
+  readonly titles = signal(['Step 1', 'Step 2', 'Step 3']);
+}
+
+describe('steps v6 layouts under antd v6 css', () => {
+  let fixture: ComponentFixture<TestStepsLayoutV6Component>;
+
+  beforeEach(() => {
+    installV6Css();
+    TestBed.configureTestingModule({ providers: [provideNzIconsTesting()], animationsEnabled: true });
+    fixture = TestBed.createComponent(TestStepsLayoutV6Component);
+  });
+
+  afterEach(() => {
+    style.remove();
+    TestBed.inject(OverlayContainer).ngOnDestroy();
+  });
+
+  // Statuses land in a microtask; colours run `var(--ant-motion-duration-slow)` (0.3s) transitions.
+  async function render(): Promise<void> {
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    await new Promise(r => setTimeout(r, 350));
+  }
+
+  const root = (): HTMLElement => fixture.nativeElement.querySelector('#b');
+  const items = (): HTMLElement[] => Array.from(root().querySelectorAll('.ant-steps-item'));
+  const cs = (i: number, s: string): CSSStyleDeclaration => getComputedStyle(items()[i].querySelector(s)!);
+
+  it('renders the inline type with antd v6 sizes and the content in a tooltip', async () => {
+    fixture.componentInstance.type.set('inline');
+    await render();
+    expect(getComputedStyle(root()).display).toBe('inline-flex');
+    expect(cs(0, '.ant-steps-item-icon').width).toBe('6px'); // inlineDotSize
+    expect([cs(0, '.ant-steps-item-title').fontSize, cs(0, '.ant-steps-item-title').whiteSpace]).toEqual([
+      '12px',
+      'nowrap'
+    ]);
+    expect([cs(0, '.ant-steps-item-section').display, cs(0, '.ant-steps-item-description').display]).toEqual([
+      'block',
+      'none'
+    ]);
+    items()[0].querySelector('.ant-steps-item-container')!.dispatchEvent(new MouseEvent('mouseenter'));
+    await new Promise(r => setTimeout(r, 400)); // mouseEnterDelay 0.15s plus the tooltip zoom motion
+    fixture.detectChanges();
+    expect(document.querySelector('.ant-tooltip-inner')!.textContent!.trim()).toBe('c0');
+  });
+
+  it('renders the panel type with antd v6 panel boxes and arrows', async () => {
+    fixture.componentInstance.type.set('panel');
+    await render();
+    const [finish, active, last] = items();
+    expect([cs(0, '.ant-steps-item-icon').display, cs(0, '.ant-steps-item-rail').display]).toEqual(['none', 'none']);
+    expect(getComputedStyle(finish).paddingTop).toBe('12px'); // paddingSM
+    expect(getComputedStyle(finish).backgroundColor).toBe('rgb(230, 244, 255)'); // panel bg = filled icon bg
+    expect(getComputedStyle(active).backgroundColor).toBe('rgb(22, 119, 255)'); // panel active bg
+    expect(cs(1, '.ant-steps-item-title').color).toBe('rgb(255, 255, 255)');
+    const arrow = finish.querySelector('.ant-steps-panel-arrow')!;
+    expect([getComputedStyle(arrow).position, getComputedStyle(arrow).display]).toEqual(['absolute', 'block']);
+    expect(arrow.getBoundingClientRect().left).toBeCloseTo(finish.getBoundingClientRect().right, 0);
+    expect(getComputedStyle(last.querySelector('.ant-steps-panel-arrow')!).display).toBe('none');
+  });
+
+  it('greys the ellipsis item and keeps nzEllipsis titles on one line', async () => {
+    fixture.componentInstance.titles.set(['1', '2', '3', '4', '5', '6', '7']);
+    fixture.componentInstance.current.set(3);
+    fixture.componentInstance.max.set(5);
+    await render();
+    expect(cs(1, '.ant-steps-item-title').color).toBe('rgba(0, 0, 0, 0.45)'); // colorTextDescription
+    fixture.componentInstance.max.set(undefined);
+    fixture.componentInstance.titles.set(['A very long step title that would wrap onto a second line', 'B', 'C']);
+    await render();
+    const wrapped = items()[0].querySelector('.ant-steps-item-title')!.getBoundingClientRect().height;
+    fixture.componentInstance.ellipsis.set(true);
+    await render();
+    expect([cs(0, '.ant-steps-item-title').whiteSpace, cs(0, '.ant-steps-item-title').textOverflow]).toEqual([
+      'nowrap',
+      'ellipsis'
+    ]);
+    expect(items()[0].querySelector('.ant-steps-item-title')!.getBoundingClientRect().height).toBeLessThan(wrapped);
+  });
+
+  it('turns vertical below the xs breakpoint unless nzResponsive is off', async () => {
+    await render();
+    const resize = async (w: number): Promise<void> => {
+      await page.viewport(w, 800);
+      await new Promise(r => setTimeout(r, 50)); // NzResizeService auditTime(16)
+      await render();
+    };
+    try {
+      await resize(375);
+      expect(root().classList).toContain('ant-steps-vertical');
+      expect(getComputedStyle(root()).flexDirection).toBe('column');
+      fixture.componentInstance.responsive.set(false);
+      await render();
+      expect(root().classList).toContain('ant-steps-horizontal');
+      fixture.componentInstance.responsive.set(true);
+      await resize(1280);
+      expect(root().classList).toContain('ant-steps-horizontal');
+    } finally {
+      await page.viewport(1000, 1000); // the runner's `browserViewport` (components/project.json)
+    }
   });
 });

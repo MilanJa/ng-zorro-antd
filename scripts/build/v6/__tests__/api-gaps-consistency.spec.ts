@@ -13,7 +13,17 @@ import path from 'node:path';
  * column. A task appends what it delivers and deletes or rewrites every row that still backticks it.
  */
 const DELIVERED: Record<string, string[]> = {
-  Steps: ['descriptionMaxWidth', 'orientation', 'titlePlacement', 'variant', 'content'],
+  Steps: [
+    'descriptionMaxWidth',
+    'orientation',
+    'titlePlacement',
+    'variant',
+    'content',
+    'type',
+    'maxCount',
+    'ellipsis',
+    'responsive'
+  ],
   Timeline: ['mode', 'orientation', 'variant', 'titleSpan', 'placement', 'title', 'icon', 'loading'],
   Menu: [],
   Splitter: [

@@ -29,6 +29,9 @@ import { NgClassType, NzSizeDSType } from 'ng-zorro-antd/core/types';
 import { aliasDeprecatedInput, fromEventOutsideAngular } from 'ng-zorro-antd/core/util';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzProgressFormatter, NzProgressModule } from 'ng-zorro-antd/progress';
+import { NzTooltipDirective } from 'ng-zorro-antd/tooltip';
+
+import { NzStepDisplayRole } from './display-steps';
 
 @Component({
   selector: 'nz-step',
@@ -40,6 +43,8 @@ import { NzProgressFormatter, NzProgressModule } from 'ng-zorro-antd/progress';
       class="ant-steps-item-container ant-steps-item-wrapper"
       [attr.role]="isClickable ? 'button' : null"
       [tabindex]="isClickable ? 0 : null"
+      nz-tooltip
+      [nzTooltipTitle]="inline ? displayContent : null"
     >
       @if (!last) {
         <!-- The rail takes the status of the step it leads to, as antd's rc-steps does. -->
@@ -52,67 +57,82 @@ import { NzProgressFormatter, NzProgressModule } from 'ng-zorro-antd/progress';
         ></div>
       }
       <div class="ant-steps-item-icon">
-        @if (!showProcessDot) {
-          @if (showProgress) {
-            <div class="ant-steps-progress-icon">
-              <nz-progress
-                [nzPercent]="nzPercentage"
-                nzType="circle"
-                [nzWidth]="nzSize === 'small' ? 32 : 40"
-                [nzFormat]="nullProcessFormat"
-                [nzStrokeWidth]="4"
+        @if (isEllipsis) {
+          <span class="ant-steps-icon"><nz-icon nzType="ellipsis" /></span>
+        } @else {
+          @if (!showProcessDot) {
+            @if (showProgress) {
+              <div class="ant-steps-progress-icon">
+                <nz-progress
+                  [nzPercent]="nzPercentage"
+                  nzType="circle"
+                  [nzWidth]="nzSize === 'small' ? 32 : 40"
+                  [nzFormat]="nullProcessFormat"
+                  [nzStrokeWidth]="4"
+                />
+              </div>
+            }
+            @if (nzStatus === 'finish' && !nzIcon) {
+              <span class="ant-steps-icon"><nz-icon nzType="check" /></span>
+            }
+            @if (nzStatus === 'error') {
+              <span class="ant-steps-icon"><nz-icon nzType="close" /></span>
+            }
+            @if ((nzStatus === 'process' || nzStatus === 'wait') && !nzIcon) {
+              <span class="ant-steps-icon">
+                {{ index + 1 }}
+              </span>
+            }
+            @if (nzIcon) {
+              <span class="ant-steps-icon">
+                <ng-container *nzStringTemplateOutlet="nzIcon; let icon">
+                  <nz-icon [nzType]="icon" />
+                </ng-container>
+              </span>
+            }
+          }
+          @if (showProcessDot) {
+            <span class="ant-steps-icon">
+              <ng-template #processDotTemplate>
+                <span class="ant-steps-icon-dot"></span>
+              </ng-template>
+              <ng-template
+                [ngTemplateOutlet]="customProcessTemplate || processDotTemplate"
+                [ngTemplateOutletContext]="{
+                  $implicit: processDotTemplate,
+                  status: nzStatus,
+                  index: index
+                }"
               />
-            </div>
-          }
-          @if (nzStatus === 'finish' && !nzIcon) {
-            <span class="ant-steps-icon"><nz-icon nzType="check" /></span>
-          }
-          @if (nzStatus === 'error') {
-            <span class="ant-steps-icon"><nz-icon nzType="close" /></span>
-          }
-          @if ((nzStatus === 'process' || nzStatus === 'wait') && !nzIcon) {
-            <span class="ant-steps-icon">
-              {{ index + 1 }}
             </span>
           }
-          @if (nzIcon) {
-            <span class="ant-steps-icon">
-              <ng-container *nzStringTemplateOutlet="nzIcon; let icon">
-                <nz-icon [nzType]="icon" />
-              </ng-container>
-            </span>
-          }
-        }
-        @if (showProcessDot) {
-          <span class="ant-steps-icon">
-            <ng-template #processDotTemplate>
-              <span class="ant-steps-icon-dot"></span>
-            </ng-template>
-            <ng-template
-              [ngTemplateOutlet]="customProcessTemplate || processDotTemplate"
-              [ngTemplateOutletContext]="{
-                $implicit: processDotTemplate,
-                status: nzStatus,
-                index: index
-              }"
-            />
-          </span>
         }
       </div>
       <div class="ant-steps-item-content ant-steps-item-section">
         <div class="ant-steps-item-title">
-          <ng-container *nzStringTemplateOutlet="nzTitle">{{ nzTitle }}</ng-container>
-          @if (nzSubtitle) {
+          <ng-container *nzStringTemplateOutlet="displayTitle">{{ displayTitle }}</ng-container>
+          @if (displaySubtitle) {
             <div class="ant-steps-item-subtitle">
-              <ng-container *nzStringTemplateOutlet="nzSubtitle">{{ nzSubtitle }}</ng-container>
+              <ng-container *nzStringTemplateOutlet="displaySubtitle">{{ displaySubtitle }}</ng-container>
             </div>
           }
         </div>
         <div class="ant-steps-item-description">
-          <ng-container *nzStringTemplateOutlet="content">{{ content }}</ng-container>
+          <ng-container *nzStringTemplateOutlet="displayContent">{{ displayContent }}</ng-container>
         </div>
       </div>
     </div>
+    @if (panel) {
+      <svg
+        class="ant-steps-panel-arrow"
+        aria-hidden="true"
+        viewBox="0 0 100 100"
+        preserveAspectRatio="none"
+        display="none"
+      >
+        <path d="M 0 0 L 100 50 L 0 100" />
+      </svg>
+    }
   `,
   host: {
     class: 'ant-steps-item',
@@ -121,12 +141,15 @@ import { NzProgressFormatter, NzProgressModule } from 'ng-zorro-antd/progress';
     '[class.ant-steps-item-finish]': 'nzStatus === "finish"',
     '[class.ant-steps-item-error]': 'nzStatus === "error"',
     '[class.ant-steps-item-active]': 'currentIndex === index',
-    '[class.ant-steps-item-disabled]': 'nzDisabled',
-    '[class.ant-steps-item-custom]': '!!nzIcon',
-    '[class.ant-steps-item-empty-header]': '!nzTitle && !nzSubtitle',
-    '[class.ant-steps-next-error]': '(outStatus === "error") && (currentIndex === index + 1)'
+    '[class.ant-steps-item-disabled]': 'nzDisabled || isEllipsis',
+    '[class.ant-steps-item-custom]': '!!nzIcon || isEllipsis',
+    // rc-steps counts antd's ellipsis `title: ''` as a title, so the ellipsis item is never `-empty-header`.
+    '[class.ant-steps-item-empty-header]': '!isEllipsis && !nzTitle && !nzSubtitle',
+    '[class.ant-steps-item-ellipsis]': 'isEllipsis',
+    '[class.ant-steps-next-error]': '(outStatus === "error") && (currentIndex === index + 1)',
+    '[style.display]': `displayRole === 'hidden' ? 'none' : null`
   },
-  imports: [NzProgressModule, NzIconModule, NzOutletModule, NgTemplateOutlet]
+  imports: [NzProgressModule, NzIconModule, NzOutletModule, NgTemplateOutlet, NzTooltipDirective]
 })
 export class NzStepComponent implements OnInit {
   private cdr = inject(ChangeDetectorRef);
@@ -165,7 +188,7 @@ export class NzStepComponent implements OnInit {
   private readonly ngZone = inject(NgZone);
   /** rc-steps `Step.js`: an item is a button when it has a click handler and is not disabled. */
   get isClickable(): boolean {
-    return (this.clickable || this.nzClick.observed) && !this.nzDisabled;
+    return (this.clickable || this.nzClick.observed) && !this.nzDisabled && !this.isEllipsis;
   }
   @Input({ transform: booleanAttribute }) nzDisabled = false;
   @Input() nzPercentage: number | null = null;
@@ -173,7 +196,7 @@ export class NzStepComponent implements OnInit {
 
   @Input()
   get nzStatus(): string {
-    return this._status;
+    return this.ellipsisStatus ?? this._status;
   }
 
   set nzStatus(status: string) {
@@ -183,6 +206,27 @@ export class NzStepComponent implements OnInit {
 
   isCustomStatus = false;
   private _status = 'wait';
+  displayRole: NzStepDisplayRole = 'visible';
+  /** Set by the parent on the step that stands for a collapsed range. */
+  ellipsisStatus: string | null = null;
+  inline = false;
+  panel = false;
+  /** The status without the ellipsis override, read when the parent collapses a range. */
+  get ownStatus(): string {
+    return this._status;
+  }
+  get isEllipsis(): boolean {
+    return this.displayRole === 'ellipsis';
+  }
+  get displayTitle(): string | TemplateRef<void> | undefined {
+    return this.isEllipsis ? '' : this.nzTitle;
+  }
+  get displaySubtitle(): string | TemplateRef<void> | undefined {
+    return this.isEllipsis ? undefined : this.nzSubtitle;
+  }
+  get displayContent(): string | TemplateRef<void> | undefined {
+    return this.isEllipsis ? undefined : this.content;
+  }
 
   @Input()
   get nzIcon(): NgClassType | TemplateRef<void> | undefined {
@@ -243,7 +287,7 @@ export class NzStepComponent implements OnInit {
   ngOnInit(): void {
     fromEventOutsideAngular(this.itemContainer.nativeElement, 'click')
       .pipe(
-        filter(() => !this.nzDisabled),
+        filter(() => !this.nzDisabled && !this.isEllipsis),
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(() => {

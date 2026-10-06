@@ -8,6 +8,9 @@
   },
   "steps": {
     "_antdDir": "steps",
+    "inline": "inline",
+    "max-count": "max-count",
+    "panel": "panel",
     "small-size": null,
     "start-index": null,
     "vertical-small": null
