@@ -13,12 +13,14 @@ import {
   computed,
   contentChildren,
   DOCUMENT,
+  effect,
   ElementRef,
   inject,
   input,
   linkedSignal,
   output,
   signal,
+  TemplateRef,
   ViewEncapsulation
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -27,13 +29,25 @@ import { pairwise, startWith } from 'rxjs/operators';
 
 import { NzResizeObserver } from 'ng-zorro-antd/cdk/resize-observer';
 import { NzDestroyService } from 'ng-zorro-antd/core/services';
-import { fromEventOutsideAngular } from 'ng-zorro-antd/core/util';
+import { aliasDeprecatedInput, fromEventOutsideAngular } from 'ng-zorro-antd/core/util';
 import { getEventWithPoint } from 'ng-zorro-antd/resizable';
 
 import { NzSplitterBarComponent } from './splitter-bar.component';
 import { NzSplitterPanelComponent } from './splitter-panel.component';
-import { NzSplitterCollapseOption, NzSplitterLayout } from './typings';
-import { coerceCollapsible, getPercentValue, isPercent } from './utils';
+import {
+  NzSplitterCollapseEvent,
+  NzSplitterCollapsibleConfig,
+  NzSplitterLayout,
+  NzSplitterOrientation,
+  NzSplitterShowCollapsibleIcon
+} from './typings';
+import {
+  coerceCollapsible,
+  getPercentValue,
+  getShowCollapsibleIcon,
+  isPercent,
+  NzSplitterMergedCollapse
+} from './utils';
 
 interface PanelSize {
   // Calculated size of the panel in pixels, constrained by the min and max size.
@@ -54,7 +68,9 @@ interface PanelSize {
 
 interface ResizableInfo {
   resizable: boolean;
-  collapsible: Required<NzSplitterCollapseOption>;
+  collapsible: { start: boolean; end: boolean };
+  showStartCollapsibleIcon: NzSplitterShowCollapsibleIcon;
+  showEndCollapsibleIcon: NzSplitterShowCollapsibleIcon;
 }
 
 const passiveEventListenerOptions = normalizePassiveListenerOptions({ passive: true });
@@ -70,6 +86,7 @@ const passiveEventListenerOptions = normalizePassiveListenerOptions({ passive: t
       <div
         class="ant-splitter-panel"
         [class.ant-splitter-panel-hidden]="size.postPxSize === 0"
+        [class.ant-splitter-panel-transition]="motion()"
         [style.flex-basis]="flexBasis"
         [style.flex-grow]="flexGrow"
       >
@@ -87,11 +104,16 @@ const passiveEventListenerOptions = normalizePassiveListenerOptions({ passive: t
           [resizable]="resizableInfo.resizable"
           [collapsible]="resizableInfo.collapsible"
           [active]="movingIndex()?.index === $index"
-          [vertical]="nzLayout() === 'vertical'"
+          [vertical]="orientation() === 'vertical'"
           [lazy]="nzLazy()"
           [constrainedOffset]="previewOffset()"
+          [showStartCollapsibleIcon]="resizableInfo.showStartCollapsibleIcon"
+          [showEndCollapsibleIcon]="resizableInfo.showEndCollapsibleIcon"
+          [collapsibleIcon]="nzCollapsible()?.icon"
+          [draggerIcon]="nzDraggerIcon()"
           (offsetStart)="startResize($index, $event)"
           (collapse)="collapse($index, $event)"
+          (draggerDoubleClick)="nzDraggerDoubleClick.emit($index)"
         ></div>
       }
     }
@@ -101,8 +123,8 @@ const passiveEventListenerOptions = normalizePassiveListenerOptions({ passive: t
       <div
         aria-hidden
         class="ant-splitter-mask"
-        [class.ant-splitter-mask-horizontal]="nzLayout() === 'horizontal'"
-        [class.ant-splitter-mask-vertical]="nzLayout() === 'vertical'"
+        [class.ant-splitter-mask-horizontal]="orientation() === 'horizontal'"
+        [class.ant-splitter-mask-vertical]="orientation() === 'vertical'"
       ></div>
     }
   `,
@@ -110,19 +132,36 @@ const passiveEventListenerOptions = normalizePassiveListenerOptions({ passive: t
   providers: [NzDestroyService],
   host: {
     class: 'ant-splitter',
-    '[class.ant-splitter-horizontal]': 'nzLayout() === "horizontal"',
-    '[class.ant-splitter-vertical]': 'nzLayout() === "vertical"',
+    '[class.ant-splitter-horizontal]': 'orientation() === "horizontal"',
+    '[class.ant-splitter-vertical]': 'orientation() === "vertical"',
     '[class.ant-splitter-rtl]': 'dir() === "rtl"'
   },
   encapsulation: ViewEncapsulation.None
 })
 export class NzSplitterComponent {
   /** ------------------- Props ------------------- */
-  readonly nzLayout = input<NzSplitterLayout>('horizontal');
+  readonly nzOrientation = input<NzSplitterOrientation>();
+  /** @deprecated Use `nzOrientation` instead. This will be removed in v23.0.0. */
+  // v6-alias: nzLayout -> nzOrientation
+  readonly nzLayout = input<NzSplitterLayout>();
   readonly nzLazy = input(false, { transform: booleanAttribute });
+  readonly nzCollapsible = input<NzSplitterCollapsibleConfig>();
+  readonly nzDraggerIcon = input<string | TemplateRef<void>>();
   readonly nzResizeStart = output<number[]>();
   readonly nzResize = output<number[]>();
   readonly nzResizeEnd = output<number[]>();
+  readonly nzDraggerDoubleClick = output<number>();
+  readonly nzCollapse = output<NzSplitterCollapseEvent>();
+
+  protected readonly orientation = computed(() => this.nzOrientation() ?? this.nzLayout() ?? 'horizontal');
+  private readonly aliasLayout = aliasDeprecatedInput<NzSplitterLayout>('nz-splitter', 'nzLayout', 'nzOrientation');
+
+  constructor() {
+    effect(() => {
+      const legacy = this.nzLayout();
+      if (legacy !== undefined) this.aliasLayout(legacy);
+    });
+  }
 
   protected readonly destroy$ = inject(NzDestroyService);
   protected readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
@@ -167,7 +206,7 @@ export class NzSplitterComponent {
    * The size of the container, used to calculate the percentage size and flex basis of each panel.
    */
   protected readonly containerSize = computed(() =>
-    this.nzLayout() === 'horizontal' ? this.containerBox().width : this.containerBox().height
+    this.orientation() === 'horizontal' ? this.containerBox().width : this.containerBox().height
   );
   /**
    * Derived from defaultSize of each panel.
@@ -285,13 +324,18 @@ export class NzSplitterComponent {
    */
   protected readonly movingIndex = signal<{ index: number; confirmed: boolean } | null>(null);
   /**
+   * Animate `flex-basis` on every panel while motion is enabled and no drag is in progress
+   * (a drag never animates, matching antd's `supportMotion`).
+   */
+  protected readonly motion = computed(() => !!this.nzCollapsible()?.motion && this.movingIndex() === null);
+  /**
    * The offset of preview position (lazy mode) when dragging the splitter bar.
    * Constrained by the min and max size of the target panel.
    */
   protected readonly constrainedOffset = signal<number>(0);
   protected readonly previewOffset = computed(() => {
     const offset = this.constrainedOffset();
-    return this.nzLayout() === 'horizontal' && this.dir() === 'rtl' ? -offset : offset;
+    return this.orientation() === 'horizontal' && this.dir() === 'rtl' ? -offset : offset;
   });
   /**
    * The resizable information of each splitter bar.
@@ -332,12 +376,31 @@ export class NzSplitterComponent {
         // Collapsed and can be collapsed
         (prevCollapsible.end && prevSize === 0 && nextSize > 0);
 
+      const show = (
+        a: [boolean, NzSplitterMergedCollapse],
+        b: [boolean, NzSplitterMergedCollapse]
+      ): NzSplitterShowCollapsibleIcon =>
+        getShowCollapsibleIcon(
+          { collapsible: a[0], showCollapsibleIcon: a[1].showCollapsibleIcon },
+          { collapsible: b[0], showCollapsibleIcon: b[1].showCollapsibleIcon }
+        );
+      const showStart = show(
+        [!!prevCollapsible.end && prevSize > 0, prevCollapsible],
+        [!!nextCollapsible.start && nextSize === 0 && prevSize > 0, nextCollapsible]
+      );
+      const showEnd = show(
+        [!!nextCollapsible.start && nextSize > 0, nextCollapsible],
+        [!!prevCollapsible.end && prevSize === 0 && nextSize > 0, prevCollapsible]
+      );
+      const rtl = this.dir() === 'rtl';
       resizeInfos[i] = {
         resizable: mergedResizable,
         collapsible: {
-          start: !!(this.dir() === 'rtl' ? endCollapsible : startCollapsible),
-          end: !!(this.dir() === 'rtl' ? startCollapsible : endCollapsible)
-        }
+          start: !!(rtl ? endCollapsible : startCollapsible),
+          end: !!(rtl ? startCollapsible : endCollapsible)
+        },
+        showStartCollapsibleIcon: rtl ? showEnd : showStart,
+        showEndCollapsibleIcon: rtl ? showStart : showEnd
       };
     }
 
@@ -388,9 +451,9 @@ export class NzSplitterComponent {
     )
       .pipe(
         map(event => getEventWithPoint(event)),
-        map(({ pageX, pageY }) => (this.nzLayout() === 'horizontal' ? pageX - startPos[0] : pageY - startPos[1])),
+        map(({ pageX, pageY }) => (this.orientation() === 'horizontal' ? pageX - startPos[0] : pageY - startPos[1])),
         // flip the offset if the direction is rtl
-        map(offset => (this.nzLayout() === 'horizontal' && this.dir() === 'rtl' ? -offset : offset)),
+        map(offset => (this.orientation() === 'horizontal' && this.dir() === 'rtl' ? -offset : offset)),
         startWith(0),
         pairwise(),
         takeUntil(merge(end$, this.destroy$))
@@ -561,5 +624,9 @@ export class NzSplitterComponent {
     this.innerSizes.set(currentSizes);
     this.nzResize.emit(currentSizes);
     this.nzResizeEnd.emit(currentSizes);
+    this.nzCollapse.emit({
+      collapsed: currentSizes.map(size => Math.abs(size) < Number.EPSILON),
+      sizes: currentSizes
+    });
   }
 }

@@ -16,7 +16,17 @@ const DELIVERED: Record<string, string[]> = {
   Steps: ['descriptionMaxWidth'],
   Timeline: [],
   Menu: [],
-  Splitter: [],
+  Splitter: [
+    'orientation',
+    'collapsible.showCollapsibleIcon',
+    'showCollapsibleIcon',
+    'collapsible.icon',
+    'collapsibleIcon',
+    'draggerIcon',
+    'onDraggerDoubleClick',
+    'collapsible.motion',
+    'onCollapse'
+  ],
   Flex: ['orientation', 'gap', 'align', 'wrap'],
   Divider: ['titlePlacement', 'orientationMargin', 'orientation']
 };

@@ -36,7 +36,7 @@ const V6_ONLY: Record<Dir, readonly string[]> = {
   menu: [],
   steps: [],
   timeline: [],
-  splitter: [],
+  splitter: ['nzCollapsible', 'nzDraggerIcon'],
   flex: [],
   divider: ['nzTitleMargin']
 };

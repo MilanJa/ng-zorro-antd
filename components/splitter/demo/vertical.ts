@@ -6,7 +6,7 @@ import { NzSplitterModule } from 'ng-zorro-antd/splitter';
   selector: 'nz-demo-splitter-vertical',
   imports: [NzSplitterModule],
   template: `
-    <nz-splitter nzLayout="vertical">
+    <nz-splitter nzOrientation="vertical">
       <nz-splitter-panel>
         <div class="box">First</div>
       </nz-splitter-panel>

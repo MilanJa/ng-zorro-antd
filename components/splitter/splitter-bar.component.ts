@@ -4,16 +4,18 @@
  */
 
 import { coerceCssPixelValue } from '@angular/cdk/coercion';
-import { Component, computed, input, output, ViewEncapsulation } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
+import { Component, computed, input, output, TemplateRef, ViewEncapsulation } from '@angular/core';
 
+import { NzOutletModule } from 'ng-zorro-antd/core/outlet';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { getEventWithPoint } from 'ng-zorro-antd/resizable';
 
-import { NzSplitterCollapseOption } from './typings';
+import { NzSplitterCollapseOption, NzSplitterCollapsibleConfig, NzSplitterShowCollapsibleIcon } from './typings';
 
 @Component({
   selector: '[nz-splitter-bar]',
-  imports: [NzIconModule],
+  imports: [NgTemplateOutlet, NzOutletModule, NzIconModule],
   template: `
     @if (lazy()) {
       @let preview = active() && !!this.constrainedOffset();
@@ -28,32 +30,46 @@ import { NzSplitterCollapseOption } from './typings';
       class="ant-splitter-bar-dragger"
       [class.ant-splitter-bar-dragger-disabled]="!resizable()"
       [class.ant-splitter-bar-dragger-active]="active()"
+      [class.ant-splitter-bar-dragger-customize]="draggerIcon() !== undefined"
       (mousedown)="resizeStartEvent($event)"
       (touchstart)="resizeStartEvent($event)"
-    ></div>
+      (dblclick)="draggerDoubleClick.emit()"
+    >
+      @if (draggerIcon() !== undefined) {
+        <div class="ant-splitter-bar-dragger-icon">
+          <ng-container *nzStringTemplateOutlet="draggerIcon(); let icon"><nz-icon [nzType]="icon" /></ng-container>
+        </div>
+      }
+    </div>
 
-    @if (collapsible()?.start) {
-      <div
-        class="ant-splitter-bar-collapse-bar ant-splitter-bar-collapse-bar-start ant-splitter-bar-collapse-bar-hover-only"
-        (click)="collapseEvent('start')"
-      >
-        <nz-icon
-          [nzType]="vertical() ? 'up' : 'left'"
-          class="ant-splitter-bar-collapse-icon ant-splitter-bar-collapse-start"
-        />
-      </div>
-    }
-
-    @if (collapsible()?.end) {
-      <div
-        class="ant-splitter-bar-collapse-bar ant-splitter-bar-collapse-bar-end ant-splitter-bar-collapse-bar-hover-only"
-        (click)="collapseEvent('end')"
-      >
-        <nz-icon
-          [nzType]="vertical() ? 'down' : 'right'"
-          class="ant-splitter-bar-collapse-icon ant-splitter-bar-collapse-end"
-        />
-      </div>
+    @for (side of sides; track side) {
+      @if (collapsible()?.[side]) {
+        @let custom = collapsibleIcon()?.[side];
+        <div
+          class="ant-splitter-bar-collapse-bar"
+          [class]="visibilityClass(side)"
+          [class.ant-splitter-bar-collapse-bar-start]="side === 'start'"
+          [class.ant-splitter-bar-collapse-bar-end]="side === 'end'"
+          [class.ant-splitter-bar-collapse-bar-customize]="custom !== undefined"
+          (click)="collapseEvent(side)"
+        >
+          @if (isTemplate(custom)) {
+            <span
+              class="ant-splitter-bar-collapse-icon"
+              [class.ant-splitter-bar-collapse-start]="side === 'start'"
+              [class.ant-splitter-bar-collapse-end]="side === 'end'"
+              ><ng-container [ngTemplateOutlet]="custom"
+            /></span>
+          } @else {
+            <nz-icon
+              [nzType]="custom ?? defaultIcon(side)"
+              class="ant-splitter-bar-collapse-icon"
+              [class.ant-splitter-bar-collapse-start]="side === 'start'"
+              [class.ant-splitter-bar-collapse-end]="side === 'end'"
+            />
+          }
+        </div>
+      }
     }
   `,
   host: {
@@ -75,9 +91,16 @@ export class NzSplitterBarComponent {
   readonly lazy = input(false);
   readonly collapsible = input<NzSplitterCollapseOption>();
   readonly constrainedOffset = input<number>();
+  readonly showStartCollapsibleIcon = input<NzSplitterShowCollapsibleIcon>('auto');
+  readonly showEndCollapsibleIcon = input<NzSplitterShowCollapsibleIcon>('auto');
+  readonly collapsibleIcon = input<NzSplitterCollapsibleConfig['icon']>();
+  readonly draggerIcon = input<string | TemplateRef<void>>();
 
   readonly offsetStart = output<[x: number, y: number]>();
   readonly collapse = output<'start' | 'end'>();
+  readonly draggerDoubleClick = output<void>();
+
+  protected readonly sides = ['start', 'end'] as const;
 
   protected readonly previewTransform = computed(() => {
     const offset = coerceCssPixelValue(this.constrainedOffset());
@@ -97,5 +120,22 @@ export class NzSplitterBarComponent {
 
   protected getValidNumber(num: number | undefined): number {
     return typeof num === 'number' && !isNaN(num) ? Math.round(num) : 0;
+  }
+
+  protected visibilityClass(side: 'start' | 'end'): string {
+    const mode = side === 'start' ? this.showStartCollapsibleIcon() : this.showEndCollapsibleIcon();
+    return mode === true
+      ? 'ant-splitter-bar-collapse-bar-always-visible'
+      : mode === false
+        ? 'ant-splitter-bar-collapse-bar-always-hidden'
+        : 'ant-splitter-bar-collapse-bar-hover-only';
+  }
+
+  protected defaultIcon(side: 'start' | 'end'): string {
+    return this.vertical() ? (side === 'start' ? 'up' : 'down') : side === 'start' ? 'left' : 'right';
+  }
+
+  protected isTemplate(value: unknown): value is TemplateRef<void> {
+    return value instanceof TemplateRef;
   }
 }

@@ -11,7 +11,7 @@ import { NzSplitterModule } from 'ng-zorro-antd/splitter';
         <div class="box">Left</div>
       </nz-splitter-panel>
       <nz-splitter-panel>
-        <nz-splitter nzLayout="vertical">
+        <nz-splitter nzOrientation="vertical">
           <nz-splitter-panel>
             <div class="box">Top</div>
           </nz-splitter-panel>

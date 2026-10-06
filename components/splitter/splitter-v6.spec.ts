@@ -11,7 +11,7 @@ import { V6_PATCH_CSS, V6_TEMPLATE_CSS, V6_TOKENS_DEFAULT_CSS } from 'ng-zorro-a
 import { provideNzIconsTesting } from 'ng-zorro-antd/icon/testing';
 
 import { NzSplitterModule } from './splitter.module';
-import { NzSplitterLayout } from './typings';
+import { NzSplitterCollapsible, NzSplitterCollapsibleConfig, NzSplitterLayout, NzSplitterOrientation } from './typings';
 
 let style: HTMLStyleElement;
 function installV6Css(): void {
@@ -137,5 +137,86 @@ describe('splitter (v6 styles)', () => {
     const cs = getComputedStyle(q('.ant-splitter-bar-dragger'));
     expect(cs.height).toBe('6px');
     expect(cs.cursor).toBe('row-resize');
+  });
+});
+
+@Component({
+  imports: [NzSplitterModule],
+  template: `
+    <div style="width: 600px; height: 200px">
+      <nz-splitter id="api" [nzOrientation]="orientation()" [nzDraggerIcon]="draggerIcon()" [nzCollapsible]="config()">
+        <nz-splitter-panel [nzCollapsible]="panel()">a</nz-splitter-panel>
+        <nz-splitter-panel [nzCollapsible]="panel()">b</nz-splitter-panel>
+      </nz-splitter>
+    </div>
+  `
+})
+class SplitterApiHost {
+  readonly orientation = signal<NzSplitterOrientation>('horizontal');
+  readonly draggerIcon = signal<string | undefined>(undefined);
+  readonly config = signal<NzSplitterCollapsibleConfig | undefined>(undefined);
+  readonly panel = signal<NzSplitterCollapsible>(true);
+}
+
+describe('splitter (v6 styles): antd v6 inputs', () => {
+  let fixture: ComponentFixture<SplitterApiHost>;
+  const api = (selector: string): HTMLElement => document.querySelector(`#api ${selector}`) as HTMLElement;
+  const set = (fn: (host: SplitterApiHost) => void): void => {
+    fn(fixture.componentInstance);
+    fixture.detectChanges();
+  };
+
+  beforeEach(() => {
+    installV6Css();
+    TestBed.configureTestingModule({ providers: [provideNzIconsTesting()], animationsEnabled: true });
+    fixture = TestBed.createComponent(SplitterApiHost);
+    fixture.detectChanges();
+  });
+
+  afterEach(() => {
+    style.remove();
+    TestBed.inject(OverlayContainer).ngOnDestroy();
+  });
+
+  it('showCollapsibleIcon: true shows the buttons at rest, false removes them', () => {
+    set(h => h.panel.set({ start: true, end: true, showCollapsibleIcon: true }));
+    expect(getComputedStyle(api('.ant-splitter-bar-collapse-bar-start')).opacity).toBe('1');
+    set(h => h.panel.set({ start: true, end: true, showCollapsibleIcon: false }));
+    expect(getComputedStyle(api('.ant-splitter-bar-collapse-bar-start')).display).toBe('none');
+  });
+
+  it('nzDraggerIcon is centred in colorFill and hides the default handle; a custom collapse icon drops the button fill', () => {
+    set(h => {
+      h.draggerIcon.set('holder');
+      h.config.set({ icon: { start: 'caret-left' } });
+    });
+    const icon = getComputedStyle(api('.ant-splitter-bar-dragger-icon'));
+    expect([icon.position, icon.display, icon.color]).toEqual(['absolute', 'flex', 'rgba(0, 0, 0, 0.15)']);
+    expect(getComputedStyle(api('.ant-splitter-bar-dragger'), '::after').display).toBe('none');
+    expect(getComputedStyle(api('.ant-splitter-bar-collapse-bar-start')).backgroundColor).toBe('rgba(0, 0, 0, 0)');
+    // controlItemBgHover on the uncustomised end button
+    expect(getComputedStyle(api('.ant-splitter-bar-collapse-bar-end')).backgroundColor).toBe('rgba(0, 0, 0, 0.04)');
+  });
+
+  it('motion animates flex-basis over motionDurationSlow when a panel collapses', async () => {
+    set(h => h.config.set({ motion: true }));
+    const panel = api('.ant-splitter-panel');
+    expect(getComputedStyle(panel).transitionProperty).toBe('flex-basis');
+    expect(getComputedStyle(panel).transitionDuration).toBe('0.3s');
+    api('.ant-splitter-bar-collapse-bar-start').click();
+    fixture.detectChanges();
+    // `transition: flex-basis 0.3s`: read once mid-way, once after it has ended.
+    await new Promise(r => setTimeout(r, 100));
+    const mid = panel.getBoundingClientRect().width;
+    expect(mid).toBeGreaterThan(0);
+    expect(mid).toBeLessThan(300);
+    await new Promise(r => setTimeout(r, 350));
+    expect(panel.getBoundingClientRect().width).toBe(0);
+  });
+
+  it('nzOrientation vertical: the dragger spans the bar with a row-resize cursor', () => {
+    set(h => h.orientation.set('vertical'));
+    const cs = getComputedStyle(api('.ant-splitter-bar-dragger'));
+    expect([cs.height, cs.cursor]).toEqual(['6px', 'row-resize']);
   });
 });

@@ -4,7 +4,7 @@
  */
 
 import { Directionality } from '@angular/cdk/bidi';
-import { Component, DebugElement, DOCUMENT, NgZone, signal } from '@angular/core';
+import { Component, DebugElement, DOCUMENT, NgZone, signal, TemplateRef, ViewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 
@@ -16,9 +16,17 @@ import {
   MockNgZone,
   provideMockDirectionality
 } from 'ng-zorro-antd/core/testing';
+import { NzIconDirective } from 'ng-zorro-antd/icon';
+import { provideNzIconsTesting } from 'ng-zorro-antd/icon/testing';
 
 import { NzSplitterModule } from './splitter.module';
-import { NzSplitterCollapsible } from './typings';
+import {
+  NzSplitterCollapseEvent,
+  NzSplitterCollapsible,
+  NzSplitterCollapsibleConfig,
+  NzSplitterLayout,
+  NzSplitterOrientation
+} from './typings';
 
 interface PanelProps {
   defaultSize?: number | string;
@@ -641,5 +649,143 @@ describe('nz-splitter', () => {
       const preview = container.query(By.css('.ant-splitter-bar-preview'))!.nativeElement as HTMLElement;
       expect(preview.style.transform).toBe('translateX(-30px)');
     });
+  });
+});
+
+@Component({
+  imports: [NzSplitterModule],
+  template: `
+    <ng-template #startIcon><span class="custom-start">S</span></ng-template>
+    <nz-splitter
+      [nzOrientation]="orientation()"
+      [nzLayout]="layout()"
+      [nzDraggerIcon]="draggerIcon()"
+      [nzCollapsible]="config()"
+      (nzDraggerDoubleClick)="onDoubleClick($event)"
+      (nzCollapse)="onCollapse($event)"
+    >
+      <nz-splitter-panel [nzCollapsible]="first()">0</nz-splitter-panel>
+      <nz-splitter-panel [nzCollapsible]="second()">1</nz-splitter-panel>
+    </nz-splitter>
+  `,
+  styles: `
+    @import './style/testing.less';
+    :host nz-splitter {
+      height: 100px;
+      width: 100px;
+    }
+  `
+})
+class NzSplitterV6ApiTestComponent {
+  @ViewChild('startIcon', { static: true }) startIcon!: TemplateRef<void>;
+  readonly orientation = signal<NzSplitterOrientation | undefined>(undefined);
+  readonly layout = signal<NzSplitterLayout | undefined>(undefined);
+  readonly draggerIcon = signal<string | TemplateRef<void> | undefined>(undefined);
+  readonly config = signal<NzSplitterCollapsibleConfig | undefined>(undefined);
+  readonly first = signal<NzSplitterCollapsible>(true);
+  readonly second = signal<NzSplitterCollapsible>(true);
+  readonly onDoubleClick = (_index: number): void => void 0;
+  readonly onCollapse = (_event: NzSplitterCollapseEvent): void => void 0;
+}
+
+describe('nz-splitter antd v6 inputs', () => {
+  let fixture: ComponentFixture<NzSplitterV6ApiTestComponent>;
+  let component: NzSplitterV6ApiTestComponent;
+  const root = (): HTMLElement => fixture.nativeElement.querySelector('nz-splitter');
+  const all = (selector: string): HTMLElement[] => Array.from(root().querySelectorAll(selector));
+  const one = (selector: string): HTMLElement => root().querySelector(selector) as HTMLElement;
+  const iconType = (selector: string): string =>
+    fixture.debugElement.query(By.css(selector)).injector.get(NzIconDirective).nzType()!;
+
+  beforeEach(async () => {
+    TestBed.configureTestingModule({ providers: [provideNzIconsTesting()] });
+    fixture = TestBed.createComponent(NzSplitterV6ApiTestComponent);
+    component = fixture.componentInstance;
+    await fixture.whenStable();
+  });
+
+  it('nzOrientation sets the layout classes; nzLayout is an alias the new input overrides', async () => {
+    expect(root().classList).toContain('ant-splitter-horizontal');
+    component.layout.set('vertical');
+    await fixture.whenStable();
+    expect(root().classList).toContain('ant-splitter-vertical');
+    component.orientation.set('horizontal');
+    await fixture.whenStable();
+    expect(root().classList).toContain('ant-splitter-horizontal');
+    expect(root().classList).not.toContain('ant-splitter-vertical');
+  });
+
+  // the `nzLayout` deprecation warning itself is covered in splitter-deprecation.spec.ts: the global
+  // once-per-message dedup in ng-zorro-antd/core/logger means this file's other tests (and the pre-existing
+  // `describe('nz-splitter', ...)` suite above, which always binds `nzLayout`) would otherwise consume it first.
+
+  it('showCollapsibleIcon picks the visibility class; a bar merges both panels as antd does', async () => {
+    expect(all('.ant-splitter-bar-collapse-bar-hover-only')).toHaveLength(2);
+    component.first.set({ end: true, showCollapsibleIcon: false });
+    component.second.set({ start: true, showCollapsibleIcon: true });
+    await fixture.whenStable();
+    expect(one('.ant-splitter-bar-collapse-bar-start').classList).toContain(
+      'ant-splitter-bar-collapse-bar-always-hidden'
+    );
+    expect(one('.ant-splitter-bar-collapse-bar-end').classList).toContain(
+      'ant-splitter-bar-collapse-bar-always-visible'
+    );
+    expect(all('.ant-splitter-bar-collapse-bar-hover-only')).toHaveLength(0);
+  });
+
+  it('nzCollapsible.icon and nzDraggerIcon render custom icons with the -customize classes', async () => {
+    expect(one('.ant-splitter-bar-dragger').classList).not.toContain('ant-splitter-bar-dragger-customize');
+    expect(one('.ant-splitter-bar-dragger-icon')).toBeNull();
+    component.config.set({ icon: { start: component.startIcon, end: 'caret-right' } });
+    component.draggerIcon.set('holder');
+    await fixture.whenStable();
+    expect(one('.ant-splitter-bar-collapse-bar-start').classList).toContain('ant-splitter-bar-collapse-bar-customize');
+    expect(one('span.ant-splitter-bar-collapse-icon.ant-splitter-bar-collapse-start .custom-start')).toBeTruthy();
+    expect(one('.ant-splitter-bar-collapse-bar-end').classList).toContain('ant-splitter-bar-collapse-bar-customize');
+    expect(iconType('.ant-splitter-bar-collapse-end')).toBe('caret-right');
+    expect(one('.ant-splitter-bar-dragger').classList).toContain('ant-splitter-bar-dragger-customize');
+    expect(iconType('.ant-splitter-bar-dragger-icon nz-icon')).toBe('holder');
+    component.draggerIcon.set(component.startIcon);
+    await fixture.whenStable();
+    expect(one('.ant-splitter-bar-dragger-icon .custom-start')).toBeTruthy();
+  });
+
+  it('emits nzDraggerDoubleClick with the bar index and nzCollapse with flags and sizes', async () => {
+    const dbl = vi.spyOn(component, 'onDoubleClick');
+    const collapse = vi.spyOn(component, 'onCollapse');
+    one('.ant-splitter-bar-dragger').dispatchEvent(new MouseEvent('dblclick', { bubbles: true }));
+    expect(dbl).toHaveBeenCalledWith(0);
+    one('.ant-splitter-bar-collapse-bar-start').click();
+    await fixture.whenStable();
+    expect(collapse).toHaveBeenCalledWith({ collapsed: [true, false], sizes: [0, 100] });
+    one('.ant-splitter-bar-collapse-bar-end').click(); // expands panel 0 from cacheCollapsedSize
+    await fixture.whenStable();
+    expect(collapse).toHaveBeenLastCalledWith({ collapsed: [false, false], sizes: [50, 50] });
+  });
+
+  it('motion puts -panel-transition on every panel except while dragging', async () => {
+    expect(all('.ant-splitter-panel-transition')).toHaveLength(0);
+    component.config.set({ motion: true });
+    await fixture.whenStable();
+    expect(all('.ant-splitter-panel-transition')).toHaveLength(2);
+    const dragger = one('.ant-splitter-bar-dragger');
+    const { left, top } = dragger.getBoundingClientRect();
+    dispatchMouseEvent(dragger, 'mousedown', left, top);
+    await fixture.whenStable();
+    expect(all('.ant-splitter-panel-transition')).toHaveLength(0);
+    dispatchMouseEvent(document, 'mouseup', left, top);
+    await fixture.whenStable();
+    expect(all('.ant-splitter-panel-transition')).toHaveLength(2);
+  });
+
+  it('v4 stylesheet: every v6 option renders without error and keeps the v4 classes and geometry', async () => {
+    const draggerWidth = one('.ant-splitter-bar-dragger').getBoundingClientRect().width;
+    component.draggerIcon.set('holder');
+    component.config.set({ motion: true, icon: { start: 'caret-left' } });
+    component.first.set({ start: true, end: true, showCollapsibleIcon: true });
+    await fixture.whenStable();
+    expect(one('.ant-splitter-bar-dragger').getBoundingClientRect().width).toBe(draggerWidth);
+    expect(all('.ant-splitter-bar-collapse-bar.ant-splitter-bar-collapse-bar-start')).toHaveLength(1);
+    expect(all('.ant-splitter-bar-collapse-icon')).toHaveLength(2);
   });
 });
