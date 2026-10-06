@@ -34,9 +34,11 @@ import { NzDividerModule } from 'ng-zorro-antd/divider';
       border-color: #7cb305 !important;
     }
 
-    /* Under v6, the title rails are a sibling \`.ant-divider-rail\` pair (antd's \`::before\`/\`::after\`
-       are only drawn without a title); colour them too so the demo matches under both themes. */
-    nz-divider .ant-divider-rail {
+    /* Under v6, the title rails are a sibling \`.ant-divider-rail\` pair rendered inside nz-divider's
+       own template (antd's \`::before\`/\`::after\` are only drawn without a title); emulated
+       encapsulation scopes a plain descendant selector to this component's own content attribute,
+       which the rail divs do not carry, so \`::ng-deep\` is needed to reach into the child component. */
+    nz-divider ::ng-deep .ant-divider-rail {
       border-color: #7cb305 !important;
     }
   `
