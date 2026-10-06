@@ -332,7 +332,7 @@
   "descriptions": [
     "ant-descriptions-middle"
   ],
-  "_divider_comment": "v4-compat: ant-divider-with-text-left, ant-divider-with-text-right (compiled v4 CSS sizes its ::before/::after lines with them; replacement: ant-divider-with-text-start / ant-divider-with-text-end on the same host, resolved from nzOrientation and the direction as divider/index.js's mergedTitlePlacement does). antd-emits: ant-divider-with-text-center (divider/index.js emits `${prefixCls}-with-text-${mergedTitlePlacement}` for 'center' too; neither the v4 nor the v6 sheet has a rule for it, the 50% rails are the default).",
+  "_divider_comment": "v4-compat: ant-divider-with-text-left, ant-divider-with-text-right (compiled v4 CSS sizes its ::before/::after lines with them; replacement: ant-divider-with-text-start / ant-divider-with-text-end on the same host, resolved from nzTitlePlacement (or the deprecated left/right nzOrientation values) and the direction as divider/index.js's mergedTitlePlacement does). antd-emits: ant-divider-with-text-center (divider/index.js emits `${prefixCls}-with-text-${mergedTitlePlacement}` for 'center' too; neither the v4 nor the v6 sheet has a rule for it, the 50% rails are the default).",
   "divider": [
     "ant-divider-with-text-center",
     "ant-divider-with-text-left",

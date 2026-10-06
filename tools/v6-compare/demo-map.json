@@ -283,7 +283,8 @@
   },
   "divider": {
     "_antdDir": "divider",
-    "orientation": "with-text"
+    "orientation": "with-text",
+    "title-margin": null
   },
   "splitter": {
     "_antdDir": "splitter",

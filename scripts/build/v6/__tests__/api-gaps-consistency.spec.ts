@@ -18,7 +18,7 @@ const DELIVERED: Record<string, string[]> = {
   Menu: [],
   Splitter: [],
   Flex: ['orientation', 'gap', 'align', 'wrap'],
-  Divider: []
+  Divider: ['titlePlacement', 'orientationMargin', 'orientation']
 };
 
 function gapRows(md: string): Array<{ components: string[]; names: string[]; line: string }> {

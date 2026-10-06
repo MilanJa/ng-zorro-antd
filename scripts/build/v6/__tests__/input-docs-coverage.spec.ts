@@ -38,7 +38,7 @@ const V6_ONLY: Record<Dir, readonly string[]> = {
   timeline: [],
   splitter: [],
   flex: [],
-  divider: []
+  divider: ['nzTitleMargin']
 };
 const V6_PHRASE: Record<Lang, string> = { 'en-US': 'Requires the v6 stylesheet.', 'zh-CN': '需要 v6 样式表。' };
 const DEPRECATED_PREFIX: Record<Lang, string> = { 'en-US': 'Deprecated, use ', 'zh-CN': '已废弃，请使用 ' };

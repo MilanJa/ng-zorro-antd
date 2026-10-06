@@ -12,6 +12,7 @@ import { NzThemeDirective } from 'ng-zorro-antd/core/theme';
 import { V6_PATCH_CSS, V6_TEMPLATE_CSS, V6_TOKENS_DEFAULT_CSS } from 'ng-zorro-antd/core/theme/generated/test-css';
 import { provideNzIconsTesting } from 'ng-zorro-antd/icon/testing';
 
+import { NzDividerTitlePlacement } from './divider.component';
 import { NzDividerModule } from './divider.module';
 
 let style: HTMLStyleElement;
@@ -65,6 +66,35 @@ class DividerRtlHost {}
   `
 })
 class DividerScopedHost {}
+
+@Component({
+  imports: [NzDividerModule],
+  template: `
+    <div style="width: 400px">
+      <nz-divider id="p" nzText="Title" [nzTitlePlacement]="p()" [nzTitleMargin]="m()" />
+    </div>
+  `
+})
+class DividerPlacementHost {
+  readonly p = signal<NzDividerTitlePlacement>('start');
+  readonly m = signal<number | string | undefined>(undefined);
+}
+
+@Component({
+  imports: [NzDividerModule],
+  template: `<nz-divider id="ov" nzOrientation="vertical" />`
+})
+class DividerOrientationHost {}
+
+@Component({
+  imports: [NzDividerModule, BidiModule],
+  template: `
+    <div dir="rtl" style="width: 400px">
+      <nz-divider id="rs" nzText="T" nzTitlePlacement="start" />
+    </div>
+  `
+})
+class DividerRtlStartHost {}
 
 function el(id: string): HTMLElement {
   return document.getElementById(id) as HTMLElement;
@@ -178,5 +208,65 @@ describe('divider (v6 styles)', () => {
     expect(s.closest('[class*="nz-theme-"]')).not.toBeNull();
     expect(getComputedStyle(s).getPropertyValue('--ant-color-split').trim()).toBe('#00b96b');
     expect(getComputedStyle(rails(s).start).borderTopColor).toBe('rgb(0, 185, 107)');
+  });
+
+  it('places the title with nzTitlePlacement exactly as the legacy left/right values do', () => {
+    const fixture: ComponentFixture<DividerPlacementHost> = TestBed.createComponent(DividerPlacementHost);
+    fixture.detectChanges();
+    const p = el('p');
+    expect(Math.abs(startRatio(p) - 0.05)).toBeLessThan(0.01);
+    fixture.componentInstance.p.set('end');
+    fixture.detectChanges();
+    expect(Math.abs(startRatio(p) - 0.95)).toBeLessThan(0.01);
+    fixture.componentInstance.p.set('center');
+    fixture.detectChanges();
+    expect(Math.abs(startRatio(p) - 0.5)).toBeLessThan(0.01);
+  });
+
+  it('replaces the 5% offset with nzTitleMargin on the placement side', () => {
+    const fixture: ComponentFixture<DividerPlacementHost> = TestBed.createComponent(DividerPlacementHost);
+    const host = fixture.componentInstance;
+    host.m.set(20);
+    fixture.detectChanges();
+    const p = el('p');
+    const text = (): HTMLElement => p.querySelector('.ant-divider-inner-text') as HTMLElement;
+    expect(rails(p).start.getBoundingClientRect().width).toBe(0);
+    expect(getComputedStyle(text()).paddingLeft).toBe('0px');
+    expect(text().getBoundingClientRect().left - p.getBoundingClientRect().left).toBeCloseTo(20, 0);
+
+    host.m.set('2em');
+    fixture.detectChanges();
+    expect(getComputedStyle(text()).marginLeft).toBe('32px');
+
+    host.m.set('24');
+    fixture.detectChanges();
+    expect(getComputedStyle(text()).marginLeft).toBe('24px');
+
+    host.p.set('end');
+    host.m.set(50);
+    fixture.detectChanges();
+    expect(rails(p).end.getBoundingClientRect().width).toBe(0);
+    expect(getComputedStyle(text()).paddingRight).toBe('0px');
+    expect(p.getBoundingClientRect().right - text().getBoundingClientRect().right).toBeCloseTo(50, 0);
+
+    host.p.set('center');
+    fixture.detectChanges();
+    expect(p.classList).not.toContain('ant-divider-no-default-orientation-margin-end');
+    expect(Math.abs(startRatio(p) - 0.5)).toBeLessThan(0.01);
+  });
+
+  it('draws nzOrientation="vertical" like the deprecated nzType="vertical"', () => {
+    TestBed.createComponent(DividerOrientationHost).detectChanges();
+    const cs = getComputedStyle(el('ov'));
+    expect(cs.marginLeft).toBe('8px');
+    expect(cs.borderLeftWidth).toBe('1px');
+    expect(cs.borderTopWidth).toBe('0px');
+  });
+
+  it('rtl: nzTitlePlacement="start" sits near the physical right', () => {
+    TestBed.createComponent(DividerRtlStartHost).detectChanges();
+    const rs = el('rs');
+    const text = rs.querySelector('.ant-divider-inner-text') as HTMLElement;
+    expect(rs.getBoundingClientRect().right - text.getBoundingClientRect().right).toBeLessThan(0.1 * 400);
   });
 });
