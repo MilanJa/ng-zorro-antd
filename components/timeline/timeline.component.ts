@@ -145,6 +145,7 @@ export class NzTimelineComponent implements AfterContentInit, OnChanges, OnInit 
 
   @ContentChildren(NzTimelineItemComponent) listOfItems!: QueryList<NzTimelineItemComponent>;
 
+  // Same-name marker: the input stays, only its left/right values are deprecated (see docs/v6-migration-notes.md).
   // v6-alias: nzMode -> nzMode
   @Input() set nzMode(value: NzTimelineMode) {
     this.modeInput = value;

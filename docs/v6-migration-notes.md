@@ -3,6 +3,9 @@
 Inputs renamed to follow Ant Design v6. The old input still works: it forwards to the new one, prints a one-time
 deprecation warning in dev mode, and loses to the new input when both are bound. Each alias is marked in code with
 `// v6-alias: <old> -> <new>` and will be removed in the listed version; a future `ng update` schematic reads this table.
+A row whose Old input and New input name the same input (an `X -> X` marker) records deprecated VALUES of a kept
+input rather than a renamed input; the deprecated values are listed in the Old input cell (e.g. `nzMode
+(left/right)`).
 
 | Component        | Old input                         | New input        | Value mapping                                                                                                                            | Removal |
 | ---------------- | --------------------------------- | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ------- |

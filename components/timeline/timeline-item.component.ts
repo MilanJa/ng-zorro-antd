@@ -157,6 +157,7 @@ export class NzTimelineItemComponent implements OnChanges {
     return this.icon;
   }
 
+  // Same-name marker: the input stays, only its left/right values are deprecated (see docs/v6-migration-notes.md).
   // v6-alias: nzPlacement -> nzPlacement
   @Input() set nzPlacement(value: NzTimelinePlacement | NzTimelinePosition | undefined) {
     this.placementExplicit = true;

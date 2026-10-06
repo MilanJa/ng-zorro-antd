@@ -13,6 +13,7 @@ import { environment } from 'ng-zorro-antd/core/environments';
 import { testDirectionality } from 'ng-zorro-antd/core/testing';
 
 import { NzDemoTimelineLabelComponent } from './demo/label';
+import { NzTimelineItemComponent } from './timeline-item.component';
 import { NzTimelineComponent } from './timeline.component';
 import { NzTimelineModule } from './timeline.module';
 import { NzTimelineMode, NzTimelineOrientation, NzTimelinePlacement, NzTimelineVariant } from './typings';
@@ -343,6 +344,20 @@ describe('nz-timeline antd v6 inputs', () => {
     expect(first.classList).toContain('ant-timeline-item-placement-end');
   });
 
+  it('nzPending and an item nzLoading are independent, not a single-winner precedence', () => {
+    // nzPending renders a separate ghost node appended after the real items; nzLoading marks a real
+    // item as the processing one. Neither suppresses the other, so this documents that both render
+    // side by side rather than asserting a single-winner precedence between them.
+    update(() => {
+      host.pending.set('Recording...');
+      host.loading.set(true);
+    });
+    const list = items();
+    expect(list).toHaveLength(4);
+    expect(list[2].classList).toContain('ant-timeline-item-process'); // the loading real item (c)
+    expect(list[3].classList).toContain('ant-timeline-item-pending'); // the separate pending ghost node
+  });
+
   it('nzPlacement accepts left/right with a one-time warning', async () => {
     await expectWarnOnce(
       '`nzPlacement="left|right"` on `nz-timeline-item` is deprecated, use `nzPlacement="start|end"` instead.',
@@ -388,6 +403,78 @@ describe('nz-timeline antd v6 inputs', () => {
     expect(list[2].classList).toContain('ant-timeline-item-last');
     expect(list[2].querySelector('.ant-timeline-item-head-custom')).toBeTruthy();
   });
+});
+
+@Component({
+  imports: [NzTimelineModule],
+  template: `
+    <nz-timeline>
+      <nz-timeline-item
+        nzTitle="new title"
+        nzLabel="old label"
+        nzIcon="n"
+        nzDot="o"
+        nzPlacement="end"
+        nzPosition="left"
+      >
+        content
+      </nz-timeline-item>
+    </nz-timeline>
+  `
+})
+class NzTestTimelineNewFirstComponent {
+  @ViewChild(NzTimelineItemComponent) item!: NzTimelineItemComponent;
+}
+
+@Component({
+  imports: [NzTimelineModule],
+  template: `
+    <nz-timeline>
+      <nz-timeline-item
+        nzLabel="old label"
+        nzTitle="new title"
+        nzDot="o"
+        nzIcon="n"
+        nzPosition="left"
+        nzPlacement="end"
+      >
+        content
+      </nz-timeline-item>
+    </nz-timeline>
+  `
+})
+class NzTestTimelineOldFirstComponent {
+  @ViewChild(NzTimelineItemComponent) item!: NzTimelineItemComponent;
+}
+
+describe('nz-timeline-item: new input wins over its deprecated alias regardless of attribute order', () => {
+  for (const [name, TestComponent] of [
+    ['new input bound first', NzTestTimelineNewFirstComponent],
+    ['old input bound first', NzTestTimelineOldFirstComponent]
+  ] as const) {
+    it(`${name}: nzTitle/nzIcon/nzPlacement win over nzLabel/nzDot/nzPosition`, () => {
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+      const el = (fixture.nativeElement as HTMLElement).querySelector('.ant-timeline-item')!;
+
+      // Rendered DOM reflects the new input's value, not the old alias's.
+      expect(el.querySelector('.ant-timeline-item-title')!.textContent).toContain('new title');
+      expect(el.querySelector('.ant-timeline-item-title')!.textContent).not.toContain('old label');
+      expect(el.querySelector('.ant-timeline-item-head-custom')!.textContent).toContain('n');
+      expect(el.querySelector('.ant-timeline-item-head-custom')!.textContent).not.toContain('o');
+      expect(el.classList).toContain('ant-timeline-item-placement-end');
+      expect(el.classList).not.toContain('ant-timeline-item-placement-start');
+
+      // The old input's getter reflects the current (new-input-won) value too.
+      const item = fixture.componentInstance.item;
+      expect(item.nzTitle).toBe('new title');
+      expect(item.nzLabel).toBe('new title');
+      expect(item.nzIcon).toBe('n');
+      expect(item.nzDot).toBe('n');
+      expect(item.nzPlacement).toBe('end');
+      expect(item.nzPosition).toBe('end');
+    });
+  }
 });
 
 @Component({
