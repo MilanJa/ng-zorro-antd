@@ -6,9 +6,9 @@
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { BehaviorSubject } from 'rxjs';
 
-import { page } from 'vitest/browser';
-
+import { NzBreakpointEnum, NzBreakpointService } from 'ng-zorro-antd/core/services';
 import { V6_PATCH_CSS, V6_TEMPLATE_CSS, V6_TOKENS_DEFAULT_CSS } from 'ng-zorro-antd/core/theme/generated/test-css';
 import { NzSizeDSType } from 'ng-zorro-antd/core/types';
 import { provideNzIconsTesting } from 'ng-zorro-antd/icon/testing';
@@ -315,7 +315,7 @@ describe('steps v6 inputs under antd v6 css', () => {
 @Component({
   imports: [NzStepsModule],
   template: `
-    <div style="width: 900px">
+    <div [style.width.px]="width()">
       <nz-steps
         id="b"
         [nzCurrent]="current()"
@@ -337,6 +337,7 @@ class TestStepsLayoutV6Component {
   readonly max = signal<number | undefined>(undefined);
   readonly ellipsis = signal(false);
   readonly responsive = signal(true);
+  readonly width = signal(900);
   readonly titles = signal(['Step 1', 'Step 2', 'Step 3']);
 }
 
@@ -407,9 +408,14 @@ describe('steps v6 layouts under antd v6 css', () => {
     await render();
     expect(cs(1, '.ant-steps-item-title').color).toBe('rgba(0, 0, 0, 0.45)'); // colorTextDescription
     fixture.componentInstance.max.set(undefined);
+    // Narrow the row so the flex item (antd's `flex: 1 1 auto`) is actually squeezed below the title's
+    // max-content width: at 900px three short-ish items never need to shrink, so the title would never wrap
+    // and there would be nothing for nzEllipsis to visibly truncate.
+    fixture.componentInstance.width.set(320);
     fixture.componentInstance.titles.set(['A very long step title that would wrap onto a second line', 'B', 'C']);
     await render();
     const wrapped = items()[0].querySelector('.ant-steps-item-title')!.getBoundingClientRect().height;
+    expect(wrapped).toBeGreaterThan(32); // sanity: the title genuinely wraps onto more than one line here
     fixture.componentInstance.ellipsis.set(true);
     await render();
     expect([cs(0, '.ant-steps-item-title').whiteSpace, cs(0, '.ant-steps-item-title').textOverflow]).toEqual([
@@ -418,26 +424,56 @@ describe('steps v6 layouts under antd v6 css', () => {
     ]);
     expect(items()[0].querySelector('.ant-steps-item-title')!.getBoundingClientRect().height).toBeLessThan(wrapped);
   });
+});
+
+// `page.viewport()` resizes the real browser window but does not drive `window.matchMedia` in this runner
+// (confirmed: CSS `@media` layout updates, but `matchMedia(...).matches` called directly does not), so the
+// breakpoint is driven through a mocked `NzBreakpointService`, exactly as `components/avatar/avatar.spec.ts`
+// does for the same service.
+describe('steps v6 responsive layout', () => {
+  let fixture: ComponentFixture<TestStepsLayoutV6Component>;
+  let breakpoint$: BehaviorSubject<NzBreakpointEnum>;
+
+  beforeEach(() => {
+    installV6Css();
+    breakpoint$ = new BehaviorSubject<NzBreakpointEnum>(NzBreakpointEnum.md);
+    TestBed.configureTestingModule({
+      providers: [
+        provideNzIconsTesting(),
+        { provide: NzBreakpointService, useValue: { subscribe: () => breakpoint$.asObservable() } }
+      ],
+      animationsEnabled: true
+    });
+    fixture = TestBed.createComponent(TestStepsLayoutV6Component);
+  });
+
+  afterEach(() => {
+    style.remove();
+    TestBed.inject(OverlayContainer).ngOnDestroy();
+  });
+
+  async function render(): Promise<void> {
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    await new Promise(r => setTimeout(r, 350));
+  }
+
+  const root = (): HTMLElement => fixture.nativeElement.querySelector('#b');
 
   it('turns vertical below the xs breakpoint unless nzResponsive is off', async () => {
     await render();
-    const resize = async (w: number): Promise<void> => {
-      await page.viewport(w, 800);
-      await new Promise(r => setTimeout(r, 50)); // NzResizeService auditTime(16)
-      await render();
-    };
-    try {
-      await resize(375);
-      expect(root().classList).toContain('ant-steps-vertical');
-      expect(getComputedStyle(root()).flexDirection).toBe('column');
-      fixture.componentInstance.responsive.set(false);
-      await render();
-      expect(root().classList).toContain('ant-steps-horizontal');
-      fixture.componentInstance.responsive.set(true);
-      await resize(1280);
-      expect(root().classList).toContain('ant-steps-horizontal');
-    } finally {
-      await page.viewport(1000, 1000); // the runner's `browserViewport` (components/project.json)
-    }
+    expect(root().classList).toContain('ant-steps-horizontal');
+    breakpoint$.next(NzBreakpointEnum.xs);
+    await render();
+    expect(root().classList).toContain('ant-steps-vertical');
+    expect(getComputedStyle(root()).flexDirection).toBe('column');
+    fixture.componentInstance.responsive.set(false);
+    await render();
+    expect(root().classList).toContain('ant-steps-horizontal');
+    fixture.componentInstance.responsive.set(true);
+    breakpoint$.next(NzBreakpointEnum.md);
+    await render();
+    expect(root().classList).toContain('ant-steps-horizontal');
   });
 });
