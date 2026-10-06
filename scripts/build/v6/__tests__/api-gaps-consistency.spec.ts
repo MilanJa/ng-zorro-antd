@@ -12,7 +12,14 @@ import path from 'node:path';
  * antd prop (or token / dotted option) names delivered by sub-project 3, keyed by the gap file's Component
  * column. A task appends what it delivers and deletes or rewrites every row that still backticks it.
  */
-const DELIVERED: Record<string, string[]> = { Steps: [], Timeline: [], Menu: [], Splitter: [], Flex: [], Divider: [] };
+const DELIVERED: Record<string, string[]> = {
+  Steps: ['descriptionMaxWidth'],
+  Timeline: [],
+  Menu: [],
+  Splitter: [],
+  Flex: [],
+  Divider: []
+};
 
 function gapRows(md: string): Array<{ components: string[]; names: string[]; line: string }> {
   return md

@@ -11,7 +11,7 @@ import path from 'node:path';
 
 import { bundleEngine } from '../bundle-engine';
 import { allAntdComponentNames, antdRegistryName, v6ComponentDirs, v6Components } from '../components';
-import { generateTypes, renderComponentRoots } from '../generate-types';
+import { componentTokenEntries, generateTypes, renderComponentRoots } from '../generate-types';
 
 describe('generateTypes', () => {
   const dir = mkdtempSync(path.join(os.tmpdir(), 'nz-v6-types-'));
@@ -55,6 +55,21 @@ describe('generateTypes', () => {
     const aliasDeclared = aliasSection.match(propertyLine) ?? [];
     expect(aliasDeclared.length).toBe(scalarKeys.length);
     expect(declared.length).toBeGreaterThan(aliasDeclared.length);
+  });
+
+  it('declares undefined-default component tokens as optional', () => {
+    const steps = dts.slice(dts.indexOf('export interface NzStepsToken {'));
+    expect(steps.slice(0, steps.indexOf('}'))).toMatch(/^\s+descriptionMaxWidth\?: number \| string;$/m);
+  });
+});
+
+describe('componentTokenEntries', () => {
+  it('keeps scalar defaults, adds undefined defaults as optional and drops other values', () => {
+    expect(componentTokenEntries({ b: 1, a: undefined, c: 'x', d: { nested: 1 }, e: null })).toEqual([
+      { key: 'a', type: 'number | string', optional: true },
+      { key: 'b', type: 'number', optional: false },
+      { key: 'c', type: 'string', optional: false }
+    ]);
   });
 });
 

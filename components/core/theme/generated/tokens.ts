@@ -1092,6 +1092,10 @@ export interface NzModalToken {
 }
 
 export interface NzNotificationToken {
+  colorErrorBg?: number | string;
+  colorInfoBg?: number | string;
+  colorSuccessBg?: number | string;
+  colorWarningBg?: number | string;
   progressBg: string;
   width: number;
   zIndexPopup: number;
@@ -1297,6 +1301,7 @@ export interface NzStepsToken {
   customIconFontSize: number;
   customIconSize: number;
   customIconTop: number;
+  descriptionMaxWidth?: number | string;
   dotCurrentSize: number;
   dotSize: number;
   finishIconBgColor: string;
@@ -1405,7 +1410,9 @@ export interface NzTagToken {
 }
 
 export interface NzTimelineToken {
+  dotBg?: number | string;
   dotBorderWidth: number;
+  dotSize?: number | string;
   itemPaddingBottom: number;
   tailColor: string;
   tailWidth: number;

@@ -92,4 +92,10 @@ describe('renderThemeCss edge cases', () => {
       '.nz-theme-7 :is([class^="ant-btn"],[class*=" ant-btn"]), .nz-theme-7:is([class^="ant-btn"],[class*=" ant-btn"])'
     );
   });
+
+  it('emits the Steps descriptionMaxWidth token, which antd declares with an undefined default', async () => {
+    const css = await r.renderThemeCss({ components: { Steps: { descriptionMaxWidth: 140 } } });
+    expect(css).toContain('--ant-steps-description-max-width:140px');
+    expect(await r.renderThemeCss({})).not.toContain('--ant-steps-description-max-width:');
+  });
 });

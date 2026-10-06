@@ -25,11 +25,32 @@ function ordinal(a: string, b: string): number {
   return a < b ? -1 : a > b ? 1 : 0;
 }
 
-function scalarEntries(obj: Record<string, unknown>): Array<[string, Scalar]> {
+interface TokenEntry {
+  key: string;
+  type: string;
+  optional: boolean;
+}
+
+/**
+ * antd declares a few component tokens with an `undefined` default so that the CSS variable exists but stays
+ * unset (Steps `descriptionMaxWidth`, Timeline `dotBg`/`dotSize`, Notification `color*Bg`). They are typed as
+ * optional and accept any value a CSS variable can hold.
+ */
+const UNSET_TOKEN_TYPE = 'number | string';
+
+function scalarEntries(obj: Record<string, unknown>): TokenEntry[] {
   return Object.entries(obj)
     .filter(([, v]) => ['string', 'number', 'boolean'].includes(typeof v))
-    .map(([k, v]): [string, Scalar] => [k, typeof v as Scalar])
-    .sort(([a], [b]) => ordinal(a, b));
+    .map(([key, v]) => ({ key, type: typeof v as Scalar, optional: false }))
+    .sort((a, b) => ordinal(a.key, b.key));
+}
+
+/** A component's own tokens: scalar defaults plus the undefined-default tokens, sorted by key. */
+export function componentTokenEntries(defaults: Record<string, unknown>): TokenEntry[] {
+  const unset = Object.keys(defaults)
+    .filter(key => defaults[key] === undefined)
+    .map(key => ({ key, type: UNSET_TOKEN_TYPE, optional: true }));
+  return [...scalarEntries(defaults), ...unset].sort((a, b) => ordinal(a.key, b.key));
 }
 
 // antd's own token keys include names such as `blue-1` (see `LegacyColorPalettes`) that are not valid
@@ -39,9 +60,9 @@ function propertyName(key: string): string {
   return VALID_IDENTIFIER.test(key) ? key : JSON.stringify(key);
 }
 
-function renderInterface(name: string, entries: Array<[string, Scalar]>, extendsName?: string): string {
+function renderInterface(name: string, entries: TokenEntry[], extendsName?: string): string {
   const head = extendsName ? `export interface ${name} extends ${extendsName} {` : `export interface ${name} {`;
-  return [head, ...entries.map(([k, t]) => `  ${propertyName(k)}: ${t};`), '}'].join('\n');
+  return [head, ...entries.map(e => `  ${propertyName(e.key)}${e.optional ? '?' : ''}: ${e.type};`), '}'].join('\n');
 }
 
 /**
@@ -63,15 +84,15 @@ export async function generateTypes(generatedDir: string): Promise<void> {
   const alias = core.formatToken({ ...core.defaultAlgorithm(seed), override: {} }) as Record<string, unknown>;
 
   const seedEntries = scalarEntries(seed);
-  const seedKeys = new Set(seedEntries.map(([k]) => k));
-  const aliasEntries = scalarEntries(alias).filter(([k]) => !seedKeys.has(k));
+  const seedKeys = new Set(seedEntries.map(e => e.key));
+  const aliasEntries = scalarEntries(alias).filter(e => !seedKeys.has(e.key));
 
   const componentBlocks: string[] = [];
   const mapEntries: string[] = [];
   for (const [name, entry] of [...registry.entries()].sort(([a], [b]) => ordinal(a as string, b as string))) {
     const defaults =
       typeof entry.getDefaultToken === 'function' ? entry.getDefaultToken({ ...alias }) : (entry.getDefaultToken ?? {});
-    componentBlocks.push(renderInterface(`Nz${name}Token`, scalarEntries(defaults)));
+    componentBlocks.push(renderInterface(`Nz${name}Token`, componentTokenEntries(defaults)));
     mapEntries.push(`  ${name}: Nz${name}Token;`);
   }
 
