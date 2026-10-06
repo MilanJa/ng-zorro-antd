@@ -27,7 +27,15 @@ import { provideNzIconsTesting } from 'ng-zorro-antd/icon/testing';
 import { NzDemoStepsClickableComponent } from './demo/clickable';
 import { NzDemoStepsNavComponent } from './demo/nav';
 import { NzStepComponent } from './step.component';
-import { NzProgressDotTemplate, NzStatusType, NzStepsComponent } from './steps.component';
+import {
+  NzProgressDotTemplate,
+  NzStatusType,
+  NzStepsComponent,
+  NzStepsOrientation,
+  NzStepsTitlePlacement,
+  NzStepsType,
+  NzStepsVariant
+} from './steps.component';
 import { NzStepsModule } from './steps.module';
 
 describe('steps', () => {
@@ -487,6 +495,77 @@ describe('steps', () => {
         });
     });
   });
+  describe('v6 inputs', () => {
+    let fixture: ComponentFixture<NzTestStepsV6InputsComponent>;
+    let host: NzTestStepsV6InputsComponent;
+    const cls = (id: string): string[] => [...fixture.nativeElement.querySelector(`#${id}`).classList];
+    const items = (id: string): HTMLElement[] =>
+      Array.from(fixture.nativeElement.querySelectorAll(`#${id} .ant-steps-item`));
+    const body = (id: string, i: number): string =>
+      items(id)[i].querySelector('.ant-steps-item-description')!.textContent!.trim();
+    const has = (id: string, ...names: string[]): void => expect(cls(id), id).toEqual(expect.arrayContaining(names));
+    const lacks = (id: string, name: string): void => expect(cls(id), id).not.toContain(name);
+    beforeEach(() => {
+      fixture = TestBed.createComponent(NzTestStepsV6InputsComponent);
+      host = fixture.componentInstance;
+    });
+    it('maps nzOrientation and nzTitlePlacement to the classes of the deprecated inputs', async () => {
+      await stabilize(fixture);
+      expect(cls('v6').join(' ')).toBe(
+        'ant-steps ant-steps-filled ant-steps-horizontal ant-steps-label-horizontal ant-steps-title-horizontal'
+      );
+      host.titlePlacement.set('vertical');
+      await stabilize(fixture);
+      has('v6', 'ant-steps-label-vertical', 'ant-steps-title-vertical');
+      host.orientation.set('vertical');
+      await stabilize(fixture);
+      has('v6', 'ant-steps-vertical', 'ant-steps-title-horizontal');
+      lacks('v6', 'ant-steps-horizontal');
+    });
+    it('lets the new input win whichever attribute comes first', async () => {
+      await stabilize(fixture);
+      for (const id of ['new-first', 'old-first']) {
+        has(id, 'ant-steps-horizontal', 'ant-steps-title-vertical');
+        lacks(id, 'ant-steps-vertical');
+        expect(body(id, 0), id).toBe('new');
+      }
+    });
+    it('renders nzType="dot" and keeps nzProgressDot as an alias', async () => {
+      host.type.set('dot');
+      await stabilize(fixture);
+      has('v6', 'ant-steps-dot', 'ant-steps-title-vertical');
+      expect(items('v6')[0].querySelector('.ant-steps-icon > .ant-steps-icon-dot')).toBeTruthy();
+      host.legacyDot.set(true);
+      await stabilize(fixture);
+      has('legacy', 'ant-steps-dot');
+      host.legacyType.set('navigation'); // antd `mergedType`: a non-default `type` wins over `progressDot`
+      await stabilize(fixture);
+      has('legacy', 'ant-steps-navigation');
+      lacks('legacy', 'ant-steps-dot');
+    });
+    it('makes ant-steps-filled conditional on nzVariant and keeps the v4 classes', async () => {
+      host.variant.set('outlined');
+      await stabilize(fixture);
+      has('v6', 'ant-steps-outlined', 'ant-steps-horizontal', 'ant-steps-label-horizontal');
+      lacks('v6', 'ant-steps-filled');
+    });
+    it('renders nzContent and prefers it over nzDescription', async () => {
+      await stabilize(fixture);
+      expect([body('v6', 0), body('v6', 1), body('v6', 2)]).toEqual(['c0', 'contentTemplate', 'd2']);
+    });
+    it('emits nzClick with the index, also for the current step, never when disabled', async () => {
+      await stabilize(fixture);
+      const [first, current, last] = items('v6').map(i => i.querySelector<HTMLElement>('.ant-steps-item-container')!);
+      expect([first.getAttribute('role'), last.getAttribute('role')]).toEqual(['button', null]);
+      first.click();
+      current.click();
+      host.disabled.set(true);
+      await stabilize(fixture);
+      first.click();
+      expect(host.clicked).toEqual([0, 1]);
+      expect(first.getAttribute('role')).toBeNull();
+    });
+  });
   testDirectionality(() => NzTestOuterStepsComponent, By.directive(NzStepsComponent), 'ant-steps');
 });
 
@@ -607,4 +686,52 @@ export class NzTestStepAsyncComponent implements OnInit {
       this.stepsSignal.set([1, 2, 3]);
     }, 1000);
   }
+}
+
+@Component({
+  imports: [NzStepsModule],
+  template: `
+    <nz-steps
+      id="v6"
+      [nzCurrent]="1"
+      [nzOrientation]="orientation()"
+      [nzTitlePlacement]="titlePlacement()"
+      [nzType]="type()"
+      [nzVariant]="variant()"
+    >
+      <nz-step nzTitle="a" nzContent="c0" [nzDisabled]="disabled()" (nzClick)="clicked.push($event)" />
+      <nz-step nzTitle="b" [nzContent]="contentTpl" nzDescription="legacy" (nzClick)="clicked.push($event)" />
+      <nz-step nzTitle="c" nzDescription="d2" />
+    </nz-steps>
+    <nz-steps
+      id="new-first"
+      nzOrientation="horizontal"
+      nzDirection="vertical"
+      nzTitlePlacement="vertical"
+      nzLabelPlacement="horizontal"
+    >
+      <nz-step nzTitle="x" nzContent="new" nzDescription="old" />
+    </nz-steps>
+    <nz-steps
+      id="old-first"
+      nzDirection="vertical"
+      nzOrientation="horizontal"
+      nzLabelPlacement="horizontal"
+      nzTitlePlacement="vertical"
+    >
+      <nz-step nzTitle="x" nzDescription="old" nzContent="new" />
+    </nz-steps>
+    <nz-steps id="legacy" [nzType]="legacyType()" [nzProgressDot]="legacyDot()"><nz-step nzTitle="x" /></nz-steps>
+    <ng-template #contentTpl>contentTemplate</ng-template>
+  `
+})
+export class NzTestStepsV6InputsComponent {
+  readonly orientation = signal<NzStepsOrientation>('horizontal');
+  readonly titlePlacement = signal<NzStepsTitlePlacement>('horizontal');
+  readonly type = signal<NzStepsType>('default');
+  readonly variant = signal<NzStepsVariant>('filled');
+  readonly legacyType = signal<NzStepsType>('default');
+  readonly legacyDot = signal(false);
+  readonly disabled = signal(false);
+  readonly clicked: number[] = [];
 }

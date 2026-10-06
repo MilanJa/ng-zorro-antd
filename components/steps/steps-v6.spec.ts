@@ -11,7 +11,13 @@ import { V6_PATCH_CSS, V6_TEMPLATE_CSS, V6_TOKENS_DEFAULT_CSS } from 'ng-zorro-a
 import { NzSizeDSType } from 'ng-zorro-antd/core/types';
 import { provideNzIconsTesting } from 'ng-zorro-antd/icon/testing';
 
-import { NzDirectionType } from './steps.component';
+import {
+  NzDirectionType,
+  NzStepsOrientation,
+  NzStepsTitlePlacement,
+  NzStepsType,
+  NzStepsVariant
+} from './steps.component';
 import { NzStepsModule } from './steps.module';
 
 let style: HTMLStyleElement;
@@ -217,5 +223,89 @@ describe('steps under antd v6 css', () => {
     expect(itemCs.outlineWidth).toBe('3px');
     expect(itemCs.outlineColor).toBe('rgb(145, 202, 255)');
     expect(getComputedStyle(wrapper).outlineStyle).toBe('none');
+  });
+});
+
+@Component({
+  imports: [NzStepsModule],
+  template: `
+    <div style="width: 900px">
+      <nz-steps
+        id="v6"
+        [nzCurrent]="1"
+        [nzVariant]="variant()"
+        [nzType]="type()"
+        [nzOrientation]="orientation()"
+        [nzTitlePlacement]="titlePlacement()"
+      >
+        <nz-step nzTitle="Finished" nzContent="d1" />
+        <nz-step nzTitle="In Progress" nzContent="d2" />
+        <nz-step nzTitle="Waiting" nzContent="d3" />
+      </nz-steps>
+    </div>
+  `
+})
+class TestStepsV6InputsComponent {
+  readonly variant = signal<NzStepsVariant>('filled');
+  readonly type = signal<NzStepsType>('default');
+  readonly orientation = signal<NzStepsOrientation>('horizontal');
+  readonly titlePlacement = signal<NzStepsTitlePlacement>('horizontal');
+}
+
+describe('steps v6 inputs under antd v6 css', () => {
+  let fixture: ComponentFixture<TestStepsV6InputsComponent>;
+
+  beforeEach(() => {
+    installV6Css();
+    TestBed.configureTestingModule({ providers: [provideNzIconsTesting()], animationsEnabled: true });
+    fixture = TestBed.createComponent(TestStepsV6InputsComponent);
+  });
+
+  afterEach(() => {
+    style.remove();
+    TestBed.inject(OverlayContainer).ngOnDestroy();
+  });
+
+  // Statuses land in a microtask; icon colours then run `var(--ant-motion-duration-slow)` (0.3s) transitions.
+  async function render(): Promise<void> {
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    await new Promise(r => setTimeout(r, 350));
+  }
+
+  const root = (): HTMLElement => fixture.nativeElement.querySelector('#v6');
+  const icon = (i: number): CSSStyleDeclaration =>
+    getComputedStyle(root().querySelectorAll<HTMLElement>('.ant-steps-item-icon')[i]);
+
+  it('draws filled by default and the outlined variant with antd v6 icon colours', async () => {
+    await render();
+    expect(icon(0).backgroundColor).toBe('rgb(230, 244, 255)');
+    fixture.componentInstance.variant.set('outlined');
+    await render();
+    // `.ant-steps.ant-steps-outlined .ant-steps-item-finish`: colorBgContainer fill, colorPrimary border.
+    expect([icon(0).backgroundColor, icon(0).borderTopColor]).toEqual(['rgb(255, 255, 255)', 'rgb(22, 119, 255)']);
+    // `.ant-steps.ant-steps-outlined .ant-steps-item-wait`: colorTextDisabled border.
+    expect(icon(2).borderTopColor).toBe('rgba(0, 0, 0, 0.25)');
+  });
+
+  it('lays out nzTitlePlacement="vertical" and nzOrientation="vertical" as antd does', async () => {
+    fixture.componentInstance.titlePlacement.set('vertical');
+    await render();
+    expect(
+      getComputedStyle(root().querySelector('.ant-steps-item-section > .ant-steps-item-title')!).flexDirection
+    ).toBe('column');
+    fixture.componentInstance.orientation.set('vertical');
+    await render();
+    expect(getComputedStyle(root()).flexDirection).toBe('column');
+  });
+
+  it('renders nzType="dot" with antd v6 dot sizes and nzContent as the body text', async () => {
+    fixture.componentInstance.type.set('dot');
+    await render();
+    expect([icon(0).width, icon(1).width]).toEqual(['8px', '10px']);
+    const body = root().querySelector('.ant-steps-item-description') as HTMLElement;
+    expect(body.textContent!.trim()).toBe('d1');
+    expect(getComputedStyle(body).color).toBe('rgba(0, 0, 0, 0.45)');
   });
 });

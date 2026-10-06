@@ -34,7 +34,7 @@ const INTERNAL_FILES: Partial<Record<Dir, readonly string[]>> = {
 /** Inputs that only render under the v6 stylesheet (spec section 2 rule 3). Tasks 2–9 append. */
 const V6_ONLY: Record<Dir, readonly string[]> = {
   menu: [],
-  steps: [],
+  steps: ['nzVariant'],
   timeline: ['nzOrientation', 'nzVariant', 'nzTitleSpan'],
   splitter: ['nzCollapsible', 'nzDraggerIcon'],
   flex: [],

@@ -8,8 +8,11 @@ import {
   ChangeDetectorRef,
   Component,
   ElementRef,
+  EventEmitter,
   Input,
+  NgZone,
   OnInit,
+  Output,
   TemplateRef,
   ViewChild,
   ViewEncapsulation,
@@ -23,7 +26,7 @@ import { filter } from 'rxjs/operators';
 
 import { NzOutletModule } from 'ng-zorro-antd/core/outlet';
 import { NgClassType, NzSizeDSType } from 'ng-zorro-antd/core/types';
-import { fromEventOutsideAngular } from 'ng-zorro-antd/core/util';
+import { aliasDeprecatedInput, fromEventOutsideAngular } from 'ng-zorro-antd/core/util';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzProgressFormatter, NzProgressModule } from 'ng-zorro-antd/progress';
 
@@ -35,8 +38,8 @@ import { NzProgressFormatter, NzProgressModule } from 'ng-zorro-antd/progress';
     <div
       #itemContainer
       class="ant-steps-item-container ant-steps-item-wrapper"
-      [attr.role]="clickable && !nzDisabled ? 'button' : null"
-      [tabindex]="clickable && !nzDisabled ? 0 : null"
+      [attr.role]="isClickable ? 'button' : null"
+      [tabindex]="isClickable ? 0 : null"
     >
       @if (!last) {
         <!-- The rail takes the status of the step it leads to, as antd's rc-steps does. -->
@@ -106,7 +109,7 @@ import { NzProgressFormatter, NzProgressModule } from 'ng-zorro-antd/progress';
           }
         </div>
         <div class="ant-steps-item-description">
-          <ng-container *nzStringTemplateOutlet="nzDescription">{{ nzDescription }}</ng-container>
+          <ng-container *nzStringTemplateOutlet="content">{{ content }}</ng-container>
         </div>
       </div>
     </div>
@@ -134,7 +137,36 @@ export class NzStepComponent implements OnInit {
 
   @Input() nzTitle?: string | TemplateRef<void>;
   @Input() nzSubtitle?: string | TemplateRef<void>;
-  @Input() nzDescription?: string | TemplateRef<void>;
+  @Input() set nzContent(value: string | TemplateRef<void> | undefined) {
+    this.contentExplicit = true;
+    this.content = value;
+  }
+  get nzContent(): string | TemplateRef<void> | undefined {
+    return this.content;
+  }
+  /** @deprecated Use `nzContent` instead. This will be removed in v23.0.0. */
+  // v6-alias: nzDescription -> nzContent
+  @Input() set nzDescription(value: string | TemplateRef<void> | undefined) {
+    const mapped = this.aliasDescription(value);
+    if (!this.contentExplicit) this.content = mapped;
+  }
+  get nzDescription(): string | TemplateRef<void> | undefined {
+    return this.content;
+  }
+  /** Emits the step's index (including `nzStartIndex`) when a step that is not disabled is clicked. */
+  @Output() readonly nzClick = new EventEmitter<number>();
+  content?: string | TemplateRef<void>;
+  private contentExplicit = false;
+  private readonly aliasDescription = aliasDeprecatedInput<string | TemplateRef<void> | undefined>(
+    'nz-step',
+    'nzDescription',
+    'nzContent'
+  );
+  private readonly ngZone = inject(NgZone);
+  /** rc-steps `Step.js`: an item is a button when it has a click handler and is not disabled. */
+  get isClickable(): boolean {
+    return (this.clickable || this.nzClick.observed) && !this.nzDisabled;
+  }
   @Input({ transform: booleanAttribute }) nzDisabled = false;
   @Input() nzPercentage: number | null = null;
   @Input() nzSize: NzSizeDSType = 'default';
@@ -211,11 +243,13 @@ export class NzStepComponent implements OnInit {
   ngOnInit(): void {
     fromEventOutsideAngular(this.itemContainer.nativeElement, 'click')
       .pipe(
-        filter(() => this.clickable && this.currentIndex !== this.index && !this.nzDisabled),
+        filter(() => !this.nzDisabled),
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(() => {
-        this.clickOutsideAngular$.next(this.index);
+        // rc-steps calls the item's `onClick` first, then the root `onChange`.
+        if (this.nzClick.observed) this.ngZone.run(() => this.nzClick.emit(this.index));
+        if (this.clickable && this.currentIndex !== this.index) this.clickOutsideAngular$.next(this.index);
       });
   }
 

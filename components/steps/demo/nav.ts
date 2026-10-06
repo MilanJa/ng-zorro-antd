@@ -7,13 +7,13 @@ import { NzStepsModule } from 'ng-zorro-antd/steps';
   imports: [NzStepsModule],
   template: `
     <nz-steps nzType="navigation" nzSize="small" [nzCurrent]="index()" (nzIndexChange)="onIndexChange($event)">
-      <nz-step nzTitle="Step 1" nzSubtitle="00:00:05" nzStatus="finish" nzDescription="This is a description." />
-      <nz-step nzTitle="Step 2" nzSubtitle="00:01:02" nzStatus="process" nzDescription="This is a description." />
+      <nz-step nzTitle="Step 1" nzSubtitle="00:00:05" nzStatus="finish" nzContent="This is a description." />
+      <nz-step nzTitle="Step 2" nzSubtitle="00:01:02" nzStatus="process" nzContent="This is a description." />
       <nz-step
         nzTitle="Step 3"
         nzSubtitle="waiting for long long time"
         nzStatus="wait"
-        nzDescription="This is a description."
+        nzContent="This is a description."
       />
     </nz-steps>
     <nz-steps nzType="navigation" [nzCurrent]="index()" (nzIndexChange)="onIndexChange($event)">

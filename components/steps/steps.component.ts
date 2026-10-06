@@ -27,13 +27,17 @@ import { Subscription, merge } from 'rxjs';
 import { startWith } from 'rxjs/operators';
 
 import { BooleanInput, NzSizeDSType } from 'ng-zorro-antd/core/types';
-import { toBoolean } from 'ng-zorro-antd/core/util';
+import { aliasDeprecatedInput, toBoolean } from 'ng-zorro-antd/core/util';
 
 import { NzStepComponent } from './step.component';
 
 export type NzDirectionType = 'horizontal' | 'vertical';
 export type NzStatusType = 'wait' | 'process' | 'finish' | 'error';
 export type NzProgressDotTemplate = TemplateRef<{ $implicit: TemplateRef<void>; status: string; index: number }>;
+export type NzStepsOrientation = 'horizontal' | 'vertical';
+export type NzStepsTitlePlacement = 'horizontal' | 'vertical';
+export type NzStepsType = 'default' | 'navigation' | 'dot';
+export type NzStepsVariant = 'filled' | 'outlined';
 
 @Component({
   selector: 'nz-steps',
@@ -41,15 +45,16 @@ export type NzProgressDotTemplate = TemplateRef<{ $implicit: TemplateRef<void>; 
   encapsulation: ViewEncapsulation.None,
   template: `<ng-content />`,
   host: {
-    // `ant-steps-filled` is antd's default `variant`, which ng-zorro has no input to change.
-    class: 'ant-steps ant-steps-filled',
-    '[class.ant-steps-horizontal]': `nzDirection === 'horizontal'`,
-    '[class.ant-steps-vertical]': `nzDirection === 'vertical'`,
-    '[class.ant-steps-label-horizontal]': `nzDirection === 'horizontal'`,
-    '[class.ant-steps-label-vertical]': `(showProcessDot || nzLabelPlacement === 'vertical') && nzDirection === 'horizontal'`,
+    class: 'ant-steps',
+    '[class.ant-steps-filled]': `nzVariant === 'filled'`,
+    '[class.ant-steps-outlined]': `nzVariant === 'outlined'`,
+    '[class.ant-steps-horizontal]': `mergedOrientation === 'horizontal'`,
+    '[class.ant-steps-vertical]': `mergedOrientation === 'vertical'`,
+    '[class.ant-steps-label-horizontal]': `mergedOrientation === 'horizontal'`,
+    '[class.ant-steps-label-vertical]': `(isDot || nzTitlePlacement === 'vertical') && mergedOrientation === 'horizontal'`,
     '[class.ant-steps-title-horizontal]': `titlePlacement === 'horizontal'`,
     '[class.ant-steps-title-vertical]': `titlePlacement === 'vertical'`,
-    '[class.ant-steps-dot]': 'showProcessDot',
+    '[class.ant-steps-dot]': 'isDot',
     '[class.ant-steps-small]': `nzSize === 'small'`,
     '[class.ant-steps-navigation]': `nzType === 'navigation'`,
     '[class.ant-steps-rtl]': `dir() === 'rtl'`,
@@ -67,49 +72,107 @@ export class NzStepsComponent implements OnChanges, OnInit, AfterContentInit {
   @ContentChildren(NzStepComponent) steps!: QueryList<NzStepComponent>;
 
   @Input() nzCurrent = 0;
-  @Input() nzDirection: NzDirectionType = 'horizontal';
-  @Input() nzLabelPlacement: 'horizontal' | 'vertical' = 'horizontal';
-  @Input() nzType: 'default' | 'navigation' = 'default';
+  @Input() set nzOrientation(value: NzStepsOrientation) {
+    this.orientationExplicit = true;
+    this.orientation = value;
+  }
+  get nzOrientation(): NzStepsOrientation {
+    return this.orientation;
+  }
+  /** @deprecated Use `nzOrientation` instead. This will be removed in v23.0.0. */
+  // v6-alias: nzDirection -> nzOrientation
+  @Input() set nzDirection(value: NzDirectionType) {
+    const mapped = this.aliasDirection(value);
+    if (!this.orientationExplicit) this.orientation = mapped;
+  }
+  get nzDirection(): NzDirectionType {
+    return this.orientation;
+  }
+  @Input() set nzTitlePlacement(value: NzStepsTitlePlacement) {
+    this.titlePlacementExplicit = true;
+    this.titlePlacementValue = value;
+  }
+  get nzTitlePlacement(): NzStepsTitlePlacement {
+    return this.titlePlacementValue;
+  }
+  /** @deprecated Use `nzTitlePlacement` instead. This will be removed in v23.0.0. */
+  // v6-alias: nzLabelPlacement -> nzTitlePlacement
+  @Input() set nzLabelPlacement(value: 'horizontal' | 'vertical') {
+    const mapped = this.aliasLabelPlacement(value);
+    if (!this.titlePlacementExplicit) this.titlePlacementValue = mapped;
+  }
+  get nzLabelPlacement(): 'horizontal' | 'vertical' {
+    return this.titlePlacementValue;
+  }
+  @Input() nzType: NzStepsType = 'default';
+  @Input() nzVariant: NzStepsVariant = 'filled';
   @Input() nzSize: NzSizeDSType = 'default';
   @Input() nzStartIndex = 0;
   @Input() nzStatus: NzStatusType = 'process';
 
+  /** @deprecated Use `nzType="dot"` instead (a template stays the dot renderer). This will be removed in v23.0.0. */
+  // v6-alias: nzProgressDot -> nzType
   @Input()
   set nzProgressDot(value: boolean | NzProgressDotTemplate | undefined | null) {
-    if (value instanceof TemplateRef) {
-      this.showProcessDot = true;
-      this.customProcessDotTemplate = value;
-    } else {
-      this.showProcessDot = toBoolean(value);
-    }
+    const { dot, template } = this.aliasProgressDot(value);
+    this.legacyDot = dot;
+    this.customProcessDotTemplate = template;
     this.updateChildrenSteps();
+  }
+  get nzProgressDot(): boolean | NzProgressDotTemplate {
+    return this.customProcessDotTemplate ?? this.legacyDot;
   }
 
   @Output() readonly nzIndexChange = new EventEmitter<number>();
 
   private indexChangeSubscription = Subscription.EMPTY;
 
-  showProcessDot = false;
   showProgress = false;
   customProcessDotTemplate?: TemplateRef<{ $implicit: TemplateRef<void>; status: string; index: number }>;
 
-  /**
-   * Title placement as antd resolves it (`mergedTitlePlacement` in antd's `steps/index.js`): dot and
-   * vertical steps force it, navigation steps keep titles beside the icon.
-   */
-  get titlePlacement(): 'horizontal' | 'vertical' {
-    if (this.showProcessDot || this.nzDirection === 'vertical') {
-      return this.nzDirection === 'vertical' ? 'horizontal' : 'vertical';
+  private orientation: NzStepsOrientation = 'horizontal';
+  private orientationExplicit = false;
+  private titlePlacementValue: NzStepsTitlePlacement = 'horizontal';
+  private titlePlacementExplicit = false;
+  private legacyDot = false;
+  private readonly aliasDirection = aliasDeprecatedInput<NzDirectionType>('nz-steps', 'nzDirection', 'nzOrientation');
+  private readonly aliasLabelPlacement = aliasDeprecatedInput<'horizontal' | 'vertical'>(
+    'nz-steps',
+    'nzLabelPlacement',
+    'nzTitlePlacement'
+  );
+  private readonly aliasProgressDot = aliasDeprecatedInput<
+    boolean | NzProgressDotTemplate | undefined | null,
+    { dot: boolean; template?: NzProgressDotTemplate }
+  >('nz-steps', 'nzProgressDot', 'nzType', value =>
+    value instanceof TemplateRef ? { dot: true, template: value } : { dot: toBoolean(value) }
+  );
+
+  /** antd `mergedType` (`steps/index.tsx`): a non-default `type` wins, else `progressDot` gives `dot`. */
+  get mergedType(): NzStepsType {
+    return this.nzType !== 'default' ? this.nzType : this.legacyDot ? 'dot' : 'default';
+  }
+  get isDot(): boolean {
+    return this.mergedType === 'dot';
+  }
+  /** Kept for code that reads it; follows `isDot`. */
+  get showProcessDot(): boolean {
+    return this.isDot;
+  }
+  get mergedOrientation(): NzStepsOrientation {
+    return this.orientation;
+  }
+  /** antd `mergedTitlePlacement`: dot and vertical steps force it, navigation keeps titles beside the icon. */
+  get titlePlacement(): NzStepsTitlePlacement {
+    if (this.isDot || this.mergedOrientation === 'vertical') {
+      return this.mergedOrientation === 'vertical' ? 'horizontal' : 'vertical';
     }
-    if (this.nzType === 'navigation') {
-      return 'horizontal';
-    }
-    return this.nzLabelPlacement === 'vertical' ? 'vertical' : 'horizontal';
+    return this.nzType === 'navigation' ? 'horizontal' : this.titlePlacementValue;
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    const { nzStartIndex, nzDirection, nzStatus, nzCurrent, nzSize } = changes;
-    if (nzStartIndex || nzDirection || nzStatus || nzCurrent || nzSize) {
+    const { nzStartIndex, nzDirection, nzOrientation, nzType, nzStatus, nzCurrent, nzSize } = changes;
+    if (nzStartIndex || nzDirection || nzOrientation || nzType || nzStatus || nzCurrent || nzSize) {
       this.updateChildrenSteps();
     }
   }
@@ -128,7 +191,7 @@ export class NzStepsComponent implements OnChanges, OnInit, AfterContentInit {
   }
 
   private updateHostProgressClass(): void {
-    if (this.steps && !this.showProcessDot) {
+    if (this.steps && !this.isDot) {
       this.showProgress = !!this.steps.toArray().find(step => step.nzPercentage !== null);
     }
   }
@@ -142,12 +205,11 @@ export class NzStepsComponent implements OnChanges, OnInit, AfterContentInit {
           step.nextStep = steps[index + 1] ?? null;
           step.nzSize = this.nzSize;
           step.outStatus = this.nzStatus;
-          step.showProcessDot = this.showProcessDot;
-          if (this.customProcessDotTemplate) {
-            step.customProcessTemplate = this.customProcessDotTemplate;
-          }
+          step.showProcessDot = this.isDot;
+          // antd uses the legacy `progressDot` render only while the merged type is `dot`.
+          step.customProcessTemplate = this.isDot ? this.customProcessDotTemplate : undefined;
           step.clickable = this.nzIndexChange.observers.length > 0;
-          step.direction = this.nzDirection;
+          step.direction = this.mergedOrientation;
           step.index = index + this.nzStartIndex;
           step.currentIndex = this.nzCurrent;
           step.last = length === index + 1;

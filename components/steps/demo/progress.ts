@@ -39,7 +39,7 @@ function mockAsyncStep(): Observable<number> {
       @for (step of steps(); track step.id) {
         <nz-step
           [nzTitle]="step.title"
-          [nzDescription]="step.description"
+          [nzContent]="step.description"
           [nzPercentage]="step.async ? step.percentage : null"
         />
       }

@@ -8,15 +8,15 @@ import { NzStepsModule } from 'ng-zorro-antd/steps';
   imports: [NzDividerModule, NzStepsModule],
   template: `
     <nz-steps [nzCurrent]="index()" (nzIndexChange)="onIndexChange($event)">
-      <nz-step nzTitle="Finished" [nzDisabled]="disable" nzDescription="This is a description." />
-      <nz-step nzTitle="In Progress" nzDescription="This is a description." />
-      <nz-step nzTitle="Waiting" nzDescription="This is a description." />
+      <nz-step nzTitle="Finished" [nzDisabled]="disable" nzContent="This is a description." />
+      <nz-step nzTitle="In Progress" nzContent="This is a description." />
+      <nz-step nzTitle="Waiting" nzContent="This is a description." />
     </nz-steps>
     <nz-divider />
-    <nz-steps nzDirection="vertical" [nzCurrent]="index()" (nzIndexChange)="onIndexChange($event)">
-      <nz-step nzTitle="Finished" nzDescription="This is a description." />
-      <nz-step nzTitle="In Progress" nzDescription="This is a description." />
-      <nz-step nzTitle="Waiting" nzDescription="This is a description." />
+    <nz-steps nzOrientation="vertical" [nzCurrent]="index()" (nzIndexChange)="onIndexChange($event)">
+      <nz-step nzTitle="Finished" nzContent="This is a description." />
+      <nz-step nzTitle="In Progress" nzContent="This is a description." />
+      <nz-step nzTitle="Waiting" nzContent="This is a description." />
     </nz-steps>
   `
 })
