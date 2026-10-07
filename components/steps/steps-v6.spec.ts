@@ -8,7 +8,9 @@ import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BehaviorSubject } from 'rxjs';
 
-import { NzBreakpointEnum, NzBreakpointService } from 'ng-zorro-antd/core/services';
+import { vi } from 'vitest';
+
+import { NzBreakpointEnum, NzBreakpointService, gridResponsiveMap } from 'ng-zorro-antd/core/services';
 import { V6_PATCH_CSS, V6_TEMPLATE_CSS, V6_TOKENS_DEFAULT_CSS } from 'ng-zorro-antd/core/theme/generated/test-css';
 import { NzSizeDSType } from 'ng-zorro-antd/core/types';
 import { provideNzIconsTesting } from 'ng-zorro-antd/icon/testing';
@@ -433,15 +435,14 @@ describe('steps v6 layouts under antd v6 css', () => {
 describe('steps v6 responsive layout', () => {
   let fixture: ComponentFixture<TestStepsLayoutV6Component>;
   let breakpoint$: BehaviorSubject<NzBreakpointEnum>;
+  let subscribe: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
     installV6Css();
     breakpoint$ = new BehaviorSubject<NzBreakpointEnum>(NzBreakpointEnum.md);
+    subscribe = vi.fn(() => breakpoint$.asObservable());
     TestBed.configureTestingModule({
-      providers: [
-        provideNzIconsTesting(),
-        { provide: NzBreakpointService, useValue: { subscribe: () => breakpoint$.asObservable() } }
-      ],
+      providers: [provideNzIconsTesting(), { provide: NzBreakpointService, useValue: { subscribe } }],
       animationsEnabled: true
     });
     fixture = TestBed.createComponent(TestStepsLayoutV6Component);
@@ -463,6 +464,7 @@ describe('steps v6 responsive layout', () => {
 
   it('turns vertical below the xs breakpoint unless nzResponsive is off', async () => {
     await render();
+    expect(subscribe).toHaveBeenCalledWith(gridResponsiveMap);
     expect(root().classList).toContain('ant-steps-horizontal');
     breakpoint$.next(NzBreakpointEnum.xs);
     await render();

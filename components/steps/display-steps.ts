@@ -18,6 +18,8 @@ export interface NzStepsDisplayPlan {
 /**
  * antd `useDisplaySteps.ts` `getCollapsedIndexes`: first, last and current are kept; the remaining slots
  * go to current-left, current-right, first-right, last-left at growing distances. `null` marks a gap.
+ *
+ * @internal
  */
 export function getCollapsedIndexes(total: number, currentIndex: number, maxCount: number): Array<number | null> {
   const safeCurrent = Math.min(Math.max(currentIndex, 0), total - 1);
@@ -33,7 +35,11 @@ export function getCollapsedIndexes(total: number, currentIndex: number, maxCoun
     .sort((a, b) => a - b)
     .flatMap((index, order, sorted) => (order > 0 && index - sorted[order - 1] > 1 ? [null, index] : [index]));
 }
-/** antd `canApplyMaxCount`: `maxCount >= 3` and more steps than `maxCount`. */
+/**
+ * antd `canApplyMaxCount`: `maxCount >= 3` and more steps than `maxCount`.
+ *
+ * @internal
+ */
 export function planDisplaySteps(total: number, current: number, maxCount: number | undefined): NzStepsDisplayPlan {
   const canApply = maxCount !== undefined && maxCount >= 3 && total > maxCount;
   const roles: NzStepDisplayRole[] = new Array(total).fill('visible');

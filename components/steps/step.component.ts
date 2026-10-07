@@ -11,16 +11,15 @@ import {
   EventEmitter,
   Input,
   NgZone,
-  OnInit,
   Output,
   TemplateRef,
   ViewChild,
   ViewEncapsulation,
   booleanAttribute,
+  effect,
   inject,
-  DestroyRef
+  viewChild
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Subject } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
@@ -38,14 +37,7 @@ import { NzStepDisplayRole } from './display-steps';
   exportAs: 'nzStep',
   encapsulation: ViewEncapsulation.None,
   template: `
-    <div
-      #itemContainer
-      class="ant-steps-item-container ant-steps-item-wrapper"
-      [attr.role]="isClickable ? 'button' : null"
-      [tabindex]="isClickable ? 0 : null"
-      nz-tooltip
-      [nzTooltipTitle]="inline ? displayContent : null"
-    >
+    <ng-template #body>
       @if (!last) {
         <!-- The rail takes the status of the step it leads to, as antd's rc-steps does. -->
         <div
@@ -121,7 +113,29 @@ import { NzStepDisplayRole } from './display-steps';
           <ng-container *nzStringTemplateOutlet="displayContent">{{ displayContent }}</ng-container>
         </div>
       </div>
-    </div>
+    </ng-template>
+    <!-- The tooltip (the full content of an inline step) is only created for the inline type. -->
+    @if (inline) {
+      <div
+        #itemContainer
+        class="ant-steps-item-container ant-steps-item-wrapper"
+        [attr.role]="isClickable ? 'button' : null"
+        [tabindex]="isClickable ? 0 : null"
+        nz-tooltip
+        [nzTooltipTitle]="displayContent"
+      >
+        <ng-container [ngTemplateOutlet]="body" />
+      </div>
+    } @else {
+      <div
+        #itemContainer
+        class="ant-steps-item-container ant-steps-item-wrapper"
+        [attr.role]="isClickable ? 'button' : null"
+        [tabindex]="isClickable ? 0 : null"
+      >
+        <ng-container [ngTemplateOutlet]="body" />
+      </div>
+    }
     @if (panel) {
       <svg
         class="ant-steps-panel-arrow"
@@ -151,12 +165,12 @@ import { NzStepDisplayRole } from './display-steps';
   },
   imports: [NzProgressModule, NzIconModule, NzOutletModule, NgTemplateOutlet, NzTooltipDirective]
 })
-export class NzStepComponent implements OnInit {
+export class NzStepComponent {
   private cdr = inject(ChangeDetectorRef);
-  private destroyRef = inject(DestroyRef);
 
   @ViewChild('processDotTemplate', { static: false }) processDotTemplate?: TemplateRef<void>;
-  @ViewChild('itemContainer', { static: true }) itemContainer!: ElementRef<HTMLElement>;
+  /** The container exists in one of two `@if` branches (tooltip or not), so it is tracked reactively. */
+  private itemContainer = viewChild<ElementRef<HTMLElement>>('itemContainer');
 
   @Input() nzTitle?: string | TemplateRef<void>;
   @Input() nzSubtitle?: string | TemplateRef<void>;
@@ -284,17 +298,19 @@ export class NzStepComponent implements OnInit {
 
   private _currentIndex = 0;
 
-  ngOnInit(): void {
-    fromEventOutsideAngular(this.itemContainer.nativeElement, 'click')
-      .pipe(
-        filter(() => !this.nzDisabled && !this.isEllipsis),
-        takeUntilDestroyed(this.destroyRef)
-      )
-      .subscribe(() => {
-        // rc-steps calls the item's `onClick` first, then the root `onChange`.
-        if (this.nzClick.observed) this.ngZone.run(() => this.nzClick.emit(this.index));
-        if (this.clickable && this.currentIndex !== this.index) this.clickOutsideAngular$.next(this.index);
-      });
+  constructor() {
+    effect(onCleanup => {
+      const container = this.itemContainer()?.nativeElement;
+      if (!container) return;
+      const subscription = fromEventOutsideAngular(container, 'click')
+        .pipe(filter(() => !this.nzDisabled && !this.isEllipsis))
+        .subscribe(() => {
+          // rc-steps calls the item's `onClick` first, then the root `onChange`.
+          if (this.nzClick.observed) this.ngZone.run(() => this.nzClick.emit(this.index));
+          if (this.clickable && this.currentIndex !== this.index) this.clickOutsideAngular$.next(this.index);
+        });
+      onCleanup(() => subscription.unsubscribe());
+    });
   }
 
   enable(): void {
