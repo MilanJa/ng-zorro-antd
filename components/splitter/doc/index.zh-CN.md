@@ -33,11 +33,11 @@ description: 自由切分指定区域。
 
 ### nz-splitter-panel
 
-| 参数              | 说明                                                                                              | 类型                                                                                     | 默认值  |
-| ----------------- | ------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ------- |
-| `[nzDefaultSize]` | 初始面板大小，支持数字 px 或者文字 '百分比%' 类型                                                 | `number \| string`                                                                       | -       |
-| `[nzMin]`         | 最小阈值，支持数字 px 或者文字 '百分比%' 类型                                                     | `number \| string`                                                                       | -       |
-| `[nzMax]`         | 最大阈值，支持数字 px 或者文字 '百分比%' 类型                                                     | `number \| string`                                                                       | -       |
-| `[nzSize]`        | 受控面板大小，支持数字 px 或者文字 '百分比%' 类型                                                 | `number \| string`                                                                       | -       |
-| `[nzCollapsible]` | 快速折叠；showCollapsibleIcon 为 'auto' 时悬停显示，true 始终显示，false 不显示。需要 v6 样式表。 | `boolean \| { start?: boolean; end?: boolean; showCollapsibleIcon?: boolean \| 'auto' }` | `false` |
-| `[nzResizable]`   | 是否开启拖拽伸缩                                                                                  | `boolean`                                                                                | `true`  |
+| 参数              | 说明                                                                                                                          | 类型                                                                                     | 默认值  |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ------- |
+| `[nzDefaultSize]` | 初始面板大小，支持数字 px 或者文字 '百分比%' 类型                                                                             | `number \| string`                                                                       | -       |
+| `[nzMin]`         | 最小阈值，支持数字 px 或者文字 '百分比%' 类型                                                                                 | `number \| string`                                                                       | -       |
+| `[nzMax]`         | 最大阈值，支持数字 px 或者文字 '百分比%' 类型                                                                                 | `number \| string`                                                                       | -       |
+| `[nzSize]`        | 受控面板大小，支持数字 px 或者文字 '百分比%' 类型                                                                             | `number \| string`                                                                       | -       |
+| `[nzCollapsible]` | 快速折叠；showCollapsibleIcon 为 'auto' 时悬停显示，true 始终显示，false 不显示；对于 `showCollapsibleIcon`：需要 v6 样式表。 | `boolean \| { start?: boolean; end?: boolean; showCollapsibleIcon?: boolean \| 'auto' }` | `false` |
+| `[nzResizable]`   | 是否开启拖拽伸缩                                                                                                              | `boolean`                                                                                | `true`  |

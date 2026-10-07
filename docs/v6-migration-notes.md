@@ -23,3 +23,24 @@ input rather than a renamed input; the deprecated values are listed in the Old i
 | nz-steps         | nzLabelPlacement                  | nzTitlePlacement | identical values                                                                                                                         | v23.0.0 |
 | nz-steps         | nzProgressDot                     | nzType           | `true` → `'dot'`; `false` → no change; a TemplateRef → `'dot'`, the template stays the dot renderer                                      | v23.0.0 |
 | nz-step          | nzDescription                     | nzContent        | identical values                                                                                                                         | v23.0.0 |
+
+## Behaviour changes
+
+Changes that do not rename an input, so they have no row in the table above. They apply under either stylesheet unless
+stated otherwise.
+
+- **Steps `nzResponsive` defaults to `true`** (Ant Design parity). A horizontal `nz-steps` renders vertically below
+  576 px. Opt out with `[nzResponsive]="false"`.
+- **Inline-collapsed Menu** (`nzInlineCollapsed`):
+  - an icon-less first-level item or submenu with a plain-text title shows the first letter of the title (the full
+    title stays the submenu's accessible name);
+  - a first-level item shows its label in an automatic tooltip on hover. Opt out with `[nzTooltip]="false"` on
+    `nz-menu`, or put your own `nz-tooltip` on the item to keep that one instead.
+- **Getter and default changes**:
+  - `nz-divider`: reading `nzOrientation` returns the axis (`'horizontal' | 'vertical'`), no longer the title
+    placement (`'left' | 'right' | 'center'`), which is now `nzTitlePlacement`;
+  - `nz-splitter`: `nzLayout()` defaults to `undefined` (the effective orientation is `'horizontal'` unless
+    `nzOrientation` or `nzLayout` is set);
+  - `nz-timeline`: `nzMode` defaults to `'start'`.
+- **Steps `nzProgressDot` as a template** is deprecated. Its replacement, an `nzIconRender` input, is not available yet,
+  so the deprecation warning for the template form is advisory until it lands; keep using the template meanwhile.
