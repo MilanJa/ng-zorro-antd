@@ -78,6 +78,8 @@ const listOfHorizontalPositions = [
       [paddingLeft]="nzPaddingLeft || inlinePaddingLeft"
       [nzTriggerSubMenuAction]="nzTriggerSubMenuAction"
       [noIconLetter]="noIconLetter"
+      [expandIcon]="expandIcon"
+      [open]="nzOpen"
       (subMenuMouseState)="setMouseEnterState($event)"
       (toggleSubMenu)="toggleSubMenu()"
     >
@@ -100,7 +102,8 @@ const listOfHorizontalPositions = [
         (positionChange)="onPositionChange($event)"
         [cdkConnectedOverlayPositions]="overlayPositions"
         [cdkConnectedOverlayOrigin]="origin"
-        [cdkConnectedOverlayWidth]="triggerWidth!"
+        [cdkConnectedOverlayWidth]="$any(stretchMinWidth ? null : triggerWidth)"
+        [cdkConnectedOverlayMinWidth]="$any(stretchMinWidth ? triggerWidth : null)"
         [cdkConnectedOverlayOpen]="nzOpen"
         [cdkConnectedOverlayPanelClass]="overlayPanelClasses()"
         cdkConnectedOverlayTransformOriginOn=".ant-menu-submenu"
@@ -192,6 +195,8 @@ export class NzSubMenuComponent implements OnInit, AfterContentInit, OnChanges {
   private level = this.nzSubmenuService.level;
   position: 'left' | 'right' = 'right';
   triggerWidth: number | null = null;
+  stretchMinWidth = false;
+  expandIcon: TemplateRef<{ $implicit: boolean }> | null = null;
   theme: NzMenuThemeType = 'light';
   mode: NzMenuModeType = 'vertical';
   inlinePaddingLeft: number | null = null;
@@ -229,6 +234,11 @@ export class NzSubMenuComponent implements OnInit, AfterContentInit, OnChanges {
     }
   }
 
+  /**
+   * A horizontal popup is as wide as its title under the v4 stylesheet. Under the v6 stylesheet it is at
+   * least as wide and grows with its content (antd's `stretch: 'minWidth'`). The v6 sheets define the
+   * `--ant-menu-*` tokens and the v4 sheets none, so their presence on the title selects the v6 behaviour.
+   */
   setTriggerWidth(): void {
     if (
       this.mode === 'horizontal' &&
@@ -236,8 +246,9 @@ export class NzSubMenuComponent implements OnInit, AfterContentInit, OnChanges {
       this.cdkOverlayOrigin &&
       this.nzPlacement === 'bottomLeft'
     ) {
-      /** TODO: fast dom */
-      this.triggerWidth = this.cdkOverlayOrigin!.nativeElement.getBoundingClientRect().width;
+      const origin: HTMLElement = this.cdkOverlayOrigin.nativeElement;
+      this.triggerWidth = origin.getBoundingClientRect().width;
+      this.stretchMinWidth = getComputedStyle(origin).getPropertyValue('--ant-menu-dropdown-width').trim() !== '';
     }
   }
 
@@ -275,6 +286,11 @@ export class NzSubMenuComponent implements OnInit, AfterContentInit, OnChanges {
         this.inlinePaddingLeft = mode === 'inline' ? this.level * inlineIndent : null;
         this.cdr.markForCheck();
       });
+
+    this.nzMenuService.expandIcon$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(icon => {
+      this.expandIcon = icon;
+      this.cdr.markForCheck();
+    });
 
     combineLatest([this.nzMenuService.inlineCollapsed$, this.nzMenuService.disabled$])
       .pipe(takeUntilDestroyed(this.destroyRef))

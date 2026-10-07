@@ -146,7 +146,9 @@ export class NzMenuItemComponent implements OnInit, OnChanges, AfterContentInit,
 
   /** antd's collapsed first-level item tooltip (`MenuItem.tsx`); the component is created on first hover. */
   protected showCollapsedTooltip(): void {
-    const title = (this.titleContent.nativeElement.textContent ?? '').trim();
+    // With `nzExtra` the title content holds the label and the extra; antd titles the tooltip with the label only.
+    const labelEl = this.hasExtra ? this.titleContent.nativeElement.querySelector('.ant-menu-item-label') : null;
+    const title = ((labelEl ?? this.titleContent.nativeElement).textContent ?? '').trim();
     if (
       !this.inlineCollapsed ||
       !this.menuTooltip ||

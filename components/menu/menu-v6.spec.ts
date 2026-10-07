@@ -137,6 +137,47 @@ class TestMenuV6InputsComponent {
   readonly disabled = signal(false);
 }
 
+@Component({
+  imports: [NzMenuModule, NzIconModule],
+  template: `
+    <ul nz-menu nzMode="inline" style="width: 256px" [nzExpandIcon]="exp">
+      <li id="expSub" nz-submenu nzTitle="Navigation One" nzIcon="mail">
+        <ul>
+          <li nz-menu-item>Option 1</li>
+        </ul>
+      </li>
+    </ul>
+    <ul nz-menu nzMode="inline" nzInlineCollapsed [nzExpandIcon]="exp">
+      <li id="expCollapsed" nz-submenu nzTitle="Navigation Two" nzIcon="appstore">
+        <ul>
+          <li nz-menu-item>Option 2</li>
+        </ul>
+      </li>
+    </ul>
+    <ng-template #exp let-open><nz-icon class="custom-expand" [nzType]="open ? 'minus' : 'plus'" /></ng-template>
+  `
+})
+class TestMenuExpandIconComponent {}
+
+@Component({
+  imports: [NzMenuModule],
+  template: `
+    <ul nz-menu nzMode="horizontal">
+      <li id="wideTitle" nz-submenu nzTitle="Navigation Three - Submenu With A Long Title">
+        <ul>
+          <li nz-menu-item>Option 1</li>
+        </ul>
+      </li>
+      <li id="narrowTitle" nz-submenu nzTitle="Nav">
+        <ul>
+          <li nz-menu-item>An option label that is much wider than its submenu title</li>
+        </ul>
+      </li>
+    </ul>
+  `
+})
+class TestMenuPopupWidthComponent {}
+
 describe('menu under antd v6 css', () => {
   let overlay: OverlayContainer;
 
@@ -394,5 +435,53 @@ describe('menu under antd v6 css', () => {
     // (dropdown's `style/v6/patch.css`), so the title content's own `inline-flex` is used as `flex`.
     expect(getComputedStyle(item.querySelector('.ant-menu-title-content')!).display).toBe('flex');
     expect([extra.fontSize, extra.color]).toEqual(['12px', 'rgba(0, 0, 0, 0.45)']);
+  });
+
+  it('places the nzExpandIcon template where v6 puts the submenu arrow and hides it while collapsed', async () => {
+    const fixture = TestBed.createComponent(TestMenuExpandIconComponent);
+    fixture.detectChanges();
+    await settle(fixture, 0);
+    const title = fixture.nativeElement.querySelector('#expSub .ant-menu-submenu-title') as HTMLElement;
+    const icon = title.querySelector('.ant-menu-submenu-expand-icon') as HTMLElement;
+    const cs = getComputedStyle(icon);
+    expect([cs.position, cs.width, cs.insetInlineEnd]).toEqual(['absolute', '10px', '16px']);
+    const iconRect = icon.getBoundingClientRect();
+    const titleRect = title.getBoundingClientRect();
+    expect(Math.abs(iconRect.top + iconRect.height / 2 - (titleRect.top + titleRect.height / 2))).toBeLessThanOrEqual(
+      1
+    );
+    expect(icon.querySelector('.custom-expand')!.classList).toContain('anticon-plus');
+    title.click();
+    await settle(fixture, 0);
+    expect(icon.querySelector('.custom-expand')!.classList).toContain('anticon-minus');
+    const collapsed = fixture.nativeElement.querySelector('#expCollapsed .ant-menu-submenu-expand-icon') as HTMLElement;
+    expect(getComputedStyle(collapsed).opacity).toBe('0');
+  });
+
+  async function openHorizontal(id: string): Promise<{ title: HTMLElement; root: HTMLElement; pane: HTMLElement }> {
+    const fixture = TestBed.createComponent(TestMenuPopupWidthComponent);
+    fixture.detectChanges();
+    const title = fixture.nativeElement.querySelector(`#${id} .ant-menu-submenu-title`) as HTMLElement;
+    dispatchFakeEvent(title, 'mouseenter');
+    await settle(fixture, 300); // auditTime(150) before the submenu opens
+    const root = popupRoots()[0];
+    await expectMotionSettled(root);
+    return { title, root, pane: root.closest('.cdk-overlay-pane') as HTMLElement };
+  }
+
+  it('gives a horizontal popup its title width as min-width', async () => {
+    const { title, root, pane } = await openHorizontal('wideTitle');
+    const titleWidth = title.getBoundingClientRect().width;
+    expect(titleWidth).toBeGreaterThan(160); // wider than v6's dropdownWidth floor on the list
+    expect(Math.abs(parseFloat(pane.style.minWidth) - titleWidth)).toBeLessThanOrEqual(0.5);
+    expect(pane.style.width).toBe(''); // v6 tokens are installed by installV6Css()
+    expect(Math.abs(root.getBoundingClientRect().width - titleWidth)).toBeLessThanOrEqual(1);
+  });
+
+  it('lets a horizontal popup grow wider than its title with its content', async () => {
+    const { title, root } = await openHorizontal('narrowTitle');
+    const item = root.querySelector('.ant-menu-item') as HTMLElement;
+    expect(root.getBoundingClientRect().width).toBeGreaterThan(title.getBoundingClientRect().width);
+    expect(item.scrollWidth).toBeLessThanOrEqual(item.clientWidth);
   });
 });

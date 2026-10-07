@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-10-06T14:32:14.306Z",
-  "base": "38e17f3b18e649f0c3567330111535fc8b925549",
+  "generatedAt": "2026-10-07T07:41:12.082Z",
+  "base": "3516141cd008bf8f326f4bd5f2879926457c623e",
   "classes": {
     "affix": [
       "ant-affix"
@@ -888,6 +888,7 @@
       "ant-dropdown-menu-vertical",
       "ant-menu",
       "ant-menu-dark",
+      "ant-menu-dropdown-width",
       "ant-menu-horizontal",
       "ant-menu-inline",
       "ant-menu-inline-collapsed",
@@ -911,6 +912,7 @@
       "ant-menu-submenu-active",
       "ant-menu-submenu-arrow",
       "ant-menu-submenu-disabled",
+      "ant-menu-submenu-expand-icon",
       "ant-menu-submenu-hidden",
       "ant-menu-submenu-horizontal",
       "ant-menu-submenu-inline",
@@ -3270,6 +3272,7 @@
         "ant-dropdown-menu-submenu-title",
         "ant-menu-inline-collapsed-noicon",
         "ant-menu-submenu-arrow",
+        "ant-menu-submenu-expand-icon",
         "ant-menu-submenu-title",
         "ant-menu-title-content"
       ],
@@ -3282,6 +3285,7 @@
         "ant-dropdown-menu-submenu-open",
         "ant-dropdown-menu-submenu-selected",
         "ant-dropdown-menu-submenu-vertical",
+        "ant-menu-dropdown-width",
         "ant-menu-submenu",
         "ant-menu-submenu-active",
         "ant-menu-submenu-disabled",

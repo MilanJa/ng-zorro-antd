@@ -25,7 +25,7 @@ const DELIVERED: Record<string, string[]> = {
     'responsive'
   ],
   Timeline: ['mode', 'orientation', 'variant', 'titleSpan', 'placement', 'title', 'icon', 'loading'],
-  Menu: ['extra', 'dashed', 'disabled', 'tooltip'],
+  Menu: ['extra', 'dashed', 'disabled', 'tooltip', 'expandIcon'],
   Splitter: [
     'orientation',
     'collapsible.showCollapsibleIcon',

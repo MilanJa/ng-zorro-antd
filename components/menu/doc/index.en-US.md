@@ -42,6 +42,7 @@ More layouts with navigation: [layout](/components/layout/en).
 | `[nzTheme]`           | color theme of the menu                                                                                                                                                     | `'light' \| 'dark'`                      | `'light'`     |
 | `[nzDisabled]`        | disable every item and submenu of the menu                                                                                                                                  | `boolean`                                | `false`       |
 | `[nzTooltip]`         | show the label of a first-level item in a tooltip while the menu is collapsed (`nzInlineCollapsed`); `false` turns it off; an item with its own `nz-tooltip` keeps that one | `boolean`                                | `true`        |
+| `[nzExpandIcon]`      | custom submenu expand icon; the template context's `$implicit` is the submenu's open state; horizontal submenus keep the default arrow                                      | `TemplateRef<{ $implicit: boolean }>`    | -             |
 | `(nzClick)`           | the Output when click `nz-menu-item` inside nz-menu                                                                                                                         | `EventEmitter<NzMenuItemComponent>`      |               |
 
 ### [nz-menu-item]
@@ -89,6 +90,8 @@ You can set the title of `[nz-submenu]` in the following ways.
 | `[nzTriggerSubMenuAction]` | Which action can trigger submenu open/close                                                                | `'hover' \| 'click'`                                                                        | `'hover'`      |
 | `[nzPaddingLeft]`          | padding-left of the submenu title in px; overrides the indent computed from `nzInlineIndent` and the level | `number`                                                                                    | -              |
 | `(nzOpenChange)`           | nzOpen callback                                                                                            | `EventEmitter<boolean>`                                                                     | -              |
+
+In `horizontal` mode a submenu popup is as wide as its title; with the v6 stylesheet it is at least as wide as its title and grows with its content.
 
 ### [nz-menu-group]
 

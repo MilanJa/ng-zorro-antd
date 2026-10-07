@@ -16,6 +16,7 @@ import {
   Output,
   QueryList,
   SimpleChanges,
+  TemplateRef,
   booleanAttribute,
   inject,
   DestroyRef
@@ -96,6 +97,7 @@ export class NzMenuDirective implements AfterContentInit, OnInit, OnChanges {
   @Input({ transform: booleanAttribute }) nzSelectable = !this.isMenuInsideDropdown;
   @Input({ transform: booleanAttribute }) nzDisabled = false;
   @Input({ transform: booleanAttribute }) nzTooltip = true;
+  @Input() nzExpandIcon: TemplateRef<{ $implicit: boolean }> | null = null;
   @Output() readonly nzClick = new EventEmitter<NzMenuItemComponent>();
 
   actualMode: NzMenuModeType = 'vertical';
@@ -145,7 +147,7 @@ export class NzMenuDirective implements AfterContentInit, OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    const { nzInlineCollapsed, nzInlineIndent, nzTheme, nzMode, nzDisabled, nzTooltip } = changes;
+    const { nzInlineCollapsed, nzInlineIndent, nzTheme, nzMode, nzDisabled, nzTooltip, nzExpandIcon } = changes;
     if (nzInlineCollapsed) {
       this.inlineCollapsed$.next(this.nzInlineCollapsed);
     }
@@ -160,6 +162,9 @@ export class NzMenuDirective implements AfterContentInit, OnInit, OnChanges {
     }
     if (nzTooltip) {
       this.nzMenuService.setTooltip(this.nzTooltip);
+    }
+    if (nzExpandIcon) {
+      this.nzMenuService.setExpandIcon(this.nzExpandIcon);
     }
     if (nzMode) {
       this.mode$.next(this.nzMode);

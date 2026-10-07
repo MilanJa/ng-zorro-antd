@@ -41,6 +41,7 @@ description: 为页面和功能提供导航的菜单列表。
 | `[nzTheme]`           | 主题颜色                                                                                                            | `'light' \| 'dark'`                      | `'light'`    |
 | `[nzDisabled]`        | 禁用菜单内的全部菜单项与子菜单                                                                                      | `boolean`                                | `false`      |
 | `[nzTooltip]`         | 菜单收起（`nzInlineCollapsed`）时一级菜单项悬停显示标题提示，`false` 关闭；自带 `nz-tooltip` 的菜单项保留自己的提示 | `boolean`                                | `true`       |
+| `[nzExpandIcon]`      | 自定义子菜单展开图标，模板上下文的 `$implicit` 为子菜单展开状态；水平模式的子菜单保留默认箭头                       | `TemplateRef<{ $implicit: boolean }>`    | -            |
 | `(nzClick)`           | 点击 `nz-menu-item` 输出属性                                                                                        | `EventEmitter<NzMenuItemComponent>`      |              |
 
 ### [nz-menu-item]
@@ -88,6 +89,8 @@ description: 为页面和功能提供导航的菜单列表。
 | `[nzTriggerSubMenuAction]` | SubMenu 展开/关闭的触发行为                                            | `'hover' \| 'click'`                                                                        | `'hover'`      |
 | `[nzPaddingLeft]`          | 子菜单标题的左内边距（px），覆盖由 `nzInlineIndent` 与层级计算出的缩进 | `number`                                                                                    | -              |
 | `(nzOpenChange)`           | 展开回调                                                               | `EventEmitter<boolean>`                                                                     | -              |
+
+`horizontal` 模式下，子菜单弹出层与标题等宽；使用 v6 样式表时，其最小宽度等于标题宽度，并随内容加宽。
 
 ### [nz-menu-group]
 

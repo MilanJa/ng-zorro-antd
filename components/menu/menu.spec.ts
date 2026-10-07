@@ -462,6 +462,7 @@ describe('menu', () => {
         await stabilize(fixture);
         let overlayPane = overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
         expect(overlayPane.style.width).toBe('200px');
+        expect(overlayPane.style.minWidth).toBe('');
         testComponent.open.set(false);
         fixture.detectChanges();
         testComponent.width.set(300);
@@ -470,6 +471,25 @@ describe('menu', () => {
         await stabilize(fixture);
         overlayPane = overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
         expect(overlayPane.style.width).toBe('300px');
+        expect(overlayPane.style.minWidth).toBe('');
+      });
+
+      it('should give the popup a min-width instead of a width when the v6 tokens are present', async () => {
+        fixture.detectChanges();
+        // The v6 stylesheet defines --ant-menu-* tokens (the v4 one none); this is what the submenu probes.
+        (fixture.nativeElement.querySelector('ul[nz-menu]') as HTMLElement).style.setProperty(
+          '--ant-menu-dropdown-width',
+          '160px'
+        );
+        const submenu = testComponent.subs.first;
+        vi.spyOn(submenu.cdkOverlayOrigin!.nativeElement, 'getBoundingClientRect').mockImplementation(
+          () => ({ width: testComponent.width() }) as DOMRect
+        );
+        testComponent.open.set(true);
+        await stabilize(fixture);
+        const overlayPane = overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
+        expect([overlayPane.style.minWidth, overlayPane.style.width]).toEqual(['200px', '']);
+        expect(submenu.stretchMinWidth).toBe(true);
       });
 
       it('should position change correct', () => {
@@ -755,6 +775,63 @@ describe('menu', () => {
       expect(item.querySelector('.ant-dropdown-menu-item-label')).not.toBeNull();
       expect(item.querySelector('.ant-dropdown-menu-item-extra')!.textContent!.trim()).toBe('⌘U');
       expect(dd.nativeElement.querySelector('#ddDivider').className).toBe('ant-dropdown-menu-item-divider');
+    });
+
+    it('titles the collapsed tooltip with the label only when nzExtra is set', async () => {
+      fixture.componentInstance.collapsed.set(true);
+      await stabilize(fixture);
+      dispatchFakeEvent(q('#extra'), 'mouseenter');
+      await stabilize(fixture);
+      expect(
+        overlayContainerElement.querySelector('.ant-tooltip.ant-menu-inline-collapsed-tooltip')!.textContent!.trim()
+      ).toBe('Option 2');
+    });
+  });
+
+  describe('nzExpandIcon', () => {
+    let fixture: ComponentFixture<NzTestMenuExpandIconComponent>;
+    const title = (): HTMLElement => fixture.nativeElement.querySelector('#expSub .ant-menu-submenu-title');
+    beforeEach(async () => {
+      fixture = TestBed.createComponent(NzTestMenuExpandIconComponent);
+      await stabilize(fixture);
+    });
+
+    it('replaces the arrow with the template, passing the open state', async () => {
+      const icon = title().lastElementChild as HTMLElement;
+      expect(icon.className).toBe('ant-menu-submenu-expand-icon');
+      expect(icon.querySelector('.custom-expand')!.textContent).toBe('closed');
+      expect(title().querySelector('.ant-menu-submenu-arrow')).toBeNull();
+      fixture.componentInstance.open.set(true);
+      await stabilize(fixture);
+      expect(title().querySelector('.custom-expand')!.textContent).toBe('open');
+    });
+
+    it('keeps the default arrow for horizontal submenus and when no template is set', async () => {
+      fixture.componentInstance.mode.set('vertical');
+      await stabilize(fixture);
+      expect(title().querySelector('.ant-menu-submenu-expand-icon .custom-expand')).not.toBeNull();
+      fixture.componentInstance.mode.set('horizontal');
+      await stabilize(fixture);
+      expect([!!title().querySelector('.ant-menu-submenu-arrow'), !!title().querySelector('.custom-expand')]).toEqual([
+        true,
+        false
+      ]);
+      fixture.componentInstance.mode.set('inline');
+      fixture.componentInstance.custom.set(false);
+      await stabilize(fixture);
+      // v4 safety: without nzExpandIcon the title ends with today's arrow span.
+      expect(title().lastElementChild!.className).toBe('ant-menu-submenu-arrow');
+      expect(title().querySelector('.ant-menu-submenu-expand-icon')).toBeNull();
+    });
+
+    it("renders the template in dropdown's expand-icon span inside a dropdown", async () => {
+      const dd = TestBed.createComponent(NzTestMenuExpandIconDropdownComponent);
+      await stabilize(dd);
+      const span = dd.nativeElement.querySelector(
+        '.ant-dropdown-menu-submenu-title > .ant-dropdown-menu-submenu-expand-icon'
+      );
+      expect(span.querySelector('.custom-expand')).not.toBeNull();
+      expect(span.querySelector('.ant-dropdown-menu-submenu-arrow-icon')).toBeNull();
     });
   });
 });
@@ -1228,6 +1305,43 @@ export class NzTestMenuV6InputsComponent {
   ></ul>`
 })
 export class NzTestMenuV6DropdownHostedComponent {}
+
+@Component({
+  imports: [NzMenuModule],
+  template: `
+    <ul nz-menu [nzMode]="mode()" [nzExpandIcon]="custom() ? icon : null">
+      <li nz-submenu id="expSub" nzTitle="Navigation One" [nzOpen]="open()">
+        <ul>
+          <li nz-menu-item>Option 1</li>
+        </ul>
+      </li>
+    </ul>
+    <ng-template #icon let-open
+      ><span class="custom-expand">{{ open ? 'open' : 'closed' }}</span></ng-template
+    >
+  `
+})
+export class NzTestMenuExpandIconComponent {
+  readonly mode = signal<'inline' | 'vertical' | 'horizontal'>('inline');
+  readonly open = signal(false);
+  readonly custom = signal(true);
+}
+
+@Component({
+  imports: [NzMenuModule],
+  providers: [{ provide: NzIsMenuInsideDropdownToken, useValue: true }],
+  template: `
+    <ul nz-menu [nzExpandIcon]="icon">
+      <li nz-submenu nzTitle="More">
+        <ul>
+          <li nz-menu-item>Nested</li>
+        </ul>
+      </li>
+    </ul>
+    <ng-template #icon><span class="custom-expand">›</span></ng-template>
+  `
+})
+export class NzTestMenuExpandIconDropdownComponent {}
 
 async function stabilize<T>(fixture: ComponentFixture<T>, ms?: number): Promise<void> {
   fixture.detectChanges();

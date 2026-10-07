@@ -8,6 +8,14 @@
   position: relative;
 }
 
+/* A horizontal popup's pane carries the title width as `min-width` (antd's `stretch: 'minWidth'` sets it
+   on the popup itself). The pane is a flex container, so its popup root would stay content-wide inside
+   it; letting it grow makes the list fill the pane. A pane without a min-width is as wide as its
+   content, where this changes nothing. */
+.cdk-overlay-pane > .ant-menu-submenu-popup:has(> .ant-menu) {
+  flex-grow: 1;
+}
+
 /* Gap between the title and the popup. antd puts `paddingXS` on the popup root through rc-trigger's
    placement class (`.ant-menu-submenu-placement-rightTop` / `-leftTop` / `-bottomLeft`, ...), names
    ng-zorro does not emit: the compiled v4 stylesheet already styles `-placement-rightTop`, and ng-zorro

@@ -3,7 +3,7 @@
  * found in the LICENSE file at https://github.com/NG-ZORRO/ng-zorro-antd/blob/master/LICENSE
  */
 
-import { Injectable } from '@angular/core';
+import { Injectable, TemplateRef } from '@angular/core';
 import { BehaviorSubject, Subject } from 'rxjs';
 
 import { NzSafeAny } from 'ng-zorro-antd/core/types';
@@ -24,6 +24,11 @@ export class MenuService {
   inlineCollapsed$ = new BehaviorSubject<boolean>(false);
   disabled$ = new BehaviorSubject<boolean>(false);
   tooltip$ = new BehaviorSubject<boolean>(true);
+  /** Root `nzExpandIcon`; the template receives the submenu's open state as `$implicit`. */
+  expandIcon$ = new BehaviorSubject<TemplateRef<{ $implicit: boolean }> | null>(null);
+  setExpandIcon(icon: TemplateRef<{ $implicit: boolean }> | null): void {
+    this.expandIcon$.next(icon);
+  }
   setInlineCollapsed(value: boolean): void {
     this.inlineCollapsed$.next(value);
   }

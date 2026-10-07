@@ -4,6 +4,7 @@
  */
 
 import { Directionality } from '@angular/cdk/bidi';
+import { NgTemplateOutlet } from '@angular/common';
 import { Component, EventEmitter, inject, Input, Output, TemplateRef, ViewEncapsulation } from '@angular/core';
 
 import { NzOutletModule } from 'ng-zorro-antd/core/outlet';
@@ -30,7 +31,15 @@ import { NzMenuModeType, NzSubmenuTrigger } from './menu.types';
     <ng-content />
     @if (isMenuInsideDropdown) {
       <span class="ant-dropdown-menu-submenu-expand-icon">
-        <nz-icon [nzType]="dir() === 'rtl' ? 'left' : 'right'" class="ant-dropdown-menu-submenu-arrow-icon" />
+        @if (expandIcon) {
+          <ng-container [ngTemplateOutlet]="expandIcon" [ngTemplateOutletContext]="{ $implicit: open }" />
+        } @else {
+          <nz-icon [nzType]="dir() === 'rtl' ? 'left' : 'right'" class="ant-dropdown-menu-submenu-arrow-icon" />
+        }
+      </span>
+    } @else if (expandIcon && mode !== 'horizontal') {
+      <span class="ant-menu-submenu-expand-icon">
+        <ng-container [ngTemplateOutlet]="expandIcon" [ngTemplateOutletContext]="{ $implicit: open }" />
       </span>
     } @else {
       <span class="ant-menu-submenu-arrow"></span>
@@ -44,7 +53,7 @@ import { NzMenuModeType, NzSubmenuTrigger } from './menu.types';
     '(mouseenter)': 'setMouseState(true)',
     '(mouseleave)': 'setMouseState(false)'
   },
-  imports: [NzIconModule, NzOutletModule]
+  imports: [NgTemplateOutlet, NzIconModule, NzOutletModule]
 })
 export class NzSubMenuTitleComponent {
   protected readonly isMenuInsideDropdown = inject(NzIsMenuInsideDropdownToken);
@@ -54,6 +63,8 @@ export class NzSubMenuTitleComponent {
   @Input() nzTitle: string | TemplateRef<void> | null = null;
   @Input() nzDisabled = false;
   @Input() noIconLetter: string | null = null;
+  @Input() expandIcon: TemplateRef<{ $implicit: boolean }> | null = null;
+  @Input() open = false;
   @Input() paddingLeft: number | null = null;
   @Input() mode: NzMenuModeType = 'vertical';
   @Input() nzTriggerSubMenuAction: NzSubmenuTrigger = 'hover';
