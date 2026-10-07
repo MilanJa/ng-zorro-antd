@@ -32,25 +32,29 @@ description: 为页面和功能提供导航的菜单列表。
 
 ### [nz-menu]
 
-| 参数                  | 说明                                         | 类型                                     | 默认值       |
-| --------------------- | -------------------------------------------- | ---------------------------------------- | ------------ |
-| `[nzInlineCollapsed]` | `inline` 时菜单是否收起状态                  | `boolean`                                | -            |
-| `[nzInlineIndent]`    | `inline` 模式的菜单缩进宽度                  | `number`                                 | `24`         |
-| `[nzMode]`            | 菜单类型，现在支持垂直、水平、和内嵌模式三种 | `'vertical' \| 'horizontal' \| 'inline'` | `'vertical'` |
-| `[nzSelectable]`      | 是否允许选中                                 | `boolean`                                | `true`       |
-| `[nzTheme]`           | 主题颜色                                     | `'light' \| 'dark'`                      | `'light'`    |
-| `(nzClick)`           | 点击 `nz-menu-item` 输出属性                 | `EventEmitter<NzMenuItemComponent>`      |              |
+| 参数                  | 说明                                                                                                                | 类型                                     | 默认值       |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- | ------------ |
+| `[nzInlineCollapsed]` | `inline` 时菜单是否收起状态；无图标的一级菜单项或子菜单此时显示标题首字                                             | `boolean`                                | -            |
+| `[nzInlineIndent]`    | `inline` 模式的菜单缩进宽度                                                                                         | `number`                                 | `24`         |
+| `[nzMode]`            | 菜单类型，现在支持垂直、水平、和内嵌模式三种                                                                        | `'vertical' \| 'horizontal' \| 'inline'` | `'vertical'` |
+| `[nzSelectable]`      | 是否允许选中                                                                                                        | `boolean`                                | `true`       |
+| `[nzTheme]`           | 主题颜色                                                                                                            | `'light' \| 'dark'`                      | `'light'`    |
+| `[nzDisabled]`        | 禁用菜单内的全部菜单项与子菜单                                                                                      | `boolean`                                | `false`      |
+| `[nzTooltip]`         | 菜单收起（`nzInlineCollapsed`）时一级菜单项悬停显示标题提示，`false` 关闭；自带 `nz-tooltip` 的菜单项保留自己的提示 | `boolean`                                | `true`       |
+| `(nzClick)`           | 点击 `nz-menu-item` 输出属性                                                                                        | `EventEmitter<NzMenuItemComponent>`      |              |
 
 ### [nz-menu-item]
 
-| 参数                   | 说明                                                                                                                         | 类型      | 默认值  |
-| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------- | --------- | ------- |
-| `[nzDisabled]`         | 是否禁用                                                                                                                     | `boolean` | `false` |
-| `[nzSelected]`         | 是否被选中                                                                                                                   | `boolean` | `false` |
-| `[nzMatchRouter]`      | 是否根据 [routerLink](https://www.angular.cn/api/router/RouterLink) 自动设定 `nzSelected`                                    | `boolean` | `false` |
-| `[nzMatchRouterExact]` | 是否路由完整精确匹配, 详见 [routerLinkActiveOptions](https://angular.cn/api/router/RouterLinkActive#routerLinkActiveOptions) | `boolean` | `false` |
-| `[nzDanger]`           | 展示错误状态样式                                                                                                             | `boolean` | `false` |
-| `[nzPaddingLeft]`      | 菜单项的左内边距（px），覆盖由 `nzInlineIndent` 与层级计算出的缩进                                                           | `number`  | -       |
+| 参数                   | 说明                                                                                                                         | 类型                          | 默认值  |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------- | ----------------------------- | ------- |
+| `[nzDisabled]`         | 是否禁用                                                                                                                     | `boolean`                     | `false` |
+| `[nzSelected]`         | 是否被选中                                                                                                                   | `boolean`                     | `false` |
+| `[nzMatchRouter]`      | 是否根据 [routerLink](https://www.angular.cn/api/router/RouterLink) 自动设定 `nzSelected`                                    | `boolean`                     | `false` |
+| `[nzMatchRouterExact]` | 是否路由完整精确匹配, 详见 [routerLinkActiveOptions](https://angular.cn/api/router/RouterLinkActive#routerLinkActiveOptions) | `boolean`                     | `false` |
+| `[nzDanger]`           | 展示错误状态样式                                                                                                             | `boolean`                     | `false` |
+| `[nzPaddingLeft]`      | 菜单项的左内边距（px），覆盖由 `nzInlineIndent` 与层级计算出的缩进                                                           | `number`                      | -       |
+| `[nzIcon]`             | 显示在标题前的图标类型，菜单收起时仍然可见；设置后投影的 `<nz-icon>` 被隐藏                                                  | `string`                      | -       |
+| `[nzExtra]`            | 菜单项末尾的额外内容，例如快捷键。需要 v6 样式表。                                                                           | `string \| TemplateRef<void>` | -       |
 
 ### [nz-submenu]
 
@@ -113,3 +117,7 @@ description: 为页面和功能提供导航的菜单列表。
 ### [nz-menu-divider]
 
 菜单项分割线，只用在弹出菜单内。
+
+| 参数         | 说明                       | 类型      | 默认值  |
+| ------------ | -------------------------- | --------- | ------- |
+| `[nzDashed]` | 是否虚线。需要 v6 样式表。 | `boolean` | `false` |

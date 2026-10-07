@@ -3,18 +3,28 @@
  * found in the LICENSE file at https://github.com/NG-ZORRO/ng-zorro-antd/blob/master/LICENSE
  */
 
+import { Directionality } from '@angular/cdk/bidi';
+import { NgTemplateOutlet } from '@angular/common';
 import {
   AfterContentInit,
+  AfterViewInit,
+  ComponentRef,
   Component,
   ContentChildren,
+  ElementRef,
   Input,
   OnChanges,
   OnInit,
   QueryList,
+  Renderer2,
   SimpleChanges,
+  TemplateRef,
+  ViewChild,
+  ViewContainerRef,
   ViewEncapsulation,
   booleanAttribute,
   inject,
+  signal,
   DestroyRef,
   ChangeDetectorRef
 } from '@angular/core';
@@ -23,7 +33,11 @@ import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { Subject, combineLatest } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
+import { warn } from 'ng-zorro-antd/core/logger';
+import { NzOutletModule } from 'ng-zorro-antd/core/outlet';
 import { numberAttributeWithZeroFallback } from 'ng-zorro-antd/core/util';
+import { NzIconDirective, NzIconModule } from 'ng-zorro-antd/icon';
+import { NzTooltipComponent, NzTooltipDirective } from 'ng-zorro-antd/tooltip';
 
 import { MenuService } from './menu.service';
 import { NzIsMenuInsideDropdownToken } from './menu.token';
@@ -34,24 +48,58 @@ import { NzSubmenuService } from './submenu.service';
   exportAs: 'nzMenuItem',
   encapsulation: ViewEncapsulation.None,
   template: `
-    <span class="ant-menu-title-content">
-      <ng-content />
+    @if (nzIcon) {
+      <nz-icon
+        [nzType]="nzIcon"
+        [class.ant-menu-item-icon]="!isMenuInsideDropdown"
+        [class.ant-dropdown-menu-item-icon]="isMenuInsideDropdown"
+      />
+    }
+    @if (noIconLetter(); as letter) {
+      <div class="ant-menu-inline-collapsed-noicon">{{ letter }}</div>
+    }
+    <span
+      #titleContent
+      class="ant-menu-title-content"
+      [class.ant-menu-title-content-with-extra]="hasExtra && !isMenuInsideDropdown"
+      [class.ant-dropdown-menu-title-content-with-extra]="hasExtra && isMenuInsideDropdown"
+    >
+      @if (hasExtra) {
+        <span
+          [class.ant-menu-item-label]="!isMenuInsideDropdown"
+          [class.ant-dropdown-menu-item-label]="isMenuInsideDropdown"
+        >
+          <ng-container [ngTemplateOutlet]="label" />
+        </span>
+        <span
+          [class.ant-menu-item-extra]="!isMenuInsideDropdown"
+          [class.ant-dropdown-menu-item-extra]="isMenuInsideDropdown"
+        >
+          <ng-container *nzStringTemplateOutlet="nzExtra">{{ nzExtra }}</ng-container>
+        </span>
+      } @else {
+        <ng-container [ngTemplateOutlet]="label" />
+      }
     </span>
+    <ng-template #label><ng-content /></ng-template>
   `,
+  imports: [NgTemplateOutlet, NzIconModule, NzOutletModule],
   host: {
     '[class.ant-dropdown-menu-item]': `isMenuInsideDropdown`,
     '[class.ant-dropdown-menu-item-selected]': `isMenuInsideDropdown && nzSelected`,
     '[class.ant-dropdown-menu-item-danger]': `isMenuInsideDropdown && nzDanger`,
-    '[class.ant-dropdown-menu-item-disabled]': `isMenuInsideDropdown && nzDisabled`,
+    '[class.ant-dropdown-menu-item-disabled]': `isMenuInsideDropdown && mergedDisabled`,
     '[class.ant-menu-item]': `!isMenuInsideDropdown`,
     '[class.ant-menu-item-selected]': `!isMenuInsideDropdown && nzSelected`,
     '[class.ant-menu-item-danger]': `!isMenuInsideDropdown && nzDanger`,
-    '[class.ant-menu-item-disabled]': `!isMenuInsideDropdown && nzDisabled`,
+    '[class.ant-menu-item-disabled]': `!isMenuInsideDropdown && mergedDisabled`,
     '[style.padding-inline-start.px]': 'nzPaddingLeft || inlinePaddingLeft',
-    '(click)': 'clickMenuItem($event)'
+    '(click)': 'clickMenuItem($event)',
+    '(mouseenter)': 'showCollapsedTooltip()',
+    '(mouseleave)': 'hideCollapsedTooltip()'
   }
 })
-export class NzMenuItemComponent implements OnInit, OnChanges, AfterContentInit {
+export class NzMenuItemComponent implements OnInit, OnChanges, AfterContentInit, AfterViewInit {
   private readonly nzMenuService = inject(MenuService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
@@ -59,6 +107,12 @@ export class NzMenuItemComponent implements OnInit, OnChanges, AfterContentInit 
   private readonly routerLink = inject(RouterLink, { optional: true });
   private readonly router = inject(Router, { optional: true });
   protected readonly isMenuInsideDropdown = inject(NzIsMenuInsideDropdownToken);
+  private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly renderer = inject(Renderer2);
+  private readonly viewContainerRef = inject(ViewContainerRef);
+  private readonly directionality = inject(Directionality);
+  /** A tooltip composed on the item itself (`<li nz-menu-item nz-tooltip>`) replaces the automatic one. */
+  private readonly composedTooltip = inject(NzTooltipDirective, { self: true, optional: true });
 
   level = this.nzSubmenuService ? this.nzSubmenuService.level + 1 : 1;
   selected$ = new Subject<boolean>();
@@ -69,11 +123,88 @@ export class NzMenuItemComponent implements OnInit, OnChanges, AfterContentInit 
   @Input({ transform: booleanAttribute }) nzDanger = false;
   @Input({ transform: booleanAttribute }) nzMatchRouterExact = false;
   @Input({ transform: booleanAttribute }) nzMatchRouter = false;
+  @Input() nzIcon: string | null = null;
+  @Input() nzExtra: string | TemplateRef<void> | null = null;
+  @ViewChild('titleContent', { static: true }) titleContent!: ElementRef<HTMLElement>;
   @ContentChildren(RouterLink, { descendants: true }) listOfRouterLink!: QueryList<RouterLink>;
+  @ContentChildren(NzIconDirective, { read: ElementRef }) listOfProjectedIcon!: QueryList<ElementRef<HTMLElement>>;
+  protected readonly noIconLetter = signal<string | null>(null);
+  private inlineCollapsed = false;
+  private menuDisabled = false;
+  private menuTooltip = true;
+  private viewInit = false;
+  private warnedDoubleIcon = false;
+  private collapsedTooltip: ComponentRef<NzTooltipComponent> | null = null;
+
+  get mergedDisabled(): boolean {
+    return this.nzDisabled || this.menuDisabled;
+  }
+
+  protected get hasExtra(): boolean {
+    return this.nzExtra !== null && this.nzExtra !== undefined && this.nzExtra !== '';
+  }
+
+  /** antd's collapsed first-level item tooltip (`MenuItem.tsx`); the component is created on first hover. */
+  protected showCollapsedTooltip(): void {
+    const title = (this.titleContent.nativeElement.textContent ?? '').trim();
+    if (
+      !this.inlineCollapsed ||
+      !this.menuTooltip ||
+      this.level !== 1 ||
+      this.composedTooltip ||
+      this.isMenuInsideDropdown ||
+      !title
+    ) {
+      return;
+    }
+    if (!this.collapsedTooltip) {
+      this.collapsedTooltip = this.viewContainerRef.createComponent(NzTooltipComponent);
+      // The component's host only anchors the CDK overlay; keep it out of the menu list.
+      this.renderer.removeChild(
+        this.renderer.parentNode(this.elementRef.nativeElement),
+        this.collapsedTooltip.location.nativeElement
+      );
+      this.collapsedTooltip.instance.setOverlayOrigin(this.elementRef);
+      this.collapsedTooltip.instance.nzOverlayClassName = 'ant-menu-inline-collapsed-tooltip';
+      this.collapsedTooltip.instance.nzTrigger = null;
+    }
+    const tooltip = this.collapsedTooltip.instance;
+    tooltip.nzTitle = title;
+    tooltip.nzPlacement = [this.directionality.value === 'rtl' ? 'left' : 'right'];
+    tooltip.updateByDirective();
+    tooltip.show();
+  }
+
+  protected hideCollapsedTooltip(): void {
+    this.collapsedTooltip?.instance.hide();
+  }
+
+  /** First letter of a plain-text label of an icon-less first-level item while collapsed (`MenuItem.tsx`). */
+  private updateCollapsedFallback(): void {
+    if (!this.viewInit) {
+      return;
+    }
+    const content = this.titleContent.nativeElement;
+    const text = content.children.length === 0 ? (content.textContent ?? '').trim() : '';
+    this.noIconLetter.set(this.inlineCollapsed && this.level === 1 && !this.nzIcon && text ? text.charAt(0) : null);
+  }
+
+  /** With `nzIcon` set, a directly projected `<nz-icon>` would be a second icon; hide it. */
+  private updateProjectedIcons(): void {
+    this.listOfProjectedIcon?.forEach(({ nativeElement }) =>
+      this.nzIcon
+        ? this.renderer.setStyle(nativeElement, 'display', 'none')
+        : this.renderer.removeStyle(nativeElement, 'display')
+    );
+    if (this.nzIcon && this.listOfProjectedIcon?.length && !this.warnedDoubleIcon) {
+      this.warnedDoubleIcon = true;
+      warn('`nz-menu-item` has `nzIcon` and a projected `<nz-icon>`; the projected icon is hidden.');
+    }
+  }
 
   /** clear all item selected status except this */
   clickMenuItem(e: MouseEvent): void {
-    if (this.nzDisabled) {
+    if (this.mergedDisabled) {
       e.preventDefault();
       e.stopPropagation();
       return;
@@ -138,17 +269,41 @@ export class NzMenuItemComponent implements OnInit, OnChanges, AfterContentInit 
       .subscribe(([mode, inlineIndent]) => {
         this.inlinePaddingLeft = mode === 'inline' ? this.level * inlineIndent : null;
       });
+
+    combineLatest([this.nzMenuService.inlineCollapsed$, this.nzMenuService.disabled$, this.nzMenuService.tooltip$])
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(([inlineCollapsed, disabled, tooltip]) => {
+        [this.inlineCollapsed, this.menuDisabled, this.menuTooltip] = [inlineCollapsed, disabled, tooltip];
+        if (!inlineCollapsed || !tooltip) {
+          this.hideCollapsedTooltip();
+        }
+        this.updateCollapsedFallback();
+        this.cdr.markForCheck();
+      });
+  }
+
+  ngAfterViewInit(): void {
+    this.viewInit = true;
+    this.updateCollapsedFallback();
   }
 
   ngAfterContentInit(): void {
     this.listOfRouterLink.changes.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => this.updateRouterActive());
     this.updateRouterActive();
+    this.updateProjectedIcons();
+    this.listOfProjectedIcon.changes
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.updateProjectedIcons());
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    const { nzSelected } = changes;
+    const { nzSelected, nzIcon } = changes;
     if (nzSelected) {
       this.setSelectedState(this.nzSelected);
+    }
+    if (nzIcon) {
+      this.updateProjectedIcons();
+      this.updateCollapsedFallback();
     }
   }
 }

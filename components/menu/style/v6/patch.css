@@ -76,3 +76,27 @@
   margin-block: var(--ant-line-width);
   padding: 0;
 }
+
+/* `[nz-menu-divider nzDashed]` adds antd's `ant-menu-item-divider-dashed` next to the
+   `ant-dropdown-menu-item-divider` the directive always renders. The divider mirror above sets
+   `border-style: var(--ant-line-type)` at the specificity of v6's
+   `.ant-menu .ant-menu-item-divider-dashed { border-style: dashed }` and later in the bundle, so the
+   dashed style is repeated one class higher. */
+.ant-menu .ant-dropdown-menu-item-divider.ant-menu-item-divider-dashed {
+  border-style: dashed;
+}
+
+/* `nzExtra` on a dropdown-hosted item: v6 keys the layout on `.ant-dropdown-menu-title-content`, which
+   the compiled v4 stylesheet styles, so ng-zorro keeps `.ant-menu-title-content` there
+   (dropdown/style/v6/patch.css). Mirror of v6's `-title-content-with-extra` and `-item-extra` rules. */
+.ant-dropdown-menu .ant-menu-title-content.ant-dropdown-menu-title-content-with-extra {
+  display: inline-flex;
+  align-items: center;
+  width: 100%;
+}
+.ant-dropdown-menu .ant-menu-title-content .ant-dropdown-menu-item-extra {
+  margin-inline-start: auto;
+  padding-inline-start: var(--ant-padding);
+  color: var(--ant-color-text-description);
+  font-size: var(--ant-font-size-sm);
+}

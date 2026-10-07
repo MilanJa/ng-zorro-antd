@@ -94,6 +94,8 @@ export class NzMenuDirective implements AfterContentInit, OnInit, OnChanges {
   @Input() nzMode: NzMenuModeType = 'vertical';
   @Input({ transform: booleanAttribute }) nzInlineCollapsed = false;
   @Input({ transform: booleanAttribute }) nzSelectable = !this.isMenuInsideDropdown;
+  @Input({ transform: booleanAttribute }) nzDisabled = false;
+  @Input({ transform: booleanAttribute }) nzTooltip = true;
   @Output() readonly nzClick = new EventEmitter<NzMenuItemComponent>();
 
   actualMode: NzMenuModeType = 'vertical';
@@ -122,6 +124,7 @@ export class NzMenuDirective implements AfterContentInit, OnInit, OnChanges {
     combineLatest([this.inlineCollapsed$, this.mode$])
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(([inlineCollapsed, mode]) => {
+        this.nzMenuService.setInlineCollapsed(inlineCollapsed);
         this.actualMode = inlineCollapsed ? 'vertical' : mode;
         this.nzMenuService.setMode(this.actualMode);
         this.cdr.markForCheck();
@@ -142,7 +145,7 @@ export class NzMenuDirective implements AfterContentInit, OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    const { nzInlineCollapsed, nzInlineIndent, nzTheme, nzMode } = changes;
+    const { nzInlineCollapsed, nzInlineIndent, nzTheme, nzMode, nzDisabled, nzTooltip } = changes;
     if (nzInlineCollapsed) {
       this.inlineCollapsed$.next(this.nzInlineCollapsed);
     }
@@ -151,6 +154,12 @@ export class NzMenuDirective implements AfterContentInit, OnInit, OnChanges {
     }
     if (nzTheme) {
       this.nzMenuService.setTheme(this.nzTheme);
+    }
+    if (nzDisabled) {
+      this.nzMenuService.setDisabled(this.nzDisabled);
+    }
+    if (nzTooltip) {
+      this.nzMenuService.setTooltip(this.nzTooltip);
     }
     if (nzMode) {
       this.mode$.next(this.nzMode);

@@ -20,6 +20,19 @@ export class MenuService {
   mode$ = new BehaviorSubject<NzMenuModeType>('vertical');
   inlineIndent$ = new BehaviorSubject<number>(24);
   isChildSubMenuOpen$ = new BehaviorSubject<boolean>(false);
+  /** Root `nzInlineCollapsed`, `nzDisabled` and `nzTooltip`, read by items and submenus at every level. */
+  inlineCollapsed$ = new BehaviorSubject<boolean>(false);
+  disabled$ = new BehaviorSubject<boolean>(false);
+  tooltip$ = new BehaviorSubject<boolean>(true);
+  setInlineCollapsed(value: boolean): void {
+    this.inlineCollapsed$.next(value);
+  }
+  setDisabled(value: boolean): void {
+    this.disabled$.next(value);
+  }
+  setTooltip(value: boolean): void {
+    this.tooltip$.next(value);
+  }
 
   onDescendantMenuItemClick(menu: NzSafeAny): void {
     this.descendantMenuItemClick$.next(menu);

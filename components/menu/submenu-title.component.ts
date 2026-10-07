@@ -20,9 +20,13 @@ import { NzMenuModeType, NzSubmenuTrigger } from './menu.types';
     @if (nzIcon) {
       <nz-icon [nzType]="nzIcon" />
     }
-    <ng-container *nzStringTemplateOutlet="nzTitle">
-      <span class="ant-menu-title-content">{{ nzTitle }}</span>
-    </ng-container>
+    @if (noIconLetter) {
+      <div class="ant-menu-inline-collapsed-noicon">{{ noIconLetter }}</div>
+    } @else {
+      <ng-container *nzStringTemplateOutlet="nzTitle"
+        ><span class="ant-menu-title-content">{{ nzTitle }}</span></ng-container
+      >
+    }
     <ng-content />
     @if (isMenuInsideDropdown) {
       <span class="ant-dropdown-menu-submenu-expand-icon">
@@ -49,6 +53,7 @@ export class NzSubMenuTitleComponent {
   @Input() nzIcon: string | null = null;
   @Input() nzTitle: string | TemplateRef<void> | null = null;
   @Input() nzDisabled = false;
+  @Input() noIconLetter: string | null = null;
   @Input() paddingLeft: number | null = null;
   @Input() mode: NzMenuModeType = 'vertical';
   @Input() nzTriggerSubMenuAction: NzSubmenuTrigger = 'hover';

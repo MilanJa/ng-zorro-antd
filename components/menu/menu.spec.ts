@@ -24,10 +24,12 @@ import { NzSafeAny } from 'ng-zorro-antd/core/types';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { provideNzIconsTesting } from 'ng-zorro-antd/icon/testing';
 import { NzSubmenuTrigger } from 'ng-zorro-antd/menu/menu.types';
+import { NzTooltipModule } from 'ng-zorro-antd/tooltip';
 
 import { NzMenuItemComponent } from './menu-item.component';
 import { NzMenuDirective } from './menu.directive';
 import { NzMenuModule } from './menu.module';
+import { NzIsMenuInsideDropdownToken } from './menu.token';
 import { NzSubMenuComponent } from './submenu.component';
 
 describe('menu', () => {
@@ -628,6 +630,133 @@ describe('menu', () => {
       );
     });
   });
+
+  describe('v6 inputs', () => {
+    let fixture: ComponentFixture<NzTestMenuV6InputsComponent>;
+    let el: HTMLElement;
+    const q = (s: string): HTMLElement => el.querySelector(s) as HTMLElement;
+    const tooltipTexts = (): string[] =>
+      [...overlayContainerElement.querySelectorAll('.ant-tooltip')].map(t => t.textContent!.trim());
+    beforeEach(async () => {
+      fixture = TestBed.createComponent(NzTestMenuV6InputsComponent);
+      el = fixture.nativeElement;
+      await stabilize(fixture);
+    });
+
+    it('wraps the label and the extra in the title content', async () => {
+      const content = q('#extra > .ant-menu-title-content');
+      expect(content.classList).toContain('ant-menu-title-content-with-extra');
+      expect([...content.children].map(c => c.className)).toEqual(['ant-menu-item-label', 'ant-menu-item-extra']);
+      expect([
+        q('#extra .ant-menu-item-label').textContent!.trim(),
+        q('#extra .ant-menu-item-extra').textContent!.trim()
+      ]).toEqual(['Option 2', '⌘P']);
+      expect(q('#extraTpl .ant-menu-item-extra b.tpl').textContent).toBe('⌘U');
+      fixture.componentInstance.extra.set(null);
+      await stabilize(fixture);
+      expect(content.classList).not.toContain('ant-menu-title-content-with-extra');
+      expect([content.children.length, content.textContent!.trim()]).toEqual([0, 'Option 2']);
+    });
+
+    it('renders the nzIcon slot before the title content, never two icons, and keeps projected icons as today', () => {
+      const slot = q('#slot').firstElementChild as HTMLElement;
+      expect([...slot.classList]).toEqual(expect.arrayContaining(['anticon-user', 'ant-menu-item-icon']));
+      expect(slot.nextElementSibling!.classList).toContain('ant-menu-title-content');
+      const visible = [...el.querySelectorAll<HTMLElement>('#both .anticon')].filter(i => i.style.display !== 'none');
+      expect(visible.map(i => i.classList.contains('anticon-user'))).toEqual([true]);
+      // v4 safety: an item without nzIcon keeps its DOM (no slot, icon inside the title content).
+      expect(q('#projected').className).toBe('ant-menu-item');
+      expect([...q('#projected').children].map(c => c.className)).toEqual(['ant-menu-title-content']);
+      expect([...q('#projected > .ant-menu-title-content').children].map(c => c.tagName)).toEqual(['NZ-ICON', 'SPAN']);
+    });
+
+    it('shows the first letter of icon-less first-level items and submenus only while collapsed', async () => {
+      expect(el.querySelector('.ant-menu-inline-collapsed-noicon')).toBeNull();
+      fixture.componentInstance.collapsed.set(true);
+      await stabilize(fixture);
+      const letter = q('#plain > .ant-menu-inline-collapsed-noicon');
+      expect([letter.textContent, letter.nextElementSibling!.className]).toEqual(['S', 'ant-menu-title-content']);
+      for (const id of [
+        '#slot',
+        '#projected',
+        '#link',
+        '#extra',
+        '#iconSub .ant-menu-submenu-title',
+        '#sub .ant-menu-item'
+      ]) {
+        // `#sub .ant-menu-item` (the nested item of a non-inline, level-1 flyout submenu) is not
+        // stamped at all while the submenu is closed (`cdkConnectedOverlayOpen` false), which also
+        // proves it carries no fallback letter.
+        expect(q(id)?.querySelector('.ant-menu-inline-collapsed-noicon') ?? null, id).toBeNull();
+      }
+      const subTitle = q('#sub .ant-menu-submenu-title');
+      expect(subTitle.querySelector(':scope > .ant-menu-inline-collapsed-noicon')!.textContent).toBe('N');
+      expect(subTitle.querySelector('.ant-menu-title-content')).toBeNull();
+      fixture.componentInstance.collapsed.set(false);
+      await stabilize(fixture);
+      expect(el.querySelector('.ant-menu-inline-collapsed-noicon')).toBeNull();
+      expect(subTitle.querySelector('.ant-menu-title-content')!.textContent).toBe('Navigation');
+    });
+
+    it('opens the collapsed title tooltip on first-level items unless nzTooltip is false or a tooltip is composed', async () => {
+      dispatchFakeEvent(q('#plain'), 'mouseenter');
+      await stabilize(fixture);
+      expect(tooltipTexts()).toEqual([]); // not collapsed
+      fixture.componentInstance.collapsed.set(true);
+      await stabilize(fixture);
+      dispatchFakeEvent(q('#plain'), 'mouseenter');
+      await stabilize(fixture);
+      expect(
+        overlayContainerElement.querySelector('.ant-tooltip.ant-menu-inline-collapsed-tooltip')!.textContent!.trim()
+      ).toBe('Settings');
+      dispatchFakeEvent(q('#plain'), 'mouseleave');
+      await stabilize(fixture, 300);
+      expect(overlayContainerElement.querySelector('.ant-menu-inline-collapsed-tooltip')).toBeNull();
+      dispatchFakeEvent(q('#composed'), 'mouseenter');
+      await stabilize(fixture, 300); // nz-tooltip's 0.15s mouseEnterDelay
+      expect(tooltipTexts()).toEqual(['Mine']);
+      dispatchFakeEvent(q('#composed'), 'mouseleave');
+      fixture.componentInstance.tooltip.set(false);
+      await stabilize(fixture, 300);
+      dispatchFakeEvent(q('#plain'), 'mouseenter');
+      await stabilize(fixture);
+      expect(overlayContainerElement.querySelector('.ant-menu-inline-collapsed-tooltip')).toBeNull();
+    });
+
+    it('disables every item and submenu through the root nzDisabled and marks a dashed divider', async () => {
+      fixture.componentInstance.disabled.set(true);
+      fixture.componentInstance.dashed.set(true);
+      await stabilize(fixture);
+      expect(
+        [...el.querySelectorAll('.ant-menu-item')].every(i => i.classList.contains('ant-menu-item-disabled'))
+      ).toBe(true);
+      expect(q('#sub').classList).toContain('ant-menu-submenu-disabled');
+      q('#plain').click();
+      expect(fixture.componentInstance.clicked).toBe(0);
+      expect(q('#divider').className).toBe('ant-dropdown-menu-item-divider ant-menu-item-divider-dashed');
+      fixture.componentInstance.disabled.set(false);
+      await stabilize(fixture);
+      expect([
+        q('#plain').classList.contains('ant-menu-item-disabled'),
+        q('#own').classList.contains('ant-menu-item-disabled')
+      ]).toEqual([false, true]);
+      q('#plain').click();
+      expect(fixture.componentInstance.clicked).toBe(1);
+    });
+
+    it("uses dropdown's vocabulary for a dropdown-hosted item and adds no dashed class there", async () => {
+      const dd = TestBed.createComponent(NzTestMenuV6DropdownHostedComponent);
+      await stabilize(dd);
+      const item = dd.nativeElement.querySelector('#ddItem') as HTMLElement;
+      expect(item.firstElementChild!.classList).toContain('ant-dropdown-menu-item-icon');
+      expect(item.querySelector('.ant-menu-title-content')!.classList).toContain(
+        'ant-dropdown-menu-title-content-with-extra'
+      );
+      expect(item.querySelector('.ant-dropdown-menu-item-label')).not.toBeNull();
+      expect(item.querySelector('.ant-dropdown-menu-item-extra')!.textContent!.trim()).toBe('⌘U');
+      expect(dd.nativeElement.querySelector('#ddDivider').className).toBe('ant-dropdown-menu-item-divider');
+    });
+  });
 });
 
 @Component({
@@ -1045,6 +1174,60 @@ export class NzTestMenuSwitchModeComponent {
 export class NzTestMenuThemeComponent {
   readonly theme = signal(true);
 }
+
+@Component({
+  imports: [NzIconModule, NzMenuModule, NzTooltipModule],
+  template: `
+    <ul
+      nz-menu
+      nzMode="inline"
+      [nzInlineCollapsed]="collapsed()"
+      [nzDisabled]="disabled()"
+      [nzTooltip]="tooltip()"
+      (nzClick)="clicked = clicked + 1"
+    >
+      <li nz-menu-item id="extra" [nzExtra]="extra()">Option 2</li>
+      <li nz-menu-item id="extraTpl" [nzExtra]="extraTpl">Users</li>
+      <li nz-menu-item id="slot" nzIcon="user">Profile</li>
+      <li nz-menu-item id="both" nzIcon="user"><nz-icon nzType="mail" /><span>Both</span></li>
+      <li nz-menu-item id="projected"><nz-icon nzType="mail" /><span>Projected</span></li>
+      <li nz-menu-item id="plain">Settings</li>
+      <li nz-menu-item id="link"><a href="#x">Link</a></li>
+      <li nz-menu-item id="composed" nz-tooltip nzTooltipTitle="Mine" nzTooltipPlacement="right">Composed</li>
+      <li nz-menu-item id="own" nzDisabled>Own</li>
+      <li nz-submenu id="sub" nzTitle="Navigation"
+        ><ul
+          ><li nz-menu-item>Nested</li></ul
+        ></li
+      >
+      <li nz-submenu id="iconSub" nzTitle="Apps" nzIcon="appstore"
+        ><ul
+          ><li nz-menu-item>Nested 2</li></ul
+        ></li
+      >
+      <li nz-menu-divider id="divider" [nzDashed]="dashed()"></li>
+    </ul>
+    <ng-template #extraTpl><b class="tpl">⌘U</b></ng-template>
+  `
+})
+export class NzTestMenuV6InputsComponent {
+  readonly collapsed = signal(false);
+  readonly disabled = signal(false);
+  readonly tooltip = signal(true);
+  readonly extra = signal<string | null>('⌘P');
+  readonly dashed = signal(false);
+  clicked = 0;
+}
+
+@Component({
+  imports: [NzMenuModule],
+  providers: [{ provide: NzIsMenuInsideDropdownToken, useValue: true }],
+  template: `<ul nz-menu
+    ><li nz-menu-item id="ddItem" nzIcon="user" nzExtra="⌘U">Users</li
+    ><li nz-menu-divider id="ddDivider" nzDashed></li
+  ></ul>`
+})
+export class NzTestMenuV6DropdownHostedComponent {}
 
 async function stabilize<T>(fixture: ComponentFixture<T>, ms?: number): Promise<void> {
   fixture.detectChanges();

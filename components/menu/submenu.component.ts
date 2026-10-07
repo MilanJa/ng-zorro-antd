@@ -74,9 +74,10 @@ const listOfHorizontalPositions = [
       [nzIcon]="nzIcon"
       [nzTitle]="nzTitle"
       [mode]="mode"
-      [nzDisabled]="nzDisabled"
+      [nzDisabled]="mergedDisabled"
       [paddingLeft]="nzPaddingLeft || inlinePaddingLeft"
       [nzTriggerSubMenuAction]="nzTriggerSubMenuAction"
+      [noIconLetter]="noIconLetter"
       (subMenuMouseState)="setMouseEnterState($event)"
       (toggleSubMenu)="toggleSubMenu()"
     >
@@ -113,7 +114,7 @@ const listOfHorizontalPositions = [
           [open]="nzOpen"
           [position]="position"
           [menuClass]="nzMenuClassName"
-          [nzDisabled]="nzDisabled"
+          [nzDisabled]="mergedDisabled"
           [nzTriggerSubMenuAction]="nzTriggerSubMenuAction"
           [nzNoAnimation]="noAnimation?.nzNoAnimation?.()"
           (subMenuMouseState)="setMouseEnterState($event)"
@@ -129,7 +130,7 @@ const listOfHorizontalPositions = [
   `,
   host: {
     '[class.ant-dropdown-menu-submenu]': `isMenuInsideDropdown`,
-    '[class.ant-dropdown-menu-submenu-disabled]': `isMenuInsideDropdown && nzDisabled`,
+    '[class.ant-dropdown-menu-submenu-disabled]': `isMenuInsideDropdown && mergedDisabled`,
     '[class.ant-dropdown-menu-submenu-open]': `isMenuInsideDropdown && nzOpen`,
     '[class.ant-dropdown-menu-submenu-selected]': `isMenuInsideDropdown && isSelected`,
     '[class.ant-dropdown-menu-submenu-vertical]': `isMenuInsideDropdown && mode === 'vertical'`,
@@ -137,7 +138,7 @@ const listOfHorizontalPositions = [
     '[class.ant-dropdown-menu-submenu-inline]': `isMenuInsideDropdown && mode === 'inline'`,
     '[class.ant-dropdown-menu-submenu-active]': `isMenuInsideDropdown && isActive`,
     '[class.ant-menu-submenu]': `!isMenuInsideDropdown`,
-    '[class.ant-menu-submenu-disabled]': `!isMenuInsideDropdown && nzDisabled`,
+    '[class.ant-menu-submenu-disabled]': `!isMenuInsideDropdown && mergedDisabled`,
     '[class.ant-menu-submenu-open]': `!isMenuInsideDropdown && nzOpen`,
     '[class.ant-menu-submenu-selected]': `!isMenuInsideDropdown && isSelected`,
     '[class.ant-menu-submenu-vertical]': `!isMenuInsideDropdown && mode === 'vertical'`,
@@ -197,6 +198,20 @@ export class NzSubMenuComponent implements OnInit, AfterContentInit, OnChanges {
   overlayPositions = listOfVerticalPositions;
   isSelected = false;
   isActive = false;
+  private menuDisabled = false;
+  private inlineCollapsed = false;
+
+  get mergedDisabled(): boolean {
+    return this.nzDisabled || this.menuDisabled;
+  }
+
+  /** First letter of a string title of an icon-less first-level submenu while collapsed (`SubMenu.tsx`). */
+  protected get noIconLetter(): string | null {
+    const title = this.nzTitle;
+    return this.inlineCollapsed && this.level === 1 && !this.nzIcon && typeof title === 'string' && title
+      ? title.charAt(0)
+      : null;
+  }
 
   /** set the submenu host open status directly **/
   setOpenStateWithoutDebounce(open: boolean): void {
@@ -258,6 +273,14 @@ export class NzSubMenuComponent implements OnInit, AfterContentInit, OnChanges {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(([mode, inlineIndent]) => {
         this.inlinePaddingLeft = mode === 'inline' ? this.level * inlineIndent : null;
+        this.cdr.markForCheck();
+      });
+
+    combineLatest([this.nzMenuService.inlineCollapsed$, this.nzMenuService.disabled$])
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(([inlineCollapsed, disabled]) => {
+        this.inlineCollapsed = inlineCollapsed;
+        this.menuDisabled = disabled;
         this.cdr.markForCheck();
       });
 
