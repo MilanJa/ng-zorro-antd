@@ -23,6 +23,14 @@ import { NzMentionComponent } from 'ng-zorro-antd/mention';
 - New components must be developed using the latest Angular features.
 - New features must be documented and include a demo. Guidelines on how to document can be found [here](./DOCUMENTATION.md).
 
+### Renamed and v6-only inputs (Ant Design v6 parity)
+
+- A new input takes antd 6's current prop name with the `nz` prefix. When the existing input matches a name antd deprecated, keep it as an alias: the new input is the source of truth, and the old one is a setter (or a second signal `input()`) that maps its value onto the same state through `aliasDeprecatedInput(component, oldName, newName, map)` from `ng-zorro-antd/core/util`. The helper warns once in dev mode; when both are bound, the new input wins.
+- Put `/** @deprecated Use \`nzNew\` instead. This will be removed in v23.0.0. */` and the marker line `// v6-alias: nzOld -> nzNew` above the old input, and add a row to `docs/v6-migration-notes.md` (component selector, old input, new input, value mapping, removal version). `scripts/build/v6/__tests__/migration-notes.spec.ts` fails for a marker without a row.
+- Every `nz*` input and output of menu, steps, timeline, splitter, flex and divider has a row in both `doc/index.en-US.md` and `doc/index.zh-CN.md`. A deprecated row is struck through (`~~[nzOld]~~`) and starts with `Deprecated, use [nzNew] instead.` / `已废弃，请使用 [nzNew]。`. An input that only renders under the v6 stylesheet ends its description with `Requires the v6 stylesheet.` / `需要 v6 样式表。` and is listed in `V6_ONLY` of `input-docs-coverage.spec.ts`.
+- A delivered antd prop goes into `DELIVERED` of `api-gaps-consistency.spec.ts`. Its `docs/v6-api-gaps.md` row is deleted, or rewritten when only part of it is closed.
+- A v6-only feature must not throw or break layout under the default v4 stylesheet. Add a new element only after auditing the compiled v4 CSS for `>`, `+`, `~` and structural pseudo-class selectors of the component, and record the audit in the commit message.
+
 ### TypeScript Guidelines
 
 - Use generics where appropriate to enhance type flexibility.
