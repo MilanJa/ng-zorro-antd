@@ -48,6 +48,9 @@ import { NzMenuModeType, NzSubmenuTrigger } from './menu.types';
   host: {
     '[class.ant-dropdown-menu-submenu-title]': 'isMenuInsideDropdown',
     '[class.ant-menu-submenu-title]': '!isMenuInsideDropdown',
+    // While the first letter replaces the title content, the full title stays the accessible name.
+    '[attr.aria-label]': 'letterOnlyTitle',
+    '[attr.title]': 'letterOnlyTitle',
     '[style.padding-inline-start.px]': 'paddingLeft',
     '(click)': 'clickTitle()',
     '(mouseenter)': 'setMouseState(true)',
@@ -70,6 +73,10 @@ export class NzSubMenuTitleComponent {
   @Input() nzTriggerSubMenuAction: NzSubmenuTrigger = 'hover';
   @Output() readonly toggleSubMenu = new EventEmitter();
   @Output() readonly subMenuMouseState = new EventEmitter<boolean>();
+
+  protected get letterOnlyTitle(): string | null {
+    return this.noIconLetter && typeof this.nzTitle === 'string' ? this.nzTitle : null;
+  }
 
   protected setMouseState(state: boolean): void {
     if (!this.nzDisabled && this.nzTriggerSubMenuAction === 'hover') {

@@ -690,6 +690,20 @@ describe('menu', () => {
       expect([...q('#projected > .ant-menu-title-content').children].map(c => c.tagName)).toEqual(['NZ-ICON', 'SPAN']);
     });
 
+    it('keeps the full title as the accessible name of a collapsed submenu showing only its first letter', async () => {
+      const subTitle = q('#sub .ant-menu-submenu-title');
+      expect(subTitle.getAttribute('aria-label')).toBeNull();
+      expect(subTitle.getAttribute('title')).toBeNull();
+      fixture.componentInstance.collapsed.set(true);
+      await stabilize(fixture);
+      expect(subTitle.getAttribute('aria-label')).toBe('Navigation');
+      expect(subTitle.getAttribute('title')).toBe('Navigation');
+      fixture.componentInstance.collapsed.set(false);
+      await stabilize(fixture);
+      expect(subTitle.getAttribute('aria-label')).toBeNull();
+      expect(subTitle.getAttribute('title')).toBeNull();
+    });
+
     it('shows the first letter of icon-less first-level items and submenus only while collapsed', async () => {
       expect(el.querySelector('.ant-menu-inline-collapsed-noicon')).toBeNull();
       fixture.componentInstance.collapsed.set(true);
