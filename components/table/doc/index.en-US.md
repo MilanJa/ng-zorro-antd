@@ -46,7 +46,7 @@ The data passed to `[nzData]` is exported with [Template Context](https://angula
       <td>{{data.address}}</td>
       <td>
         <a>Action 一 {{data.name}}</a>
-        <nz-divider nzType="vertical"></nz-divider>
+        <nz-divider nzOrientation="vertical"></nz-divider>
         <a>Delete</a>
       </td>
     </tr>

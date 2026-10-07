@@ -7,21 +7,21 @@ import { NzGridModule } from 'ng-zorro-antd/grid';
   selector: 'nz-demo-grid-gutter',
   imports: [NzDividerModule, NzGridModule],
   template: `
-    <nz-divider nzOrientation="left" nzText="Horizontal" />
+    <nz-divider nzTitlePlacement="start" nzText="Horizontal" />
     <div nz-row [nzGutter]="16">
       <div nz-col class="gutter-row" [nzSpan]="6"><div class="inner-box">col-6</div></div>
       <div nz-col class="gutter-row" [nzSpan]="6"><div class="inner-box">col-6</div></div>
       <div nz-col class="gutter-row" [nzSpan]="6"><div class="inner-box">col-6</div></div>
       <div nz-col class="gutter-row" [nzSpan]="6"><div class="inner-box">col-6</div></div>
     </div>
-    <nz-divider nzOrientation="left" nzText="Responsive" />
+    <nz-divider nzTitlePlacement="start" nzText="Responsive" />
     <div nz-row [nzGutter]="{ xs: 8, sm: 16, md: 24, lg: 32 }">
       <div nz-col class="gutter-row" [nzSpan]="6"><div class="inner-box">col-6</div></div>
       <div nz-col class="gutter-row" [nzSpan]="6"><div class="inner-box">col-6</div></div>
       <div nz-col class="gutter-row" [nzSpan]="6"><div class="inner-box">col-6</div></div>
       <div nz-col class="gutter-row" [nzSpan]="6"><div class="inner-box">col-6</div></div>
     </div>
-    <nz-divider nzOrientation="left" nzText="Vertical" />
+    <nz-divider nzTitlePlacement="start" nzText="Vertical" />
     <div nz-row [nzGutter]="[16, 24]">
       <div nz-col class="gutter-row" [nzSpan]="6"><div class="inner-box">col-6</div></div>
       <div nz-col class="gutter-row" [nzSpan]="6"><div class="inner-box">col-6</div></div>

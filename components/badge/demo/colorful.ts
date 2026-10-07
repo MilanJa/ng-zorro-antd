@@ -7,14 +7,14 @@ import { NzDividerModule } from 'ng-zorro-antd/divider';
   selector: 'nz-demo-badge-colorful',
   imports: [NzBadgeModule, NzDividerModule],
   template: `
-    <nz-divider nzOrientation="left" nzText="Presets" />
+    <nz-divider nzTitlePlacement="start" nzText="Presets" />
     @for (color of presets; track color) {
       <div>
         <nz-badge [nzColor]="color" [nzText]="color" />
       </div>
     }
 
-    <nz-divider nzOrientation="left" nzText="Custom" />
+    <nz-divider nzTitlePlacement="start" nzText="Custom" />
     @for (color of customColors; track color) {
       <div>
         <nz-badge [nzColor]="color" [nzText]="color" />

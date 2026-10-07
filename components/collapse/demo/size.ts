@@ -7,7 +7,7 @@ import { NzDividerModule } from 'ng-zorro-antd/divider';
   selector: 'nz-demo-collapse-size',
   imports: [NzCollapseModule, NzDividerModule],
   template: `
-    <nz-divider nzText="Default Size" nzOrientation="left" />
+    <nz-divider nzText="Default Size" nzTitlePlacement="start" />
     <nz-collapse>
       <nz-collapse-panel nzHeader="This is default size panel header" nzActive>
         <p style="margin:0;">
@@ -16,7 +16,7 @@ import { NzDividerModule } from 'ng-zorro-antd/divider';
         </p>
       </nz-collapse-panel>
     </nz-collapse>
-    <nz-divider nzText="Small Size" nzOrientation="left" />
+    <nz-divider nzText="Small Size" nzTitlePlacement="start" />
     <nz-collapse nzSize="small">
       <nz-collapse-panel nzHeader="This is small size panel header" nzActive>
         <p style="margin:0;">
@@ -25,7 +25,7 @@ import { NzDividerModule } from 'ng-zorro-antd/divider';
         </p>
       </nz-collapse-panel>
     </nz-collapse>
-    <nz-divider nzText="Large Size" nzOrientation="left" />
+    <nz-divider nzText="Large Size" nzTitlePlacement="start" />
     <nz-collapse nzSize="large">
       <nz-collapse-panel nzHeader="This is large size panel header" nzActive>
         <p style="margin:0;">

@@ -7,8 +7,8 @@ title:
 
 ## zh-CN
 
-使用 `nzType="vertical"` 设置为行内的垂直分割线。
+使用 `nzOrientation="vertical"` 设置为行内的垂直分割线。
 
 ## en-US
 
-Use `nzType="vertical"` make it vertical.
+Use `nzOrientation="vertical"` make it vertical.

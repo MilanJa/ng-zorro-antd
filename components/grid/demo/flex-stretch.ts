@@ -7,17 +7,17 @@ import { NzGridModule } from 'ng-zorro-antd/grid';
   selector: 'nz-demo-grid-flex-stretch',
   imports: [NzDividerModule, NzGridModule],
   template: `
-    <nz-divider nzText="Percentage columns" nzOrientation="left" />
+    <nz-divider nzText="Percentage columns" nzTitlePlacement="start" />
     <div nz-row>
       <div nz-col nzFlex="2">2 / 5</div>
       <div nz-col nzFlex="3">3 / 5</div>
     </div>
-    <nz-divider nzText="Fill rest" nzOrientation="left" />
+    <nz-divider nzText="Fill rest" nzTitlePlacement="start" />
     <div nz-row>
       <div nz-col nzFlex="100px">100px</div>
       <div nz-col nzFlex="auto">Fill Rest</div>
     </div>
-    <nz-divider nzText="Raw flex style" nzOrientation="left" />
+    <nz-divider nzText="Raw flex style" nzTitlePlacement="start" />
     <div nz-row>
       <div nz-col nzFlex="1 1 200px">1 1 200px</div>
       <div nz-col nzFlex="0 1 300px">0 1 300px</div>

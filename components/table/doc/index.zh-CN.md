@@ -47,7 +47,7 @@ Table 组件同时具备了易用性和高度可定制性
       <td>{{data.address}}</td>
       <td>
         <a>Action 一 {{data.name}}</a>
-        <nz-divider nzType="vertical"></nz-divider>
+        <nz-divider nzOrientation="vertical"></nz-divider>
         <a>Delete</a>
       </td>
     </tr>
