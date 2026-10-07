@@ -168,12 +168,12 @@ describe('timeline under antd v6 css', () => {
     }
   });
 
-  it('nzLoading: a spinning custom icon and a dotted process rail before it', async () => {
+  it('nzLoading: a spinning custom icon and a solid process rail before it', async () => {
     const [, second, third] = await api(h => h.loading.set(true));
     expect(third.classList).toContain('ant-timeline-item-process');
     expect(getComputedStyle(part(third, '.ant-timeline-item-icon')).borderTopWidth).toBe('0px');
     expect(part(third, '.ant-timeline-item-icon .anticon-loading')).toBeTruthy();
-    expect(getComputedStyle(part(second, '.ant-timeline-item-tail')).borderLeftStyle).toBe('dotted');
+    expect(getComputedStyle(part(second, '.ant-timeline-item-tail')).borderLeftStyle).toBe('solid');
   });
 
   it('paints dot items as antd: 10px outlined dots in the preset or custom colour, a 2px rail', async () => {
@@ -319,7 +319,7 @@ describe('timeline under antd v6 css', () => {
     const rails = list.slice(0, 4).map(item => part(item, '.ant-timeline-item-tail'));
     expect(rails.slice(0, 3).every(rail => rail.classList.contains('ant-timeline-item-rail-finish'))).toBe(true);
     expect(rails[3].classList).toContain('ant-timeline-item-rail-process');
-    expect(getComputedStyle(rails[3]).borderLeftStyle).toBe('dotted');
+    expect(getComputedStyle(rails[3]).borderLeftStyle).toBe('solid');
     expect(getComputedStyle(rails[2]).borderLeftStyle).toBe('solid');
     expect(list[3].classList).not.toContain('ant-timeline-item-active');
   });
@@ -335,7 +335,7 @@ describe('timeline under antd v6 css', () => {
     expect(pending.classList).not.toContain('ant-timeline-item-active');
     const pendingRail = part(pending, '.ant-timeline-item-tail');
     expect(pendingRail.classList).toContain('ant-timeline-item-rail-process');
-    expect(getComputedStyle(pendingRail).borderLeftStyle).toBe('dotted');
+    expect(getComputedStyle(pendingRail).borderLeftStyle).toBe('solid');
     for (const item of rest.slice(0, 3)) {
       expect(part(item, '.ant-timeline-item-tail').classList).toContain('ant-timeline-item-rail-finish');
     }

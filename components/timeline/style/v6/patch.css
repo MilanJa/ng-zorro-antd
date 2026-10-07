@@ -51,3 +51,10 @@
   .ant-timeline-item-wrapper.ant-timeline-item-empty-header.ant-timeline-item-placement-end::before {
   order: 1;
 }
+
+/* antd renders the rail before a loading/pending item solid: its `.ant-steps .ant-steps-item` rule resets
+   the generated `dotted` process-rail style, and that rule never applies to ng-zorro items (they carry no
+   `ant-steps-*` class). The doubled class outranks the generated `.ant-timeline .ant-timeline-item`. */
+.ant-timeline .ant-timeline-item.ant-timeline-item-wrapper {
+  --ant-cmp-steps-item-process-rail-line-style: solid;
+}
