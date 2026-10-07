@@ -31,7 +31,7 @@ interface Person {
             <td>{{ data.address }}</td>
             <td>
               <a>Action 一 {{ data.name }}</a>
-              <nz-divider nzType="vertical" />
+              <nz-divider nzOrientation="vertical" />
               <a>Delete</a>
             </td>
           </tr>

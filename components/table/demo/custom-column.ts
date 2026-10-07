@@ -57,7 +57,7 @@ interface CustomColumn extends NzCustomColumn {
             <td nzCellControl="address">{{ data.address }}</td>
             <td nzCellControl="action">
               <a>Action</a>
-              <nz-divider nzType="vertical" />
+              <nz-divider nzOrientation="vertical" />
               <a>Delete</a>
             </td>
           </tr>

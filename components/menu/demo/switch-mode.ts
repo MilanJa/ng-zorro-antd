@@ -11,7 +11,7 @@ import { NzSwitchModule } from 'ng-zorro-antd/switch';
   template: `
     <nz-switch [(ngModel)]="mode" />
     Change Mode
-    <nz-divider nzType="vertical" />
+    <nz-divider nzOrientation="vertical" />
     <nz-switch [(ngModel)]="dark" />
     Change Theme
     <br />

@@ -129,7 +129,7 @@ interface Setting {
             <td [nzEllipsis]="settingValue().ellipsis">{{ data.address }}</td>
             <td [nzRight]="fixedColumn()" [nzEllipsis]="settingValue().ellipsis">
               <a href="#">Delete</a>
-              <nz-divider nzType="vertical" />
+              <nz-divider nzOrientation="vertical" />
               <a href="#">More action</a>
             </td>
           </tr>

@@ -91,9 +91,9 @@ interface ChildrenItemData {
                             </li>
                           </ul>
                         </nz-dropdown-menu>
-                        <nz-divider nzType="vertical" />
+                        <nz-divider nzOrientation="vertical" />
                         <a class="operation">Stop</a>
-                        <nz-divider nzType="vertical" />
+                        <nz-divider nzOrientation="vertical" />
                         <a>More</a>
                       </span>
                     </td>

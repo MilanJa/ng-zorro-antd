@@ -58,7 +58,7 @@ import { FontType, NzWatermarkModule } from 'ng-zorro-antd/watermark';
           alt="示例图片"
         />
       </nz-watermark>
-      <nz-divider nzType="vertical" />
+      <nz-divider nzOrientation="vertical" />
       <form nz-form nzLayout="vertical" [formGroup]="form">
         <nz-form-item>
           <nz-form-label>Content</nz-form-label>
