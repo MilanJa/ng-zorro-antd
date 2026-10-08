@@ -20,7 +20,7 @@ import { By } from '@angular/platform-browser';
 import { vi } from 'vitest';
 
 import { testDirectionality, updateNonSignalsInput } from 'ng-zorro-antd/core/testing';
-import { BooleanInput, NzDirectionVHType, NzSizeDSType } from 'ng-zorro-antd/core/types';
+import { BooleanInput, NzDirectionVHType, NzSizeDMSType, NzSizeDSType } from 'ng-zorro-antd/core/types';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { provideNzIconsTesting } from 'ng-zorro-antd/icon/testing';
 import { NzTooltipDirective } from 'ng-zorro-antd/tooltip';
@@ -869,3 +869,37 @@ export class NzTestStepsLayoutComponent {
   readonly errorAt = signal(-1);
   readonly changed: number[] = [];
 }
+
+@Component({
+  imports: [NzStepsModule],
+  template: `
+    <nz-steps id="size" [nzSize]="size()" [nzCurrent]="0">
+      <nz-step nzTitle="a" />
+      <nz-step nzTitle="b" />
+    </nz-steps>
+  `
+})
+export class NzTestStepsSizeComponent {
+  readonly size = signal<NzSizeDMSType>('medium');
+}
+
+describe('steps nzSize', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({ providers: [provideNzIconsTesting()] });
+  });
+
+  it('renders medium exactly as default, and small with the small class', async () => {
+    const fixture = TestBed.createComponent(NzTestStepsSizeComponent);
+    await stabilize(fixture);
+    const root = (): HTMLElement => fixture.nativeElement.querySelector('#size');
+    const classes = (): string[] => [root(), ...root().querySelectorAll('.ant-steps-item')].map(e => e.className);
+    const medium = classes();
+    expect(medium[0]).not.toContain('ant-steps-small');
+    fixture.componentInstance.size.set('default');
+    await stabilize(fixture);
+    expect(classes()).toEqual(medium); // v4 safety: medium adds no class and drops none
+    fixture.componentInstance.size.set('small');
+    await stabilize(fixture);
+    expect(root().classList).toContain('ant-steps-small');
+  });
+});

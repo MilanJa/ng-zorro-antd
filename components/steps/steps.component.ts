@@ -29,7 +29,7 @@ import { startWith } from 'rxjs/operators';
 
 import { warn } from 'ng-zorro-antd/core/logger';
 import { gridResponsiveMap, NzBreakpointEnum, NzBreakpointService } from 'ng-zorro-antd/core/services';
-import { BooleanInput, NzSizeDSType } from 'ng-zorro-antd/core/types';
+import { BooleanInput, NzSizeDMSType } from 'ng-zorro-antd/core/types';
 import { aliasDeprecatedInput, toBoolean } from 'ng-zorro-antd/core/util';
 
 import { planDisplaySteps } from './display-steps';
@@ -114,7 +114,7 @@ export class NzStepsComponent implements OnChanges, OnInit, AfterContentInit {
   }
   @Input() nzType: NzStepsType = 'default';
   @Input() nzVariant: NzStepsVariant = 'filled';
-  @Input() nzSize: NzSizeDSType = 'default';
+  @Input() nzSize: NzSizeDMSType = 'default';
   @Input() nzStartIndex = 0;
   @Input() nzStatus: NzStatusType = 'process';
   /** Maximum number of steps shown (`>= 3`); hidden ranges collapse into disabled ellipsis steps. */

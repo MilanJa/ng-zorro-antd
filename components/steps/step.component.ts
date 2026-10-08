@@ -24,7 +24,7 @@ import { Subject } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
 import { NzOutletModule } from 'ng-zorro-antd/core/outlet';
-import { NgClassType, NzSizeDSType } from 'ng-zorro-antd/core/types';
+import { NgClassType, NzSizeDMSType } from 'ng-zorro-antd/core/types';
 import { aliasDeprecatedInput, fromEventOutsideAngular } from 'ng-zorro-antd/core/util';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzProgressFormatter, NzProgressModule } from 'ng-zorro-antd/progress';
@@ -208,7 +208,7 @@ export class NzStepComponent {
   }
   @Input({ transform: booleanAttribute }) nzDisabled = false;
   @Input() nzPercentage: number | null = null;
-  @Input() nzSize: NzSizeDSType = 'default';
+  @Input() nzSize: NzSizeDMSType = 'default';
 
   @Input()
   get nzStatus(): string {
