@@ -37,7 +37,7 @@ export type NzSiderSemanticSlot = 'root' | 'body';
   exportAs: 'nzSider',
   encapsulation: ViewEncapsulation.None,
   template: `
-    <div class="ant-layout-sider-children" [class]="nzClassNames.body ?? null" [style]="nzStyles.body ?? null">
+    <div class="ant-layout-sider-children" [class]="nzClassNames?.body ?? null" [style]="nzStyles?.body ?? null">
       <ng-content />
     </div>
     @if (nzCollapsible && nzTrigger !== null) {
@@ -62,8 +62,8 @@ export type NzSiderSemanticSlot = 'root' | 'body';
     '[class.ant-layout-sider-dark]': `nzTheme === 'dark'`,
     '[class.ant-layout-sider-collapsed]': `nzCollapsed`,
     '[class.ant-layout-sider-has-trigger]': `nzCollapsible && nzTrigger !== null`,
-    '[class]': 'nzClassNames.root ?? null',
-    '[style]': 'nzStyles.root ?? null',
+    '[class]': 'nzClassNames?.root ?? null',
+    '[style]': 'nzStyles?.root ?? null',
     '[style.flex]': 'flexSetting',
     '[style.maxWidth]': 'widthSetting',
     '[style.minWidth]': 'widthSetting',
@@ -89,9 +89,9 @@ export class NzSiderComponent implements OnInit, OnChanges, AfterContentInit {
   @Input({ transform: booleanAttribute }) nzCollapsible = false;
   @Input({ transform: booleanAttribute }) nzCollapsed = false;
   /** antd v6 semantic class names: `root` (the host) and `body` (`.ant-layout-sider-children`). */
-  @Input() nzClassNames: NzSemanticClassNames<NzSiderSemanticSlot> = {};
+  @Input() nzClassNames: NzSemanticClassNames<NzSiderSemanticSlot> | null | undefined = {};
   /** antd v6 semantic styles; the width bindings of the host win over `root`, as in antd. */
-  @Input() nzStyles: NzSemanticStyles<NzSiderSemanticSlot> = {};
+  @Input() nzStyles: NzSemanticStyles<NzSiderSemanticSlot> | null | undefined = {};
   matchBreakPoint = false;
   flexSetting: string | null = null;
   widthSetting: string | null = null;

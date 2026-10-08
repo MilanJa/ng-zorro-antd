@@ -416,3 +416,46 @@ describe('nz-sider semantic slots', () => {
     expect(q('#plain .ant-layout-sider-children').getAttribute('style')).toBeNull();
   });
 });
+
+@Component({
+  imports: [NzLayoutModule],
+  template: `
+    <nz-layout>
+      <nz-sider id="nullish" [nzClassNames]="cn()" [nzStyles]="st()">S</nz-sider>
+    </nz-layout>
+  `
+})
+export class NzLayoutSiderNullishSlotsComponent {
+  readonly cn = signal<NzSemanticClassNames<'root' | 'body'> | null | undefined>(undefined);
+  readonly st = signal<NzSemanticStyles<'root' | 'body'> | null | undefined>(null);
+}
+
+describe('nz-sider nullish semantic slots', () => {
+  it('treats undefined and null as unset, then applies and clears the slots', () => {
+    const fixture = TestBed.createComponent(NzLayoutSiderNullishSlotsComponent);
+    const q = (sel: string): HTMLElement => fixture.nativeElement.querySelector(sel);
+    expect(() => fixture.detectChanges()).not.toThrow();
+    expect(q('#nullish').className).toBe('ant-layout-sider ant-layout-sider-dark');
+    expect(q('#nullish').getAttribute('style')).toBe(
+      'flex: 0 0 200px; max-width: 200px; min-width: 200px; width: 200px;'
+    );
+    expect(q('#nullish .ant-layout-sider-children').className).toBe('ant-layout-sider-children');
+    expect(q('#nullish .ant-layout-sider-children').getAttribute('style')).toBeNull();
+
+    fixture.componentInstance.cn.set({ root: 'my-root', body: 'my-body' });
+    fixture.componentInstance.st.set({ root: { color: 'rgb(255, 0, 0)' }, body: { padding: '12px' } });
+    fixture.detectChanges();
+    expect(q('#nullish').classList).toContain('my-root');
+    expect(q('#nullish').style.color).toBe('rgb(255, 0, 0)');
+    expect(q('#nullish .ant-layout-sider-children').className).toBe('ant-layout-sider-children my-body');
+    expect(q('#nullish .ant-layout-sider-children').style.padding).toBe('12px');
+
+    fixture.componentInstance.cn.set(undefined);
+    fixture.componentInstance.st.set(undefined);
+    fixture.detectChanges();
+    expect(q('#nullish').classList).not.toContain('my-root');
+    expect(q('#nullish').style.color).toBe('');
+    expect(q('#nullish .ant-layout-sider-children').className).toBe('ant-layout-sider-children');
+    expect(q('#nullish .ant-layout-sider-children').style.padding).toBe('');
+  });
+});
