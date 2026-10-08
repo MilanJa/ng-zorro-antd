@@ -80,6 +80,23 @@ class TestDropdownComponent {
 })
 class TestNestedDropdownComponent {}
 
+@Component({
+  imports: [NzDropdownModule],
+  template: `
+    <button id="iconTrg" nz-dropdown [nzDropdownMenu]="iconMenu" nzTrigger="click">Menu</button>
+    <nz-dropdown-menu #iconMenu="nzDropdownMenu">
+      <ul nz-menu>
+        <li nz-submenu id="iconSub" nzTitle="sub menu" nzIcon="setting">
+          <ul>
+            <li id="nestedIconItem" nz-menu-item nzIcon="user" nzExtra="⌘U">Nested</li>
+          </ul>
+        </li>
+      </ul>
+    </nz-dropdown-menu>
+  `
+})
+class TestNestedIconDropdownComponent {}
+
 describe('dropdown under antd v6 css', () => {
   let fixture: ComponentFixture<TestDropdownComponent>;
   let overlay: OverlayContainer;
@@ -289,5 +306,31 @@ describe('dropdown under antd v6 css', () => {
     // The list's 4px padding is the only inset (the submenu's projected `<ul>` adds none).
     expect(item.getBoundingClientRect().left - list.getBoundingClientRect().left).toBeCloseTo(4, 0);
     expect(item.getBoundingClientRect().top - list.getBoundingClientRect().top).toBeCloseTo(4, 0);
+  });
+
+  it('sizes submenu-title and nested item icons like antd', async () => {
+    const iconFixture = TestBed.createComponent(TestNestedIconDropdownComponent);
+    iconFixture.detectChanges();
+    (iconFixture.nativeElement.querySelector('#iconTrg') as HTMLElement).click();
+    await waitForOpen(iconFixture);
+    const title = overlay.getContainerElement().querySelector('.ant-dropdown-menu-submenu-title') as HTMLElement;
+    const titleIcon = getComputedStyle(title.querySelector('.ant-dropdown-menu-item-icon')!);
+    expect(titleIcon.marginInlineEnd).toBe('8px');
+    expect(titleIcon.fontSize).toBe('12px');
+
+    dispatchEvent(title, new MouseEvent('mouseenter'));
+    await waitForOpen(iconFixture);
+    const root = overlay.getContainerElement().querySelector('.ant-menu-submenu-popup') as HTMLElement;
+    await expectMotionSettled(root);
+    const nestedIcon = getComputedStyle(root.querySelector('#nestedIconItem .ant-dropdown-menu-item-icon')!);
+    expect(nestedIcon.marginInlineEnd).toBe('8px');
+    expect(nestedIcon.fontSize).toBe('12px');
+    expect(nestedIcon.minWidth).toBe('14px');
+    const content = getComputedStyle(
+      root.querySelector('#nestedIconItem .ant-dropdown-menu-title-content-with-extra')!
+    );
+    // `inline-flex` computes to `flex` for a child of the item's flex container.
+    expect(content.display).toBe('flex');
+    expect(content.alignItems).toBe('center');
   });
 });

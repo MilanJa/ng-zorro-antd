@@ -19,7 +19,11 @@ import { NzMenuModeType, NzSubmenuTrigger } from './menu.types';
   encapsulation: ViewEncapsulation.None,
   template: `
     @if (nzIcon) {
-      <nz-icon [nzType]="nzIcon" />
+      <nz-icon
+        [nzType]="nzIcon"
+        [class.ant-menu-item-icon]="!isMenuInsideDropdown"
+        [class.ant-dropdown-menu-item-icon]="isMenuInsideDropdown"
+      />
     }
     @if (noIconLetter) {
       <div class="ant-menu-inline-collapsed-noicon">{{ noIconLetter }}</div>

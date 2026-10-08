@@ -48,7 +48,7 @@ const DELIVERED: Record<string, string[]> = {
   BackTop: ['showProgress'],
   Col: ['xs', 'sm', 'md', 'lg', 'xl', 'xxl', 'xxxl'],
   Sider: ['classNames', 'styles'],
-  'Dropdown menu items': [],
+  'Dropdown menu items': ['icon', 'extra', 'label'],
   'Dropdown submenu title': [],
   Breadcrumb: []
 };

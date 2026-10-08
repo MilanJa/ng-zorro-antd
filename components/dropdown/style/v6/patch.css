@@ -73,15 +73,16 @@
   list-style: inherit;
 }
 
-/* The list, item, title, group, divider, arrow and state rules v6 keys on
+/* The list, item, icon, title, group, divider, arrow and state rules v6 keys on
    `.ant-dropdown-menu-submenu .ant-dropdown-menu`, re-keyed onto the popup root (same specificity, so
    source order after the template decides). Selectors naming a class ng-zorro's menu never emits
-   (`-title-content`, `-item-icon`, `-item-extra`, `-item-label`, `-item-active`, `-submenu-title-*`
-   states) are left out; the `.ant-menu-title-content` mirrors above already cover nested items. The
-   one `!important` is antd's own, kept as extracted. Regenerate after an antd upgrade: take the
-   template part of `publish/dropdown/style/v6/index.css`, keep the selectors that start with
-   `.ant-dropdown-menu-submenu .ant-dropdown-menu` and name only emitted classes, replace that prefix
-   with `.ant-menu-submenu-popup > .ant-dropdown-menu`, and compare the rule count (23) here. */
+   inside a dropdown (`-title-content`, `-item-active`, `-item-selected-active`, `-submenu-title-*`
+   states) are left out; the `.ant-menu-title-content` mirrors above and menu's own patch cover the
+   label and extra inside nested items. The one `!important` is antd's own, kept as extracted.
+   Regenerate after an antd upgrade: take the template part of `publish/dropdown/style/v6/index.css`,
+   keep the selectors that start with `.ant-dropdown-menu-submenu .ant-dropdown-menu` and name only
+   emitted classes, replace that prefix with `.ant-menu-submenu-popup > .ant-dropdown-menu`, and
+   compare the rule count (25) here. */
 .ant-menu-submenu-popup > .ant-dropdown-menu {
   padding: var(--ant-padding-xxs);
   list-style-type: none;
@@ -109,6 +110,16 @@
   position: relative;
   display: flex;
   align-items: center;
+}
+.ant-menu-submenu-popup > .ant-dropdown-menu .ant-dropdown-menu-item-icon {
+  min-width: var(--ant-font-size);
+  margin-inline-end: var(--ant-margin-xs);
+  font-size: var(--ant-font-size-sm);
+}
+.ant-menu-submenu-popup > .ant-dropdown-menu .ant-dropdown-menu-title-content-with-extra {
+  display: inline-flex;
+  align-items: center;
+  width: 100%;
 }
 .ant-menu-submenu-popup > .ant-dropdown-menu .ant-dropdown-menu-item,
 .ant-menu-submenu-popup > .ant-dropdown-menu .ant-dropdown-menu-submenu-title {

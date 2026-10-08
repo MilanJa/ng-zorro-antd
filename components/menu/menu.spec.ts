@@ -791,6 +791,25 @@ describe('menu', () => {
       expect(dd.nativeElement.querySelector('#ddDivider').className).toBe('ant-dropdown-menu-item-divider');
     });
 
+    it('gives a submenu title icon the item-icon class of its host vocabulary', async () => {
+      const plain = TestBed.createComponent(NzTestMenuSubmenuIconComponent);
+      await stabilize(plain);
+      const plainIcon = plain.nativeElement.querySelector('#plainSub .ant-menu-submenu-title > nz-icon') as HTMLElement;
+      expect(plainIcon.classList).toContain('ant-menu-item-icon');
+      expect(plainIcon.classList).not.toContain('ant-dropdown-menu-item-icon');
+
+      const dd = TestBed.createComponent(NzTestMenuDropdownSubmenuIconComponent);
+      await stabilize(dd);
+      const ddIcon = dd.nativeElement.querySelector('#ddSub .ant-dropdown-menu-submenu-title > nz-icon') as HTMLElement;
+      expect(ddIcon.classList).toContain('ant-dropdown-menu-item-icon');
+      expect(ddIcon.classList).not.toContain('ant-menu-item-icon');
+      expect(
+        dd.nativeElement.querySelector(
+          '#ddNoIcon .ant-dropdown-menu-submenu-title > nz-icon:not(.ant-dropdown-menu-submenu-arrow-icon)'
+        )
+      ).toBeNull();
+    });
+
     it('titles the collapsed tooltip with the label only when nzExtra is set', async () => {
       fixture.componentInstance.collapsed.set(true);
       await stabilize(fixture);
@@ -1408,6 +1427,40 @@ class TrackingMutationObserver extends NativeMutationObserver {
   ></ul>`
 })
 export class NzTestMenuV6DropdownHostedComponent {}
+
+@Component({
+  imports: [NzMenuModule],
+  template: `
+    <ul nz-menu>
+      <li nz-submenu id="plainSub" nzTitle="Plain" nzIcon="mail"
+        ><ul
+          ><li nz-menu-item>a</li></ul
+        ></li
+      >
+    </ul>
+  `
+})
+export class NzTestMenuSubmenuIconComponent {}
+
+@Component({
+  imports: [NzMenuModule],
+  providers: [{ provide: NzIsMenuInsideDropdownToken, useValue: true }],
+  template: `
+    <ul nz-menu>
+      <li nz-submenu id="ddSub" nzTitle="In dropdown" nzIcon="mail"
+        ><ul
+          ><li nz-menu-item>a</li></ul
+        ></li
+      >
+      <li nz-submenu id="ddNoIcon" nzTitle="No icon"
+        ><ul
+          ><li nz-menu-item>b</li></ul
+        ></li
+      >
+    </ul>
+  `
+})
+export class NzTestMenuDropdownSubmenuIconComponent {}
 
 @Component({
   imports: [NzMenuModule],
