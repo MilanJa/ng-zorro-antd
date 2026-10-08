@@ -243,7 +243,7 @@ describe('nz-float-button-top nzShowProgress', () => {
     await settle();
   });
 
-  // Review Focus 5: scrollHeight === clientHeight binds 0, never NaN.
+  // a target that cannot scroll (scrollHeight === clientHeight) yields 0, not NaN.
   it('binds 0turn when the target cannot scroll', () => {
     expect(box().scrollHeight).toBe(box().clientHeight);
     expect(button().classList).toContain('ant-float-btn-progress');

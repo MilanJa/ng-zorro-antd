@@ -141,3 +141,39 @@ describe('float-button-top progress ring under antd v6 css', () => {
     expect(plain.borderTopWidth).toBe('0px');
   });
 });
+
+@Component({
+  imports: [NzFloatButtonModule],
+  template: `
+    <nz-float-button id="wrap" nzShape="square" nzIcon="file-text" nzContent="HELP INFO" />
+    <nz-float-button id="short" nzShape="square" nzIcon="file-text" nzContent="HELP" />
+  `
+})
+class TestFloatButtonContentWrapComponent {}
+
+describe('float-button content wrapping under antd v6 css', () => {
+  beforeEach(() => {
+    installV6Css();
+    TestBed.configureTestingModule({ providers: [provideNzIconsTesting()] });
+  });
+
+  afterEach(() => {
+    style.remove();
+  });
+
+  it('wraps long nzContent text inside the square instead of clipping it', async () => {
+    const fixture = TestBed.createComponent(TestFloatButtonContentWrapComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const inner = document.querySelector('#wrap .ant-float-btn-inner') as HTMLElement;
+    const description = document.querySelector('#wrap .ant-float-btn-description') as HTMLElement;
+    expect(getComputedStyle(inner).whiteSpace).toBe('normal');
+    expect(getComputedStyle(inner).wordBreak).toBe('break-word');
+    expect(description.scrollWidth).toBeLessThanOrEqual(description.clientWidth);
+    expect(Math.round(inner.getBoundingClientRect().width)).toBe(40);
+    // short content keeps the 40px square
+    const short = document.querySelector('#short .ant-float-btn-inner') as HTMLElement;
+    expect(Math.round(short.getBoundingClientRect().width)).toBe(40);
+  });
+});

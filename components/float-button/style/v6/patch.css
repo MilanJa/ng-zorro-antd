@@ -39,6 +39,10 @@
      2 x line-width to an auto-height (square) host. */
   border: none;
   border-radius: inherit;
+  /* v6 `.ant-float-btn` sets these for antd's Button root; here the text sits under the inner button,
+     where `.ant-btn` sets `white-space: nowrap`, so nzContent could not wrap in the 40px square. */
+  white-space: normal;
+  word-break: break-word;
 }
 
 /* `nz-float-button-content` is an unstyled custom element (inline by default), so the percentage
