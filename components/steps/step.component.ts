@@ -175,8 +175,8 @@ export class NzStepComponent {
   @Input() nzTitle?: string | TemplateRef<void>;
   @Input() nzSubtitle?: string | TemplateRef<void>;
   @Input() set nzContent(value: string | TemplateRef<void> | undefined) {
-    this.contentExplicit = true;
-    this.content = value;
+    this.contentExplicit = value !== undefined;
+    this.content = value ?? this.descriptionAlias;
   }
   get nzContent(): string | TemplateRef<void> | undefined {
     return this.content;
@@ -184,8 +184,8 @@ export class NzStepComponent {
   /** @deprecated Use `nzContent` instead. This will be removed in v23.0.0. */
   // v6-alias: nzDescription -> nzContent
   @Input() set nzDescription(value: string | TemplateRef<void> | undefined) {
-    const mapped = this.aliasDescription(value);
-    if (!this.contentExplicit) this.content = mapped;
+    this.descriptionAlias = this.aliasDescription(value);
+    if (!this.contentExplicit) this.content = this.descriptionAlias;
   }
   get nzDescription(): string | TemplateRef<void> | undefined {
     return this.content;
@@ -194,6 +194,8 @@ export class NzStepComponent {
   @Output() readonly nzClick = new EventEmitter<number>();
   content?: string | TemplateRef<void>;
   private contentExplicit = false;
+  /** Last value of the deprecated `nzDescription`, the fallback when `nzContent` is unset. */
+  private descriptionAlias?: string | TemplateRef<void>;
   private readonly aliasDescription = aliasDeprecatedInput<string | TemplateRef<void> | undefined>(
     'nz-step',
     'nzDescription',

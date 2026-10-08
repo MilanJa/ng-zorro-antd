@@ -80,9 +80,9 @@ export class NzStepsComponent implements OnChanges, OnInit, AfterContentInit {
   @ContentChildren(NzStepComponent) steps!: QueryList<NzStepComponent>;
 
   @Input() nzCurrent = 0;
-  @Input() set nzOrientation(value: NzStepsOrientation) {
-    this.orientationExplicit = true;
-    this.orientation = value;
+  @Input() set nzOrientation(value: NzStepsOrientation | undefined) {
+    this.orientationExplicit = value !== undefined;
+    this.orientation = value ?? this.directionAlias ?? 'horizontal';
   }
   get nzOrientation(): NzStepsOrientation {
     return this.orientation;
@@ -90,15 +90,15 @@ export class NzStepsComponent implements OnChanges, OnInit, AfterContentInit {
   /** @deprecated Use `nzOrientation` instead. This will be removed in v23.0.0. */
   // v6-alias: nzDirection -> nzOrientation
   @Input() set nzDirection(value: NzDirectionType) {
-    const mapped = this.aliasDirection(value);
-    if (!this.orientationExplicit) this.orientation = mapped;
+    this.directionAlias = this.aliasDirection(value);
+    if (!this.orientationExplicit) this.orientation = this.directionAlias ?? 'horizontal';
   }
   get nzDirection(): NzDirectionType {
     return this.orientation;
   }
-  @Input() set nzTitlePlacement(value: NzStepsTitlePlacement) {
-    this.titlePlacementExplicit = true;
-    this.titlePlacementValue = value;
+  @Input() set nzTitlePlacement(value: NzStepsTitlePlacement | undefined) {
+    this.titlePlacementExplicit = value !== undefined;
+    this.titlePlacementValue = value ?? this.labelPlacementAlias ?? 'horizontal';
   }
   get nzTitlePlacement(): NzStepsTitlePlacement {
     return this.titlePlacementValue;
@@ -106,8 +106,8 @@ export class NzStepsComponent implements OnChanges, OnInit, AfterContentInit {
   /** @deprecated Use `nzTitlePlacement` instead. This will be removed in v23.0.0. */
   // v6-alias: nzLabelPlacement -> nzTitlePlacement
   @Input() set nzLabelPlacement(value: 'horizontal' | 'vertical') {
-    const mapped = this.aliasLabelPlacement(value);
-    if (!this.titlePlacementExplicit) this.titlePlacementValue = mapped;
+    this.labelPlacementAlias = this.aliasLabelPlacement(value);
+    if (!this.titlePlacementExplicit) this.titlePlacementValue = this.labelPlacementAlias ?? 'horizontal';
   }
   get nzLabelPlacement(): 'horizontal' | 'vertical' {
     return this.titlePlacementValue;
@@ -148,8 +148,12 @@ export class NzStepsComponent implements OnChanges, OnInit, AfterContentInit {
 
   private orientation: NzStepsOrientation = 'horizontal';
   private orientationExplicit = false;
+  /** Last value of the deprecated `nzDirection`, the fallback when `nzOrientation` is unset. */
+  private directionAlias?: NzDirectionType;
   private titlePlacementValue: NzStepsTitlePlacement = 'horizontal';
   private titlePlacementExplicit = false;
+  /** Last value of the deprecated `nzLabelPlacement`, the fallback when `nzTitlePlacement` is unset. */
+  private labelPlacementAlias?: 'horizontal' | 'vertical';
   private legacyDot = false;
   private readonly aliasDirection = aliasDeprecatedInput<NzDirectionType>('nz-steps', 'nzDirection', 'nzOrientation');
   private readonly aliasLabelPlacement = aliasDeprecatedInput<'horizontal' | 'vertical'>(
