@@ -24,6 +24,7 @@ import {
   ViewEncapsulation,
   booleanAttribute,
   inject,
+  NgZone,
   signal,
   DestroyRef,
   ChangeDetectorRef
@@ -135,6 +136,9 @@ export class NzMenuItemComponent implements OnInit, OnChanges, AfterContentInit,
   private viewInit = false;
   private warnedDoubleIcon = false;
   private collapsedTooltip: ComponentRef<NzTooltipComponent> | null = null;
+  private readonly ngZone = inject(NgZone);
+  /** Watches the title content while the collapsed first letter is derived from it; `null` otherwise. */
+  private titleObserver: MutationObserver | null = null;
 
   get mergedDisabled(): boolean {
     return this.nzDisabled || this.menuDisabled;
@@ -186,9 +190,41 @@ export class NzMenuItemComponent implements OnInit, OnChanges, AfterContentInit,
     if (!this.viewInit) {
       return;
     }
+    this.noIconLetter.set(this.collapsedLetter());
+    this.syncTitleObserver();
+  }
+
+  private collapsedLetter(): string | null {
     const content = this.titleContent.nativeElement;
     const text = content.children.length === 0 ? (content.textContent ?? '').trim() : '';
-    this.noIconLetter.set(this.inlineCollapsed && this.level === 1 && !this.nzIcon && text ? text.charAt(0) : null);
+    return this.inlineCollapsed && this.level === 1 && !this.nzIcon && text ? text.charAt(0) : null;
+  }
+
+  /** While the letter can show, a label changed later (an interpolation, a translation) must refresh it. */
+  private syncTitleObserver(): void {
+    const watch = this.inlineCollapsed && this.level === 1 && !this.nzIcon && typeof MutationObserver !== 'undefined';
+    if (watch && !this.titleObserver) {
+      this.ngZone.runOutsideAngular(() => {
+        this.titleObserver = new MutationObserver(() => {
+          const letter = this.collapsedLetter();
+          if (letter !== this.noIconLetter()) {
+            this.ngZone.run(() => this.noIconLetter.set(letter));
+          }
+        });
+        this.titleObserver.observe(this.titleContent.nativeElement, {
+          characterData: true,
+          childList: true,
+          subtree: true
+        });
+      });
+    } else if (!watch) {
+      this.disconnectTitleObserver();
+    }
+  }
+
+  private disconnectTitleObserver(): void {
+    this.titleObserver?.disconnect();
+    this.titleObserver = null;
   }
 
   /** With `nzIcon` set, a directly projected `<nz-icon>` would be a second icon; hide it. */
@@ -262,6 +298,7 @@ export class NzMenuItemComponent implements OnInit, OnChanges, AfterContentInit,
         filter(e => e instanceof NavigationEnd)
       )
       .subscribe(() => this.updateRouterActive());
+    this.destroyRef.onDestroy(() => this.disconnectTitleObserver());
   }
 
   ngOnInit(): void {

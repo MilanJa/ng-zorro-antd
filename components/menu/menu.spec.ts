@@ -802,6 +802,35 @@ describe('menu', () => {
     });
   });
 
+  describe('collapsed first letter', () => {
+    beforeEach(() => {
+      TrackingMutationObserver.live.clear();
+      vi.stubGlobal('MutationObserver', TrackingMutationObserver);
+    });
+    afterEach(() => vi.unstubAllGlobals());
+
+    it('follows a label that changes while collapsed and disconnects its observer', async () => {
+      const fixture = TestBed.createComponent(NzTestMenuCollapsedLabelComponent);
+      const letter = (): string | null =>
+        fixture.nativeElement.querySelector('#dyn > .ant-menu-inline-collapsed-noicon')?.textContent ?? null;
+      await stabilize(fixture);
+      expect(letter()).toBe('S');
+      expect(TrackingMutationObserver.live.size).toBe(1); // the icon item is never observed
+      fixture.componentInstance.label.set('Mail');
+      await stabilize(fixture);
+      expect(letter()).toBe('M');
+      fixture.componentInstance.collapsed.set(false);
+      await stabilize(fixture);
+      expect(letter()).toBeNull();
+      expect(TrackingMutationObserver.live.size).toBe(0);
+      fixture.componentInstance.collapsed.set(true);
+      await stabilize(fixture);
+      expect(TrackingMutationObserver.live.size).toBe(1);
+      fixture.destroy();
+      expect(TrackingMutationObserver.live.size).toBe(0);
+    });
+  });
+
   describe('nzExpandIcon', () => {
     let fixture: ComponentFixture<NzTestMenuExpandIconComponent>;
     const title = (): HTMLElement => fixture.nativeElement.querySelector('#expSub .ant-menu-submenu-title');
@@ -1308,6 +1337,34 @@ export class NzTestMenuV6InputsComponent {
   readonly extra = signal<string | null>('⌘P');
   readonly dashed = signal(false);
   clicked = 0;
+}
+
+@Component({
+  imports: [NzMenuModule],
+  template: `
+    <ul nz-menu nzMode="inline" [nzInlineCollapsed]="collapsed()">
+      <li nz-menu-item id="dyn">{{ label() }}</li>
+      <li nz-menu-item id="dynIcon" nzIcon="user">{{ label() }}</li>
+    </ul>
+  `
+})
+export class NzTestMenuCollapsedLabelComponent {
+  readonly collapsed = signal(true);
+  readonly label = signal('Settings');
+}
+
+/** Records which observers are live, so a spec can prove an observer is disconnected. */
+const NativeMutationObserver = MutationObserver;
+class TrackingMutationObserver extends NativeMutationObserver {
+  static readonly live = new Set<TrackingMutationObserver>();
+  override observe(target: Node, options?: MutationObserverInit): void {
+    TrackingMutationObserver.live.add(this);
+    super.observe(target, options);
+  }
+  override disconnect(): void {
+    TrackingMutationObserver.live.delete(this);
+    super.disconnect();
+  }
 }
 
 @Component({
