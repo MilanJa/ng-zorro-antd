@@ -77,7 +77,6 @@ interface NzTagCustomStyle {
     '[class.ant-tag-checkable-disabled]': `disabled && nzMode === 'checkable'`,
     '[class.ant-tag-rtl]': `dir() === 'rtl'`,
     '[class.ant-tag-borderless]': `!bordered && variant === 'filled'`,
-    '[attr.tabindex]': `disabled ? -1 : hostTabindex`,
     '[attr.aria-disabled]': `disabled || null`,
     '(click)': 'updateCheckedStatus()'
   },
@@ -87,8 +86,9 @@ export class NzTagComponent implements OnChanges {
   private renderer = inject(Renderer2);
   private el: HTMLElement = inject(ElementRef<HTMLElement>).nativeElement;
   protected readonly dir = inject(Directionality).valueSignal;
-  /** A `tabindex` the app wrote on the host; it comes back when the tag is enabled again. */
-  protected readonly hostTabindex = this.el.getAttribute('tabindex');
+  /** The host's own `tabindex`, kept while the tag is disabled so it can be put back (null: none). */
+  private savedTabindex: string | null = null;
+  private tabindexSaved = false;
 
   @Input() nzMode: 'default' | 'closeable' | 'checkable' = 'default';
   @Input() nzColor?: NzTagColor;
@@ -123,6 +123,7 @@ export class NzTagComponent implements OnChanges {
   @Input({ transform: optionalBooleanAttribute })
   set nzDisabled(value: boolean | undefined) {
     this.ownDisabled = value;
+    this.syncTabindex();
   }
   get nzDisabled(): boolean {
     return this.disabled;
@@ -187,6 +188,23 @@ export class NzTagComponent implements OnChanges {
     this.nzOnClose.emit(e);
     if (!e.defaultPrevented) {
       this.renderer.removeChild(this.renderer.parentNode(this.el), this.el);
+    }
+  }
+
+  /** A disabled tag leaves the tab order; the host's own `tabindex` is written only across the disabled transition. */
+  private syncTabindex(): void {
+    if (this.disabled && !this.tabindexSaved) {
+      this.savedTabindex = this.el.getAttribute('tabindex');
+      this.tabindexSaved = true;
+      this.renderer.setAttribute(this.el, 'tabindex', '-1');
+    } else if (!this.disabled && this.tabindexSaved) {
+      if (this.savedTabindex === null) {
+        this.renderer.removeAttribute(this.el, 'tabindex');
+      } else {
+        this.renderer.setAttribute(this.el, 'tabindex', this.savedTabindex);
+      }
+      this.savedTabindex = null;
+      this.tabindexSaved = false;
     }
   }
 

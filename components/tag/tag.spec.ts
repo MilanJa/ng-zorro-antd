@@ -399,12 +399,40 @@ describe('tag v6 inputs', () => {
     });
 
     it('restores an app-supplied tabindex when enabled', () => {
-      const { fixture } = renderTag(
-        `<nz-tag id="on" tabindex="0">c</nz-tag><nz-tag id="off" tabindex="0" nzDisabled>c</nz-tag>`
-      );
-      const root = fixture.nativeElement as HTMLElement;
-      expect(root.querySelector('#on')!.getAttribute('tabindex')).toBe('0');
-      expect(root.querySelector('#off')!.getAttribute('tabindex')).toBe('-1');
+      const fixture = TestBed.createComponent(TestTagTabindexComponent);
+      fixture.detectChanges();
+      const tag = fixture.nativeElement.querySelector('#supplied') as HTMLElement;
+      const host = fixture.componentInstance;
+      expect(tag.getAttribute('tabindex')).toBe('3');
+      host.disabled.set(true);
+      fixture.detectChanges();
+      expect(tag.getAttribute('tabindex')).toBe('-1');
+      host.disabled.set(false);
+      fixture.detectChanges();
+      expect(tag.getAttribute('tabindex')).toBe('3');
+    });
+
+    it('leaves a dynamically bound tabindex alone when never disabled', () => {
+      const fixture = TestBed.createComponent(TestTagTabindexComponent);
+      fixture.detectChanges();
+      const tag = fixture.nativeElement.querySelector('#bound') as HTMLElement;
+      expect(tag.getAttribute('tabindex')).toBe('5');
+      fixture.componentInstance.ti.set(7);
+      fixture.detectChanges();
+      expect(tag.getAttribute('tabindex')).toBe('7');
+    });
+
+    it('removes tabindex on enable when none was supplied', () => {
+      const fixture = TestBed.createComponent(TestTagTabindexComponent);
+      fixture.detectChanges();
+      const tag = fixture.nativeElement.querySelector('#none') as HTMLElement;
+      expect(tag.hasAttribute('tabindex')).toBe(false);
+      fixture.componentInstance.disabled.set(true);
+      fixture.detectChanges();
+      expect(tag.getAttribute('tabindex')).toBe('-1');
+      fixture.componentInstance.disabled.set(false);
+      fixture.detectChanges();
+      expect(tag.hasAttribute('tabindex')).toBe(false);
     });
   });
 });
@@ -416,4 +444,17 @@ describe('tag v6 inputs', () => {
 class TestTagVariantDynamicComponent {
   readonly variant = signal<NzTagVariant | undefined>('outlined');
   readonly bordered = signal(false);
+}
+
+@Component({
+  imports: [NzTagModule],
+  template: `
+    <nz-tag id="supplied" tabindex="3" [nzDisabled]="disabled()">x</nz-tag>
+    <nz-tag id="bound" [attr.tabindex]="ti()">x</nz-tag>
+    <nz-tag id="none" [nzDisabled]="disabled()">x</nz-tag>
+  `
+})
+class TestTagTabindexComponent {
+  readonly disabled = signal(false);
+  readonly ti = signal(5);
 }
