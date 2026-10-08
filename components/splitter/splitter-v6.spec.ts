@@ -205,12 +205,20 @@ describe('splitter (v6 styles): antd v6 inputs', () => {
     expect(getComputedStyle(panel).transitionDuration).toBe('0.3s');
     api('.ant-splitter-bar-collapse-bar-start').click();
     fixture.detectChanges();
-    // `transition: flex-basis 0.3s`: read once mid-way, once after it has ended.
-    await new Promise(r => setTimeout(r, 100));
+    await fixture.whenStable();
+    // getAnimations() flushes pending style, so the flex-basis transition exists from here on.
+    const transitions = panel
+      .getAnimations()
+      .filter((a): a is CSSTransition => a instanceof CSSTransition && a.transitionProperty === 'flex-basis');
+    expect(transitions).toHaveLength(1);
+    const [transition] = transitions;
+    // Seek instead of sleeping: half-way through the 300 ms transition, then to its end.
+    transition.pause();
+    transition.currentTime = 150;
     const mid = panel.getBoundingClientRect().width;
     expect(mid).toBeGreaterThan(0);
     expect(mid).toBeLessThan(300);
-    await new Promise(r => setTimeout(r, 350));
+    transition.finish();
     expect(panel.getBoundingClientRect().width).toBe(0);
   });
 
