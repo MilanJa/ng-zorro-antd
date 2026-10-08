@@ -118,13 +118,9 @@ let nextId = 0;
                     <nz-icon [nzType]="iconType" />
                   }
                 </span>
-                @if (tab.labelText) {
-                  <span>{{ tab.labelText }}</span>
-                } @else {
-                  <ng-container *nzStringTemplateOutlet="tab.label; context: { visible: true }">
-                    {{ tab.label }}
-                  </ng-container>
-                }
+              }
+              @if (tab.nzIcon && tab.labelText) {
+                <span>{{ tab.labelText }}</span>
               } @else {
                 <ng-container *nzStringTemplateOutlet="tab.label; context: { visible: true }">
                   {{ tab.label }}

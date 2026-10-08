@@ -71,7 +71,7 @@ const V6_ONLY: Record<Dir, readonly string[]> = {
   divider: ['nzTitleMargin'],
   tag: ['nzVariant', 'nzDisabled'],
   badge: [],
-  tabs: [],
+  tabs: ['nzIcon'],
   pagination: ['nzSize', 'nzVariant'],
   progress: [],
   'float-button': [],
