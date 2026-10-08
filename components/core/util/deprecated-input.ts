@@ -8,6 +8,19 @@ import { warnDeprecation } from 'ng-zorro-antd/core/logger';
 /**
  * Returns a mapper for a deprecated input that forwards to its replacement.
  * Warns once per (component, oldName) in dev mode the first time it is called.
+ *
+ * Decorator setters that pair a new input with an alias follow two rules (signal inputs get both from
+ * `computed(() => nzNew() ?? nzOld())`):
+ * - the new input is the source of truth: once bound to a value it wins over the alias, in either binding order;
+ * - undefined means unset: a setter receiving `undefined` clears its explicit flag, falls back to the alias
+ *   or default, and does not warn.
+ *
+ * ```ts
+ * set nzNew(value: T | undefined) {
+ *   this.nzNewExplicit = value !== undefined;
+ *   this.resolved = value ?? this.aliasValue ?? DEFAULT;
+ * }
+ * ```
  */
 export function aliasDeprecatedInput<TOld, TNew = TOld>(
   component: string,
