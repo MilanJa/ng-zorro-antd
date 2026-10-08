@@ -264,7 +264,7 @@ export interface PageHeaderConfig {
 }
 
 export interface PaginationConfig {
-  nzSize?: 'default' | 'small';
+  nzSize?: 'default' | 'medium' | 'small' | 'large';
   nzPageSizeOptions?: number[];
   nzShowSizeChanger?: boolean;
   nzShowQuickJumper?: boolean;

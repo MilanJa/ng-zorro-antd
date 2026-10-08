@@ -151,3 +151,79 @@ describe('pagination size changer dropdown under antd v6 css', () => {
     expect(overlay.getContainerElement().querySelector('.ant-select-dropdown')).toBeNull();
   });
 });
+
+@Component({
+  imports: [FormsModule, NzPaginationModule],
+  template: `
+    <nz-pagination id="large" nzSize="large" [nzPageIndex]="2" [nzTotal]="50" nzShowSizeChanger nzShowQuickJumper />
+  `
+})
+class LargePaginationComponent {}
+
+@Component({
+  imports: [FormsModule, NzPaginationModule],
+  template: `
+    <nz-pagination id="filled" nzVariant="filled" [nzTotal]="50" nzShowQuickJumper />
+    <nz-pagination id="underlined" nzVariant="underlined" [nzTotal]="50" nzShowQuickJumper />
+    <nz-pagination id="simple-filled" nzVariant="filled" nzSimple [nzTotal]="50" />
+  `
+})
+class VariantPaginationComponent {}
+
+describe('large pagination under antd v6 css', () => {
+  beforeEach(() => {
+    installV6Css();
+    TestBed.configureTestingModule({ providers: [provideNzIconsTesting()], animationsEnabled: true });
+  });
+
+  afterEach(() => {
+    style.remove();
+    TestBed.inject(OverlayContainer).ngOnDestroy();
+  });
+
+  it('sizes the pagers and the size changer together', async () => {
+    const fixture = TestBed.createComponent(LargePaginationComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const host = document.getElementById('large') as HTMLElement;
+    expect(host.classList).toContain('ant-pagination-large');
+    const active = host.querySelector('.ant-pagination-item-active') as HTMLElement;
+    expect(getComputedStyle(active).height).toBe('40px'); // itemSizeLG
+    const select = host.querySelector('nz-select') as HTMLElement;
+    expect(select.classList).toContain('ant-select-lg');
+    expect(select.getBoundingClientRect().height).toBeCloseTo(40, 0); // controlHeightLG
+  });
+});
+
+describe('pagination nzVariant under antd v6 css', () => {
+  beforeEach(() => {
+    installV6Css();
+    TestBed.configureTestingModule({ providers: [provideNzIconsTesting()], animationsEnabled: true });
+    TestBed.createComponent(VariantPaginationComponent).detectChanges();
+  });
+
+  afterEach(() => {
+    style.remove();
+    TestBed.inject(OverlayContainer).ngOnDestroy();
+  });
+
+  it('fills the quick-jumper and simple-pager inputs', () => {
+    const jumper = getComputedStyle(document.querySelector('#filled .ant-pagination-options-quick-jumper input')!);
+    expect(jumper.backgroundColor).toBe('rgba(0, 0, 0, 0.04)'); // colorFillTertiary
+    expect(jumper.borderTopColor).toBe('rgba(0, 0, 0, 0)');
+    const simple = getComputedStyle(document.querySelector('#simple-filled .ant-pagination-simple-pager input')!);
+    expect(simple.backgroundColor).toBe('rgba(0, 0, 0, 0.04)');
+  });
+
+  it('underlines the quick-jumper input', () => {
+    const jumper = getComputedStyle(document.querySelector('#underlined .ant-pagination-options-quick-jumper input')!);
+    // `border-width: lineWidth 0; border-style: solid none`: only the bottom edge is coloured, the top edge
+    // keeps its width but is transparent, and the sides draw nothing.
+    expect(jumper.borderTopColor).toBe('rgba(0, 0, 0, 0)');
+    expect(jumper.borderBottomWidth).toBe('1px');
+    expect(jumper.borderBottomColor).not.toBe('rgba(0, 0, 0, 0)');
+    expect(jumper.borderLeftWidth).toBe('0px');
+    expect(jumper.borderRadius).toBe('0px');
+  });
+});

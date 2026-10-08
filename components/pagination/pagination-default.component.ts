@@ -20,7 +20,7 @@ import {
   ViewEncapsulation
 } from '@angular/core';
 
-import { NzSafeAny } from 'ng-zorro-antd/core/types';
+import { NzSafeAny, NzSizeLDSType } from 'ng-zorro-antd/core/types';
 import { NzPaginationI18nInterface } from 'ng-zorro-antd/i18n';
 
 import { NzPaginationItemComponent } from './pagination-item.component';
@@ -85,7 +85,7 @@ export class NzPaginationDefaultComponent implements OnChanges {
   protected readonly dir = inject(Directionality).valueSignal;
 
   @ViewChild('containerTemplate', { static: true }) template!: TemplateRef<NzSafeAny>;
-  @Input() nzSize: 'default' | 'small' = 'default';
+  @Input() nzSize: NzSizeLDSType = 'default';
   @Input() itemRender: TemplateRef<PaginationItemRenderContext> | null = null;
   @Input() showTotal: TemplateRef<{ $implicit: number; range: [number, number] }> | null = null;
   @Input() disabled = false;

@@ -42,7 +42,7 @@ const DELIVERED: Record<string, string[]> = {
   Tag: ['icon', 'variant', 'disabled', 'CheckableTagGroup', 'multiple'],
   Badge: ['size'],
   Tabs: ['icon'],
-  Pagination: [],
+  Pagination: ['size', 'variant'],
   Progress: [],
   FloatButton: [],
   BackTop: [],

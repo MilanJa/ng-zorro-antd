@@ -482,11 +482,12 @@
     "ant-picker-time-panel-column-3",
     "ant-picker-time-panel-narrow"
   ],
-  "_pagination_comment": "antd-emits: -jump-next-custom-icon, -jump-prev-custom-icon (antd's own `Pagination.js` always supplies its own `jumpPrevIcon`/`jumpNextIcon` to `@rc-component/pagination`, so `Pagination.js:303,310` (`@rc-component/pagination/es/Pagination.js`) always sets `${prefixCls}-jump-{prev,next}-custom-icon` from rc-pagination's point of view; v6 CSS never has a rule for either name). v4-compat: -mini (replacement: ant-pagination-small, added alongside; kept because the compiled v4 CSS styles `.ant-pagination-mini` and it stays the default-stylesheet size hook while v4 is default). The ant-select-* classes pagination's demos render (the size changer is a real `nz-select` rendered inside pagination's options item) are not repeated here: select's own `_select_comment` already explains every one of them, and `allowlistFor` credits pagination with select's entries for the `ant-select` prefix.",
+  "_pagination_comment": "antd-emits: -jump-next-custom-icon, -jump-prev-custom-icon (antd's own `Pagination.js` always supplies its own `jumpPrevIcon`/`jumpNextIcon` to `@rc-component/pagination`, so `Pagination.js:303,310` (`@rc-component/pagination/es/Pagination.js`) always sets `${prefixCls}-jump-{prev,next}-custom-icon` from rc-pagination's point of view; v6 CSS never has a rule for either name). v4-compat: -mini (replacement: ant-pagination-small, added alongside; kept because the compiled v4 CSS styles `.ant-pagination-mini` and it stays the default-stylesheet size hook while v4 is default). scan-artefact: ant-pagination-item-size-lg (not a class; the scanner reads it out of the `--ant-pagination-item-size-lg` custom-property name that pagination.component.ts probes to tell the v6 stylesheet from the v4 one). The ant-select-* classes pagination's demos render (the size changer is a real `nz-select` rendered inside pagination's options item) are not repeated here: select's own `_select_comment` already explains every one of them, and `allowlistFor` credits pagination with select's entries for the `ant-select` prefix.",
   "pagination": [
     "ant-pagination-jump-next-custom-icon",
     "ant-pagination-jump-prev-custom-icon",
-    "ant-pagination-mini"
+    "ant-pagination-mini",
+    "ant-pagination-item-size-lg"
   ],
   "dropdown": [
     "ant-dropdown-link",

@@ -11,8 +11,9 @@ import { By } from '@angular/platform-browser';
 import { vi } from 'vitest';
 
 import { provideNzNoAnimation } from 'ng-zorro-antd/core/animation';
+import { NZ_FORM_VARIANT } from 'ng-zorro-antd/core/form';
 import { createKeyboardEvent, dispatchKeyboardEvent, testDirectionality } from 'ng-zorro-antd/core/testing';
-import { NzSafeAny } from 'ng-zorro-antd/core/types';
+import { NzSafeAny, NzVariant } from 'ng-zorro-antd/core/types';
 import en_US from 'ng-zorro-antd/i18n/languages/en_US';
 import { NzI18nService } from 'ng-zorro-antd/i18n/nz-i18n.service';
 
@@ -494,3 +495,85 @@ export class NzTestPaginationTotalComponent {
   template: `<nz-pagination nzResponsive />`
 })
 export class NzTestPaginationAutoResizeComponent {}
+
+@Component({ imports: [NzPaginationModule], template: '' })
+class TestPaginationV6InputsComponent {}
+
+function renderPagination(template: string): {
+  fixture: ComponentFixture<TestPaginationV6InputsComponent>;
+  host: HTMLElement;
+} {
+  TestBed.overrideComponent(TestPaginationV6InputsComponent, { set: { imports: [NzPaginationComponent], template } });
+  const fixture = TestBed.createComponent(TestPaginationV6InputsComponent);
+  fixture.detectChanges();
+  return { fixture, host: fixture.nativeElement.querySelector('nz-pagination') as HTMLElement };
+}
+
+const SIZE_CLASSES = ['ant-pagination-mini', 'ant-pagination-small', 'ant-pagination-large'];
+const VARIANT_CLASSES = ['ant-pagination-filled', 'ant-pagination-borderless', 'ant-pagination-underlined'];
+const present = (el: HTMLElement, classes: string[]): string[] => classes.filter(c => el.classList.contains(c));
+
+describe('pagination v6 inputs under the default stylesheet', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({ providers: [provideNzNoAnimation()] });
+  });
+
+  // Without the v6 stylesheet a large pagination renders as a default one.
+  it('large: adds the inert ant-pagination-large and keeps the size changer at the default size', async () => {
+    const { fixture, host } = renderPagination(
+      `<nz-pagination [nzTotal]="50" nzSize="large" nzShowSizeChanger nzShowQuickJumper />`
+    );
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(present(host, SIZE_CLASSES)).toEqual(['ant-pagination-large']);
+    const select = host.querySelector('nz-select') as HTMLElement;
+    expect(select.classList).not.toContain('ant-select-lg');
+    expect(select.classList).not.toContain('ant-select-sm');
+  });
+
+  it('medium renders as default', async () => {
+    const { fixture, host } = renderPagination(`<nz-pagination [nzTotal]="50" nzSize="medium" nzShowSizeChanger />`);
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(present(host, SIZE_CLASSES)).toEqual([]);
+    const select = host.querySelector('nz-select') as HTMLElement;
+    expect(select.classList).not.toContain('ant-select-lg');
+    expect(select.classList).not.toContain('ant-select-sm');
+  });
+
+  it('small still reaches the size changer', () => {
+    const { host } = renderPagination(`<nz-pagination [nzTotal]="50" nzSize="small" nzShowSizeChanger />`);
+    expect(present(host, SIZE_CLASSES)).toEqual(['ant-pagination-mini', 'ant-pagination-small']);
+    expect((host.querySelector('nz-select') as HTMLElement).classList).toContain('ant-select-sm');
+  });
+
+  it.each([
+    { attrs: '', expected: [] },
+    { attrs: 'nzVariant="outlined"', expected: [] },
+    { attrs: 'nzVariant="filled"', expected: ['ant-pagination-filled'] },
+    { attrs: 'nzVariant="borderless"', expected: ['ant-pagination-borderless'] },
+    { attrs: 'nzVariant="underlined"', expected: ['ant-pagination-underlined'] },
+    { attrs: 'nzVariant="filled" nzSimple', expected: ['ant-pagination-filled'] }
+  ])('variant class for "$attrs"', ({ attrs, expected }) => {
+    const { host } = renderPagination(`<nz-pagination [nzTotal]="50" ${attrs} />`);
+    expect(present(host, VARIANT_CLASSES)).toEqual(expected);
+  });
+});
+
+describe('pagination nzVariant fallback to the form variant', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideNzNoAnimation(), { provide: NZ_FORM_VARIANT, useValue: signal<NzVariant>('underlined') }]
+    });
+  });
+
+  it('takes the enclosing form variant when nzVariant is unset', () => {
+    const { host } = renderPagination(`<nz-pagination [nzTotal]="50" />`);
+    expect(present(host, VARIANT_CLASSES)).toEqual(['ant-pagination-underlined']);
+  });
+
+  it('lets nzVariant win over the form', () => {
+    const { host } = renderPagination(`<nz-pagination [nzTotal]="50" nzVariant="filled" />`);
+    expect(present(host, VARIANT_CLASSES)).toEqual(['ant-pagination-filled']);
+  });
+});

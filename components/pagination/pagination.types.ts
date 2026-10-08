@@ -3,6 +3,8 @@
  * found in the LICENSE file at https://github.com/NG-ZORRO/ng-zorro-antd/blob/master/LICENSE
  */
 
+import type { NzSizeDMSType } from 'ng-zorro-antd/core/types';
+
 export interface PaginationItemRenderContext {
   $implicit: PaginationItemType;
   page: number;
@@ -11,3 +13,5 @@ export interface PaginationItemRenderContext {
 export type PaginationItemType = 'page' | 'prev' | 'next' | 'prev_5' | 'next_5';
 
 export type NzPaginationAlign = 'start' | 'center' | 'end';
+
+export type NzPaginationSize = NzSizeDMSType | 'large';

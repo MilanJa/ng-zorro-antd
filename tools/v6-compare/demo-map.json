@@ -76,7 +76,8 @@
   },
   "pagination": {
     "_antdDir": "pagination",
-    "item-render": "itemRender"
+    "item-render": "itemRender",
+    "variant": null
   },
   "select": {
     "_antdDir": "select"

@@ -4,11 +4,13 @@
  */
 
 import { Directionality } from '@angular/cdk/bidi';
+import { Platform } from '@angular/cdk/platform';
 import { NgTemplateOutlet } from '@angular/common';
 import {
   ChangeDetectorRef,
   Component,
   DestroyRef,
+  ElementRef,
   EventEmitter,
   Input,
   OnChanges,
@@ -17,7 +19,9 @@ import {
   SimpleChanges,
   TemplateRef,
   ViewEncapsulation,
+  afterNextRender,
   booleanAttribute,
+  computed,
   inject,
   input,
   numberAttribute
@@ -26,12 +30,14 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ReplaySubject } from 'rxjs';
 
 import { NzConfigKey, NzConfigService, WithConfig } from 'ng-zorro-antd/core/config';
+import { NZ_FORM_VARIANT } from 'ng-zorro-antd/core/form';
 import { NzBreakpointEnum, NzBreakpointService, gridResponsiveMap } from 'ng-zorro-antd/core/services';
+import type { NzSizeLDSType, NzVariant } from 'ng-zorro-antd/core/types';
 import { NzI18nService, NzPaginationI18nInterface } from 'ng-zorro-antd/i18n';
 
 import { NzPaginationDefaultComponent } from './pagination-default.component';
 import { NzPaginationSimpleComponent } from './pagination-simple.component';
-import { PaginationItemRenderContext, type NzPaginationAlign } from './pagination.types';
+import { PaginationItemRenderContext, type NzPaginationAlign, type NzPaginationSize } from './pagination.types';
 
 const NZ_CONFIG_MODULE_NAME: NzConfigKey = 'pagination';
 
@@ -60,7 +66,7 @@ const NZ_CONFIG_MODULE_NAME: NzConfigKey = 'pagination';
     />
     <nz-pagination-default
       #defaultPagination
-      [nzSize]="size"
+      [nzSize]="changerSize"
       [itemRender]="nzItemRender"
       [showTotal]="nzShowTotal"
       [disabled]="nzDisabled"
@@ -81,6 +87,10 @@ const NZ_CONFIG_MODULE_NAME: NzConfigKey = 'pagination';
     '[class.ant-pagination-disabled]': 'nzDisabled',
     '[class.ant-pagination-mini]': `!nzSimple && size === 'small'`,
     '[class.ant-pagination-small]': `!nzSimple && size === 'small'`,
+    '[class.ant-pagination-large]': `size === 'large'`,
+    '[class.ant-pagination-filled]': `variant() === 'filled'`,
+    '[class.ant-pagination-borderless]': `variant() === 'borderless'`,
+    '[class.ant-pagination-underlined]': `variant() === 'underlined'`,
     '[class.ant-pagination-rtl]': `dir() === 'rtl'`,
     '[class.ant-pagination-start]': 'nzAlign() === "start"',
     '[class.ant-pagination-center]': 'nzAlign() === "center"',
@@ -97,12 +107,15 @@ export class NzPaginationComponent implements OnInit, OnChanges {
   protected readonly nzConfigService = inject(NzConfigService);
   protected readonly dir = inject(Directionality).valueSignal;
   private readonly destroyRef = inject(DestroyRef);
+  private readonly el: HTMLElement = inject(ElementRef<HTMLElement>).nativeElement;
+  private readonly platform = inject(Platform);
+  private readonly formVariant = inject(NZ_FORM_VARIANT, { optional: true });
 
   @Output() readonly nzPageSizeChange = new EventEmitter<number>();
   @Output() readonly nzPageIndexChange = new EventEmitter<number>();
   @Input() nzShowTotal: TemplateRef<{ $implicit: number; range: [number, number] }> | null = null;
   @Input() nzItemRender: TemplateRef<PaginationItemRenderContext> | null = null;
-  @Input() @WithConfig() nzSize: 'default' | 'small' = 'default';
+  @Input() @WithConfig() nzSize: NzPaginationSize = 'default';
   @Input() @WithConfig() nzPageSizeOptions: number[] = [10, 20, 30, 40];
   @Input({ transform: booleanAttribute }) @WithConfig() nzShowSizeChanger = false;
   @Input({ transform: booleanAttribute }) @WithConfig() nzShowQuickJumper = false;
@@ -114,12 +127,32 @@ export class NzPaginationComponent implements OnInit, OnChanges {
   @Input({ transform: numberAttribute }) nzPageIndex = 1;
   @Input({ transform: numberAttribute }) nzPageSize = 10;
   readonly nzAlign = input<NzPaginationAlign>('start');
+  /**
+   * The quick-jumper and simple-pager input variant. antd has no such prop: it reads `useVariant('input')`,
+   * which this mirrors with this input, then the enclosing `nz-form`'s variant, then 'outlined'.
+   */
+  readonly nzVariant = input<NzVariant>();
 
   showPagination = true;
   locale!: NzPaginationI18nInterface;
-  size: 'default' | 'small' = 'default';
+  size: NzPaginationSize = 'default';
+  /**
+   * The size the size-changer `nz-select` gets. 'large' reaches it only under the v6 stylesheet: the
+   * default stylesheet has no large pagination, so a large select would stand out next to default pagers.
+   */
+  protected changerSize: NzSizeLDSType = 'default';
+  protected readonly variant = computed<NzVariant>(() => this.nzVariant() || this.formVariant?.() || 'outlined');
 
   private total$ = new ReplaySubject<number>(1);
+
+  constructor() {
+    afterNextRender(() => {
+      if (this.size === 'large') {
+        this.updateChangerSize();
+        this.cdr.markForCheck();
+      }
+    });
+  }
 
   validatePageIndex(value: number, lastIndex: number): number {
     if (value > lastIndex) {
@@ -179,7 +212,8 @@ export class NzPaginationComponent implements OnInit, OnChanges {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(bp => {
         if (this.nzResponsive) {
-          this.size = bp === NzBreakpointEnum.xs ? 'small' : 'default';
+          this.size = bp === NzBreakpointEnum.xs ? 'small' : this.nzSize === 'large' ? 'large' : 'default';
+          this.updateChangerSize();
           this.cdr.markForCheck();
         }
       });
@@ -197,6 +231,29 @@ export class NzPaginationComponent implements OnInit, OnChanges {
 
     if (nzSize) {
       this.size = nzSize.currentValue;
+      this.updateChangerSize();
     }
+  }
+
+  private updateChangerSize(): void {
+    if (this.size === 'small') {
+      this.changerSize = 'small';
+    } else if (this.size === 'large' && this.hasV6Stylesheet()) {
+      this.changerSize = 'large';
+    } else {
+      this.changerSize = 'default';
+    }
+  }
+
+  /**
+   * The v6 tokens define `--ant-pagination-item-size-lg` and the default stylesheet does not (the same kind
+   * of probe as the one in `nz-submenu`).
+   */
+  private hasV6Stylesheet(): boolean {
+    return (
+      this.platform.isBrowser &&
+      this.el.isConnected &&
+      getComputedStyle(this.el).getPropertyValue('--ant-pagination-item-size-lg').trim() !== ''
+    );
   }
 }

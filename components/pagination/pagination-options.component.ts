@@ -6,6 +6,7 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewEncapsulation } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
+import type { NzSizeLDSType } from 'ng-zorro-antd/core/types';
 import { toNumber } from 'ng-zorro-antd/core/util';
 import { NzPaginationI18nInterface } from 'ng-zorro-antd/i18n';
 import { NzSelectModule } from 'ng-zorro-antd/select';
@@ -40,7 +41,7 @@ import { NzSelectModule } from 'ng-zorro-antd/select';
   imports: [NzSelectModule, FormsModule]
 })
 export class NzPaginationOptionsComponent implements OnChanges {
-  @Input() nzSize: 'default' | 'small' = 'default';
+  @Input() nzSize: NzSizeLDSType = 'default';
   @Input() disabled = false;
   @Input() showSizeChanger = false;
   @Input() showQuickJumper = false;
