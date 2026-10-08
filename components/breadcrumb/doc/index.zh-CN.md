@@ -116,3 +116,9 @@ const params = this.activatedRoute.snapshot.params;
 
 customRoute = (route:string) => this.bindCurrentParams(params,route);
 ```
+
+### nz-breadcrumb-item
+
+| 参数          | 说明                       | 类型                      | 默认值 |
+| ------------- | -------------------------- | ------------------------- | ------ |
+| `[nzOverlay]` | 从该面包屑项展开的下拉菜单 | `NzDropdownMenuComponent` | -      |

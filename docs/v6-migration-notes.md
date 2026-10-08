@@ -44,3 +44,11 @@ stated otherwise.
   - `nz-timeline`: `nzMode` defaults to `'start'`.
 - **Steps `nzProgressDot` as a template** is deprecated. Its replacement, an `nzIconRender` input, is not available yet,
   so the deprecation warning for the template form is advisory until it lands; keep using the template meanwhile.
+- **Undefined means unset** for an input that replaced a deprecated one: binding `undefined` no longer pins an empty
+  value. The deprecated input's value, or the default, applies again, and no warning is printed. This covers
+  `nz-divider` `nzOrientation`/`nzTitlePlacement`, `nz-steps` `nzOrientation`/`nzTitlePlacement`, `nz-step`
+  `nzContent`, `nz-timeline-item` `nzTitle`/`nzIcon`/`nzPlacement`, and every renamed input added after them;
+  `nz-splitter` always behaved this way.
+- **Size value `medium`**: `nz-badge`, `nz-progress`, `nz-pagination` and `nz-steps` accept `nzSize="medium"`, Ant
+  Design 6's name for the default size, and render it exactly as `'default'`. `'default'` stays accepted without a
+  warning; it is not deprecated.

@@ -30,21 +30,22 @@ description: 悬浮于页面上方的按钮。
 
 ### nz-float-button-group
 
-| 参数                   | 说明                                                   | 类型                                     | 默认值  |
-| ---------------------- | ------------------------------------------------------ | ---------------------------------------- | ------- |
-| `[nzTrigger]`          | 触发方式（有触发方式为菜单模式）                       | `'click' \| 'hover'`                     | -       |
-| `[nzPlacement]`        | 自定义菜单弹出位置                                     | `'top' \| 'right' \| 'bottom' \| 'left'` | `'top'` |
-| `[nzOpen]`             | 受控展开                                               | `boolean`                                | -       |
-| `(nzOpenChange)`       | 展开收起时的回调                                       | `EventEmitter<boolean>`                  | -       |
-| ~~`(nzOnOpenChange)`~~ | 展开收起时的回调，已废弃，请使用 `(nzOpenChange)` 代替 | `EventEmitter<boolean>`                  | -       |
+| 参数                   | 说明                                            | 类型                                     | 默认值  |
+| ---------------------- | ----------------------------------------------- | ---------------------------------------- | ------- |
+| `[nzTrigger]`          | 触发方式（有触发方式为菜单模式）                | `'click' \| 'hover'`                     | -       |
+| `[nzPlacement]`        | 自定义菜单弹出位置                              | `'top' \| 'right' \| 'bottom' \| 'left'` | `'top'` |
+| `[nzOpen]`             | 受控展开                                        | `boolean`                                | -       |
+| `(nzOpenChange)`       | 展开收起时的回调                                | `EventEmitter<boolean>`                  | -       |
+| ~~`(nzOnOpenChange)`~~ | 已废弃，请使用 (nzOpenChange)。展开收起时的回调 | `EventEmitter<boolean>`                  | -       |
 
 ### nz-float-button-top
 
-| 参数                   | 说明                                                          | 类型                | 默认值   | 全局配置 |
-| ---------------------- | ------------------------------------------------------------- | ------------------- | -------- | -------- |
-| `[nzVisibilityHeight]` | 滚动高度达到此值时才出现 `nz-float-button-top`                | `number`            | `400`    | ✅       |
-| `[nzTarget]`           | 设置需要监听其滚动事件的元素，值为一个返回对应 DOM 元素的函数 | `string \| Element` | `window` | -        |
-| `[nzDuration]`         | 回到顶部所需时间（毫秒）                                      | `number`            | `450`    | -        |
+| 参数                   | 说明                                                          | 类型                        | 默认值   | 全局配置 |
+| ---------------------- | ------------------------------------------------------------- | --------------------------- | -------- | -------- |
+| `[nzVisibilityHeight]` | 滚动高度达到此值时才出现 `nz-float-button-top`                | `number`                    | `400`    | ✅       |
+| `[nzTarget]`           | 设置需要监听其滚动事件的元素，值为一个返回对应 DOM 元素的函数 | `string \| Element`         | `window` | -        |
+| `[nzDuration]`         | 回到顶部所需时间（毫秒）                                      | `number`                    | `450`    | -        |
+| `[nzTemplate]`         | 不会被渲染，仅为兼容保留                                      | `TemplateRef<void> \| null` | -        | -        |
 
 ### Interfaces
 

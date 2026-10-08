@@ -29,6 +29,7 @@ description: 图标右上角的圆形徽标数字。
 | `[nzText]`          | 在设置了 `nzStatus` 的前提下有效，设置状态点的文本                           | `string \| TemplateRef<void>`                                    | -           |
 | `[nzTitle]`         | 设置鼠标放在状态点上时显示的文字 (非独立使用时), 为 `null` 时隐藏            | `string \| null`                                                 | `nzCount`   |
 | `[nzOffset]`        | 设置状态点的位置偏移，格式为 `[x, y]` (非独立使用时)                         | `[number, number]`                                               | -           |
+| `[nzStyle]`         | 数字或小圆点的自定义样式                                                     | `NgStyleInterface \| null`                                       | -           |
 
 ### nz-ribbon
 

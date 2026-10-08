@@ -9,7 +9,23 @@ import { readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 
 const componentsDir = path.resolve(__dirname, '../../../../components');
-type Dir = 'menu' | 'steps' | 'timeline' | 'splitter' | 'flex' | 'divider';
+type Dir =
+  | 'menu'
+  | 'steps'
+  | 'timeline'
+  | 'splitter'
+  | 'flex'
+  | 'divider'
+  | 'tag'
+  | 'badge'
+  | 'tabs'
+  | 'pagination'
+  | 'progress'
+  | 'float-button'
+  | 'grid'
+  | 'layout'
+  | 'dropdown'
+  | 'breadcrumb';
 type Lang = 'en-US' | 'zh-CN';
 
 /** Files whose `nz*` inputs/outputs are public API and must be documented. */
@@ -25,20 +41,44 @@ const PUBLIC_FILES: Record<Dir, readonly string[]> = {
   timeline: ['timeline.component.ts', 'timeline-item.component.ts'],
   splitter: ['splitter.component.ts', 'splitter-panel.component.ts'],
   flex: ['nz-flex.directive.ts'],
-  divider: ['divider.component.ts']
+  divider: ['divider.component.ts'],
+  tag: ['tag.component.ts'],
+  badge: ['badge.component.ts', 'ribbon.component.ts'],
+  tabs: ['tabs.component.ts', 'tab.component.ts'],
+  pagination: ['pagination.component.ts'],
+  progress: ['progress.component.ts'],
+  'float-button': ['float-button.component.ts', 'float-button-group.component.ts', 'float-button-top.component.ts'],
+  grid: ['row.directive.ts', 'col.directive.ts'],
+  layout: ['sider.component.ts'],
+  dropdown: ['dropdown.directive.ts'],
+  breadcrumb: ['breadcrumb.component.ts', 'breadcrumb-item.component.ts']
 };
 /** Internal components that forward `nz*` inputs from their public parent; not documented. */
 const INTERNAL_FILES: Partial<Record<Dir, readonly string[]>> = {
-  menu: ['submenu-non-inline-child.component.ts', 'submenu-title.component.ts']
+  menu: ['submenu-non-inline-child.component.ts', 'submenu-title.component.ts'],
+  badge: ['badge-sup.component.ts'],
+  pagination: ['pagination-default.component.ts', 'pagination-options.component.ts'],
+  'float-button': ['float-button-content.component.ts'],
+  layout: ['sider-trigger.component.ts']
 };
-/** Inputs that only render under the v6 stylesheet (spec section 2 rule 3). Tasks 2–9 append. */
+/** Inputs that only render under the v6 stylesheet (spec section 2 rule 3). Later tasks append. */
 const V6_ONLY: Record<Dir, readonly string[]> = {
   menu: ['nzExtra', 'nzDashed'],
   steps: ['nzType', 'nzVariant', 'nzEllipsis'],
   timeline: ['nzOrientation', 'nzVariant', 'nzTitleSpan'],
   splitter: ['nzCollapsible', 'nzDraggerIcon'],
   flex: [],
-  divider: ['nzTitleMargin']
+  divider: ['nzTitleMargin'],
+  tag: [],
+  badge: [],
+  tabs: [],
+  pagination: [],
+  progress: [],
+  'float-button': [],
+  grid: [],
+  layout: [],
+  dropdown: [],
+  breadcrumb: []
 };
 const V6_PHRASE: Record<Lang, string> = { 'en-US': 'Requires the v6 stylesheet.', 'zh-CN': '需要 v6 样式表。' };
 const DEPRECATED_PREFIX: Record<Lang, string> = { 'en-US': 'Deprecated, use ', 'zh-CN': '已废弃，请使用 ' };

@@ -29,6 +29,7 @@ unread messages count.
 | `[nzText]`          | If `nzStatus` is set, `text` sets the display text of the status `dot`                     | `string \| TemplateRef<void>`                                    | -           |
 | `[nzTitle]`         | Text to show when hovering over the badge（Only Non-standalone), hide when value is `null` | `string \| null`                                                 | `nzCount`   |
 | `[nzOffset]`        | set offset of the badge dot, like `[x, y]` (Only Non-standalone)                           | `[number, number]`                                               | -           |
+| `[nzStyle]`         | Custom style of the count or dot                                                           | `NgStyleInterface \| null`                                       | -           |
 
 ### nz-ribbon
 

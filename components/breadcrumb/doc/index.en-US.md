@@ -116,3 +116,9 @@ const params = this.activatedRoute.snapshot.params;
 
 customRoute = (route:string) => this.bindCurrentParams(params,route);
 ```
+
+### nz-breadcrumb-item
+
+| Property      | Description                              | Type                      | Default |
+| ------------- | ---------------------------------------- | ------------------------- | ------- |
+| `[nzOverlay]` | Dropdown menu that opens from this crumb | `NzDropdownMenuComponent` | -       |

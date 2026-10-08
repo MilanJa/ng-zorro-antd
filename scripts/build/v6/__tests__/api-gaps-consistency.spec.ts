@@ -38,7 +38,19 @@ const DELIVERED: Record<string, string[]> = {
     'onCollapse'
   ],
   Flex: ['orientation', 'gap', 'align', 'wrap'],
-  Divider: ['titlePlacement', 'orientationMargin', 'orientation']
+  Divider: ['titlePlacement', 'orientationMargin', 'orientation'],
+  Tag: [],
+  Badge: [],
+  Tabs: [],
+  Pagination: [],
+  Progress: [],
+  FloatButton: [],
+  BackTop: [],
+  Col: [],
+  Sider: [],
+  'Dropdown menu items': [],
+  'Dropdown submenu title': [],
+  Breadcrumb: []
 };
 
 function gapRows(md: string): Array<{ components: string[]; names: string[]; line: string }> {

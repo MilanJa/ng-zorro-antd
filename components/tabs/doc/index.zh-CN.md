@@ -41,6 +41,7 @@ Ant Design 依次提供了三级选项卡，分别用于不同的场景。
 | `[nzIndicator]`              | 自定义指示条宽度和对齐方式                                         | `NzIndicator`                                       | -                                     |          | 21.2.0 |
 | `(nzSelectedIndexChange)`    | 当前激活 tab 面板的 序列号变更回调函数                             | `EventEmitter<number>`                              | -                                     |
 | `(nzSelectChange)`           | 当前激活 tab 面板变更回调函数                                      | `EventEmitter<{index: number,tab: NzTabComponent}>` | -                                     |
+| `(nzTabListScroll)`          | 页签列表通过触摸或滚轮滚动时的回调                                 | `EventEmitter<NzTabScrollEvent>`                    | -                                     |
 
 ### nz-tabs[nzType="editable-card"]
 

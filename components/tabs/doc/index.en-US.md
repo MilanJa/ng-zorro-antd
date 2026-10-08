@@ -38,6 +38,7 @@ Ant Design has 3 types of Tabs for different situations.
 | `[nzIndicator]`              | Custom indicator size and align                                                           | `NzIndicator`                                       | -                                  |               | 21.2.0  |
 | `(nzSelectedIndexChange)`    | Current tab's index change callback                                                       | `EventEmitter<number>`                              | -                                  |
 | `(nzSelectChange)`           | Current tab's change callback                                                             | `EventEmitter<{index: number,tab: NzTabComponent}>` | -                                  |
+| `(nzTabListScroll)`          | Callback when the tab list scrolls by touch or wheel                                      | `EventEmitter<NzTabScrollEvent>`                    | -                                  |
 
 ### nz-tabs[nzType="editable-card"]
 
