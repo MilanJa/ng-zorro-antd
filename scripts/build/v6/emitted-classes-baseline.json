@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-10-07T08:35:26.737Z",
-  "base": "00bda5ae7f30e7233c9606cb5027f7e68cb0c713",
+  "generatedAt": "2026-10-08T19:28:25.567Z",
+  "base": "fcc275b413d4c3dfb6db604727f228acc3d2944a",
   "classes": {
     "affix": [
       "ant-affix"
@@ -592,7 +592,8 @@
       "ant-float-btn-group-wrap",
       "ant-float-btn-icon",
       "ant-float-btn-icon-only",
-      "ant-float-btn-inner"
+      "ant-float-btn-inner",
+      "ant-float-btn-progress"
     ],
     "form": [
       "ant-design",
@@ -1024,19 +1025,23 @@
     ],
     "pagination": [
       "ant-pagination",
+      "ant-pagination-borderless",
       "ant-pagination-center",
       "ant-pagination-disabled",
       "ant-pagination-end",
+      "ant-pagination-filled",
       "ant-pagination-item",
       "ant-pagination-item-active",
       "ant-pagination-item-container",
       "ant-pagination-item-ellipsis",
       "ant-pagination-item-link",
       "ant-pagination-item-link-icon",
+      "ant-pagination-item-size-lg",
       "ant-pagination-jump-next",
       "ant-pagination-jump-next-custom-icon",
       "ant-pagination-jump-prev",
       "ant-pagination-jump-prev-custom-icon",
+      "ant-pagination-large",
       "ant-pagination-mini",
       "ant-pagination-next",
       "ant-pagination-options",
@@ -1050,7 +1055,8 @@
       "ant-pagination-slash",
       "ant-pagination-small",
       "ant-pagination-start",
-      "ant-pagination-total-text"
+      "ant-pagination-total-text",
+      "ant-pagination-underlined"
     ],
     "popconfirm": [
       "ant-popconfirm",
@@ -1090,6 +1096,7 @@
       "ant-progress",
       "ant-progress-bg",
       "ant-progress-body",
+      "ant-progress-body-layout-bottom",
       "ant-progress-circle",
       "ant-progress-circle-gradient",
       "ant-progress-circle-path",
@@ -1097,12 +1104,23 @@
       "ant-progress-circle-trail",
       "ant-progress-default",
       "ant-progress-indicator",
+      "ant-progress-indicator-bright",
+      "ant-progress-indicator-center",
       "ant-progress-indicator-end",
+      "ant-progress-indicator-inner",
       "ant-progress-indicator-outer",
+      "ant-progress-indicator-start",
+      "ant-progress-inline-circle",
       "ant-progress-inner",
       "ant-progress-line",
+      "ant-progress-line-align-center",
+      "ant-progress-line-align-end",
+      "ant-progress-line-align-start",
+      "ant-progress-line-position-inner",
+      "ant-progress-line-position-outer",
       "ant-progress-outer",
       "ant-progress-rail",
+      "ant-progress-remaining-color",
       "ant-progress-rtl",
       "ant-progress-show-info",
       "ant-progress-small",
@@ -1559,6 +1577,7 @@
       "ant-tabs-tab-active",
       "ant-tabs-tab-btn",
       "ant-tabs-tab-disabled",
+      "ant-tabs-tab-icon",
       "ant-tabs-tab-remove",
       "ant-tabs-tabpane",
       "ant-tabs-tabpane-active",
@@ -1569,10 +1588,16 @@
       "ant-tag-borderless",
       "ant-tag-checkable",
       "ant-tag-checkable-checked",
+      "ant-tag-checkable-disabled",
+      "ant-tag-checkable-group",
+      "ant-tag-checkable-group-rtl",
       "ant-tag-close-icon",
+      "ant-tag-disabled",
       "ant-tag-filled",
       "ant-tag-has-color",
-      "ant-tag-rtl"
+      "ant-tag-outlined",
+      "ant-tag-rtl",
+      "ant-tag-solid"
     ],
     "time-picker": [
       "ant-picker",
@@ -2782,7 +2807,8 @@
       ],
       "float-button/float-button-top.component.ts": [
         "ant-btn",
-        "ant-float-btn"
+        "ant-float-btn",
+        "ant-float-btn-progress"
       ],
       "float-button/float-button.component.ts": [
         "ant-btn",
@@ -3267,10 +3293,12 @@
       ],
       "menu/submenu-non-inline-child.component.ts": [],
       "menu/submenu-title.component.ts": [
+        "ant-dropdown-menu-item-icon",
         "ant-dropdown-menu-submenu-arrow-icon",
         "ant-dropdown-menu-submenu-expand-icon",
         "ant-dropdown-menu-submenu-title",
         "ant-menu-inline-collapsed-noicon",
+        "ant-menu-item-icon",
         "ant-menu-submenu-arrow",
         "ant-menu-submenu-expand-icon",
         "ant-menu-submenu-title",
@@ -3489,14 +3517,19 @@
       ],
       "pagination/pagination.component.ts": [
         "ant-pagination",
+        "ant-pagination-borderless",
         "ant-pagination-center",
         "ant-pagination-disabled",
         "ant-pagination-end",
+        "ant-pagination-filled",
+        "ant-pagination-item-size-lg",
+        "ant-pagination-large",
         "ant-pagination-mini",
         "ant-pagination-rtl",
         "ant-pagination-simple",
         "ant-pagination-small",
-        "ant-pagination-start"
+        "ant-pagination-start",
+        "ant-pagination-underlined"
       ],
       "pagination/pagination.module.ts": [],
       "pagination/pagination.types.ts": [],
@@ -3553,6 +3586,7 @@
         "ant-progress",
         "ant-progress-bg",
         "ant-progress-body",
+        "ant-progress-body-layout-bottom",
         "ant-progress-circle",
         "ant-progress-circle-gradient",
         "ant-progress-circle-path",
@@ -3560,12 +3594,23 @@
         "ant-progress-circle-trail",
         "ant-progress-default",
         "ant-progress-indicator",
+        "ant-progress-indicator-bright",
+        "ant-progress-indicator-center",
         "ant-progress-indicator-end",
+        "ant-progress-indicator-inner",
         "ant-progress-indicator-outer",
+        "ant-progress-indicator-start",
+        "ant-progress-inline-circle",
         "ant-progress-inner",
         "ant-progress-line",
+        "ant-progress-line-align-center",
+        "ant-progress-line-align-end",
+        "ant-progress-line-align-start",
+        "ant-progress-line-position-inner",
+        "ant-progress-line-position-outer",
         "ant-progress-outer",
         "ant-progress-rail",
+        "ant-progress-remaining-color",
         "ant-progress-rtl",
         "ant-progress-show-info",
         "ant-progress-small",
@@ -4281,6 +4326,7 @@
         "ant-tabs-tab-active",
         "ant-tabs-tab-btn",
         "ant-tabs-tab-disabled",
+        "ant-tabs-tab-icon",
         "ant-tabs-top"
       ],
       "tabs/tabs.module.ts": []
@@ -4288,15 +4334,25 @@
     "tag": {
       "tag/index.ts": [],
       "tag/public-api.ts": [],
+      "tag/tag-checkable-group.component.ts": [
+        "ant-tag-checkable-group",
+        "ant-tag-checkable-group-rtl"
+      ],
+      "tag/tag-checkable-group.token.ts": [],
+      "tag/tag-color.ts": [],
       "tag/tag.component.ts": [
         "ant-tag",
         "ant-tag-borderless",
         "ant-tag-checkable",
         "ant-tag-checkable-checked",
+        "ant-tag-checkable-disabled",
         "ant-tag-close-icon",
+        "ant-tag-disabled",
         "ant-tag-filled",
         "ant-tag-has-color",
-        "ant-tag-rtl"
+        "ant-tag-outlined",
+        "ant-tag-rtl",
+        "ant-tag-solid"
       ],
       "tag/tag.module.ts": [],
       "tag/typings.ts": []
