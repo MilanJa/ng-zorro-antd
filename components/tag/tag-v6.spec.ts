@@ -79,3 +79,67 @@ describe('tag under antd v6 css', () => {
     expect(cs.color).toBe('rgba(0, 0, 0, 0.45)'); // colorIcon
   });
 });
+
+@Component({
+  imports: [NzTagModule],
+  template: `
+    <nz-tag id="o1" nzVariant="outlined">o</nz-tag>
+    <nz-tag id="o2" nzVariant="outlined" nzColor="blue">o</nz-tag>
+    <nz-tag id="o3" nzVariant="outlined" nzColor="#f50">o</nz-tag>
+    <nz-tag id="s1" nzVariant="solid" nzColor="blue">s</nz-tag>
+    <nz-tag id="s2" nzVariant="solid" nzColor="#f50">s</nz-tag>
+    <nz-tag id="d1" nzDisabled>d</nz-tag>
+    <nz-tag id="d2" nzMode="checkable" nzChecked nzDisabled>d</nz-tag>
+    <nz-tag id="i1" nzIcon="check-circle">icon</nz-tag>
+  `
+})
+class TestTagV6InputsComponent {}
+
+describe('tag v6 inputs under antd v6 css', () => {
+  const css = (id: string): CSSStyleDeclaration => getComputedStyle(document.getElementById(id) as HTMLElement);
+
+  beforeEach(() => {
+    installV6Css();
+    TestBed.configureTestingModule({ providers: [provideNzIconsTesting()], animationsEnabled: true });
+    TestBed.createComponent(TestTagV6InputsComponent).detectChanges();
+  });
+
+  afterEach(() => {
+    style.remove();
+    TestBed.inject(OverlayContainer).ngOnDestroy();
+  });
+
+  it('draws the outlined variant with a colorBorder border', () => {
+    expect(css('o1').borderColor).toBe('rgb(217, 217, 217)'); // colorBorder
+    expect(css('o1').backgroundColor).toBe('rgb(245, 245, 245)'); // defaultBg
+  });
+
+  it('draws preset colours per variant from the v6 rules', () => {
+    expect(css('o2').backgroundColor).toBe('rgb(230, 244, 255)'); // blue-1
+    expect(css('o2').borderColor).toBe('rgb(145, 202, 255)'); // blue-3
+    expect(css('o2').color).toBe('rgb(9, 88, 217)'); // blue-7
+    expect(css('s1').backgroundColor).toBe('rgb(22, 119, 255)'); // blue-6
+    expect(css('s1').color).toBe('rgb(255, 255, 255)'); // colorTextLightSolid
+  });
+
+  it('draws custom colours per variant as antd useColor computes them', () => {
+    expect(css('o3').backgroundColor).toBe('rgb(255, 238, 229)'); // #ffeee5, hsl l = 0.95
+    expect(css('o3').borderColor).toBe('rgb(255, 85, 0)');
+    expect(css('o3').color).toBe('rgb(255, 85, 0)');
+    expect(css('s2').backgroundColor).toBe('rgb(255, 85, 0)');
+    expect(css('s2').color).toBe('rgb(255, 255, 255)');
+  });
+
+  it('greys out disabled tags', () => {
+    expect(css('d1').backgroundColor).toBe('rgba(0, 0, 0, 0.04)'); // colorBgContainerDisabled
+    expect(css('d1').color).toBe('rgba(0, 0, 0, 0.25)'); // colorTextDisabled
+    expect(css('d1').cursor).toBe('not-allowed');
+    expect(css('d2').backgroundColor).toBe('rgba(0, 0, 0, 0.04)');
+    expect(css('d2').color).toBe('rgba(0, 0, 0, 0.25)');
+  });
+
+  it('spaces the nzIcon content span by the tag paddingInline', () => {
+    const span = document.querySelector('#i1 > span') as HTMLElement;
+    expect(getComputedStyle(span).marginLeft).toBe('7px'); // tagPaddingHorizontal - lineWidth
+  });
+});

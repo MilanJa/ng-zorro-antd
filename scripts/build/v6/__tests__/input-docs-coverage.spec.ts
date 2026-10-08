@@ -69,7 +69,7 @@ const V6_ONLY: Record<Dir, readonly string[]> = {
   splitter: ['nzCollapsible', 'nzDraggerIcon'],
   flex: [],
   divider: ['nzTitleMargin'],
-  tag: [],
+  tag: ['nzVariant', 'nzDisabled'],
   badge: [],
   tabs: [],
   pagination: [],

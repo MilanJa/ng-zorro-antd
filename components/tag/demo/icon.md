@@ -7,8 +7,8 @@ title:
 
 ## zh-CN
 
-在 tag 组件内嵌入 icon。
+通过 `nzIcon` 在标签内容前添加图标；直接投影 `<nz-icon>` 仍然可用。
 
 ## en-US
 
-Tag components can contain an icon.
+Set `nzIcon` to put an icon before the content; a projected `<nz-icon>` still works.
