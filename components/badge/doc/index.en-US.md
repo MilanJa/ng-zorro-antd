@@ -15,21 +15,21 @@ unread messages count.
 
 ### nz-badge
 
-| Property            | Description                                                                                | Type                                                             | Default     | Global Config |
-| ------------------- | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------- | ----------- | ------------- |
-| `[nzStandalone]`    | Whether standalone mode                                                                    | `boolean`                                                        | -           | -             |
-| `[nzColor]`         | Customize Badge dot color                                                                  | `string`                                                         | -           | ✅            |
-| `[nzCount]`         | Number to show in badge                                                                    | `number \| TemplateRef<void>`                                    | -           |
-| `[nzDot]`           | Whether to display a red dot instead of `count`                                            | `boolean`                                                        | `false`     |
-| `[nzShowDot]`       | Whether to display the red dot                                                             | `boolean`                                                        | `true`      |
-| `[nzOverflowCount]` | Max count to show                                                                          | `number`                                                         | `99`        | ✅            |
-| `[nzShowZero]`      | Whether to show badge when `count` is zero                                                 | `boolean`                                                        | `false`     |
-| `[nzSize]`          | If `nzCount` is set, `size` sets the size of badge                                         | `'default' \| 'small'`                                           | `'default'` |
-| `[nzStatus]`        | Set `nz-badge` as a status dot                                                             | `'success' \| 'processing' \| 'default' \| 'error' \| 'warning'` | -           |
-| `[nzText]`          | If `nzStatus` is set, `text` sets the display text of the status `dot`                     | `string \| TemplateRef<void>`                                    | -           |
-| `[nzTitle]`         | Text to show when hovering over the badge（Only Non-standalone), hide when value is `null` | `string \| null`                                                 | `nzCount`   |
-| `[nzOffset]`        | set offset of the badge dot, like `[x, y]` (Only Non-standalone)                           | `[number, number]`                                               | -           |
-| `[nzStyle]`         | Custom style of the count or dot                                                           | `NgStyleInterface \| null`                                       | -           |
+| Property            | Description                                                                                                                | Type                                                             | Default     | Global Config |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- | ----------- | ------------- |
+| `[nzStandalone]`    | Whether standalone mode                                                                                                    | `boolean`                                                        | -           | -             |
+| `[nzColor]`         | Customize Badge dot color                                                                                                  | `string`                                                         | -           | ✅            |
+| `[nzCount]`         | Number to show in badge                                                                                                    | `number \| TemplateRef<void>`                                    | -           |
+| `[nzDot]`           | Whether to display a red dot instead of `count`                                                                            | `boolean`                                                        | `false`     |
+| `[nzShowDot]`       | Whether to display the red dot                                                                                             | `boolean`                                                        | `true`      |
+| `[nzOverflowCount]` | Max count to show                                                                                                          | `number`                                                         | `99`        | ✅            |
+| `[nzShowZero]`      | Whether to show badge when `count` is zero                                                                                 | `boolean`                                                        | `false`     |
+| `[nzSize]`          | If `nzCount` is set, `size` sets the size of badge; `'medium'` is Ant Design 6's name for `'default'` and renders the same | `'medium' \| 'small' \| 'default'`                               | `'default'` |
+| `[nzStatus]`        | Set `nz-badge` as a status dot                                                                                             | `'success' \| 'processing' \| 'default' \| 'error' \| 'warning'` | -           |
+| `[nzText]`          | If `nzStatus` is set, `text` sets the display text of the status `dot`                                                     | `string \| TemplateRef<void>`                                    | -           |
+| `[nzTitle]`         | Text to show when hovering over the badge（Only Non-standalone), hide when value is `null`                                 | `string \| null`                                                 | `nzCount`   |
+| `[nzOffset]`        | set offset of the badge dot, like `[x, y]` (Only Non-standalone)                                                           | `[number, number]`                                               | -           |
+| `[nzStyle]`         | Custom style of the count or dot                                                                                           | `NgStyleInterface \| null`                                       | -           |
 
 ### nz-ribbon
 

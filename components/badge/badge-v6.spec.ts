@@ -24,6 +24,9 @@ function installV6Css(): void {
   imports: [FormsModule, NzBadgeModule],
   template: `
     <nz-badge id="b1" [nzCount]="5"><a class="head" style="width:40px;height:40px;display:block"></a></nz-badge>
+    <nz-badge id="b3" nzSize="medium" [nzCount]="5"
+      ><a class="head" style="width:40px;height:40px;display:block"></a
+    ></nz-badge>
     <nz-badge id="b2" nzStatus="processing" nzText="Running" />
     <nz-ribbon id="r1" nzText="Hi"><div style="height:60px"></div></nz-ribbon>
   `
@@ -81,5 +84,14 @@ describe('badge under antd v6 css', () => {
     expect(content).toBeTruthy();
     expect(content.textContent?.trim()).toBe('Hi');
     expect(getComputedStyle(content).color).toBe('rgb(255, 255, 255)');
+  });
+
+  it('draws nzSize="medium" with the default indicator size', () => {
+    const medium = getComputedStyle(document.querySelector('#b3 .ant-badge-count') as HTMLElement);
+    const byDefault = getComputedStyle(document.querySelector('#b1 .ant-badge-count') as HTMLElement);
+    expect(medium.height).toBe('20px'); // indicatorHeight
+    expect(medium.height).toBe(byDefault.height);
+    expect(medium.minWidth).toBe(byDefault.minWidth);
+    expect(medium.fontSize).toBe(byDefault.fontSize);
   });
 });

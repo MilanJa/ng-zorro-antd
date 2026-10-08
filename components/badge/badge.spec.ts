@@ -9,7 +9,7 @@ import { By } from '@angular/platform-browser';
 
 import { NzNoAnimationDirective, provideNzNoAnimation } from 'ng-zorro-antd/core/animation';
 import { testDirectionality, updateNonSignalsInput } from 'ng-zorro-antd/core/testing';
-import { NgStyleInterface, NzSizeDSType } from 'ng-zorro-antd/core/types';
+import { NgStyleInterface, NzSizeDMSType } from 'ng-zorro-antd/core/types';
 
 import { NzBadgeComponent } from './badge.component';
 import { NzBadgeModule } from './badge.module';
@@ -168,6 +168,17 @@ describe('badge', () => {
       testComponent.size.set('small');
       fixture.detectChanges();
       expect(badgeElement.nativeElement.querySelector('nz-badge-sup').classList).toContain('ant-badge-count-sm');
+    });
+
+    it('renders nzSize="medium" exactly as "default"', () => {
+      fixture.detectChanges();
+      const sup = badgeElement.nativeElement.querySelector('nz-badge-sup') as HTMLElement;
+      const defaultClasses = [...sup.classList].sort();
+      testComponent.size.set('medium');
+      fixture.detectChanges();
+      expect(sup.classList).toContain('ant-badge-count');
+      expect(sup.classList).not.toContain('ant-badge-count-sm');
+      expect([...sup.classList].sort()).toEqual(defaultClasses);
     });
 
     it('should set presetColor of nzColor change', () => {
@@ -373,7 +384,7 @@ export class NzTestBadgeBasicComponent {
   readonly text = signal<string | undefined>(undefined);
   readonly title = signal<string | null | undefined>(undefined);
   readonly offset = signal<[number, number] | undefined>(undefined);
-  readonly size = signal<NzSizeDSType>('default');
+  readonly size = signal<NzSizeDMSType>('default');
   readonly noAnimation = signal(true);
   readonly color = signal<string | undefined>(undefined);
 }

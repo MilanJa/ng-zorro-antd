@@ -17,7 +17,7 @@ import {
 } from '@angular/core';
 
 import { NzNoAnimationDirective } from 'ng-zorro-antd/core/animation';
-import { NgStyleInterface, NzSafeAny, NzSizeDSType } from 'ng-zorro-antd/core/types';
+import { NgStyleInterface, NzSafeAny, NzSizeDMSType } from 'ng-zorro-antd/core/types';
 
 @Component({
   selector: 'nz-badge-sup',
@@ -83,7 +83,7 @@ export class NzBadgeSupComponent implements OnInit, OnChanges {
   @Input() nzDot = false;
   @Input({ transform: numberAttribute }) nzOverflowCount = 99;
   @Input() nzCount?: number | TemplateRef<NzSafeAny>;
-  @Input() nzSize: NzSizeDSType = 'default';
+  @Input() nzSize: NzSizeDMSType = 'default';
   @Input({ transform: booleanAttribute }) isPresetColor = false;
   // Set by the parent from `!!nzStatus`, not derived from `nzColor`'s value: a status word
   // reaching this component through `nzColor` (no `nzStatus` set) is a custom colour, not a

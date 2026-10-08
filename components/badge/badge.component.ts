@@ -18,7 +18,7 @@ import {
 import { withAnimationCheck } from 'ng-zorro-antd/core/animation';
 import { NzConfigKey, WithConfig } from 'ng-zorro-antd/core/config';
 import { NzOutletModule } from 'ng-zorro-antd/core/outlet';
-import { NgStyleInterface, NzSafeAny, NzSizeDSType } from 'ng-zorro-antd/core/types';
+import { NgStyleInterface, NzSafeAny, NzSizeDMSType } from 'ng-zorro-antd/core/types';
 
 import { NzBadgeSupComponent } from './badge-sup.component';
 import { badgePresetColors } from './preset-colors';
@@ -97,7 +97,7 @@ export class NzBadgeComponent implements OnChanges {
   @Input() nzStatus?: NzBadgeStatusType | string;
   @Input() nzCount?: number | TemplateRef<NzSafeAny>;
   @Input() nzOffset?: [number, number];
-  @Input() nzSize: NzSizeDSType = 'default';
+  @Input() nzSize: NzSizeDMSType = 'default';
 
   protected get mergedStyle(): NgStyleInterface {
     return { backgroundColor: !this.presetColor && this.nzColor, ...(this.nzStyle ?? {}) };

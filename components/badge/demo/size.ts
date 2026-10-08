@@ -6,7 +6,7 @@ import { NzBadgeModule } from 'ng-zorro-antd/badge';
   selector: 'nz-demo-badge-size',
   imports: [NzBadgeModule],
   template: `
-    <nz-badge nzSize="default" [nzCount]="5">
+    <nz-badge nzSize="medium" [nzCount]="5">
       <a class="head-example"></a>
     </nz-badge>
     <nz-badge nzSize="small" [nzCount]="5">
