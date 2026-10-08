@@ -180,3 +180,39 @@ describe('tag checkable group under antd v6 css', () => {
     expect(cs.cursor).toBe('not-allowed');
   });
 });
+
+@Component({
+  imports: [NzTagModule],
+  template: `
+    <nz-tag id="c1" nzMode="checkable" nzChecked>on</nz-tag>
+    <nz-tag id="c2" nzMode="checkable">off</nz-tag>
+    <nz-tag id="c3" nzMode="checkable" nzDisabled>off disabled</nz-tag>
+    <nz-tag id="c4" nzMode="checkable" nzDisabled nzChecked>on disabled</nz-tag>
+  `
+})
+class TestCheckableV6Component {}
+
+describe('checkable tag under antd v6 css', () => {
+  beforeEach(() => {
+    installV6Css();
+    TestBed.configureTestingModule({ providers: [provideNzIconsTesting()], animationsEnabled: true });
+    TestBed.createComponent(TestCheckableV6Component).detectChanges();
+  });
+
+  afterEach(() => {
+    style.remove();
+    TestBed.inject(OverlayContainer).ngOnDestroy();
+  });
+
+  const bg = (id: string): string => getComputedStyle(document.getElementById(id) as HTMLElement).backgroundColor;
+
+  it('fills a checked tag with the primary colour, as antd draws it', () => {
+    expect(bg('c1')).toBe('rgb(22, 119, 255)'); // colorPrimary
+  });
+
+  it('leaves unchecked tags unfilled and fills a checked disabled tag distinctly', () => {
+    expect(bg('c2')).toBe('rgba(0, 0, 0, 0)');
+    expect(bg('c3')).toBe('rgba(0, 0, 0, 0)');
+    expect(bg('c4')).not.toBe(bg('c3')); // colorBgContainerDisabled
+  });
+});

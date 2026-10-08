@@ -208,7 +208,7 @@ describe('nz-tag-checkable-group', () => {
     const tag = debug.nativeElement as HTMLElement;
     expect(debug.injector.get(NZ_TAG_CHECKABLE_GROUP, null)).toBeNull();
     expect(debug.injector.get(NG_VALUE_ACCESSOR, null)).toBeNull();
-    expect([...tag.classList].sort()).toEqual(['ant-tag', 'ant-tag-checkable', 'ant-tag-filled']);
+    expect([...tag.classList].sort()).toEqual(['ant-tag', 'ant-tag-checkable']);
     expect(tag.hasAttribute('tabindex')).toBe(false);
     expect(tag.hasAttribute('aria-disabled')).toBe(false);
 
@@ -217,12 +217,7 @@ describe('nz-tag-checkable-group', () => {
     expect(fixture.componentInstance.checked).toBe(true);
     expect(fixture.componentInstance.change).toHaveBeenCalledTimes(1);
     expect(fixture.componentInstance.change).toHaveBeenCalledWith(true);
-    expect([...tag.classList].sort()).toEqual([
-      'ant-tag',
-      'ant-tag-checkable',
-      'ant-tag-checkable-checked',
-      'ant-tag-filled'
-    ]);
+    expect([...tag.classList].sort()).toEqual(['ant-tag', 'ant-tag-checkable', 'ant-tag-checkable-checked']);
 
     tag.click();
     fixture.detectChanges();

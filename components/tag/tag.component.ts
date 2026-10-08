@@ -66,9 +66,9 @@ interface NzTagCustomStyle {
   // `nzBordered` is `false`: the default stylesheet's borderless look keys off it.
   host: {
     class: 'ant-tag',
-    '[class.ant-tag-filled]': `variant === 'filled'`,
-    '[class.ant-tag-outlined]': `variant === 'outlined'`,
-    '[class.ant-tag-solid]': `variant === 'solid'`,
+    '[class.ant-tag-filled]': `variantClass === 'filled'`,
+    '[class.ant-tag-outlined]': `variantClass === 'outlined'`,
+    '[class.ant-tag-solid]': `variantClass === 'solid'`,
     '[style.background-color]': `customStyle.backgroundColor`,
     '[style.color]': `customStyle.color`,
     '[style.border-color]': `customStyle.borderColor`,
@@ -175,6 +175,11 @@ export class NzTagComponent implements OnChanges {
 
   private get inGroup(): boolean {
     return !!this.group && this.nzMode === 'checkable' && this.nzValue !== undefined;
+  }
+
+  /** antd's `CheckableTag` carries no variant class; `ant-tag-filled` would paint over the checked fill. */
+  protected get variantClass(): NzTagVariant | null {
+    return this.nzMode === 'checkable' ? null : this.variant;
   }
 
   protected get iconTemplate(): TemplateRef<void> | null {
