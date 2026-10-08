@@ -28,3 +28,4 @@ export * from './encode-entities';
 export * from './class-name';
 export * from './focus';
 export * from './deprecated-input';
+export * from './flex';

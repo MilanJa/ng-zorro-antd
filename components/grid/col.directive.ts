@@ -9,7 +9,7 @@ import { computed, Directive, inject, input } from '@angular/core';
 
 import { responsiveArray, type ResponsiveLike } from 'ng-zorro-antd/core/services';
 import type { NgStyleInterface } from 'ng-zorro-antd/core/types';
-import { generateClassName, isNotNil, isNumber, isPlainObject } from 'ng-zorro-antd/core/util';
+import { generateClassName, isNotNil, isNumber, isPlainObject, parseFlex } from 'ng-zorro-antd/core/util';
 
 import { NzRowDirective } from './row.directive';
 
@@ -98,14 +98,7 @@ export class NzColDirective {
 
   protected readonly flexStyle = computed(() => {
     const flex = this.nzFlex();
-    if (typeof flex === 'number') {
-      return `${flex} ${flex} auto`;
-    } else if (typeof flex === 'string') {
-      if (/^\d+(\.\d+)?(px|em|rem|%)$/.test(flex)) {
-        return `0 0 ${flex}`;
-      }
-    }
-    return flex;
+    return isNotNil(flex) ? parseFlex(flex) : flex;
   });
 
   protected readonly gutterPaddingStyle = computed<NgStyleInterface>(() => {

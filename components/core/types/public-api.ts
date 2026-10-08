@@ -18,3 +18,4 @@ export * from './input-observable';
 export * from './type';
 export * from './status';
 export * from './variant';
+export * from './semantic';

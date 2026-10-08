@@ -8,3 +8,5 @@ export type NzSizeLDSType = 'large' | 'default' | 'small';
 export type NzSizeLMSType = 'large' | 'middle' | 'small';
 export type NzSizeMDSType = 'middle' | 'default' | 'small';
 export type NzSizeDSType = 'default' | 'small';
+/** Ant Design v6 renamed the default size to `medium`; both names are accepted and render the same. */
+export type NzSizeDMSType = 'default' | 'medium' | 'small';
