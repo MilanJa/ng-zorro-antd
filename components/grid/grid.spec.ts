@@ -249,6 +249,43 @@ describe('grid', () => {
       fixture.detectChanges();
       expect(batchSizeMatch(1, 'xs')).toBe(false);
     });
+
+    it('should apply the responsive flex class and custom property', () => {
+      component.xs.set({ flex: '100%' });
+      component.md.set({ flex: 2, span: 6 });
+      component.xl.set({ flex: 'auto' });
+      component.xxxl.set({ flex: 0 });
+      fixture.detectChanges();
+      for (const size of ['xs', 'md', 'xl', 'xxxl']) {
+        expect(colElement.classList).toContain(`ant-col-${size}-flex`);
+      }
+      expect(colElement.classList).toContain('ant-col-md-6');
+      expect(colElement.classList).not.toContain('ant-col-sm-flex');
+      expect(colElement.style.getPropertyValue('--ant-col-xs-flex')).toBe('0 0 100%');
+      expect(colElement.style.getPropertyValue('--ant-col-md-flex')).toBe('2 2 auto');
+      expect(colElement.style.getPropertyValue('--ant-col-xl-flex')).toBe('auto');
+      expect(colElement.style.getPropertyValue('--ant-col-xxxl-flex')).toBe('0 0 auto');
+      component.xs.set(8);
+      fixture.detectChanges();
+      expect(colElement.classList).not.toContain('ant-col-xs-flex');
+      expect(colElement.style.getPropertyValue('--ant-col-xs-flex')).toBe('');
+    });
+
+    it('v4 safety: no responsive flex leaves the class list and inline style as before', () => {
+      component.xs.set({ span: 4 });
+      component.flex.set(1);
+      fixture.detectChanges();
+      expect(colElement.className).toBe('ant-col ant-col-xs-4');
+      expect(colElement.style.cssText).toBe('flex: 1 1 auto;');
+    });
+
+    it('should merge the responsive flex property with the gutter padding', () => {
+      const gutterFixture = TestBed.createComponent(TestColGutterFlexComponent);
+      gutterFixture.detectChanges();
+      const col = gutterFixture.nativeElement.querySelector('#gutterFlex') as HTMLElement;
+      expect(col.style.paddingInline).toBe('8px');
+      expect(col.style.getPropertyValue('--ant-col-xs-flex')).toBe('0 0 50%');
+    });
   });
 
   describe('RTL', () => {
@@ -342,3 +379,13 @@ export class TestColComponent {
   xxl = signal<string | number | ColSize | null>(null);
   xxxl = signal<string | number | ColSize | null>(null);
 }
+
+@Component({
+  imports: [NzGridModule],
+  template: `
+    <div nz-row [nzGutter]="16">
+      <div nz-col id="gutterFlex" [nzXs]="{ flex: '50%' }"></div>
+    </div>
+  `
+})
+export class TestColGutterFlexComponent {}

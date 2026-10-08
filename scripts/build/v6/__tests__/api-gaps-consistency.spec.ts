@@ -46,7 +46,7 @@ const DELIVERED: Record<string, string[]> = {
   Progress: ['percentPosition', 'size'],
   FloatButton: ['content', 'description', 'showProgress'],
   BackTop: ['showProgress'],
-  Col: [],
+  Col: ['xs', 'sm', 'md', 'lg', 'xl', 'xxl', 'xxxl'],
   Sider: [],
   'Dropdown menu items': [],
   'Dropdown submenu title': [],

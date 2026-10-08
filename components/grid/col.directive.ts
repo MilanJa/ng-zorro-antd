@@ -16,6 +16,8 @@ import { NzRowDirective } from './row.directive';
 export type ColSpanType = number | string;
 
 export interface ColSize {
+  /** Responsive flex (antd v6 `ColSize.flex`); styled by the v6 stylesheet only. */
+  flex?: ColSpanType;
   span?: ColSpanType;
   pull?: ColSpanType;
   push?: ColSpanType;
@@ -31,7 +33,7 @@ const CLASS_NAME = 'ant-col';
   host: {
     '[class]': 'hostClass()',
     '[class.ant-col-rtl]': `dir() === 'rtl'`,
-    '[style]': 'gutterPaddingStyle()',
+    '[style]': 'hostStyle()',
     '[style.flex]': 'flexStyle()'
   }
 })
@@ -53,16 +55,19 @@ export class NzColDirective {
   readonly nzXXl = input<ColSpanType | ColSize | null>();
   readonly nzXXXl = input<ColSpanType | ColSize | null>();
 
-  protected readonly responsiveClass = computed(() => {
-    const xs = this.nzXs();
-    const sm = this.nzSm();
-    const md = this.nzMd();
-    const lg = this.nzLg();
-    const xl = this.nzXl();
-    const xxl = this.nzXXl();
-    const xxxl = this.nzXXXl();
-    return this.generateClassList({ xs, sm, md, lg, xl, xxl, xxxl });
-  });
+  private readonly responsiveProps = computed<Partial<ResponsiveLike<ColSpanType | ColSize | null | undefined>>>(
+    () => ({
+      xs: this.nzXs(),
+      sm: this.nzSm(),
+      md: this.nzMd(),
+      lg: this.nzLg(),
+      xl: this.nzXl(),
+      xxl: this.nzXXl(),
+      xxxl: this.nzXXXl()
+    })
+  );
+
+  protected readonly responsiveClass = computed(() => this.generateClassList(this.responsiveProps()));
 
   protected readonly hostClass = computed(() => {
     const span = this.nzSpan();
@@ -117,7 +122,28 @@ export class NzColDirective {
     return style;
   });
 
-  private generateClassList(props: Partial<ResponsiveLike<ColSpanType | ColSize | null>>): string[] {
+  /** antd v6 `col.js`: each breakpoint's `flex` becomes a `--ant-col-<size>-flex` custom property. */
+  protected readonly responsiveFlexStyle = computed<NgStyleInterface>(() => {
+    const props = this.responsiveProps();
+    const style: NgStyleInterface = {};
+    responsiveArray.forEach(size => {
+      const propSize = props[size];
+      if (isPlainObject<ColSize>(propSize)) {
+        const { flex } = propSize;
+        if (flex || flex === 0) {
+          style[`--ant-col-${size}-flex`] = parseFlex(flex);
+        }
+      }
+    });
+    return style;
+  });
+
+  protected readonly hostStyle = computed<NgStyleInterface>(() => ({
+    ...this.gutterPaddingStyle(),
+    ...this.responsiveFlexStyle()
+  }));
+
+  private generateClassList(props: Partial<ResponsiveLike<ColSpanType | ColSize | null | undefined>>): string[] {
     const classList: string[] = [];
 
     responsiveArray.forEach(size => {
@@ -129,7 +155,7 @@ export class NzColDirective {
         sizeProps = propSize || {};
       }
 
-      const { span, pull, push, offset, order } = sizeProps;
+      const { span, pull, push, offset, order, flex } = sizeProps;
 
       if (isNotNil(span)) {
         classList.push(this.generateClass(`${size}-${span}`));
@@ -149,6 +175,10 @@ export class NzColDirective {
 
       if (pull || pull === 0) {
         classList.push(this.generateClass(`${size}-pull-${pull}`));
+      }
+
+      if (flex || flex === 0) {
+        classList.push(this.generateClass(`${size}-flex`));
       }
     });
 

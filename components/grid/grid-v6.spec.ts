@@ -167,3 +167,37 @@ describe('grid under antd v6 css', () => {
     expect(Math.abs(n2.width - nested.width / 2)).toBeLessThanOrEqual(0.5);
   });
 });
+
+@Component({
+  imports: [NzGridModule],
+  template: `
+    <div nz-row style="width: 400px">
+      <div nz-col id="rf" [nzXs]="{ flex: '100%' }" [nzMd]="{ flex: '50%' }">r</div>
+    </div>
+  `
+})
+class GridResponsiveFlexHost {}
+
+describe('grid responsive flex under antd v6 css', () => {
+  beforeEach(() => {
+    installV6Css();
+    TestBed.configureTestingModule({ providers: [provideNzIconsTesting()] });
+  });
+
+  afterEach(() => {
+    style.remove();
+  });
+
+  it('applies the breakpoint flex that matches the viewport', async () => {
+    TestBed.createComponent(GridResponsiveFlexHost).detectChanges();
+    try {
+      await page.viewport(375, 800);
+      expect(getComputedStyle(el('rf')).flex).toBe('0 0 100%');
+      await page.viewport(1280, 800);
+      expect(getComputedStyle(el('rf')).flex).toBe('0 0 50%');
+      expect(el('rf').getBoundingClientRect().width).toBeCloseTo(200, 0);
+    } finally {
+      await page.viewport(1000, 1000);
+    }
+  });
+});

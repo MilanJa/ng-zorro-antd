@@ -75,7 +75,7 @@ const V6_ONLY: Record<Dir, readonly string[]> = {
   pagination: ['nzSize', 'nzVariant'],
   progress: ['nzPercentPosition'],
   'float-button': ['nzShowProgress'],
-  grid: [],
+  grid: ['nzXs', 'nzSm', 'nzMd', 'nzLg', 'nzXl', 'nzXXl', 'nzXXXl'],
   layout: [],
   dropdown: [],
   breadcrumb: []

@@ -90,20 +90,20 @@ description: 24 栅格系统。
 
 ### [nz-col]
 
-| 成员         | 说明                                                             | 类型               | 默认值 | 版本   |
-| ------------ | ---------------------------------------------------------------- | ------------------ | ------ | ------ |
-| `[nzFlex]`   | flex 布局属性                                                    | `string \| number` | -      |        |
-| `[nzOffset]` | 栅格左侧的间隔格数，间隔内不可以有栅格                           | `number`           | `0`    |        |
-| `[nzOrder]`  | 栅格顺序                                                         | `number`           | `0`    |        |
-| `[nzPull]`   | 栅格向左移动格数                                                 | `number`           | `0`    |        |
-| `[nzPush]`   | 栅格向右移动格数                                                 | `number`           | `0`    |        |
-| `[nzSpan]`   | 栅格占位格数，为 0 时相当于 `display: none`                      | `number`           | -      |        |
-| `[nzXs]`     | `screen < 576px` 响应式栅格，可为栅格数或一个包含其他属性的对象  | `number \| object` | -      |        |
-| `[nzSm]`     | `screen ≥ 576px` 响应式栅格，可为栅格数或一个包含其他属性的对象  | `number \| object` | -      |        |
-| `[nzMd]`     | `screen ≥ 768px` 响应式栅格，可为栅格数或一个包含其他属性的对象  | `number \| object` | -      |        |
-| `[nzLg]`     | `screen ≥ 992px` 响应式栅格，可为栅格数或一个包含其他属性的对象  | `number \| object` | -      |        |
-| `[nzXl]`     | `screen ≥ 1200px` 响应式栅格，可为栅格数或一个包含其他属性的对象 | `number \| object` | -      |        |
-| `[nzXXl]`    | `screen ≥ 1600px` 响应式栅格，可为栅格数或一个包含其他属性的对象 | `number \| object` | -      |        |
-| `[nzXXXl]`   | `screen ≥ 1920px` 响应式栅格，可为栅格数或一个包含其他属性的对象 | `number \| object` | -      | 21.3.0 |
+| 成员         | 说明                                                                                                             | 类型               | 默认值 | 版本   |
+| ------------ | ---------------------------------------------------------------------------------------------------------------- | ------------------ | ------ | ------ |
+| `[nzFlex]`   | flex 布局属性                                                                                                    | `string \| number` | -      |        |
+| `[nzOffset]` | 栅格左侧的间隔格数，间隔内不可以有栅格                                                                           | `number`           | `0`    |        |
+| `[nzOrder]`  | 栅格顺序                                                                                                         | `number`           | `0`    |        |
+| `[nzPull]`   | 栅格向左移动格数                                                                                                 | `number`           | `0`    |        |
+| `[nzPush]`   | 栅格向右移动格数                                                                                                 | `number`           | `0`    |        |
+| `[nzSpan]`   | 栅格占位格数，为 0 时相当于 `display: none`                                                                      | `number`           | -      |        |
+| `[nzXs]`     | `screen < 576px` 响应式栅格，可为栅格数或一个包含其他属性及 `flex` 的对象；对象的 `flex` 字段：需要 v6 样式表。  | `number \| object` | -      |        |
+| `[nzSm]`     | `screen ≥ 576px` 响应式栅格，可为栅格数或一个包含其他属性及 `flex` 的对象；对象的 `flex` 字段：需要 v6 样式表。  | `number \| object` | -      |        |
+| `[nzMd]`     | `screen ≥ 768px` 响应式栅格，可为栅格数或一个包含其他属性及 `flex` 的对象；对象的 `flex` 字段：需要 v6 样式表。  | `number \| object` | -      |        |
+| `[nzLg]`     | `screen ≥ 992px` 响应式栅格，可为栅格数或一个包含其他属性及 `flex` 的对象；对象的 `flex` 字段：需要 v6 样式表。  | `number \| object` | -      |        |
+| `[nzXl]`     | `screen ≥ 1200px` 响应式栅格，可为栅格数或一个包含其他属性及 `flex` 的对象；对象的 `flex` 字段：需要 v6 样式表。 | `number \| object` | -      |        |
+| `[nzXXl]`    | `screen ≥ 1600px` 响应式栅格，可为栅格数或一个包含其他属性及 `flex` 的对象；对象的 `flex` 字段：需要 v6 样式表。 | `number \| object` | -      |        |
+| `[nzXXXl]`   | `screen ≥ 1920px` 响应式栅格，可为栅格数或一个包含其他属性及 `flex` 的对象；对象的 `flex` 字段：需要 v6 样式表。 | `number \| object` | -      | 21.3.0 |
 
 响应式栅格的断点扩展自 [BootStrap 4 的规则](https://getbootstrap.com/docs/4.0/layout/overview/#responsive-breakpoints)（不包含链接里 `occasionally` 的部分)。
