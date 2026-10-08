@@ -42,7 +42,7 @@ const PUBLIC_FILES: Record<Dir, readonly string[]> = {
   splitter: ['splitter.component.ts', 'splitter-panel.component.ts'],
   flex: ['nz-flex.directive.ts'],
   divider: ['divider.component.ts'],
-  tag: ['tag.component.ts'],
+  tag: ['tag.component.ts', 'tag-checkable-group.component.ts'],
   badge: ['badge.component.ts', 'ribbon.component.ts'],
   tabs: ['tabs.component.ts', 'tab.component.ts'],
   pagination: ['pagination.component.ts'],

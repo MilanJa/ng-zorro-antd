@@ -24,6 +24,15 @@ description: Used for marking and categorization.
 | `[nzVariant]`       | Variant of the tag; with `'outlined'` a custom `nzColor` is tinted as Ant Design does; for `'outlined'` and `'solid'`: Requires the v6 stylesheet.                                | `'filled' \| 'outlined' \| 'solid'`       | `'filled'`  |
 | `[nzIcon]`          | Icon rendered before the content, which is then wrapped in a `<span>` as Ant Design does                                                                                          | `string \| TemplateRef<void>`             | -           |
 | `[nzDisabled]`      | Disable the tag: a checkable tag no longer toggles, a closeable tag no longer closes, and a custom `nzColor` is not applied; for the greyed-out look: Requires the v6 stylesheet. | `boolean`                                 | `false`     |
+| `[nzValue]`         | Value of a checkable tag inside `nz-tag-checkable-group`; a tag without it is not part of the group's model                                                                       | `string \| number`                        | -           |
 | ~~`[nzBordered]`~~  | Deprecated, use [nzVariant] instead. Whether has border style; `false` keeps the borderless look of the default stylesheet and resolves to `'filled'`                             | `boolean`                                 | `true`      |
 | `(nzOnClose)`       | Callback executed when tag is closed, only works when `nzMode="closable"`                                                                                                         | `EventEmitter<MouseEvent>`                | -           |
 | `(nzCheckedChange)` | Checked status change call back, only works when `nzMode="checkable"`                                                                                                             | `EventEmitter<boolean>`                   | -           |
+
+### nz-tag-checkable-group
+
+| Property       | Description                                                                                                   | Type                                               | Default |
+| -------------- | ------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- | ------- |
+| `[nzMultiple]` | Whether several tags can be checked; the model is an array when `true` and a single value or `null` otherwise | `boolean`                                          | `false` |
+| `[nzDisabled]` | Disable every checkable tag in the group; a tag's own bound `[nzDisabled]` wins                               | `boolean`                                          | `false` |
+| `[(ngModel)]`  | The checked `nzValue`s of the child checkable tags                                                            | `(string \| number)[] \| string \| number \| null` | -       |

@@ -5,10 +5,11 @@
 
 import { NgModule } from '@angular/core';
 
+import { NzTagCheckableGroupComponent } from './tag-checkable-group.component';
 import { NzTagComponent } from './tag.component';
 
 @NgModule({
-  imports: [NzTagComponent],
-  exports: [NzTagComponent]
+  imports: [NzTagComponent, NzTagCheckableGroupComponent],
+  exports: [NzTagComponent, NzTagCheckableGroupComponent]
 })
 export class NzTagModule {}

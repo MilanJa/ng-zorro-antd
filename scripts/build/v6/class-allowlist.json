@@ -498,6 +498,7 @@
   "_dropdown_comment": "v4-compat: ant-dropdown-link (NzDropdownADirective host class on a[nz-dropdown]; kept because the compiled v4 CSS styles .ant-dropdown-link via style/index.less, no v6 counterpart — v6 CSS never has a rule for this class, confirmed against components/core/theme/generated/test-css.ts), ant-dropdown-rtl (compiled v4 CSS styles &-rtl { direction: rtl } in style/index.less; v6 handles direction without a class, no v6 counterpart). antd-emits: ant-dropdown-show-arrow (@rc-component/dropdown/es/Dropdown.js:112 sets prefixCls-show-arrow on the root exactly when the arrow prop is truthy, matching dropdown-menu.component.ts's [class.ant-dropdown-show-arrow]=\"nzArrow\"; no v6 CSS rule keys off it — the arrow's visibility is driven by conditionally rendering div.ant-dropdown-arrow itself, not this class), ant-dropdown-menu-root (@rc-component/menu/es/Menu.js:351 always adds prefixCls-root to the menu root regardless of theme, matching menu.directive.ts's [class.ant-dropdown-menu-root]=\"isMenuInsideDropdown\"; no v6 CSS rule keys off it, confirmed by grepping the extracted dropdown CSS for -menu-root), ant-dropdown-menu-light (antd/es/dropdown/dropdown.js defaults the OverrideProvider's menu to the light theme (Dropdown has no dark-menu prop of its own), matching menu.directive.ts's default nzTheme=\"light\"; no v6 CSS rule keys off it either — confirmed by the same grep).",
   "tag": [
     "ant-tag-borderless",
+    "ant-tag-checkable-group-rtl",
     "ant-tag-has-color"
   ],
   "tabs": [
@@ -525,7 +526,7 @@
   "typography": [
     "ant-typography-single-line"
   ],
-  "_tag_comment": "v4-compat: -borderless (replacement: ant-tag-filled, kept while the deprecated nzBordered is false and the resolved nzVariant is filled, on the same host that carries ant-tag-filled; compiled v4 CSS still styles .ant-tag-borderless, no v6 CSS rule for that literal class name — v6 only styles the variant classes). -has-color (no v6 counterpart: v6's custom-colour path (useColor.js) never emits a class at all, only the inline tagStyle; compiled v4 CSS still styles .ant-tag-has-color).",
+  "_tag_comment": "v4-compat: -borderless (replacement: ant-tag-filled, kept while the deprecated nzBordered is false and the resolved nzVariant is filled, on the same host that carries ant-tag-filled; compiled v4 CSS still styles .ant-tag-borderless, no v6 CSS rule for that literal class name — v6 only styles the variant classes). -has-color (no v6 counterpart: v6's custom-colour path (useColor.js) never emits a class at all, only the inline tagStyle; compiled v4 CSS still styles .ant-tag-has-color). antd-emits: ant-tag-checkable-group-rtl (CheckableTagGroup.js sets ${groupPrefixCls}-rtl from direction === 'rtl' on its root; v6 CSS has no rule for it, and nz-tag-checkable-group sets it on its host the same way).",
   "badge": [
     "ant-ribbon-text",
     "ant-badge-status-pink",

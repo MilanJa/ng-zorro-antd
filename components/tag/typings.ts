@@ -7,3 +7,5 @@ import { NzPresetColor, NzStatusColor } from 'ng-zorro-antd/core/color';
 
 export type NzTagColor = NzPresetColor | NzStatusColor | (string & {});
 export type NzTagVariant = 'filled' | 'outlined' | 'solid';
+
+export type NzTagCheckableValue = string | number;

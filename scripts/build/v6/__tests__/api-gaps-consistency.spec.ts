@@ -39,7 +39,7 @@ const DELIVERED: Record<string, string[]> = {
   ],
   Flex: ['orientation', 'gap', 'align', 'wrap'],
   Divider: ['titlePlacement', 'orientationMargin', 'orientation'],
-  Tag: ['icon', 'variant', 'disabled'],
+  Tag: ['icon', 'variant', 'disabled', 'CheckableTagGroup', 'multiple'],
   Badge: [],
   Tabs: [],
   Pagination: [],

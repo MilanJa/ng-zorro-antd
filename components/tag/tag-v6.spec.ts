@@ -143,3 +143,40 @@ describe('tag v6 inputs under antd v6 css', () => {
     expect(getComputedStyle(span).marginLeft).toBe('7px'); // tagPaddingHorizontal - lineWidth
   });
 });
+
+@Component({
+  imports: [NzTagModule],
+  template: `
+    <nz-tag-checkable-group id="g" nzDisabled>
+      <nz-tag id="g1" nzMode="checkable" nzValue="a">a</nz-tag>
+      <nz-tag id="g2" nzMode="checkable" nzValue="b">b</nz-tag>
+    </nz-tag-checkable-group>
+  `
+})
+class TestTagGroupV6Component {}
+
+describe('tag checkable group under antd v6 css', () => {
+  beforeEach(() => {
+    installV6Css();
+    TestBed.configureTestingModule({ providers: [provideNzIconsTesting()], animationsEnabled: true });
+    TestBed.createComponent(TestTagGroupV6Component).detectChanges();
+  });
+
+  afterEach(() => {
+    style.remove();
+    TestBed.inject(OverlayContainer).ngOnDestroy();
+  });
+
+  it('lays the tags out with the v6 flex gap', () => {
+    const cs = getComputedStyle(document.getElementById('g') as HTMLElement);
+    expect(cs.display).toBe('flex');
+    expect(cs.flexWrap).toBe('wrap');
+    expect(cs.columnGap).toBe('8px'); // paddingXS
+  });
+
+  it('greys out the children of a disabled group', () => {
+    const cs = getComputedStyle(document.getElementById('g1') as HTMLElement);
+    expect(cs.color).toBe('rgba(0, 0, 0, 0.25)'); // colorTextDisabled
+    expect(cs.cursor).toBe('not-allowed');
+  });
+});

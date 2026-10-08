@@ -8,6 +8,7 @@ import { NgTemplateOutlet } from '@angular/common';
 import {
   booleanAttribute,
   Component,
+  effect,
   ElementRef,
   EventEmitter,
   inject,
@@ -24,8 +25,9 @@ import { isPresetColor, isStatusColor, presetColors, statusColors } from 'ng-zor
 import { aliasDeprecatedInput, isTemplateRef } from 'ng-zorro-antd/core/util';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 
+import { NZ_TAG_CHECKABLE_GROUP } from './tag-checkable-group.token';
 import { tagCustomTint } from './tag-color';
-import { NzTagColor, NzTagVariant } from './typings';
+import { NzTagCheckableValue, NzTagColor, NzTagVariant } from './typings';
 
 /** `booleanAttribute` that keeps `undefined` as "unset" (rule 8 beside `aliasDeprecatedInput`). */
 function optionalBooleanAttribute(value: unknown): boolean | undefined {
@@ -72,7 +74,7 @@ interface NzTagCustomStyle {
     '[style.border-color]': `customStyle.borderColor`,
     '[class.ant-tag-has-color]': `nzColor && !isPresetColor && !disabled`,
     '[class.ant-tag-checkable]': `nzMode === 'checkable'`,
-    '[class.ant-tag-checkable-checked]': `nzChecked`,
+    '[class.ant-tag-checkable-checked]': `checked`,
     '[class.ant-tag-disabled]': `disabled && nzMode !== 'checkable'`,
     '[class.ant-tag-checkable-disabled]': `disabled && nzMode === 'checkable'`,
     '[class.ant-tag-rtl]': `dir() === 'rtl'`,
@@ -89,12 +91,15 @@ export class NzTagComponent implements OnChanges {
   /** The host's own `tabindex`, kept while the tag is disabled so it can be put back (null: none). */
   private savedTabindex: string | null = null;
   private tabindexSaved = false;
+  private readonly group = inject(NZ_TAG_CHECKABLE_GROUP, { optional: true });
 
   @Input() nzMode: 'default' | 'closeable' | 'checkable' = 'default';
   @Input() nzColor?: NzTagColor;
   @Input({ transform: booleanAttribute }) nzChecked = false;
   /** Icon rendered before the content; the content is then wrapped in a `<span>`, as antd does. */
   @Input() nzIcon?: string | TemplateRef<void>;
+  /** The value a checkable tag contributes to its `nz-tag-checkable-group`; unset keeps it out of the model. */
+  @Input() nzValue?: NzTagCheckableValue;
 
   @Input()
   set nzVariant(value: NzTagVariant | undefined) {
@@ -133,6 +138,17 @@ export class NzTagComponent implements OnChanges {
   @Output() readonly nzCheckedChange = new EventEmitter<boolean>();
   isPresetColor = false;
 
+  constructor() {
+    const group = this.group;
+    if (group) {
+      // The group's disabled state can change without this tag's own setter firing.
+      effect(() => {
+        group.disabled();
+        this.syncTabindex();
+      });
+    }
+  }
+
   protected variant: NzTagVariant = 'filled';
   protected bordered = true;
   private variantExplicit = false;
@@ -147,8 +163,18 @@ export class NzTagComponent implements OnChanges {
     () => 'filled'
   );
 
+  /** A bound `nzDisabled` wins; otherwise a checkable tag inherits its group's disabled state. */
   protected get disabled(): boolean {
-    return this.ownDisabled ?? false;
+    return this.ownDisabled ?? (this.nzMode === 'checkable' ? this.group?.disabled() : undefined) ?? false;
+  }
+
+  /** Inside a group with an `nzValue`, the group's model decides; otherwise `nzChecked`, as before. */
+  protected get checked(): boolean {
+    return this.inGroup ? this.group!.isChecked(this.nzValue!) : this.nzChecked;
+  }
+
+  private get inGroup(): boolean {
+    return !!this.group && this.nzMode === 'checkable' && this.nzValue !== undefined;
   }
 
   protected get iconTemplate(): TemplateRef<void> | null {
@@ -175,10 +201,17 @@ export class NzTagComponent implements OnChanges {
   }
 
   updateCheckedStatus(): void {
-    if (this.nzMode === 'checkable' && !this.disabled) {
-      this.nzChecked = !this.nzChecked;
-      this.nzCheckedChange.emit(this.nzChecked);
+    if (this.nzMode !== 'checkable' || this.disabled) {
+      return;
     }
+    if (this.inGroup) {
+      const next = !this.checked;
+      this.group!.toggle(this.nzValue!, next);
+      this.nzCheckedChange.emit(next);
+      return;
+    }
+    this.nzChecked = !this.nzChecked;
+    this.nzCheckedChange.emit(this.nzChecked);
   }
 
   closeTag(e: MouseEvent): void {

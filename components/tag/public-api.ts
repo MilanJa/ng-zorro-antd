@@ -4,5 +4,6 @@
  */
 
 export * from './tag.component';
+export * from './tag-checkable-group.component';
 export * from './tag.module';
 export * from './typings';
