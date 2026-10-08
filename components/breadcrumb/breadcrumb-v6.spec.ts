@@ -55,6 +55,25 @@ class TestBreadcrumbComponent {}
 })
 class TestBreadcrumbDropdownComponent {}
 
+@Component({
+  imports: [NzBreadCrumbModule, NzDropdownModule],
+  template: `
+    <nz-breadcrumb>
+      <nz-breadcrumb-item>Ant Design</nz-breadcrumb-item>
+      <nz-breadcrumb-item id="centred" [nzOverlay]="menu" nzOverlayPlacement="bottomCenter">
+        <a>An Application</a>
+      </nz-breadcrumb-item>
+    </nz-breadcrumb>
+    <nz-dropdown-menu #menu="nzDropdownMenu">
+      <ul nz-menu>
+        <li nz-menu-item>General</li>
+        <li nz-menu-item>Layout</li>
+      </ul>
+    </nz-dropdown-menu>
+  `
+})
+class TestBreadcrumbCentredComponent {}
+
 describe('breadcrumb under antd v6 css', () => {
   let fixture: ComponentFixture<TestBreadcrumbComponent>;
 
@@ -188,5 +207,23 @@ describe('breadcrumb overlay item under antd v6 css', () => {
     dispatchEvent(document.body, escape);
     await waitForClose();
     expect(overlay.getContainerElement().querySelector('.ant-dropdown')).toBeNull();
+  });
+
+  it('centres the overlay under the crumb with nzOverlayPlacement="bottomCenter"', async () => {
+    const centred = TestBed.createComponent(TestBreadcrumbCentredComponent);
+    centred.detectChanges();
+    const link = centred.debugElement.query(By.css('#centred .ant-breadcrumb-overlay-link'))
+      .nativeElement as HTMLElement;
+    dispatchEvent(link, new MouseEvent('mouseenter'));
+    await new Promise(resolve => setTimeout(resolve, 300));
+    centred.detectChanges();
+    await centred.whenStable();
+    centred.detectChanges();
+    const root = overlay.getContainerElement().querySelector('.ant-dropdown') as HTMLElement;
+    expect(root.classList).toContain('ant-dropdown-placement-bottom');
+    await expectMotionSettled(root);
+    const pane = root.closest('.cdk-overlay-pane')!.getBoundingClientRect();
+    const trigger = link.getBoundingClientRect();
+    expect(Math.abs((pane.left + pane.right) / 2 - (trigger.left + trigger.right) / 2)).toBeLessThan(1);
   });
 });

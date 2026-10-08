@@ -119,6 +119,7 @@ customRoute = (route:string) => this.bindCurrentParams(params,route);
 
 ### nz-breadcrumb-item
 
-| Property      | Description                              | Type                      | Default |
-| ------------- | ---------------------------------------- | ------------------------- | ------- |
-| `[nzOverlay]` | Dropdown menu that opens from this crumb | `NzDropdownMenuComponent` | -       |
+| Property               | Description                                                                                    | Type                                                                                        | Default        | Global Config |
+| ---------------------- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- | -------------- | ------------- |
+| `[nzOverlay]`          | Dropdown menu that opens from this crumb                                                       | `NzDropdownMenuComponent`                                                                   | -              |               |
+| `[nzOverlayPlacement]` | Placement of the dropdown overlay; `'bottomCenter'` centres it under the crumb as antd v6 does | `'bottomLeft' \| 'bottomCenter' \| 'bottomRight' \| 'topLeft' \| 'topCenter' \| 'topRight'` | `'bottomLeft'` | ✅            |

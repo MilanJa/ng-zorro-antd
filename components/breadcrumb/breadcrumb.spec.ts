@@ -3,15 +3,17 @@
  * found in the LICENSE file at https://github.com/NG-ZORRO/ng-zorro-antd/blob/master/LICENSE
  */
 
-import { Component, DebugElement } from '@angular/core';
+import { Component, DebugElement, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { PRIMARY_OUTLET, provideRouter, Router, RouterOutlet, Routes } from '@angular/router';
 
 import { vi } from 'vitest';
 
+import { provideNzConfig } from 'ng-zorro-antd/core/config';
 import { testDirectionality } from 'ng-zorro-antd/core/testing';
 import { NzSafeAny } from 'ng-zorro-antd/core/types';
+import { NzDropdownDirective, NzDropdownModule, NzPlacementType } from 'ng-zorro-antd/dropdown';
 import { provideNzIconsTesting } from 'ng-zorro-antd/icon/testing';
 
 import { NzBreadCrumbItemComponent } from './breadcrumb-item.component';
@@ -418,5 +420,51 @@ describe('breadcrumb', () => {
     component['getBreadcrumbs'](mockRoute as NzSafeAny, 'mockUrl', []);
 
     expect(component.nzRouteFn).toHaveBeenCalledWith('mockUrl');
+  });
+});
+
+@Component({
+  imports: [NzBreadCrumbModule, NzDropdownModule],
+  template: `
+    <nz-breadcrumb>
+      <nz-breadcrumb-item id="unset" [nzOverlay]="menu">A</nz-breadcrumb-item>
+      <nz-breadcrumb-item id="bound" [nzOverlay]="menu" [nzOverlayPlacement]="placement()">B</nz-breadcrumb-item>
+    </nz-breadcrumb>
+    <nz-dropdown-menu #menu="nzDropdownMenu">
+      <ul nz-menu>
+        <li nz-menu-item>x</li>
+      </ul>
+    </nz-dropdown-menu>
+  `
+})
+class NzTestBreadcrumbPlacementComponent {
+  readonly placement = signal<NzPlacementType>('bottomCenter');
+}
+
+describe('breadcrumb item nzOverlayPlacement', () => {
+  const placementOf = (fixture: ComponentFixture<NzTestBreadcrumbPlacementComponent>, id: string): NzPlacementType =>
+    fixture.debugElement.query(By.css(`#${id} .ant-breadcrumb-overlay-link`)).injector.get(NzDropdownDirective)
+      .nzPlacement;
+
+  it('defaults to bottomLeft (today’s output) and forwards a bound placement', () => {
+    TestBed.configureTestingModule({ providers: [provideNzIconsTesting()] });
+    const fixture = TestBed.createComponent(NzTestBreadcrumbPlacementComponent);
+    fixture.detectChanges();
+    expect(placementOf(fixture, 'unset')).toBe('bottomLeft');
+    expect(placementOf(fixture, 'bound')).toBe('bottomCenter');
+    fixture.componentInstance.placement.set('topRight');
+    fixture.detectChanges();
+    expect(placementOf(fixture, 'bound')).toBe('topRight');
+  });
+
+  it('reads the default from the breadcrumb.nzOverlayPlacement global config', () => {
+    TestBed.configureTestingModule({
+      providers: [provideNzIconsTesting(), provideNzConfig({ breadcrumb: { nzOverlayPlacement: 'bottomCenter' } })]
+    });
+    const fixture = TestBed.createComponent(NzTestBreadcrumbPlacementComponent);
+    fixture.componentInstance.placement.set('topLeft');
+    fixture.detectChanges();
+    expect(placementOf(fixture, 'unset')).toBe('bottomCenter');
+    expect(placementOf(fixture, 'bound')).toBe('topLeft');
   });
 });

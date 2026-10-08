@@ -119,6 +119,7 @@ customRoute = (route:string) => this.bindCurrentParams(params,route);
 
 ### nz-breadcrumb-item
 
-| 参数          | 说明                       | 类型                      | 默认值 |
-| ------------- | -------------------------- | ------------------------- | ------ |
-| `[nzOverlay]` | 从该面包屑项展开的下拉菜单 | `NzDropdownMenuComponent` | -      |
+| 参数                   | 说明                                                                 | 类型                                                                                        | 默认值         | 全局配置 |
+| ---------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- | -------------- | -------- |
+| `[nzOverlay]`          | 从该面包屑项展开的下拉菜单                                           | `NzDropdownMenuComponent`                                                                   | -              |          |
+| `[nzOverlayPlacement]` | 下拉菜单的弹出位置；`'bottomCenter'` 与 antd v6 一样在面包屑下方居中 | `'bottomLeft' \| 'bottomCenter' \| 'bottomRight' \| 'topLeft' \| 'topCenter' \| 'topRight'` | `'bottomLeft'` | ✅       |

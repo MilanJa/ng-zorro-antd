@@ -50,7 +50,7 @@ const DELIVERED: Record<string, string[]> = {
   Sider: ['classNames', 'styles'],
   'Dropdown menu items': ['icon', 'extra', 'label'],
   'Dropdown submenu title': [],
-  Breadcrumb: []
+  Breadcrumb: ['placement']
 };
 
 function gapRows(md: string): Array<{ components: string[]; names: string[]; line: string }> {

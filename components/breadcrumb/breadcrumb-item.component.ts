@@ -6,8 +6,9 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { Component, inject, Input, ViewEncapsulation } from '@angular/core';
 
+import { NzConfigKey, WithConfig } from 'ng-zorro-antd/core/config';
 import { NzOutletModule } from 'ng-zorro-antd/core/outlet';
-import { NzDropdownMenuComponent, NzDropdownModule } from 'ng-zorro-antd/dropdown';
+import { NzDropdownMenuComponent, NzDropdownModule, NzPlacementType } from 'ng-zorro-antd/dropdown';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 
 import { NzBreadcrumb } from './breadcrumb';
@@ -23,7 +24,12 @@ import { NzBreadCrumbSeparatorComponent } from './breadcrumb-separator.component
   },
   template: `
     @if (!!nzOverlay) {
-      <span class="ant-breadcrumb-overlay-link" nz-dropdown [nzDropdownMenu]="nzOverlay">
+      <span
+        class="ant-breadcrumb-overlay-link"
+        nz-dropdown
+        [nzDropdownMenu]="nzOverlay"
+        [nzPlacement]="nzOverlayPlacement"
+      >
         <ng-template [ngTemplateOutlet]="noMenuTpl" />
         <nz-icon nzType="down" />
       </span>
@@ -47,9 +53,12 @@ import { NzBreadCrumbSeparatorComponent } from './breadcrumb-separator.component
   `
 })
 export class NzBreadCrumbItemComponent {
+  readonly _nzModuleName: NzConfigKey = 'breadcrumb';
   nzBreadCrumbComponent = inject(NzBreadcrumb);
   /**
    * Dropdown content of a breadcrumb item.
    */
   @Input() nzOverlay?: NzDropdownMenuComponent;
+  /** Placement of the overlay; antd v6 centres it (`'bottomCenter'`). */
+  @Input() @WithConfig() nzOverlayPlacement: NzPlacementType = 'bottomLeft';
 }

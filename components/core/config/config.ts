@@ -37,6 +37,7 @@ export interface NzConfig {
   avatar?: AvatarConfig;
   floatButton?: FloatButtonConfig;
   badge?: BadgeConfig;
+  breadcrumb?: BreadcrumbConfig;
   button?: ButtonConfig;
   card?: CardConfig;
   carousel?: CarouselConfig;
@@ -213,6 +214,11 @@ export interface DrawerConfig {
 
 export interface DropdownConfig {
   nzBackdrop?: boolean;
+}
+
+export interface BreadcrumbConfig {
+  /** Spelled out: `ng-zorro-antd/core/config` cannot import `NzPlacementType` from `ng-zorro-antd/dropdown`. */
+  nzOverlayPlacement?: 'bottomLeft' | 'bottomCenter' | 'bottomRight' | 'topLeft' | 'topCenter' | 'topRight';
 }
 
 export interface EmptyConfig {
