@@ -43,7 +43,7 @@ const DELIVERED: Record<string, string[]> = {
   Badge: ['size'],
   Tabs: ['icon'],
   Pagination: ['size', 'variant'],
-  Progress: [],
+  Progress: ['percentPosition', 'size'],
   FloatButton: [],
   BackTop: [],
   Col: [],

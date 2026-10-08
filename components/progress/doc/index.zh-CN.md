@@ -20,16 +20,18 @@ description: 展示操作的当前进度。
 
 各类型通用的属性。
 
-| 属性                 | 说明                         | 类型                                                                                   | 默认值                     | 全局配置 |
-| -------------------- | ---------------------------- | -------------------------------------------------------------------------------------- | -------------------------- | -------- |
-| `[nzType]`           | 类型                         | `'line' \| 'circle' \| 'dashboard'`                                                    | `'line'`                   |          |
-| `[nzFormat]`         | 内容的模板函数               | `(percent: number) => string \| TemplateRef<{ $implicit: number }>`                    | `percent => percent + '%'` |
-| `[nzPercent]`        | 百分比                       | `number`                                                                               | `0`                        |          |
-| `[nzShowInfo]`       | 是否显示进度数值或状态图标   | `boolean`                                                                              | `true`                     | ✅       |
-| `[nzStatus]`         | 状态                         | `'success' \| 'exception' \| 'active' \| 'normal'`                                     | -                          |          |
-| `[nzStrokeLinecap]`  | 进度条端点形状               | `'round' \| 'square'`                                                                  | `'round'`                  | ✅       |
-| `[nzStrokeColor]`    | 进度条颜色，传入对象时为渐变 | `string \| { from: string; to: string: direction: string; [percent: string]: string }` | -                          | ✅       |
-| `[nzSuccessPercent]` | 已完成的分段百分比           | `number`                                                                               | 0                          |          |
+| 属性                  | 说明                                                                                                                                                                                                                                                                           | 类型                                                                                                              | 默认值                            | 全局配置 |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------- | --------------------------------- | -------- |
+| `[nzType]`            | 类型                                                                                                                                                                                                                                                                           | `'line' \| 'circle' \| 'dashboard'`                                                                               | `'line'`                          |          |
+| `[nzFormat]`          | 内容的模板函数                                                                                                                                                                                                                                                                 | `(percent: number) => string \| TemplateRef<{ $implicit: number }>`                                               | `percent => percent + '%'`        |
+| `[nzPercent]`         | 百分比                                                                                                                                                                                                                                                                         | `number`                                                                                                          | `0`                               |          |
+| `[nzShowInfo]`        | 是否显示进度数值或状态图标                                                                                                                                                                                                                                                     | `boolean`                                                                                                         | `true`                            | ✅       |
+| `[nzStatus]`          | 状态                                                                                                                                                                                                                                                                           | `'success' \| 'exception' \| 'active' \| 'normal'`                                                                | -                                 |          |
+| `[nzStrokeLinecap]`   | 进度条端点形状                                                                                                                                                                                                                                                                 | `'round' \| 'square'`                                                                                             | `'round'`                         | ✅       |
+| `[nzStrokeColor]`     | 进度条颜色，传入对象时为渐变                                                                                                                                                                                                                                                   | `string \| { from: string; to: string: direction: string; [percent: string]: string }`                            | -                                 | ✅       |
+| `[nzSuccessPercent]`  | 已完成的分段百分比                                                                                                                                                                                                                                                             | `number`                                                                                                          | 0                                 |          |
+| `[nzSize]`            | 进度条尺寸：预设名称，或与 antd v6 相同的数字（圆形/仪表盘的画布宽度；线形和步骤条的高度与宽度）、`[width, height]`（线形、步骤条）或 `{ width, height }`（线形、步骤条）。预设名称保留此前版本的线形高度、步骤宽度和圆形画布（`nzWidth`）；`'medium'` 与 `'default'` 渲染相同 | `'default' \| 'medium' \| 'small' \| number \| [number \| string, number] \| { width?: number; height?: number }` | `'default'`                       | ✅       |
+| `[nzPercentPosition]` | 无步骤线形进度条的数值位置：`align` 为沿进度条的位置，`type` 为在进度条内部（`'inner'`）或外部（`'outer'`）；默认样式表下 `'inner'` 回退为 `'outer'`，`align` 不生效。需要 v6 样式表。                                                                                         | `{ align?: 'start' \| 'center' \| 'end'; type?: 'inner' \| 'outer' }`                                             | `{ align: 'end', type: 'outer' }` |          |
 
 ### `nzType="line"`
 
@@ -40,16 +42,16 @@ description: 展示操作的当前进度。
 
 ### `nzType="circle"`
 
-| 属性              | 说明                                             | 类型     | 默认值 | 全局配置 |
-| ----------------- | ------------------------------------------------ | -------- | ------ | -------- |
-| `[nzWidth]`       | 圆形进度条画布宽度，单位 px                      | `number` | `132`  |          |
-| `[nzStrokeWidth]` | 圆形进度条线的宽度，单位是进度条画布宽度的百分比 | `number` | `6`    | ✅       |
+| 属性              | 说明                                                 | 类型     | 默认值 | 全局配置 |
+| ----------------- | ---------------------------------------------------- | -------- | ------ | -------- |
+| ~~`[nzWidth]`~~   | 已废弃，请使用 [nzSize]。圆形进度条画布宽度，单位 px | `number` | `132`  |          |
+| `[nzStrokeWidth]` | 圆形进度条线的宽度，单位是进度条画布宽度的百分比     | `number` | `6`    | ✅       |
 
 ### `nzType="dashboard"`
 
-| 属性              | 说明                                               | 类型                                     | 默认值  | 全局配置 |
-| ----------------- | -------------------------------------------------- | ---------------------------------------- | ------- | -------- |
-| `[nzWidth]`       | 仪表盘进度条画布宽度，单位 px                      | `number`                                 | `132`   |          |
-| `[nzStrokeWidth]` | 仪表盘进度条线的宽度，单位是进度条画布宽度的百分比 | `number`                                 | `6`     | ✅       |
-| `[nzGapDegree]`   | 仪表盘进度条缺口角度，可取值 0 ~ 360               | `number`                                 | `0`     | ✅       |
-| `[nzGapPosition]` | 仪表盘进度条缺口位置                               | `'top' \| 'right' \| 'bottom' \| 'left'` | `'top'` | ✅       |
+| 属性              | 说明                                                   | 类型                                     | 默认值  | 全局配置 |
+| ----------------- | ------------------------------------------------------ | ---------------------------------------- | ------- | -------- |
+| ~~`[nzWidth]`~~   | 已废弃，请使用 [nzSize]。仪表盘进度条画布宽度，单位 px | `number`                                 | `132`   |          |
+| `[nzStrokeWidth]` | 仪表盘进度条线的宽度，单位是进度条画布宽度的百分比     | `number`                                 | `6`     | ✅       |
+| `[nzGapDegree]`   | 仪表盘进度条缺口角度，可取值 0 ~ 360                   | `number`                                 | `0`     | ✅       |
+| `[nzGapPosition]` | 仪表盘进度条缺口位置                                   | `'top' \| 'right' \| 'bottom' \| 'left'` | `'top'` | ✅       |

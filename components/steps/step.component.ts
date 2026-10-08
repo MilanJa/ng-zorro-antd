@@ -58,7 +58,7 @@ import { NzStepDisplayRole } from './display-steps';
                 <nz-progress
                   [nzPercent]="nzPercentage"
                   nzType="circle"
-                  [nzWidth]="nzSize === 'small' ? 32 : 40"
+                  [nzSize]="nzSize === 'small' ? 32 : 40"
                   [nzFormat]="nullProcessFormat"
                   [nzStrokeWidth]="4"
                 />

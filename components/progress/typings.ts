@@ -5,7 +5,7 @@
 
 import { TemplateRef } from '@angular/core';
 
-import { NgStyleInterface } from 'ng-zorro-antd/core/types';
+import { NgStyleInterface, NzSizeDMSType } from 'ng-zorro-antd/core/types';
 
 export type NzProgressGapPositionType = 'top' | 'bottom' | 'left' | 'right';
 
@@ -39,4 +39,13 @@ export interface NzProgressStepItem {
   backgroundColor: string;
   width: string;
   height: string;
+}
+
+/** antd v6 `size`: a preset, a number, `[width, height]` or `{ width, height }`. */
+export type NzProgressSize = NzSizeDMSType | number | [number | string, number] | { width?: number; height?: number };
+
+/** antd v6 `percentPosition`, for a line progress without steps. */
+export interface NzProgressPercentPosition {
+  align?: 'start' | 'center' | 'end';
+  type?: 'inner' | 'outer';
 }

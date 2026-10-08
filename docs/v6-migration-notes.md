@@ -24,6 +24,7 @@ input rather than a renamed input; the deprecated values are listed in the Old i
 | nz-steps         | nzProgressDot                     | nzType           | `true` → `'dot'`; `false` → no change; a TemplateRef → `'dot'`, the template stays the dot renderer                                                                | v23.0.0 |
 | nz-step          | nzDescription                     | nzContent        | identical values                                                                                                                                                   | v23.0.0 |
 | nz-tag           | nzBordered                        | nzVariant        | false→filled, and ant-tag-borderless stays on the host for the default stylesheet; true→no change (filled is the default); antd useColor never maps it to outlined | v23.0.0 |
+| nz-progress      | nzWidth                           | nzSize           | identity for numbers (the circle or dashboard canvas width in px)                                                                                                  | v23.0.0 |
 
 ## Behaviour changes
 

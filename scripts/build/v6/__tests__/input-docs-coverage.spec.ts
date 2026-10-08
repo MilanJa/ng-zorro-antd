@@ -73,7 +73,7 @@ const V6_ONLY: Record<Dir, readonly string[]> = {
   badge: [],
   tabs: ['nzIcon'],
   pagination: ['nzSize', 'nzVariant'],
-  progress: [],
+  progress: ['nzPercentPosition'],
   'float-button': [],
   grid: [],
   layout: [],

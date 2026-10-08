@@ -3,7 +3,15 @@
  * found in the LICENSE file at https://github.com/NG-ZORRO/ng-zorro-antd/blob/master/LICENSE
  */
 
-import { NzProgressColorGradient, NzProgressGradientProgress } from './typings';
+import { TinyColor } from '@ctrl/tinycolor';
+
+import {
+  NzProgressColorGradient,
+  NzProgressGradientProgress,
+  NzProgressSize,
+  NzProgressStrokeColorType,
+  NzProgressTypeType
+} from './typings';
 
 function stripPercentToNumber(percent: string): number {
   return +percent.replace('%', '');
@@ -42,3 +50,54 @@ export const handleLinearGradient = (strokeColor: NzProgressColorGradient): stri
   }
   return `linear-gradient(${direction}, ${from}, ${to})`;
 };
+
+/** Port of antd v6 `progress/utils.ts` `getSize`: `[width, height]` in px, -1 meaning "not set". */
+export function getSize(
+  size: NzProgressSize | undefined,
+  type: NzProgressTypeType | 'step',
+  extra?: { steps?: number; strokeWidth?: number }
+): [number, number] {
+  let width = -1;
+  let height = -1;
+  if (type === 'step') {
+    const steps = extra?.steps ?? 0;
+    const strokeWidth = extra?.strokeWidth;
+    if (typeof size === 'string' || typeof size === 'undefined') {
+      width = size === 'small' ? 2 : 14;
+      height = strokeWidth ?? 8;
+    } else if (typeof size === 'number') {
+      [width, height] = [size, size];
+    } else {
+      [width = 14, height = 8] = (Array.isArray(size) ? size : [size.width, size.height]) as [number, number];
+    }
+    width *= steps;
+  } else if (type === 'line') {
+    const strokeWidth = extra?.strokeWidth;
+    if (typeof size === 'string' || typeof size === 'undefined') {
+      height = strokeWidth || (size === 'small' ? 6 : 8);
+    } else if (typeof size === 'number') {
+      [width, height] = [size, size];
+    } else {
+      [width = -1, height = 8] = (Array.isArray(size) ? size : [size.width, size.height]) as [number, number];
+    }
+  } else if (type === 'circle' || type === 'dashboard') {
+    if (typeof size === 'string' || typeof size === 'undefined') {
+      [width, height] = size === 'small' ? [60, 60] : [120, 120];
+    } else if (typeof size === 'number') {
+      [width, height] = [size, size];
+    } else if (Array.isArray(size)) {
+      width = (size[0] ?? size[1] ?? 120) as number;
+      height = (size[0] ?? size[1] ?? 120) as number;
+    }
+  }
+  return [width, height];
+}
+
+/** antd v6's `strokeColorIsBright`: the string colour, or a gradient's first value, is light. */
+export function isBrightColor(strokeColor: NzProgressStrokeColorType | undefined): boolean {
+  if (!strokeColor) {
+    return false;
+  }
+  const color = typeof strokeColor === 'string' ? strokeColor : Object.values(strokeColor)[0];
+  return typeof color === 'string' && new TinyColor(color).isLight();
+}

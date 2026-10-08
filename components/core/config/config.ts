@@ -14,6 +14,7 @@ import type { NzThemeConfig } from 'ng-zorro-antd/core/theme';
 import {
   NzSafeAny,
   NzShapeSCType,
+  NzSizeDMSType,
   NzSizeDSType,
   NzSizeLDSType,
   NzSizeMDSType,
@@ -277,7 +278,7 @@ export interface ProgressConfig {
   nzShowInfo?: boolean;
   nzStrokeSwitch?: number;
   nzStrokeWidth?: number;
-  nzSize?: 'default' | 'small';
+  nzSize?: NzSizeDMSType;
   nzStrokeLinecap?: 'round' | 'square';
   nzStrokeColor?: string;
 }

@@ -14,6 +14,8 @@ import { NzProgressModule } from './progress.module';
 import {
   NzProgressFormatter,
   NzProgressGapPositionType,
+  NzProgressPercentPosition,
+  NzProgressSize,
   NzProgressStatusType,
   NzProgressStrokeColorType,
   NzProgressStrokeLinecapType
@@ -490,3 +492,157 @@ export class NzTestProgressCircleComponent {
   template: `<nz-progress nzType="circle" [nzPercent]="75" [nzSuccessPercent]="60" />`
 })
 export class NzTestProgressCircleSuccessComponent {}
+
+@Component({
+  imports: [NzProgressModule],
+  template: `
+    <nz-progress
+      id="p"
+      [nzType]="type()"
+      [nzPercent]="percent()"
+      [nzSteps]="steps()"
+      [nzSize]="size()"
+      [nzWidth]="width()"
+      [nzStrokeWidth]="strokeWidth()"
+      [nzPercentPosition]="position()"
+    />
+  `
+})
+class NzTestProgressV6InputsComponent {
+  readonly type = signal<'line' | 'circle' | 'dashboard'>('line');
+  readonly percent = signal(50);
+  readonly steps = signal(0);
+  readonly size = signal<NzProgressSize | undefined>(undefined);
+  readonly width = signal<number | undefined>(undefined);
+  readonly strokeWidth = signal<number | undefined>(undefined);
+  readonly position = signal<NzProgressPercentPosition | undefined>(undefined);
+}
+
+describe('progress v6 inputs', () => {
+  let fixture: ComponentFixture<NzTestProgressV6InputsComponent>;
+  let host: NzTestProgressV6InputsComponent;
+  const root = (): HTMLElement => fixture.nativeElement.querySelector('#p .ant-progress');
+  const q = (sel: string): HTMLElement | null => fixture.nativeElement.querySelector(`#p ${sel}`);
+
+  beforeEach(() => {
+    fixture = TestBed.createComponent(NzTestProgressV6InputsComponent);
+    host = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('keeps today’s line DOM and adds the default position classes', () => {
+    expect(root().classList).toContain('ant-progress-line-align-end');
+    expect(root().classList).toContain('ant-progress-line-position-outer');
+    const indicator = q('.ant-progress-indicator')!;
+    expect([...indicator.classList]).toEqual(
+      expect.arrayContaining(['ant-progress-text', 'ant-progress-indicator-end', 'ant-progress-indicator-outer'])
+    );
+    // v4 safety: the indicator stays after the body
+    expect(indicator.previousElementSibling!.classList).toContain('ant-progress-body');
+    expect(q('.ant-progress-body')!.style.width).toBe('');
+  });
+
+  it('v4 safety: without the v6 stylesheet inner falls back to outer after the body', async () => {
+    host.position.set({ align: 'center', type: 'inner' });
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(root().classList).toContain('ant-progress-line-position-outer');
+    expect(root().classList).toContain('ant-progress-line-align-center');
+    expect(q('.ant-progress-track .ant-progress-indicator')).toBeNull();
+    const indicator = q('.ant-progress-indicator')!;
+    expect(indicator.classList).toContain('ant-progress-indicator-outer');
+    expect(indicator.classList).toContain('ant-progress-indicator-center');
+    expect(indicator.classList).not.toContain('ant-progress-indicator-end');
+    expect(indicator.previousElementSibling!.classList).toContain('ant-progress-body');
+    expect(q('.ant-progress-body')!.classList).toContain('ant-progress-body-layout-bottom');
+  });
+
+  it('keeps -end/-outer on steps and adds no position classes there', () => {
+    host.steps.set(3);
+    host.position.set({ align: 'start', type: 'outer' });
+    fixture.detectChanges();
+    expect(root().classList).not.toContain('ant-progress-line-align-start');
+    const indicator = q('.ant-progress-indicator')!;
+    expect(indicator.classList).toContain('ant-progress-indicator-end');
+    expect(indicator.classList).toContain('ant-progress-indicator-outer');
+    expect(indicator.classList).not.toContain('ant-progress-indicator-start');
+  });
+
+  it('sizes a line from nzSize [width, height] and a number', () => {
+    host.size.set([300, 20]);
+    fixture.detectChanges();
+    expect(q('.ant-progress-body')!.style.width).toBe('300px');
+    expect(q('.ant-progress-rail')!.style.height).toBe('20px');
+    expect(q('.ant-progress-track')!.style.height).toBe('20px');
+    host.size.set(12);
+    fixture.detectChanges();
+    expect(q('.ant-progress-body')!.style.width).toBe('12px');
+    expect(q('.ant-progress-rail')!.style.height).toBe('12px');
+    host.size.set({ height: 10 });
+    fixture.detectChanges();
+    expect(q('.ant-progress-body')!.style.width).toBe('');
+    expect(q('.ant-progress-rail')!.style.height).toBe('10px');
+  });
+
+  it('keeps preset names on today’s sizing and treats medium as default', () => {
+    host.size.set('medium');
+    fixture.detectChanges();
+    expect(root().classList).toContain('ant-progress-default');
+    expect(q('.ant-progress-rail')!.style.height).toBe('8px');
+    host.size.set('small');
+    fixture.detectChanges();
+    expect(root().classList).toContain('ant-progress-small');
+    expect(q('.ant-progress-rail')!.style.height).toBe('6px');
+    host.type.set('circle');
+    fixture.detectChanges();
+    expect(q('.ant-progress-body')!.style.width).toBe('132px');
+  });
+
+  it('sizes steps from nzSize', () => {
+    host.steps.set(3);
+    host.size.set([20, 30]);
+    fixture.detectChanges();
+    const item = q('.ant-progress-steps-item')!;
+    expect(item.style.width).toBe('20px');
+    expect(item.style.height).toBe('30px');
+    host.size.set(10);
+    fixture.detectChanges();
+    expect(item.style.width).toBe('10px');
+    expect(item.style.height).toBe('10px');
+  });
+
+  it('sizes a circle from a numeric nzSize, which wins over nzWidth in both orders', () => {
+    host.type.set('circle');
+    host.width.set(80);
+    fixture.detectChanges();
+    expect(q('.ant-progress-body')!.style.width).toBe('80px');
+    host.size.set(60);
+    fixture.detectChanges();
+    const body = q('.ant-progress-body')!;
+    expect(body.style.width).toBe('60px');
+    expect(body.style.height).toBe('60px');
+    expect(body.style.fontSize).toBe('15px');
+    host.width.set(100);
+    fixture.detectChanges();
+    expect(q('.ant-progress-body')!.style.width).toBe('60px');
+    // undefined means unset: back to the alias
+    host.size.set(undefined);
+    fixture.detectChanges();
+    expect(q('.ant-progress-body')!.style.width).toBe('100px');
+    host.width.set(undefined);
+    fixture.detectChanges();
+    expect(q('.ant-progress-body')!.style.width).toBe('132px');
+  });
+
+  it('uses antd’s minimum stroke and inline-circle class for a 20px circle', () => {
+    host.type.set('circle');
+    host.size.set(20);
+    fixture.detectChanges();
+    expect(root().classList).toContain('ant-progress-inline-circle');
+    expect(q('.ant-progress-circle-rail')!.getAttribute('stroke-width')).toBe('15');
+    host.type.set('dashboard');
+    fixture.detectChanges();
+    expect(root().classList).not.toContain('ant-progress-inline-circle');
+  });
+});

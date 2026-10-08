@@ -4,22 +4,32 @@
  */
 
 import { Directionality } from '@angular/cdk/bidi';
+import { Platform } from '@angular/cdk/platform';
 import { NgTemplateOutlet } from '@angular/common';
 import {
+  afterNextRender,
   ChangeDetectorRef,
   Component,
+  ElementRef,
   Input,
   OnChanges,
   SimpleChanges,
   ViewEncapsulation,
   numberAttribute,
-  inject
+  inject,
+  signal
 } from '@angular/core';
 
-import { NzConfigKey, onConfigChangeEventForComponent, WithConfig } from 'ng-zorro-antd/core/config';
+import { NzConfigKey, NzConfigService, onConfigChangeEventForComponent, WithConfig } from 'ng-zorro-antd/core/config';
+import { warn } from 'ng-zorro-antd/core/logger';
 import { NzOutletModule } from 'ng-zorro-antd/core/outlet';
 import { NgStyleInterface } from 'ng-zorro-antd/core/types';
-import { isNotNil, numberAttributeWithZeroFallback } from 'ng-zorro-antd/core/util';
+import {
+  aliasDeprecatedInput,
+  isNotNil,
+  isPlainObject,
+  numberAttributeWithZeroFallback
+} from 'ng-zorro-antd/core/util';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 
 import {
@@ -28,17 +38,24 @@ import {
   NzProgressFormatter,
   NzProgressGapPositionType,
   NzProgressGradientProgress,
+  NzProgressPercentPosition,
+  NzProgressSize,
   NzProgressStatusType,
   NzProgressStepItem,
   NzProgressStrokeColorType,
   NzProgressStrokeLinecapType,
   NzProgressTypeType
 } from './typings';
-import { handleCircleGradient, handleLinearGradient } from './utils';
+import { getSize, handleCircleGradient, handleLinearGradient, isBrightColor } from './utils';
 
 let gradientIdSeed = 0;
 
 const NZ_CONFIG_MODULE_NAME: NzConfigKey = 'progress';
+const DEFAULT_CIRCLE_WIDTH = 132;
+/** antd `Circle.tsx` `CIRCLE_MIN_STROKE_WIDTH` (px). */
+const CIRCLE_MIN_STROKE_WIDTH = 3;
+/** A v6-only token on `:root`: present only when the v6 stylesheet is loaded. */
+const V6_PROBE_TOKEN = '--ant-progress-remaining-color';
 const statusIconNameMap = new Map([
   ['success', 'check'],
   ['exception', 'close']
@@ -60,10 +77,14 @@ const defaultFormatter: NzProgressFormatter = (p: number): string => `${p}%`;
       @if (nzShowInfo) {
         <span
           class="ant-progress-text ant-progress-indicator"
-          [class.ant-progress-indicator-end]="nzType === 'line'"
-          [class.ant-progress-indicator-outer]="nzType === 'line'"
+          [class.ant-progress-indicator-start]="isPureLine && percentAlign === 'start'"
+          [class.ant-progress-indicator-center]="isPureLine && percentAlign === 'center'"
+          [class.ant-progress-indicator-end]="nzType === 'line' && (isSteps || percentAlign === 'end')"
+          [class.ant-progress-indicator-inner]="isPureLine && percentType === 'inner'"
+          [class.ant-progress-indicator-outer]="nzType === 'line' && (isSteps || percentType === 'outer')"
+          [class.ant-progress-indicator-bright]="isPureLine && percentType === 'inner' && strokeIsBright"
         >
-          @if ((status === 'exception' || status === 'success') && !nzFormat) {
+          @if ((status === 'exception' || status === 'success') && !nzFormat && percentType !== 'inner') {
             <nz-icon [nzType]="icon" />
           } @else {
             <ng-container *nzStringTemplateOutlet="formatter; context: { $implicit: nzPercent }; let formatter">
@@ -77,10 +98,16 @@ const defaultFormatter: NzProgressFormatter = (p: number): string => `${p}%`;
     <div
       [class]="'ant-progress ant-progress-status-' + status"
       [class.ant-progress-line]="nzType === 'line'"
+      [class.ant-progress-line-align-start]="isPureLine && percentAlign === 'start'"
+      [class.ant-progress-line-align-center]="isPureLine && percentAlign === 'center'"
+      [class.ant-progress-line-align-end]="isPureLine && percentAlign === 'end'"
+      [class.ant-progress-line-position-inner]="isPureLine && percentType === 'inner'"
+      [class.ant-progress-line-position-outer]="isPureLine && percentType === 'outer'"
       [class.ant-progress-small]="nzSize === 'small'"
-      [class.ant-progress-default]="nzSize === 'default'"
+      [class.ant-progress-default]="nzSize === 'default' || nzSize === 'medium'"
       [class.ant-progress-show-info]="nzShowInfo"
       [class.ant-progress-circle]="isCircleStyle"
+      [class.ant-progress-inline-circle]="nzType === 'circle' && sizeOverride !== null && circleWidth <= 20"
       [class.ant-progress-steps]="isSteps"
       [class.ant-progress-rtl]="dir() === 'rtl'"
     >
@@ -101,7 +128,11 @@ const defaultFormatter: NzProgressFormatter = (p: number): string => `${p}%`;
               <ng-template [ngTemplateOutlet]="progressInfoTemplate" />
             </div>
           } @else {
-            <div class="ant-progress-outer ant-progress-body">
+            <div
+              class="ant-progress-outer ant-progress-body"
+              [class.ant-progress-body-layout-bottom]="percentAlign === 'center' && percentType === 'outer'"
+              [style.width]="bodyWidth"
+            >
               <div class="ant-progress-inner ant-progress-rail" [style.height.px]="strokeWidth">
                 <div
                   class="ant-progress-bg ant-progress-track"
@@ -110,7 +141,11 @@ const defaultFormatter: NzProgressFormatter = (p: number): string => `${p}%`;
                   [style.background]="!isGradient ? nzStrokeColor : null"
                   [style.background-image]="isGradient ? lineGradient : null"
                   [style.height.px]="strokeWidth"
-                ></div>
+                >
+                  @if (infoSlot === 'track') {
+                    <ng-template [ngTemplateOutlet]="progressInfoTemplate" />
+                  }
+                </div>
                 @if (nzSuccessPercent || nzSuccessPercent === 0) {
                   <div
                     class="ant-progress-success-bg ant-progress-track ant-progress-track-success"
@@ -120,8 +155,13 @@ const defaultFormatter: NzProgressFormatter = (p: number): string => `${p}%`;
                   ></div>
                 }
               </div>
+              @if (infoSlot === 'body') {
+                <ng-template [ngTemplateOutlet]="progressInfoTemplate" />
+              }
             </div>
-            <ng-template [ngTemplateOutlet]="progressInfoTemplate" />
+            @if (infoSlot === 'after') {
+              <ng-template [ngTemplateOutlet]="progressInfoTemplate" />
+            }
           }
         </div>
       }
@@ -131,9 +171,9 @@ const defaultFormatter: NzProgressFormatter = (p: number): string => `${p}%`;
 
       @if (isCircleStyle) {
         <div
-          [style.width.px]="this.nzWidth"
-          [style.height.px]="this.nzWidth"
-          [style.fontSize.px]="this.nzWidth * 0.15 + 6"
+          [style.width.px]="circleWidth"
+          [style.height.px]="circleWidth"
+          [style.fontSize.px]="circleWidth * 0.15 + 6"
           class="ant-progress-inner ant-progress-body"
           [class.ant-progress-circle-gradient]="isGradient"
         >
@@ -178,12 +218,38 @@ export class NzProgressComponent implements OnChanges {
   readonly _nzModuleName: NzConfigKey = NZ_CONFIG_MODULE_NAME;
 
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly nzConfigService = inject(NzConfigService);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly platform = inject(Platform);
   protected readonly dir = inject(Directionality).valueSignal;
 
   @Input() @WithConfig() nzShowInfo: boolean = true;
-  @Input() nzWidth = 132;
+
+  /** @deprecated Use `nzSize` instead. This will be removed in v23.0.0. */
+  // v6-alias: nzWidth -> nzSize
+  @Input()
+  set nzWidth(value: number | undefined) {
+    this.widthAlias = value === undefined ? undefined : this.aliasWidth(value);
+  }
+  get nzWidth(): number {
+    return this.circleWidth;
+  }
+
   @Input() @WithConfig() nzStrokeColor?: NzProgressStrokeColorType = undefined;
-  @Input() @WithConfig() nzSize: 'default' | 'small' = 'default';
+
+  /**
+   * A preset name (also settable through the global config), or as in antd v6 a number,
+   * `[width, height]` or `{ width, height }`, which override `nzWidth` and `nzStrokeWidth`.
+   */
+  @Input()
+  set nzSize(value: NzProgressSize | undefined) {
+    this.nzSizeExplicit = value !== undefined;
+    this.sizeValue = value;
+  }
+  get nzSize(): NzProgressSize {
+    return this.sizeValue ?? this.nzConfigService.getConfigForComponent('progress')?.nzSize ?? 'default';
+  }
+
   @Input() nzFormat?: NzProgressFormatter;
   @Input({ transform: numberAttributeWithZeroFallback }) nzSuccessPercent?: number;
   @Input({ transform: numberAttribute }) nzPercent: number = 0;
@@ -195,6 +261,9 @@ export class NzProgressComponent implements OnChanges {
   @Input() @WithConfig() nzStrokeLinecap: NzProgressStrokeLinecapType = 'round';
 
   @Input({ transform: numberAttribute }) nzSteps: number = 0;
+
+  /** Where a line progress without steps shows its value. `type: 'inner'` needs the v6 stylesheet. */
+  @Input() nzPercentPosition?: NzProgressPercentPosition;
 
   steps: NzProgressStepItem[] = [];
 
@@ -210,6 +279,9 @@ export class NzProgressComponent implements OnChanges {
   /** If the linear progress is a step progress. */
   isSteps = false;
 
+  /** antd v6's `strokeColorIsBright`, for the `-indicator-bright` class. */
+  strokeIsBright = false;
+
   /**
    * Each progress whose `nzType` is circle or dashboard should have unique id to
    * define `<linearGradient>`.
@@ -223,6 +295,17 @@ export class NzProgressComponent implements OnChanges {
   pathString?: string;
   icon!: string;
 
+  /**
+   * Whether the v6 stylesheet is loaded, probed once after the first render. The indicator only moves
+   * into the body or the track under it; the default stylesheet has no rule for those positions.
+   */
+  protected readonly v6Styles = signal(false);
+
+  private nzSizeExplicit = false;
+  private sizeValue: NzProgressSize | undefined = undefined;
+  private widthAlias: number | undefined = undefined;
+  private readonly aliasWidth = aliasDeprecatedInput<number>('nz-progress', 'nzWidth', 'nzSize');
+
   get formatter(): NzProgressFormatter {
     return this.nzFormat || defaultFormatter;
   }
@@ -231,12 +314,74 @@ export class NzProgressComponent implements OnChanges {
     return this.nzStatus || this.inferredStatus;
   }
 
+  /** `nzSize` as a number, `[width, height]` or `{ width, height }`; a preset name keeps today's sizing. */
+  get sizeOverride(): Exclude<NzProgressSize, string> | null {
+    const size = this.nzSizeExplicit ? this.sizeValue : undefined;
+    return size === undefined || typeof size === 'string' ? null : size;
+  }
+
   get strokeWidth(): number {
+    const size = this.sizeOverride;
+    if (size !== null && this.nzType === 'line') {
+      return getSize(size, this.isSteps ? 'step' : 'line', { steps: this.nzSteps, strokeWidth: this.nzStrokeWidth })[1];
+    }
+    if (size !== null && this.isCircleStyle && !this.nzStrokeWidth) {
+      return Math.max((CIRCLE_MIN_STROKE_WIDTH / this.circleWidth) * 100, 6);
+    }
     return this.nzStrokeWidth || (this.nzType === 'line' && this.nzSize !== 'small' ? 8 : 6);
+  }
+
+  /** Canvas width of a circle or dashboard: a numeric `nzSize` (or an array's first number) wins over `nzWidth`. */
+  get circleWidth(): number {
+    const size = this.sizeOverride;
+    if (typeof size === 'number') {
+      return size;
+    }
+    if (Array.isArray(size)) {
+      const [width] = getSize(size, 'circle');
+      if (typeof width === 'number' && width > 0) {
+        return width;
+      }
+    }
+    return this.widthAlias ?? DEFAULT_CIRCLE_WIDTH;
+  }
+
+  /** Inline width of a line body (antd `Line.tsx`: `width > 0 ? width : '100%'`). */
+  get bodyWidth(): string | null {
+    const size = this.sizeOverride;
+    if (size === null || !this.isPureLine) {
+      return null;
+    }
+    const [width] = getSize(size, 'line', { strokeWidth: this.nzStrokeWidth });
+    return width > 0 ? `${width}px` : null;
   }
 
   get isCircleStyle(): boolean {
     return this.nzType === 'circle' || this.nzType === 'dashboard';
+  }
+
+  get isPureLine(): boolean {
+    return this.nzType === 'line' && !this.isSteps;
+  }
+
+  get percentAlign(): 'start' | 'center' | 'end' {
+    return this.nzPercentPosition?.align ?? 'end';
+  }
+
+  /** The resolved position: `inner` falls back to `outer` without the v6 stylesheet. */
+  get percentType(): 'inner' | 'outer' {
+    return this.nzPercentPosition?.type === 'inner' && this.v6Styles() ? 'inner' : 'outer';
+  }
+
+  /** `after`: today's DOM (after the body); `body`: antd's outer slot; `track`: antd's inner slot. */
+  get infoSlot(): 'after' | 'body' | 'track' {
+    if (!this.isPureLine || !this.v6Styles()) {
+      return 'after';
+    }
+    if (this.percentType === 'inner') {
+      return 'track';
+    }
+    return this.percentAlign === 'end' ? 'after' : 'body';
   }
 
   private cachedStatus: NzProgressStatusType = 'normal';
@@ -247,6 +392,12 @@ export class NzProgressComponent implements OnChanges {
       this.updateIcon();
       this.setStrokeColor();
       this.getCirclePaths();
+    });
+    afterNextRender(() => {
+      const el = this.host.nativeElement;
+      this.v6Styles.set(
+        this.platform.isBrowser && el.isConnected && getComputedStyle(el).getPropertyValue(V6_PROBE_TOKEN).trim() !== ''
+      );
     });
   }
 
@@ -261,7 +412,9 @@ export class NzProgressComponent implements OnChanges {
       nzStatus,
       nzPercent,
       nzSuccessPercent,
-      nzStrokeWidth
+      nzStrokeWidth,
+      nzSize,
+      nzWidth
     } = changes;
 
     if (nzStatus) {
@@ -287,15 +440,39 @@ export class NzProgressComponent implements OnChanges {
       this.setStrokeColor();
     }
 
-    if (nzGapPosition || nzStrokeLinecap || nzGapDegree || nzType || nzPercent || nzStrokeColor || nzStrokeColor) {
+    if ((nzSize || nzType) && this.isCircleStyle) {
+      this.warnCircleSize();
+    }
+
+    if (
+      nzGapPosition ||
+      nzStrokeLinecap ||
+      nzGapDegree ||
+      nzType ||
+      nzPercent ||
+      nzStrokeColor ||
+      nzStrokeWidth ||
+      nzSize ||
+      nzWidth
+    ) {
       this.getCirclePaths();
     }
 
-    if (nzPercent || nzSteps || nzStrokeWidth) {
+    if (nzPercent || nzSteps || nzStrokeWidth || nzSize) {
       this.isSteps = this.nzSteps > 0;
       if (this.isSteps) {
         this.getSteps();
       }
+    }
+  }
+
+  /** antd `progress.tsx`: circle and dashboard accept only a number or a preset as `size`. */
+  private warnCircleSize(): void {
+    const size = this.sizeOverride;
+    if (Array.isArray(size)) {
+      warn('Type "circle" and "dashboard" do not accept array as `nzSize`, please use number or preset size instead.');
+    } else if (isPlainObject(size)) {
+      warn('Type "circle" and "dashboard" do not accept object as `nzSize`, please use number or preset size instead.');
     }
   }
 
@@ -310,7 +487,13 @@ export class NzProgressComponent implements OnChanges {
   private getSteps(): void {
     const current = Math.floor(this.nzSteps * (this.nzPercent / 100));
     this.activeStepsCount = current;
-    const stepWidth = this.nzSize === 'small' ? 2 : 14;
+    const size = this.sizeOverride;
+    const stepWidth =
+      size === null
+        ? this.nzSize === 'small'
+          ? 2
+          : 14
+        : getSize(size, 'step', { steps: this.nzSteps, strokeWidth: this.nzStrokeWidth })[0] / this.nzSteps;
 
     const steps = [];
 
@@ -406,6 +589,7 @@ export class NzProgressComponent implements OnChanges {
   private setStrokeColor(): void {
     const color = this.nzStrokeColor;
     const isGradient = (this.isGradient = !!color && typeof color !== 'string');
+    this.strokeIsBright = isBrightColor(color);
     if (isGradient && !this.isCircleStyle) {
       this.lineGradient = handleLinearGradient(color as NzProgressColorGradient);
     } else if (isGradient && this.isCircleStyle) {
