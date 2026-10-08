@@ -24,7 +24,7 @@ import { NzSafeAny } from 'ng-zorro-antd/core/types';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { provideNzIconsTesting } from 'ng-zorro-antd/icon/testing';
 import { NzSubmenuTrigger } from 'ng-zorro-antd/menu/menu.types';
-import { NzTooltipModule } from 'ng-zorro-antd/tooltip';
+import { NzTooltipComponent, NzTooltipModule } from 'ng-zorro-antd/tooltip';
 
 import { NzMenuItemComponent } from './menu-item.component';
 import { NzMenuDirective } from './menu.directive';
@@ -828,6 +828,38 @@ describe('menu', () => {
       expect(TrackingMutationObserver.live.size).toBe(1);
       fixture.destroy();
       expect(TrackingMutationObserver.live.size).toBe(0);
+    });
+  });
+
+  describe('collapsed tooltip edge cases', () => {
+    const hoverPlain = async (fixture: ComponentFixture<NzTestMenuV6InputsComponent>): Promise<void> => {
+      fixture.componentInstance.collapsed.set(true);
+      await stabilize(fixture);
+      dispatchFakeEvent(fixture.nativeElement.querySelector('#plain'), 'mouseenter');
+      await stabilize(fixture);
+    };
+
+    it('places the collapsed tooltip on the left under RTL', async () => {
+      const directionality = TestBed.inject(Directionality) as NzSafeAny;
+      directionality.value = 'rtl'; // read by the item when it opens the tooltip
+      directionality.valueSignal.set('rtl');
+      const fixture = TestBed.createComponent(NzTestMenuV6InputsComponent);
+      await hoverPlain(fixture);
+      expect(overlayContainerElement.querySelector('.ant-tooltip.ant-menu-inline-collapsed-tooltip')).not.toBeNull();
+      const item = fixture.debugElement.query(By.css('#plain')).injector.get(NzMenuItemComponent);
+      const tooltip = (item as NzSafeAny).collapsedTooltip.instance as NzTooltipComponent;
+      // POSITION_MAP.left; read from the preferred positions, so a narrow test viewport cannot flip it
+      expect(tooltip._positions[0]).toEqual(
+        expect.objectContaining({ originX: 'start', originY: 'center', overlayX: 'end', overlayY: 'center' })
+      );
+    });
+
+    it('leaves no collapsed tooltip in the overlay container when destroyed while it shows', async () => {
+      const fixture = TestBed.createComponent(NzTestMenuV6InputsComponent);
+      await hoverPlain(fixture);
+      expect(overlayContainerElement.querySelector('.ant-menu-inline-collapsed-tooltip')).not.toBeNull();
+      fixture.destroy();
+      expect(overlayContainerElement.querySelector('.ant-menu-inline-collapsed-tooltip')).toBeNull();
     });
   });
 
