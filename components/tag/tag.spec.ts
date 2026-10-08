@@ -315,7 +315,7 @@ describe('tag v6 inputs', () => {
       expect(tag.classList.contains('ant-tag-has-color')).toBe(hasColor);
     });
 
-    // Review Focus 1: the alias must not change the default stylesheet's custom-colour output.
+    // The alias must not change the default stylesheet's custom-colour output.
     // This test passes on the code before this task too; it pins today's DOM.
     it('renders nzBordered=false with a custom hex colour exactly as before', () => {
       const { tag } = renderTag(`<nz-tag nzColor="#f50" [nzBordered]="false">t</nz-tag>`);
