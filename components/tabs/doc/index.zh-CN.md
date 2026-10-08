@@ -54,15 +54,16 @@ Ant Design 依次提供了三级选项卡，分别用于不同的场景。
 
 ### nz-tab
 
-| 参数              | 说明                      | 类型                                        | 默认值  |
-| ----------------- | ------------------------- | ------------------------------------------- | ------- |
-| `[nzTitle]`       | 选项卡头显示文字          | `string \| TemplateRef<TabTemplateContext>` | -       |
-| `[nzForceRender]` | 被隐藏时是否渲染 DOM 结构 | `boolean`                                   | `false` |
-| `[nzDisabled]`    | 是否禁用                  | `boolean`                                   | -       |
-| `(nzClick)`       | 单击 title 的回调函数     | `EventEmitter<void>`                        | -       |
-| `(nzContextmenu)` | 右键 title 的回调函数     | `EventEmitter<MouseEvent>`                  | -       |
-| `(nzSelect)`      | tab 被选中的回调函数      | `EventEmitter<void>`                        | -       |
-| `(nzDeselect)`    | tab 被取消选中的回调函数  | `EventEmitter<void>`                        | -       |
+| 参数              | 说明                                                                                                               | 类型                                        | 默认值  |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------- | ------- |
+| `[nzTitle]`       | 选项卡头显示文字                                                                                                   | `string \| TemplateRef<TabTemplateContext>` | -       |
+| `[nzIcon]`        | 选项卡头中显示在标题前的图标，包裹在 `<span class="ant-tabs-tab-icon">` 中；与 Ant Design 一致，溢出菜单只显示标题 | `string \| TemplateRef<void>`               | -       |
+| `[nzForceRender]` | 被隐藏时是否渲染 DOM 结构                                                                                          | `boolean`                                   | `false` |
+| `[nzDisabled]`    | 是否禁用                                                                                                           | `boolean`                                   | -       |
+| `(nzClick)`       | 单击 title 的回调函数                                                                                              | `EventEmitter<void>`                        | -       |
+| `(nzContextmenu)` | 右键 title 的回调函数                                                                                              | `EventEmitter<MouseEvent>`                  | -       |
+| `(nzSelect)`      | tab 被选中的回调函数                                                                                               | `EventEmitter<void>`                        | -       |
+| `(nzDeselect)`    | tab 被取消选中的回调函数                                                                                           | `EventEmitter<void>`                        | -       |
 
 ### nz-tabs[nzType="editable-card"] > nz-tab
 

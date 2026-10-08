@@ -171,3 +171,33 @@ describe('tabs overflow dropdown under antd v6 css', () => {
     expect(items.length).toBeGreaterThan(0);
   });
 });
+
+@Component({
+  imports: [NzTabsModule],
+  template: `
+    <nz-tabs id="icon-host">
+      <nz-tab nzTitle="Tab 1" nzIcon="apple"><p>one</p></nz-tab>
+    </nz-tabs>
+  `
+})
+class TestTabsIconV6Component {}
+
+describe('tabs nzIcon under antd v6 css', () => {
+  beforeEach(() => {
+    installV6Css();
+    TestBed.configureTestingModule({ providers: [provideNzIconsTesting()], animationsEnabled: true });
+    TestBed.createComponent(TestTabsIconV6Component).detectChanges();
+  });
+
+  afterEach(() => {
+    style.remove();
+    TestBed.inject(OverlayContainer).ngOnDestroy();
+  });
+
+  it('separates the icon slot from the label by marginSM', () => {
+    const icon = document.querySelector('#icon-host .ant-tabs-tab-icon') as HTMLElement;
+    const label = icon.nextElementSibling as HTMLElement;
+    expect(getComputedStyle(icon).marginRight).toBe('12px'); // marginSM
+    expect(Math.round(label.getBoundingClientRect().left - icon.getBoundingClientRect().right)).toBe(12);
+  });
+});

@@ -37,6 +37,7 @@ import { PREFIX } from 'ng-zorro-antd/core/logger';
 import { NzOutletModule } from 'ng-zorro-antd/core/outlet';
 import { NzSafeAny, NzSizeLDSType } from 'ng-zorro-antd/core/types';
 import { wrapIntoObservable } from 'ng-zorro-antd/core/util';
+import { NzIconModule } from 'ng-zorro-antd/icon';
 
 import {
   NzAnimatedInterface,
@@ -109,9 +110,26 @@ let nextId = 0;
               nzTabNavItem
               cdkMonitorElementFocus
             >
-              <ng-container *nzStringTemplateOutlet="tab.label; context: { visible: true }">
-                {{ tab.label }}
-              </ng-container>
+              @if (tab.nzIcon) {
+                <span class="ant-tabs-tab-icon">
+                  @if (tab.iconTemplate; as iconTemplate) {
+                    <ng-container [ngTemplateOutlet]="iconTemplate" />
+                  } @else if (tab.iconType; as iconType) {
+                    <nz-icon [nzType]="iconType" />
+                  }
+                </span>
+                @if (tab.labelText) {
+                  <span>{{ tab.labelText }}</span>
+                } @else {
+                  <ng-container *nzStringTemplateOutlet="tab.label; context: { visible: true }">
+                    {{ tab.label }}
+                  </ng-container>
+                }
+              } @else {
+                <ng-container *nzStringTemplateOutlet="tab.label; context: { visible: true }">
+                  {{ tab.label }}
+                </ng-container>
+              }
               @if (tab.nzClosable && closable && !tab.nzDisabled) {
                 <button
                   type="button"
@@ -190,6 +208,7 @@ let nextId = 0;
     NzTabNavItemDirective,
     A11yModule,
     NzOutletModule,
+    NzIconModule,
     NzTabCloseButtonComponent,
     NzTabBodyComponent
   ]

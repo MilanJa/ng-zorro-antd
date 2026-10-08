@@ -7,8 +7,8 @@ title:
 
 ## zh-CN
 
-有图标的标签。
+通过 `nzIcon` 为标签添加图标，也可以传入模板，例如第三方图标库的 `<svg>`。
 
 ## en-US
 
-The Tab with Icon.
+Set `nzIcon` to give a tab an icon; a template works too, for example a bare `<svg>` from a third-party icon library.

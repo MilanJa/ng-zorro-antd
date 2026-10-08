@@ -22,6 +22,7 @@ import {
 import { Subject } from 'rxjs';
 
 import { NzSafeAny } from 'ng-zorro-antd/core/types';
+import { isTemplateRef } from 'ng-zorro-antd/core/util';
 
 import { TabTemplateContext } from './interfaces';
 import { NzTabLinkDirective, NzTabLinkTemplateDirective } from './tab-link.directive';
@@ -49,6 +50,8 @@ export class NzTabComponent implements OnChanges, OnDestroy {
   readonly closestTabSet = inject(NZ_TAB_SET);
 
   @Input() nzTitle: string | TemplateRef<TabTemplateContext> = '';
+  /** Icon rendered before the title in the tab button (antd `items[].icon`); the overflow menu shows the title only. */
+  @Input() nzIcon?: string | TemplateRef<void>;
   @Input({ transform: booleanAttribute }) nzClosable = false;
   @Input() nzCloseIcon: string | TemplateRef<NzSafeAny> = 'close';
   @Input({ transform: booleanAttribute }) nzDisabled = false;
@@ -78,9 +81,22 @@ export class NzTabComponent implements OnChanges, OnDestroy {
     return this.nzTitle || this.nzTabLinkTemplateDirective?.templateRef;
   }
 
+  get iconTemplate(): TemplateRef<void> | null {
+    return isTemplateRef(this.nzIcon) ? this.nzIcon : null;
+  }
+
+  get iconType(): string | null {
+    return typeof this.nzIcon === 'string' ? this.nzIcon : null;
+  }
+
+  /** A string title, which the tab button wraps in a `<span>` next to an icon, as rc-tabs' TabNode does. */
+  get labelText(): string | null {
+    return typeof this.label === 'string' ? this.label : null;
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
-    const { nzTitle, nzDisabled, nzForceRender } = changes;
-    if (nzTitle || nzDisabled || nzForceRender) {
+    const { nzTitle, nzIcon, nzDisabled, nzForceRender } = changes;
+    if (nzTitle || nzIcon || nzDisabled || nzForceRender) {
       this.stateChanges.next();
     }
   }

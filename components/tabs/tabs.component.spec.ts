@@ -1304,3 +1304,44 @@ class IndicatorTabsTestComponent {
   readonly position = signal<NzTabPosition>('top');
   readonly indicator = signal<NzIndicator | undefined>(undefined);
 }
+
+@Component({
+  imports: [NzTabsModule],
+  template: `
+    <nz-tabs>
+      <nz-tab nzTitle="Apple" nzIcon="apple">a</nz-tab>
+      <nz-tab [nzTitle]="titleTpl" [nzIcon]="heart">b</nz-tab>
+      <nz-tab nzTitle="Plain">c</nz-tab>
+    </nz-tabs>
+    <ng-template #titleTpl><b class="custom-title">Custom</b></ng-template>
+    <ng-template #heart><svg class="heart" viewBox="0 0 24 24" width="1em" height="1em"></svg></ng-template>
+  `
+})
+class TestTabsIconComponent {}
+
+describe('nz-tab nzIcon', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({ providers: [provideNzNoAnimation(), provideNzIconsTesting()] });
+  });
+
+  it('renders the icon in span.ant-tabs-tab-icon before a span-wrapped string title', () => {
+    const fixture = TestBed.createComponent(TestTabsIconComponent);
+    fixture.detectChanges();
+    const buttons = Array.from(fixture.nativeElement.querySelectorAll('.ant-tabs-tab-btn')) as HTMLElement[];
+
+    const [icon, label] = Array.from(buttons[0].children) as HTMLElement[];
+    expect(icon.className).toBe('ant-tabs-tab-icon');
+    expect(icon.querySelector('nz-icon')!.classList).toContain('anticon-apple');
+    expect(label.tagName).toBe('SPAN');
+    expect(label.textContent!.trim()).toBe('Apple');
+
+    expect(buttons[1].querySelector('.ant-tabs-tab-icon > svg.heart')).toBeTruthy();
+    expect((buttons[1].querySelector('.ant-tabs-tab-icon') as HTMLElement).nextElementSibling!.className).toBe(
+      'custom-title'
+    );
+
+    expect(buttons[2].querySelector('.ant-tabs-tab-icon')).toBeNull();
+    expect(buttons[2].children.length).toBe(0);
+    expect(buttons[2].textContent!.trim()).toBe('Plain');
+  });
+});
