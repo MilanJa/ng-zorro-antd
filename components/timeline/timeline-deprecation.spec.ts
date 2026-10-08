@@ -5,11 +5,13 @@
 
 import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 
 import { MockInstance, vi } from 'vitest';
 
+import { NzTimelineItemComponent } from './timeline-item.component';
 import { NzTimelineModule } from './timeline.module';
-import { NzTimelineMode } from './typings';
+import { NzTimelineMode, NzTimelinePlacement } from './typings';
 
 @Component({
   imports: [NzTimelineModule],
@@ -76,5 +78,54 @@ describe('timeline deprecation warnings', () => {
     fixture.componentInstance.placement.set('right');
     fixture.detectChanges();
     expect(messages().filter(m => m.includes(MESSAGE)).length).toBe(1);
+  });
+});
+
+@Component({
+  imports: [NzTimelineModule],
+  template: `
+    <nz-timeline>
+      <nz-timeline-item
+        nzLabel="old title"
+        [nzTitle]="title()"
+        nzDot="old-dot"
+        [nzIcon]="icon()"
+        nzPosition="right"
+        [nzPlacement]="placement()"
+        >a</nz-timeline-item
+      >
+      <nz-timeline-item [nzTitle]="title()" [nzIcon]="icon()" [nzPlacement]="placement()">b</nz-timeline-item>
+    </nz-timeline>
+  `
+})
+class TestTimelineUnsetComponent {
+  readonly title = signal<string | undefined>('new title');
+  readonly icon = signal<string | undefined>('new-dot');
+  readonly placement = signal<NzTimelinePlacement | undefined>('start');
+}
+
+describe('timeline: undefined on a new input means unset', () => {
+  it('falls back to the deprecated input or the default and does not warn', () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    try {
+      const fixture = TestBed.createComponent(TestTimelineUnsetComponent);
+      fixture.detectChanges();
+      const [aliased, bare] = fixture.debugElement
+        .queryAll(By.directive(NzTimelineItemComponent))
+        .map(d => d.componentInstance as NzTimelineItemComponent);
+      expect([aliased.nzTitle, aliased.nzIcon, aliased.nzPlacement]).toEqual(['new title', 'new-dot', 'start']);
+      warnSpy.mockClear(); // the aliases warned on first binding; only the unset phase is asserted
+
+      fixture.componentInstance.title.set(undefined);
+      fixture.componentInstance.icon.set(undefined);
+      fixture.componentInstance.placement.set(undefined);
+      fixture.detectChanges();
+
+      expect([aliased.nzTitle, aliased.nzIcon, aliased.nzPlacement]).toEqual(['old title', 'old-dot', 'end']);
+      expect([bare.nzTitle, bare.nzIcon, bare.nzPlacement]).toEqual([undefined, undefined, undefined]);
+      expect(warnSpy).not.toHaveBeenCalled();
+    } finally {
+      warnSpy.mockRestore();
+    }
   });
 });

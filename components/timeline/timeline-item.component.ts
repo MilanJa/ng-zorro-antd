@@ -124,8 +124,8 @@ export class NzTimelineItemComponent implements OnChanges {
   @ViewChild('template', { static: false }) template!: TemplateRef<void>;
 
   @Input() set nzTitle(value: string | TemplateRef<void> | undefined) {
-    this.titleExplicit = true;
-    this.title = value;
+    this.titleExplicit = value !== undefined;
+    this.title = value ?? this.labelAlias;
   }
   get nzTitle(): string | TemplateRef<void> | undefined {
     return this.title;
@@ -134,6 +134,7 @@ export class NzTimelineItemComponent implements OnChanges {
   // v6-alias: nzLabel -> nzTitle
   @Input() set nzLabel(value: string | TemplateRef<void> | undefined) {
     this.aliasLabel(value);
+    this.labelAlias = value;
     if (!this.titleExplicit) this.title = value;
   }
   get nzLabel(): string | TemplateRef<void> | undefined {
@@ -141,8 +142,8 @@ export class NzTimelineItemComponent implements OnChanges {
   }
 
   @Input() set nzIcon(value: string | TemplateRef<void> | undefined) {
-    this.iconExplicit = true;
-    this.icon = value;
+    this.iconExplicit = value !== undefined;
+    this.icon = value ?? this.dotAlias;
   }
   get nzIcon(): string | TemplateRef<void> | undefined {
     return this.icon;
@@ -151,6 +152,7 @@ export class NzTimelineItemComponent implements OnChanges {
   // v6-alias: nzDot -> nzIcon
   @Input() set nzDot(value: string | TemplateRef<void> | undefined) {
     this.aliasDot(value);
+    this.dotAlias = value;
     if (!this.iconExplicit) this.icon = value;
   }
   get nzDot(): string | TemplateRef<void> | undefined {
@@ -160,9 +162,9 @@ export class NzTimelineItemComponent implements OnChanges {
   // Same-name marker: the input stays, only its left/right values are deprecated (see docs/v6-migration-notes.md).
   // v6-alias: nzPlacement -> nzPlacement
   @Input() set nzPlacement(value: NzTimelinePlacement | NzTimelinePosition | undefined) {
-    this.placementExplicit = true;
+    this.placementExplicit = value !== undefined;
     if (value === 'left' || value === 'right') this.aliasPlacementValue(value);
-    this.placement = value && toTimelinePlacement(value);
+    this.placement = value ? toTimelinePlacement(value) : this.positionAlias;
   }
   get nzPlacement(): NzTimelinePlacement | undefined {
     return this.placement;
@@ -171,7 +173,8 @@ export class NzTimelineItemComponent implements OnChanges {
   // v6-alias: nzPosition -> nzPlacement
   @Input() set nzPosition(value: NzTimelinePosition | NzTimelinePlacement | undefined) {
     this.aliasPosition(value);
-    if (!this.placementExplicit) this.placement = value && toTimelinePlacement(value);
+    this.positionAlias = value && toTimelinePlacement(value);
+    if (!this.placementExplicit) this.placement = this.positionAlias;
   }
   get nzPosition(): NzTimelinePlacement | undefined {
     return this.placement;
@@ -186,6 +189,10 @@ export class NzTimelineItemComponent implements OnChanges {
   private titleExplicit = false;
   private iconExplicit = false;
   private placementExplicit = false;
+  /** Last values of the deprecated `nzLabel`, `nzDot` and `nzPosition`, the fallbacks when the new input is unset. */
+  private labelAlias?: string | TemplateRef<void>;
+  private dotAlias?: string | TemplateRef<void>;
+  private positionAlias?: NzTimelinePlacement;
   private readonly aliasLabel = aliasDeprecatedInput<string | TemplateRef<void> | undefined>(
     'nz-timeline-item',
     'nzLabel',
