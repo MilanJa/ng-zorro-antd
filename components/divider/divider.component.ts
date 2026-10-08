@@ -74,9 +74,9 @@ export class NzDividerComponent {
   // v6-alias: nzType -> nzOrientation
   @Input()
   set nzType(value: NzDividerOrientation) {
-    const mapped = this.aliasType(value);
+    this.typeAlias = this.aliasType(value);
     if (!this.axisExplicit) {
-      this.axis.set(mapped);
+      this.axis.set(this.typeAlias ?? 'horizontal');
     }
   }
   get nzType(): NzDividerOrientation {
@@ -86,17 +86,25 @@ export class NzDividerComponent {
   /**
    * Whether the line is horizontal or vertical. The values `'left' | 'right' | 'center'` (this input's
    * meaning before antd v6) are forwarded to `nzTitlePlacement` with a deprecation warning.
+   * `undefined` unsets it: `nzType` or the default applies again.
    */
   // v6-alias: nzOrientation -> nzTitlePlacement
   @Input()
-  set nzOrientation(value: NzDividerOrientation | NzDividerLegacyTitlePlacement) {
-    if (value === 'horizontal' || value === 'vertical') {
+  set nzOrientation(value: NzDividerOrientation | NzDividerLegacyTitlePlacement | undefined) {
+    if (value === undefined) {
+      this.axisExplicit = false;
+      this.axis.set(this.typeAlias ?? 'horizontal');
+      this.legacyPlacement = undefined;
+      if (!this.placementExplicit) {
+        this.placement.set('center');
+      }
+    } else if (value === 'horizontal' || value === 'vertical') {
       this.axisExplicit = true;
       this.axis.set(value);
     } else if (value === 'left' || value === 'right' || value === 'center') {
-      const legacy = this.aliasPlacement(value);
+      this.legacyPlacement = this.aliasPlacement(value);
       if (!this.placementExplicit) {
-        this.placement.set(legacy);
+        this.placement.set(this.legacyPlacement);
       }
     } else {
       warn(`\`nzOrientation\` on \`nz-divider\` accepts 'horizontal' or 'vertical'; ignoring "${value}".`);
@@ -107,9 +115,9 @@ export class NzDividerComponent {
   }
 
   @Input()
-  set nzTitlePlacement(value: NzDividerTitlePlacement) {
-    this.placementExplicit = true;
-    this.placement.set(value);
+  set nzTitlePlacement(value: NzDividerTitlePlacement | undefined) {
+    this.placementExplicit = value !== undefined;
+    this.placement.set(value ?? this.legacyPlacement ?? 'center');
   }
   get nzTitlePlacement(): NzDividerTitlePlacement {
     return this.titlePlacement();
@@ -132,8 +140,12 @@ export class NzDividerComponent {
   protected readonly dir = inject(Directionality).valueSignal;
   protected readonly axis = signal<NzDividerOrientation>('horizontal');
   private axisExplicit = false;
+  /** Last value of the deprecated `nzType`, the fallback when `nzOrientation` is unset. */
+  private typeAlias?: NzDividerOrientation;
   private readonly placement = signal<NzDividerTitlePlacement | 'left' | 'right'>('center');
   private placementExplicit = false;
+  /** Last legacy `left|right|center` of `nzOrientation`, the fallback when `nzTitlePlacement` is unset. */
+  private legacyPlacement?: NzDividerLegacyTitlePlacement;
   private readonly margin = signal<number | string | null>(null);
   private readonly aliasType = aliasDeprecatedInput<NzDividerOrientation>('nz-divider', 'nzType', 'nzOrientation');
   private readonly aliasPlacement = aliasDeprecatedInput<NzDividerLegacyTitlePlacement>(

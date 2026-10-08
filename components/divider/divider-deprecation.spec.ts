@@ -63,3 +63,44 @@ describe('divider deprecation warnings', () => {
     );
   });
 });
+
+@Component({
+  imports: [NzDividerModule],
+  template: `
+    <nz-divider id="axis" nzText="T" nzType="vertical" [nzOrientation]="orientation()" />
+    <nz-divider id="placement" nzText="T" nzOrientation="left" [nzTitlePlacement]="placement()" />
+    <nz-divider id="plain" nzText="T" [nzOrientation]="orientation()" [nzTitlePlacement]="placement()" />
+  `
+})
+class TestDividerUnsetComponent {
+  readonly orientation = signal<'horizontal' | 'vertical' | undefined>('horizontal');
+  readonly placement = signal<'start' | 'end' | 'center' | undefined>('end');
+}
+
+describe('divider: undefined on a new input means unset', () => {
+  it('falls back to the deprecated input or the default and does not warn', () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    try {
+      const fixture = TestBed.createComponent(TestDividerUnsetComponent);
+      fixture.detectChanges();
+      const classes = (id: string): DOMTokenList =>
+        (fixture.nativeElement.querySelector(`#${id}`) as HTMLElement).classList;
+      expect(classes('axis')).toContain('ant-divider-horizontal');
+      expect(classes('placement')).toContain('ant-divider-with-text-end');
+      warnSpy.mockClear(); // the aliases warned on first binding; only the unset phase is asserted
+
+      fixture.componentInstance.orientation.set(undefined);
+      fixture.componentInstance.placement.set(undefined);
+      fixture.detectChanges();
+
+      expect(classes('axis')).toContain('ant-divider-vertical'); // nzType applies again
+      expect(classes('placement')).toContain('ant-divider-with-text-start'); // nzOrientation="left" applies again
+      expect(classes('placement')).toContain('ant-divider-with-text-left'); // v4 safety: the physical class follows
+      expect(classes('plain')).toContain('ant-divider-horizontal'); // defaults
+      expect(classes('plain')).toContain('ant-divider-with-text-center');
+      expect(warnSpy).not.toHaveBeenCalled();
+    } finally {
+      warnSpy.mockRestore();
+    }
+  });
+});
