@@ -9,7 +9,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 
 import { provideMockDirectionality } from 'ng-zorro-antd/core/testing';
-import { NzSafeAny } from 'ng-zorro-antd/core/types';
+import { NzSafeAny, NzSemanticClassNames, NzSemanticStyles } from 'ng-zorro-antd/core/types';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { provideNzIconsTesting } from 'ng-zorro-antd/icon/testing';
 
@@ -356,3 +356,63 @@ export class NzLayoutResponsiveComponent {
   `
 })
 export class NzLayoutBasicComponent {}
+
+@Component({
+  imports: [NzLayoutModule],
+  template: `
+    <nz-layout>
+      <nz-sider id="slots" class="own" [nzClassNames]="classNames()" [nzStyles]="styles()">S</nz-sider>
+      <nz-sider id="plain">P</nz-sider>
+    </nz-layout>
+  `
+})
+export class NzLayoutSiderSlotsComponent {
+  readonly classNames = signal<NzSemanticClassNames<'root' | 'body'>>({ root: 'my-root', body: 'my-body' });
+  readonly styles = signal<NzSemanticStyles<'root' | 'body'>>({
+    root: { color: 'rgb(255, 0, 0)', width: '999px' },
+    body: { padding: '12px' }
+  });
+}
+
+describe('nz-sider semantic slots', () => {
+  let fixture: ComponentFixture<NzLayoutSiderSlotsComponent>;
+  const q = (sel: string): HTMLElement => fixture.nativeElement.querySelector(sel);
+
+  beforeEach(() => {
+    fixture = TestBed.createComponent(NzLayoutSiderSlotsComponent);
+    fixture.detectChanges();
+  });
+
+  it('merges root into the host class and style and lets the width bindings win', () => {
+    const host = q('#slots');
+    expect(host.classList).toContain('ant-layout-sider');
+    expect(host.classList).toContain('own');
+    expect(host.classList).toContain('my-root');
+    expect(host.style.color).toBe('rgb(255, 0, 0)');
+    expect(host.style.width).toBe('200px');
+    expect(host.style.flex).toBe('0 0 200px');
+  });
+
+  it('applies body to the children wrapper', () => {
+    const body = q('#slots .ant-layout-sider-children');
+    expect(body.className).toBe('ant-layout-sider-children my-body');
+    expect(body.style.padding).toBe('12px');
+  });
+
+  it('updates and clears the slots', () => {
+    fixture.componentInstance.classNames.set({});
+    fixture.componentInstance.styles.set({});
+    fixture.detectChanges();
+    expect(q('#slots').classList).not.toContain('my-root');
+    expect(q('#slots').style.color).toBe('');
+    expect(q('#slots .ant-layout-sider-children').className).toBe('ant-layout-sider-children');
+  });
+
+  it('v4 safety: an unbound sider keeps today’s classes and styles', () => {
+    expect(q('#plain').className).toBe('ant-layout-sider ant-layout-sider-dark');
+    expect(q('#plain').getAttribute('style')).toBe(
+      'flex: 0 0 200px; max-width: 200px; min-width: 200px; width: 200px;'
+    );
+    expect(q('#plain .ant-layout-sider-children').getAttribute('style')).toBeNull();
+  });
+});

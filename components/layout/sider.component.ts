@@ -24,17 +24,20 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { Breakpoint, NzBreakpointService, siderResponsiveMap } from 'ng-zorro-antd/core/services';
+import type { NzSemanticClassNames, NzSemanticStyles } from 'ng-zorro-antd/core/types';
 import { inNextTick, toCssPixel } from 'ng-zorro-antd/core/util';
 import { NzMenuDirective } from 'ng-zorro-antd/menu';
 
 import { NzSiderTriggerComponent } from './sider-trigger.component';
+
+export type NzSiderSemanticSlot = 'root' | 'body';
 
 @Component({
   selector: 'nz-sider',
   exportAs: 'nzSider',
   encapsulation: ViewEncapsulation.None,
   template: `
-    <div class="ant-layout-sider-children">
+    <div class="ant-layout-sider-children" [class]="nzClassNames.body ?? null" [style]="nzStyles.body ?? null">
       <ng-content />
     </div>
     @if (nzCollapsible && nzTrigger !== null) {
@@ -59,6 +62,8 @@ import { NzSiderTriggerComponent } from './sider-trigger.component';
     '[class.ant-layout-sider-dark]': `nzTheme === 'dark'`,
     '[class.ant-layout-sider-collapsed]': `nzCollapsed`,
     '[class.ant-layout-sider-has-trigger]': `nzCollapsible && nzTrigger !== null`,
+    '[class]': 'nzClassNames.root ?? null',
+    '[style]': 'nzStyles.root ?? null',
     '[style.flex]': 'flexSetting',
     '[style.maxWidth]': 'widthSetting',
     '[style.minWidth]': 'widthSetting',
@@ -83,6 +88,10 @@ export class NzSiderComponent implements OnInit, OnChanges, AfterContentInit {
   @Input({ transform: booleanAttribute }) nzReverseArrow = false;
   @Input({ transform: booleanAttribute }) nzCollapsible = false;
   @Input({ transform: booleanAttribute }) nzCollapsed = false;
+  /** antd v6 semantic class names: `root` (the host) and `body` (`.ant-layout-sider-children`). */
+  @Input() nzClassNames: NzSemanticClassNames<NzSiderSemanticSlot> = {};
+  /** antd v6 semantic styles; the width bindings of the host win over `root`, as in antd. */
+  @Input() nzStyles: NzSemanticStyles<NzSiderSemanticSlot> = {};
   matchBreakPoint = false;
   flexSetting: string | null = null;
   widthSetting: string | null = null;

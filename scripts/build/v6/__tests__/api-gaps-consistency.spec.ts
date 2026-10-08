@@ -47,7 +47,7 @@ const DELIVERED: Record<string, string[]> = {
   FloatButton: ['content', 'description', 'showProgress'],
   BackTop: ['showProgress'],
   Col: ['xs', 'sm', 'md', 'lg', 'xl', 'xxl', 'xxxl'],
-  Sider: [],
+  Sider: ['classNames', 'styles'],
   'Dropdown menu items': [],
   'Dropdown submenu title': [],
   Breadcrumb: []
