@@ -19,7 +19,7 @@ import {
 
 import { withAnimationCheck } from 'ng-zorro-antd/core/animation';
 import { NzFourDirectionType, NzShapeSCType } from 'ng-zorro-antd/core/types';
-import { generateClassName } from 'ng-zorro-antd/core/util';
+import { aliasDeprecatedInput, generateClassName } from 'ng-zorro-antd/core/util';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 
 import { NzFloatButtonTopComponent } from './float-button-top.component';
@@ -50,7 +50,7 @@ const CLASS_NAME = 'ant-float-btn-group';
         [nzType]="nzType()"
         [nzIcon]="open() ? close : nzIcon()"
         [nzShape]="nzShape()"
-        [nzDescription]="open() ? null : nzDescription()"
+        [nzContent]="open() ? null : content()"
         (nzOnClick)="open() ? clickCloseMenu() : clickOpenMenu()"
         (mouseover)="hoverOpenMenu()"
       />
@@ -73,6 +73,9 @@ export class NzFloatButtonGroupComponent {
   readonly nzTarget = input<string | null>(null);
   readonly nzType = input<NzFloatButtonType>('default');
   readonly nzIcon = input<string | TemplateRef<void> | null>(null);
+  readonly nzContent = input<string | TemplateRef<void> | null>();
+  /** @deprecated Use `nzContent` instead. This will be removed in v23.0.0. */
+  // v6-alias: nzDescription -> nzContent
   readonly nzDescription = input<string | TemplateRef<void> | null>(null);
   readonly nzShape = input<NzShapeSCType>('circle');
   readonly nzTrigger = input<'click' | 'hover' | null>(null);
@@ -87,6 +90,12 @@ export class NzFloatButtonGroupComponent {
 
   protected readonly dir = inject(Directionality).valueSignal;
   protected readonly open = linkedSignal<boolean>(() => !!this.nzOpen());
+  protected readonly content = computed(() => this.nzContent() ?? this.nzDescription());
+  private readonly aliasDescription = aliasDeprecatedInput<string | TemplateRef<void>>(
+    'nz-float-button-group',
+    'nzDescription',
+    'nzContent'
+  );
   protected readonly isMenuMode = computed(
     () => !!this.nzTrigger() && ['click', 'hover'].includes(this.nzTrigger() as string)
   );
@@ -129,6 +138,11 @@ export class NzFloatButtonGroupComponent {
           item.shape.set(this.nzShape());
         });
       }
+    });
+
+    effect(() => {
+      const legacy = this.nzDescription();
+      if (legacy !== null && legacy !== undefined) this.aliasDescription(legacy);
     });
   }
 

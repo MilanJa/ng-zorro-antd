@@ -174,8 +174,7 @@
     "_antdDir": "float-button",
     "top": "back-top",
     "group-placement": "placement",
-    "open": "controlled",
-    "description": null
+    "open": "controlled"
   },
   "form": {
     "_antdDir": "form",

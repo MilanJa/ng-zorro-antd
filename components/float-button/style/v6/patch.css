@@ -272,3 +272,28 @@ nz-float-button-content {
     opacity: 0;
   }
 }
+
+/* BackTop `nzShowProgress`: v6 draws the ring on `.ant-float-btn.ant-btn.ant-float-btn-progress`, antd's
+   FloatButton root being the Button. ng-zorro's `ant-btn` layer is the inner button, so the ring is
+   mirrored onto it (one class above the `border: none` mirror); `--ant-float-btn-progress` is set on
+   the host and inherited. */
+.ant-float-btn-progress > .ant-btn.ant-float-btn-inner {
+  border: var(--ant-line-width-bold) solid transparent;
+  background-image:
+    linear-gradient(var(--ant-btn-bg-color), var(--ant-btn-bg-color)),
+    conic-gradient(var(--ant-color-primary) var(--ant-float-btn-progress, 0turn), var(--ant-color-border-secondary) 0);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+}
+.ant-float-btn-progress > .ant-btn.ant-float-btn-inner:not(:disabled):not(.ant-btn-disabled):hover {
+  border-color: transparent;
+  background-image:
+    linear-gradient(var(--ant-btn-bg-color-hover), var(--ant-btn-bg-color-hover)),
+    conic-gradient(var(--ant-color-primary) var(--ant-float-btn-progress, 0turn), var(--ant-color-border-secondary) 0);
+}
+.ant-float-btn-progress > .ant-btn.ant-float-btn-inner:not(:disabled):not(.ant-btn-disabled):active {
+  border-color: transparent;
+  background-image:
+    linear-gradient(var(--ant-btn-bg-color-active), var(--ant-btn-bg-color-active)),
+    conic-gradient(var(--ant-color-primary) var(--ant-float-btn-progress, 0turn), var(--ant-color-border-secondary) 0);
+}

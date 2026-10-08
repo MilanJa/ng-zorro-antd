@@ -5,12 +5,12 @@
 
 import { Directionality } from '@angular/cdk/bidi';
 import { NgTemplateOutlet } from '@angular/common';
-import { Component, computed, inject, input, linkedSignal, output, TemplateRef } from '@angular/core';
+import { Component, computed, effect, inject, input, linkedSignal, output, TemplateRef } from '@angular/core';
 
 import { NzBadgeModule } from 'ng-zorro-antd/badge';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzShapeSCType } from 'ng-zorro-antd/core/types';
-import { generateClassName } from 'ng-zorro-antd/core/util';
+import { aliasDeprecatedInput, generateClassName } from 'ng-zorro-antd/core/util';
 
 import { NzFloatButtonContentComponent } from './float-button-content.component';
 import { NzFloatButtonBadge, NzFloatButtonType } from './typings';
@@ -49,7 +49,7 @@ const CLASS_NAME = 'ant-float-btn';
       <nz-float-button-content
         [nzBadge]="nzBadge()"
         [nzIcon]="nzIcon()"
-        [nzDescription]="nzDescription()"
+        [nzDescription]="content()"
         [nzShape]="shape()"
       />
     </ng-template>
@@ -63,12 +63,21 @@ export class NzFloatButtonComponent {
   readonly nzTarget = input<string | null>(null);
   readonly nzType = input<NzFloatButtonType>('default');
   readonly nzIcon = input<string | TemplateRef<void> | null>(null);
+  readonly nzContent = input<string | TemplateRef<void> | null>();
+  /** @deprecated Use `nzContent` instead. This will be removed in v23.0.0. */
+  // v6-alias: nzDescription -> nzContent
   readonly nzDescription = input<string | TemplateRef<void> | null>(null);
   readonly nzShape = input<NzShapeSCType>('circle');
   readonly nzBadge = input<NzFloatButtonBadge | null>(null);
   readonly nzOnClick = output<boolean>();
 
   readonly shape = linkedSignal(() => this.nzShape());
+  protected readonly content = computed(() => this.nzContent() ?? this.nzDescription());
+  private readonly aliasDescription = aliasDeprecatedInput<string | TemplateRef<void>>(
+    'nz-float-button',
+    'nzDescription',
+    'nzContent'
+  );
   protected readonly dir = inject(Directionality).valueSignal;
   protected readonly class = computed<string[]>(() => {
     const dir = this.dir();
@@ -76,7 +85,7 @@ export class NzFloatButtonComponent {
     // (antd/es/float-button/FloatButton.js). The `ant-btn*` layer is not added to the host, where v4
     // button styles would also apply; the `-{type}`/`-{shape}`/`-icon-only` classes are additive.
     const classes = [CLASS_NAME, this.generateClass(this.nzType()), this.generateClass(this.shape())];
-    if (!this.nzDescription()) {
+    if (!this.content()) {
       classes.push(`${CLASS_NAME}-icon-only`);
     }
     if (dir === 'rtl') {
@@ -84,6 +93,13 @@ export class NzFloatButtonComponent {
     }
     return classes;
   });
+
+  constructor() {
+    effect(() => {
+      const legacy = this.nzDescription();
+      if (legacy !== null && legacy !== undefined) this.aliasDescription(legacy);
+    });
+  }
 
   private generateClass(suffix: string): string {
     return generateClassName(CLASS_NAME, suffix);

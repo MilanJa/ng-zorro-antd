@@ -16,16 +16,17 @@ description: A button that floats at the top of the page.
 
 ### Common API
 
-| Property          | Description                               | Type                                  | Default     | Version |
-| ----------------- | ----------------------------------------- | ------------------------------------- | ----------- | ------- |
-| `[nzIcon]`        | Set the icon component of button          | `string \| TemplateRef<void> \| null` | -           |
-| `[nzDescription]` | Text and other content                    | `string \| TemplateRef<void> \| null` | -           |
-| `[nzType]`        | Button type                               | `'default' \| 'primary'`              | `'default'` |
-| `[nzShape]`       | Button shape                              | `'circle' \| 'square'`                | `'circle'`  |
-| `[nzHref]`        | The target of hyperlink                   | `string`                              | -           |
-| `[nzTarget]`      | Specifies where to display the linked URL | `string`                              | -           |
-| `[nzBadge]`       | badge                                     | `NzFloatButtonBadge`                  | -           | 20.4.0  |
-| `(nzOnClick)`     | Callback of `click` event                 | `EventEmitter<boolean>`               | -           |
+| Property              | Description                                                 | Type                                  | Default     | Version |
+| --------------------- | ----------------------------------------------------------- | ------------------------------------- | ----------- | ------- |
+| `[nzIcon]`            | Set the icon component of button                            | `string \| TemplateRef<void> \| null` | -           |
+| `[nzContent]`         | Text and other content, shown when `nzShape` is `'square'`  | `string \| TemplateRef<void> \| null` | -           |
+| ~~`[nzDescription]`~~ | Deprecated, use [nzContent] instead. Text and other content | `string \| TemplateRef<void> \| null` | -           |
+| `[nzType]`            | Button type                                                 | `'default' \| 'primary'`              | `'default'` |
+| `[nzShape]`           | Button shape                                                | `'circle' \| 'square'`                | `'circle'`  |
+| `[nzHref]`            | The target of hyperlink                                     | `string`                              | -           |
+| `[nzTarget]`          | Specifies where to display the linked URL                   | `string`                              | -           |
+| `[nzBadge]`           | badge                                                       | `NzFloatButtonBadge`                  | -           | 20.4.0  |
+| `(nzOnClick)`         | Callback of `click` event                                   | `EventEmitter<boolean>`               | -           |
 
 ### nz-float-button-group
 
@@ -44,6 +45,7 @@ description: A button that floats at the top of the page.
 | `[nzVisibilityHeight]` | The `nz-float-button-top` button will not show until the scroll height reaches this value | `number`                    | `400`    | ✅            |
 | `[nzTarget]`           | Specifies the scrollable area dom node                                                    | `string \| Element`         | `window` | -             |
 | `[nzDuration]`         | Duration of scrolling to top (ms)                                                         | `number`                    | `450`    | -             |
+| `[nzShowProgress]`     | Show the scroll progress as a ring around the button edge. Requires the v6 stylesheet.    | `boolean`                   | `false`  | -             |
 | `[nzTemplate]`         | Not rendered; kept for backward compatibility                                             | `TemplateRef<void> \| null` | -        | -             |
 
 ### Interfaces

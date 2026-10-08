@@ -97,3 +97,47 @@ describe('float-button under antd v6 css', () => {
     expect(document.querySelector('#group .ant-float-btn-group-list')).toBeNull();
   });
 });
+
+@Component({
+  imports: [NzFloatButtonModule],
+  template: `
+    <div #box style="height: 100px; overflow-y: auto"><div style="height: 300px"></div></div>
+    <nz-float-button-top id="ring" [nzTarget]="box" [nzVisibilityHeight]="-1" nzShowProgress />
+    <nz-float-button-top id="plain" [nzTarget]="box" [nzVisibilityHeight]="-1" />
+  `
+})
+class TestFloatButtonProgressComponent {}
+
+describe('float-button-top progress ring under antd v6 css', () => {
+  beforeEach(() => {
+    installV6Css();
+    TestBed.configureTestingModule({ providers: [provideNzIconsTesting()] });
+  });
+
+  afterEach(() => {
+    style.remove();
+  });
+
+  it('draws the conic ring on the inner button and keeps its 40px box', async () => {
+    const fixture = TestBed.createComponent(TestFloatButtonProgressComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const box = fixture.nativeElement.querySelector('div') as HTMLElement;
+    box.scrollTop = 100;
+    box.dispatchEvent(new Event('scroll'));
+    await new Promise(resolve => setTimeout(resolve, 60));
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const inner = document.querySelector('#ring .ant-float-btn-inner') as HTMLElement;
+    const cs = getComputedStyle(inner);
+    expect(cs.getPropertyValue('--ant-float-btn-progress').trim()).toBe('0.5turn');
+    expect(cs.backgroundImage).toContain('conic-gradient');
+    expect(cs.borderTopWidth).toBe('2px');
+    expect(Math.round(inner.getBoundingClientRect().width)).toBe(40);
+    // v4 safety (same sheet): without nzShowProgress the inner button keeps no border and no ring
+    const plain = getComputedStyle(document.querySelector('#plain .ant-float-btn-inner') as HTMLElement);
+    expect(plain.backgroundImage).not.toContain('conic-gradient');
+    expect(plain.borderTopWidth).toBe('0px');
+  });
+});

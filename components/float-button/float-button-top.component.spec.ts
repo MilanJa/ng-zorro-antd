@@ -211,6 +211,66 @@ describe('nz-float-button-top', () => {
   });
 });
 
+@Component({
+  imports: [NzFloatButtonModule],
+  template: `
+    <div #box id="box" style="height: 100px; overflow-y: auto">
+      <div [style.height.px]="contentHeight()"></div>
+    </div>
+    <nz-float-button-top [nzTarget]="box" [nzVisibilityHeight]="-1" [nzShowProgress]="showProgress()" />
+  `
+})
+class TestFloatButtonTopProgressComponent {
+  readonly contentHeight = signal(100);
+  readonly showProgress = signal(true);
+}
+
+describe('nz-float-button-top nzShowProgress', () => {
+  let fixture: ComponentFixture<TestFloatButtonTopProgressComponent>;
+  const button = (): HTMLElement => fixture.nativeElement.querySelector('nz-float-button-top nz-float-button');
+  const box = (): HTMLElement => fixture.nativeElement.querySelector('#box');
+
+  async function settle(): Promise<void> {
+    fixture.detectChanges();
+    await sleep(60); // the scroll subscription is debounced by 50 ms
+    await fixture.whenStable();
+    fixture.detectChanges();
+  }
+
+  beforeEach(async () => {
+    TestBed.configureTestingModule({ providers: [provideNzNoAnimation()] });
+    fixture = TestBed.createComponent(TestFloatButtonTopProgressComponent);
+    await settle();
+  });
+
+  // Review Focus 5: scrollHeight === clientHeight binds 0, never NaN.
+  it('binds 0turn when the target cannot scroll', () => {
+    expect(box().scrollHeight).toBe(box().clientHeight);
+    expect(button().classList).toContain('ant-float-btn-progress');
+    expect(button().style.getPropertyValue('--ant-float-btn-progress')).toBe('0turn');
+  });
+
+  it('binds the scrolled fraction of the target', async () => {
+    fixture.componentInstance.contentHeight.set(300);
+    fixture.detectChanges();
+    box().scrollTop = 100;
+    box().dispatchEvent(new Event('scroll'));
+    await settle();
+    expect(button().style.getPropertyValue('--ant-float-btn-progress')).toBe('0.5turn');
+    box().scrollTop = 200;
+    box().dispatchEvent(new Event('scroll'));
+    await settle();
+    expect(button().style.getPropertyValue('--ant-float-btn-progress')).toBe('1turn');
+  });
+
+  it('v4 safety: binds neither the class nor the property without nzShowProgress', async () => {
+    fixture.componentInstance.showProgress.set(false);
+    await settle();
+    expect(button().classList).not.toContain('ant-float-btn-progress');
+    expect(button().style.getPropertyValue('--ant-float-btn-progress')).toBe('');
+  });
+});
+
 class MockNzScrollService {
   mockTopOffset: number = 0;
 

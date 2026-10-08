@@ -133,3 +133,55 @@ export class NzTestFloatButtonBasicComponent {
     this.isClick.set(value);
   }
 }
+
+@Component({
+  imports: [NzFloatButtonModule],
+  template: `
+    <nz-float-button id="newFirst" nzShape="square" nzContent="NEW" nzDescription="OLD" />
+    <nz-float-button id="oldFirst" nzShape="square" nzDescription="OLD" nzContent="NEW" />
+    <nz-float-button id="legacy" nzShape="square" nzDescription="OLD" />
+    <nz-float-button id="unset" nzShape="square" [nzContent]="undefined" nzDescription="OLD" />
+    <nz-float-button id="none" nzShape="square" />
+    <nz-float-button-top id="top" [nzVisibilityHeight]="-1" nzShape="square" nzContent="TOP" />
+    <nz-float-button-group id="group" nzShape="square" nzTrigger="click" nzContent="MENU">
+      <nz-float-button />
+    </nz-float-button-group>
+  `
+})
+class NzTestFloatButtonContentComponent {}
+
+describe('float-button nzContent', () => {
+  let fixture: ComponentFixture<NzTestFloatButtonContentComponent>;
+  const text = (id: string): string | undefined =>
+    (
+      fixture.nativeElement.querySelector(`#${id} .ant-float-btn-description`) as HTMLElement | null
+    )?.textContent?.trim();
+
+  beforeEach(async () => {
+    TestBed.configureTestingModule({ providers: [provideNzIconsTesting(), provideNzNoAnimation()] });
+    fixture = TestBed.createComponent(NzTestFloatButtonContentComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+  });
+
+  it('prefers nzContent over the deprecated nzDescription in both binding orders', () => {
+    expect(text('newFirst')).toBe('NEW');
+    expect(text('oldFirst')).toBe('NEW');
+  });
+
+  it('falls back to nzDescription when nzContent is unbound or undefined', () => {
+    expect(text('legacy')).toBe('OLD');
+    expect(text('unset')).toBe('OLD');
+  });
+
+  it('keeps the icon-only class only without content', () => {
+    expect(fixture.nativeElement.querySelector('#none').classList).toContain('ant-float-btn-icon-only');
+    expect(fixture.nativeElement.querySelector('#newFirst').classList).not.toContain('ant-float-btn-icon-only');
+  });
+
+  it('forwards nzContent from the BackTop and the group trigger', () => {
+    expect(text('top')).toBe('TOP');
+    expect(text('group')).toBe('MENU');
+  });
+});
