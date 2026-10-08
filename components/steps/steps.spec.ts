@@ -903,3 +903,39 @@ describe('steps nzSize', () => {
     expect(root().classList).toContain('ant-steps-small');
   });
 });
+
+@Component({
+  imports: [NzStepsModule],
+  template: `
+    <nz-steps id="status" [nzCurrent]="6" [nzMaxCount]="5">
+      @for (i of steps; track i) {
+        <nz-step [nzTitle]="'S' + i" [nzStatus]="i === 3 ? hiddenStatus() : i < 6 ? 'finish' : 'process'" />
+      }
+    </nz-steps>
+  `
+})
+export class NzTestStepsStatusComponent {
+  readonly steps = [0, 1, 2, 3, 4, 5, 6];
+  readonly hiddenStatus = signal<NzStatusType>('finish');
+}
+
+describe('steps nzMaxCount with a bound step status', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({ providers: [provideNzIconsTesting()] });
+  });
+
+  it('re-plans the ellipsis status when a hidden step status changes later', async () => {
+    const fixture = TestBed.createComponent(NzTestStepsStatusComponent);
+    await stabilize(fixture);
+    const item = (i: number): HTMLElement => fixture.nativeElement.querySelectorAll('#status .ant-steps-item')[i];
+    expect(item(2).classList).toContain('ant-steps-item-ellipsis');
+    expect(item(3).style.display).toBe('none');
+    expect(item(2).classList).toContain('ant-steps-item-finish');
+    fixture.componentInstance.hiddenStatus.set('error');
+    await stabilize(fixture);
+    expect(item(2).classList).toContain('ant-steps-item-error');
+    fixture.componentInstance.hiddenStatus.set('finish');
+    await stabilize(fixture);
+    expect(item(2).classList).toContain('ant-steps-item-finish');
+  });
+});

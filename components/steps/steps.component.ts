@@ -25,7 +25,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Subscription, merge } from 'rxjs';
-import { startWith } from 'rxjs/operators';
+import { filter, startWith, switchMap } from 'rxjs/operators';
 
 import { warn } from 'ng-zorro-antd/core/logger';
 import { gridResponsiveMap, NzBreakpointEnum, NzBreakpointService } from 'ng-zorro-antd/core/services';
@@ -237,6 +237,15 @@ export class NzStepsComponent implements OnChanges, OnInit, AfterContentInit {
         this.updateHostProgressClass();
         this.updateChildrenSteps();
       });
+      // A hidden step's status feeds its ellipsis item (antd `getEllipsisStep`), so a later change re-plans.
+      this.steps.changes
+        .pipe(
+          startWith(null),
+          switchMap(() => merge(...this.steps.map(step => step.statusChange$))),
+          filter(() => this.canApplyMaxCount),
+          takeUntilDestroyed(this.destroyRef)
+        )
+        .subscribe(() => this.updateChildrenSteps());
     }
   }
 

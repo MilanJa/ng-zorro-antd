@@ -218,7 +218,11 @@ export class NzStepComponent {
   set nzStatus(status: string) {
     this._status = status;
     this.isCustomStatus = true;
+    this.statusChange$.next();
   }
+
+  /** Emits when the bound `nzStatus` changes, so the parent can re-plan collapsed ranges. @internal */
+  readonly statusChange$ = new Subject<void>();
 
   isCustomStatus = false;
   private _status = 'wait';
