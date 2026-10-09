@@ -57,3 +57,9 @@ stated otherwise.
 - **Size value `medium`**: `nz-badge`, `nz-progress`, `nz-pagination` and `nz-steps` accept `nzSize="medium"`, Ant
   Design 6's name for the default size, and render it exactly as `'default'`. `'default'` stays accepted without a
   warning; it is not deprecated.
+- **Class-list changes with nothing new bound**, none styled under the default stylesheet:
+  - every `nz-progress` line without `nzSteps` now carries `ant-progress-line-align-end` and
+    `ant-progress-line-position-outer`;
+  - an `nz-pagination` inside an `nz-form` that sets `nzVariant` carries the matching variant class;
+  - a checkable `nz-tag` no longer carries `ant-tag-filled`;
+  - the circle in an `nz-step` with `nzPercentage` no longer carries `ant-progress-default`.
