@@ -459,3 +459,59 @@ describe('nz-sider nullish semantic slots', () => {
     expect(q('#nullish .ant-layout-sider-children').style.padding).toBe('');
   });
 });
+
+@Component({
+  imports: [NzLayoutModule],
+  template: `
+    <nz-layout>
+      <nz-sider
+        id="beside"
+        class="app"
+        [class.extra]="flag()"
+        [style.opacity]="0.5"
+        [nzClassNames]="classNames()"
+        [nzStyles]="{ root: { color: 'red' } }"
+      >
+        S
+      </nz-sider>
+    </nz-layout>
+  `
+})
+export class NzLayoutSiderHostBindingsComponent {
+  readonly flag = signal(true);
+  readonly classNames = signal<NzSemanticClassNames<'root' | 'body'>>({ root: 'own' });
+}
+
+describe('nz-sider host bindings beside app bindings', () => {
+  it('keeps the app class, class and style bindings next to the slots', () => {
+    const fixture = TestBed.createComponent(NzLayoutSiderHostBindingsComponent);
+    fixture.detectChanges();
+    const host: HTMLElement = fixture.nativeElement.querySelector('#beside');
+    for (const name of ['ant-layout-sider', 'app', 'extra', 'own']) {
+      expect(host.classList).toContain(name);
+    }
+    expect(host.style.opacity).toBe('0.5');
+    expect(host.style.color).toBe('red');
+    expect(host.style.width).toBe('200px');
+    expect(host.style.flex).toBe('0 0 200px');
+    expect(host.style.maxWidth).toBe('200px');
+    expect(host.style.minWidth).toBe('200px');
+
+    fixture.componentInstance.flag.set(false);
+    fixture.detectChanges();
+    expect(host.classList).not.toContain('extra');
+    for (const name of ['ant-layout-sider', 'app', 'own']) {
+      expect(host.classList).toContain(name);
+    }
+
+    fixture.componentInstance.flag.set(true);
+    fixture.componentInstance.classNames.set({});
+    fixture.detectChanges();
+    expect(host.classList).not.toContain('own');
+    for (const name of ['ant-layout-sider', 'app', 'extra']) {
+      expect(host.classList).toContain(name);
+    }
+    expect(host.style.opacity).toBe('0.5');
+    expect(host.style.color).toBe('red');
+  });
+});
