@@ -66,10 +66,10 @@ export class NzTagCheckableGroupComponent implements ControlValueAccessor {
     return Array.isArray(model) ? model.includes(value) : model === value;
   }
 
-  /** antd's `handleChange` (CheckableTagGroup.tsx). */
-  toggle(value: NzTagCheckableValue, checked: boolean): void {
+  /** antd's `handleChange` (CheckableTagGroup.tsx). Returns whether the model changed (false: group disabled). */
+  toggle(value: NzTagCheckableValue, checked: boolean): boolean {
     if (this.disabled()) {
-      return;
+      return false;
     }
     const model = this.model();
     let next: NzTagCheckableValue | NzTagCheckableValue[] | null;
@@ -82,6 +82,7 @@ export class NzTagCheckableGroupComponent implements ControlValueAccessor {
     this.model.set(next);
     this.onChange(next);
     this.onTouched();
+    return true;
   }
 
   writeValue(value: NzTagCheckableValue | NzTagCheckableValue[] | null): void {

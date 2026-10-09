@@ -211,8 +211,9 @@ export class NzTagComponent implements OnChanges {
     }
     if (this.inGroup) {
       const next = !this.checked;
-      this.group!.toggle(this.nzValue!, next);
-      this.nzCheckedChange.emit(next);
+      if (this.group!.toggle(this.nzValue!, next)) {
+        this.nzCheckedChange.emit(next);
+      }
       return;
     }
     this.nzChecked = !this.nzChecked;

@@ -84,6 +84,19 @@ class TestGroupTabindexComponent {
   readonly groupDisabled = signal(true);
 }
 
+@Component({
+  imports: [NzTagModule],
+  template: `
+    <nz-tag-checkable-group [nzDisabled]="groupDisabled()">
+      <nz-tag nzMode="checkable" nzValue="a" [nzDisabled]="false" (nzCheckedChange)="change($event)">a</nz-tag>
+    </nz-tag-checkable-group>
+  `
+})
+class TestGroupEmitComponent {
+  readonly groupDisabled = signal(true);
+  readonly change = vi.fn();
+}
+
 const tagsOf = (fixture: ComponentFixture<unknown>): HTMLElement[] =>
   Array.from((fixture.nativeElement as HTMLElement).querySelectorAll('nz-tag'));
 const tagNamed = (fixture: ComponentFixture<unknown>, name: string): HTMLElement =>
@@ -173,6 +186,24 @@ describe('nz-tag-checkable-group', () => {
     tagNamed(fixture, 'Own').click();
     await settle(fixture);
     expect(fixture.componentInstance.value).toEqual(['Movies', 'Music']);
+  });
+
+  it('emits nzCheckedChange only when the group accepts the toggle', async () => {
+    const fixture = TestBed.createComponent(TestGroupEmitComponent);
+    await settle(fixture);
+    const tag = tagsOf(fixture)[0];
+    tag.click();
+    await settle(fixture);
+    expect(fixture.componentInstance.change).not.toHaveBeenCalled();
+    expect(tag.classList).not.toContain('ant-tag-checkable-checked');
+
+    fixture.componentInstance.groupDisabled.set(false);
+    await settle(fixture);
+    tag.click();
+    await settle(fixture);
+    expect(fixture.componentInstance.change).toHaveBeenCalledTimes(1);
+    expect(fixture.componentInstance.change).toHaveBeenCalledWith(true);
+    expect(tag.classList).toContain('ant-tag-checkable-checked');
   });
 
   it('is disabled by a disabled form control', async () => {
