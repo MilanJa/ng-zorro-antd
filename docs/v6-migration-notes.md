@@ -58,7 +58,8 @@ stated otherwise.
   Design 6's name for the default size, and render it exactly as `'default'`. `'default'` stays accepted without a
   warning; it is not deprecated.
 - **Pagination size config**: the global `provideNzConfig({ pagination: { nzSize } })` value now reaches
-  `nz-pagination`; it was ignored before, so an app that set it will see its pagination change size.
+  `nz-pagination`; it was ignored before unless `nzResponsive` was set, so an app that set it will see its
+  pagination change size.
 - **Class-list changes with nothing new bound**, none styled under the default stylesheet:
   - every `nz-progress` line without `nzSteps` now carries `ant-progress-line-align-end` and
     `ant-progress-line-position-outer`;
