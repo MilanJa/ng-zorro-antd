@@ -31,8 +31,8 @@ description: Used for marking and categorization.
 
 ### nz-tag-checkable-group
 
-| Property       | Description                                                                                                   | Type                                               | Default |
-| -------------- | ------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- | ------- |
-| `[nzMultiple]` | Whether several tags can be checked; the model is an array when `true` and a single value or `null` otherwise | `boolean`                                          | `false` |
-| `[nzDisabled]` | Disable every checkable tag in the group; a tag's own bound `[nzDisabled]` wins                               | `boolean`                                          | `false` |
-| `[(ngModel)]`  | The checked `nzValue`s of the child checkable tags                                                            | `(string \| number)[] \| string \| number \| null` | -       |
+| Property       | Description                                                                                                                                                                                                           | Type                                               | Default |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- | ------- |
+| `[nzMultiple]` | Whether several tags can be checked; the model is an array when `true` and a single value or `null` otherwise                                                                                                         | `boolean`                                          | `false` |
+| `[nzDisabled]` | Disable every checkable tag in the group; a child's own bound `[nzDisabled]` controls its look and focus, but a disabled group refuses model changes regardless; for the greyed-out look: Requires the v6 stylesheet. | `boolean`                                          | `false` |
+| `[(ngModel)]`  | The checked `nzValue`s of the child checkable tags                                                                                                                                                                    | `(string \| number)[] \| string \| number \| null` | -       |
