@@ -22,17 +22,12 @@ import {
 } from '@angular/core';
 
 import { isPresetColor, isStatusColor, presetColors, statusColors } from 'ng-zorro-antd/core/color';
-import { aliasDeprecatedInput, isTemplateRef } from 'ng-zorro-antd/core/util';
+import { aliasDeprecatedInput, isTemplateRef, optionalBooleanAttribute } from 'ng-zorro-antd/core/util';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 
 import { NZ_TAG_CHECKABLE_GROUP } from './tag-checkable-group.token';
 import { tagCustomTint } from './tag-color';
 import { NzTagCheckableValue, NzTagColor, NzTagVariant } from './typings';
-
-/** `booleanAttribute` that keeps `undefined` as "unset" (rule 8 beside `aliasDeprecatedInput`). */
-function optionalBooleanAttribute(value: unknown): boolean | undefined {
-  return value === undefined ? undefined : booleanAttribute(value);
-}
 
 interface NzTagCustomStyle {
   backgroundColor: string | null | undefined;

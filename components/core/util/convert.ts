@@ -4,13 +4,18 @@
  */
 
 import { coerceBooleanProperty, coerceCssPixelValue, coerceNumberProperty } from '@angular/cdk/coercion';
-import { numberAttribute } from '@angular/core';
+import { booleanAttribute, numberAttribute } from '@angular/core';
 
 import { warn } from 'ng-zorro-antd/core/logger';
 import { FunctionProp, NzSafeAny } from 'ng-zorro-antd/core/types';
 
 export function toBoolean(value: unknown): boolean {
   return coerceBooleanProperty(value);
+}
+
+/** `booleanAttribute` that keeps `undefined` as "unset" (rule 8 beside `aliasDeprecatedInput`). */
+export function optionalBooleanAttribute(value: unknown): boolean | undefined {
+  return value === undefined ? undefined : booleanAttribute(value);
 }
 
 export function numberAttributeWithZeroFallback(value: unknown): number {
