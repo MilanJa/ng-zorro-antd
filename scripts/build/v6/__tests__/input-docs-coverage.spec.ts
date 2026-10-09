@@ -25,7 +25,8 @@ type Dir =
   | 'grid'
   | 'layout'
   | 'dropdown'
-  | 'breadcrumb';
+  | 'breadcrumb'
+  | 'card';
 type Lang = 'en-US' | 'zh-CN';
 
 /** Files whose `nz*` inputs/outputs are public API and must be documented. */
@@ -51,7 +52,8 @@ const PUBLIC_FILES: Record<Dir, readonly string[]> = {
   grid: ['row.directive.ts', 'col.directive.ts'],
   layout: ['sider.component.ts'],
   dropdown: ['dropdown.directive.ts'],
-  breadcrumb: ['breadcrumb.component.ts', 'breadcrumb-item.component.ts']
+  breadcrumb: ['breadcrumb.component.ts', 'breadcrumb-item.component.ts'],
+  card: ['card.component.ts', 'card-tab.component.ts', 'card-grid.directive.ts', 'card-meta.component.ts']
 };
 /** Internal components that forward `nz*` inputs from their public parent; not documented. */
 const INTERNAL_FILES: Partial<Record<Dir, readonly string[]>> = {
@@ -78,7 +80,8 @@ const V6_ONLY: Record<Dir, readonly string[]> = {
   grid: ['nzXs', 'nzSm', 'nzMd', 'nzLg', 'nzXl', 'nzXXl', 'nzXXXl'],
   layout: [],
   dropdown: [],
-  breadcrumb: []
+  breadcrumb: [],
+  card: []
 };
 const V6_PHRASE: Record<Lang, string> = { 'en-US': 'Requires the v6 stylesheet.', 'zh-CN': '需要 v6 样式表。' };
 const DEPRECATED_PREFIX: Record<Lang, string> = { 'en-US': 'Deprecated, use ', 'zh-CN': '已废弃，请使用 ' };

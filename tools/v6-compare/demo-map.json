@@ -37,9 +37,11 @@
     "_antdDir": "breadcrumb",
     "with-icon": "withIcon",
     "dropdown": "overlay",
+    "items": "basic",
+    "with-params": "withParams",
     "auto": null,
     "router": null,
-    "separator-independent": null
+    "separator-independent": "separator-component"
   },
   "cascader": {
     "_antdDir": "cascader",
