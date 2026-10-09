@@ -359,6 +359,27 @@ describe('tag v6 inputs', () => {
       expect(tag.textContent!.trim()).toBe('Plain');
     });
 
+    it('toggles the icon while the projected text survives', () => {
+      const fixture = TestBed.createComponent(TestTagIconToggleComponent);
+      fixture.detectChanges();
+      const tag = fixture.nativeElement.querySelector('nz-tag') as HTMLElement;
+      expect(tag.textContent!.trim()).toBe('Label');
+      expect(tag.querySelector('nz-icon')).toBeNull();
+      expect(tag.querySelector('span')).toBeNull();
+
+      fixture.componentInstance.icon.set('check');
+      fixture.detectChanges();
+      expect(tag.textContent!.trim()).toBe('Label');
+      expect(tag.querySelector('nz-icon.anticon-check')).not.toBeNull();
+      expect(tag.querySelector('span')!.textContent!.trim()).toBe('Label');
+
+      fixture.componentInstance.icon.set(undefined);
+      fixture.detectChanges();
+      expect(tag.textContent!.trim()).toBe('Label');
+      expect(tag.querySelector('nz-icon')).toBeNull();
+      expect(tag.querySelector('span')).toBeNull();
+    });
+
     it('keeps the close icon last', () => {
       const { tag } = renderTag(`<nz-tag nzIcon="check-circle" nzMode="closeable">c</nz-tag>`);
       expect(tag.children.length).toBe(3);
@@ -389,6 +410,17 @@ describe('tag v6 inputs', () => {
       expect(fixture.componentInstance.onClose).not.toHaveBeenCalled();
       expect(fixture.nativeElement.querySelector('nz-tag')).toBe(tag);
       expect(tag.classList).toContain('ant-tag-disabled');
+    });
+
+    it('keeps ant-tag-filled on a plain tag by default', () => {
+      const { tag } = renderTag(`<nz-tag>p</nz-tag>`);
+      expect(tag.classList).toContain('ant-tag-filled');
+    });
+
+    it('carries no ant-tag-filled on a checkable tag', () => {
+      const { tag } = renderTag(`<nz-tag nzMode="checkable">c</nz-tag>`);
+      expect(tag.classList).not.toContain('ant-tag-filled');
+      expect(tag.classList).toContain('ant-tag-checkable');
     });
 
     it('treats [nzDisabled]="undefined" as unset', () => {
@@ -488,4 +520,12 @@ class TestTagVariantDynamicComponent {
 class TestTagTabindexComponent {
   readonly disabled = signal(false);
   readonly ti = signal(5);
+}
+
+@Component({
+  imports: [NzTagModule],
+  template: `<nz-tag [nzIcon]="icon()">Label</nz-tag>`
+})
+class TestTagIconToggleComponent {
+  readonly icon = signal<string | undefined>(undefined);
 }
