@@ -60,6 +60,9 @@ stated otherwise.
 - **Pagination size config**: the global `provideNzConfig({ pagination: { nzSize } })` value now reaches
   `nz-pagination`; it was ignored before unless `nzResponsive` was set, so an app that set it will see its
   pagination change size.
+- **Disabled tags and groups**: a disabled checkable `nz-tag` leaves the tab order (`tabindex="-1"`) while other
+  disabled tags keep their own tabindex, and a disabled `nz-tag-checkable-group` refuses model changes without
+  emitting `nzCheckedChange`.
 - **Class-list changes with nothing new bound**, none styled under the default stylesheet:
   - every `nz-progress` line without `nzSteps` now carries `ant-progress-line-align-end` and
     `ant-progress-line-position-outer`;
