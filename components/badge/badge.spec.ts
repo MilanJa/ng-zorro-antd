@@ -181,6 +181,18 @@ describe('badge', () => {
       expect([...sup.classList].sort()).toEqual(defaultClasses);
     });
 
+    it('renders a standalone nzSize="medium" exactly as "default"', () => {
+      testComponent.standalone.set(true);
+      fixture.detectChanges();
+      const sup = badgeElement.nativeElement.querySelector('nz-badge-sup') as HTMLElement;
+      expect(sup.classList).toContain('ant-badge-count');
+      const defaultClasses = [...sup.classList].sort();
+      testComponent.size.set('medium');
+      fixture.detectChanges();
+      expect(sup.classList).not.toContain('ant-badge-count-sm');
+      expect([...sup.classList].sort()).toEqual(defaultClasses);
+    });
+
     it('should set presetColor of nzColor change', () => {
       const color = badgePresetColors[0];
       const component: NzBadgeComponent = badgeElement.componentInstance;
