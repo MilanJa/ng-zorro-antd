@@ -230,17 +230,24 @@ export class NzTagComponent implements OnChanges {
     }
   }
 
-  /** A disabled tag leaves the tab order; the host's own `tabindex` is written only across the disabled transition. */
+  /**
+   * A disabled checkable tag leaves the tab order, as antd's `CheckableTag` does (other tags keep theirs).
+   * The host's own `tabindex` is written only across the disabled transition: when the tag is enabled again
+   * and the attribute is no longer `-1`, the parent wrote it meanwhile and it is left alone.
+   */
   private syncTabindex(): void {
-    if (this.disabled && !this.tabindexSaved) {
+    const off = this.disabled && this.nzMode === 'checkable';
+    if (off && !this.tabindexSaved) {
       this.savedTabindex = this.el.getAttribute('tabindex');
       this.tabindexSaved = true;
       this.renderer.setAttribute(this.el, 'tabindex', '-1');
-    } else if (!this.disabled && this.tabindexSaved) {
-      if (this.savedTabindex === null) {
-        this.renderer.removeAttribute(this.el, 'tabindex');
-      } else {
-        this.renderer.setAttribute(this.el, 'tabindex', this.savedTabindex);
+    } else if (!off && this.tabindexSaved) {
+      if (this.el.getAttribute('tabindex') === '-1') {
+        if (this.savedTabindex === null) {
+          this.renderer.removeAttribute(this.el, 'tabindex');
+        } else {
+          this.renderer.setAttribute(this.el, 'tabindex', this.savedTabindex);
+        }
       }
       this.savedTabindex = null;
       this.tabindexSaved = false;
@@ -283,9 +290,12 @@ export class NzTagComponent implements OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    const { nzColor } = changes;
+    const { nzColor, nzMode } = changes;
     if (nzColor) {
       this.setPresetColor();
+    }
+    if (nzMode) {
+      this.syncTabindex();
     }
   }
 }

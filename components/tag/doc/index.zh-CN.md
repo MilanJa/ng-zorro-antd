@@ -16,18 +16,18 @@ description: 进行标记和分类的小标签。
 
 ### nz-tag
 
-| 参数                | 说明                                                                                                                         | 类型                                      | 默认值      |
-| ------------------- | ---------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------- | ----------- |
-| `[nzMode]`          | 设定标签工作的模式                                                                                                           | `'closeable' \| 'default' \| 'checkable'` | `'default'` |
-| `[nzChecked]`       | 设置标签的选中状态，可双向绑定，在 `nzMode="checkable"` 时可用                                                               | `boolean`                                 | `false`     |
-| `[nzColor]`         | 标签色                                                                                                                       | `string`                                  | -           |
-| `[nzVariant]`       | 标签的变体；`'outlined'` 时自定义 `nzColor` 会像 Ant Design 一样生成浅色背景；对于 `'outlined'`、`'solid'`：需要 v6 样式表。 | `'filled' \| 'outlined' \| 'solid'`       | `'filled'`  |
-| `[nzIcon]`          | 显示在内容之前的图标，此时内容会像 Ant Design 一样包裹在 `<span>` 中                                                         | `string \| TemplateRef<void>`             | -           |
-| `[nzDisabled]`      | 是否禁用：可选择标签不再切换，可关闭标签不再关闭，且不应用自定义 `nzColor`；对于禁用外观：需要 v6 样式表。                   | `boolean`                                 | `false`     |
-| `[nzValue]`         | `nz-tag-checkable-group` 中可选择标签的值；未设置时不参与组的取值                                                            | `string \| number`                        | -           |
-| ~~`[nzBordered]`~~  | 已废弃，请使用 [nzVariant]。是否有边框；`false` 保留默认样式表的无边框外观，并解析为 `'filled'`                              | `boolean`                                 | `true`      |
-| `(nzOnClose)`       | 关闭时的回调，在 `nzMode="closable"` 时可用                                                                                  | `EventEmitter<MouseEvent>`                | -           |
-| `(nzCheckedChange)` | 设置标签的选中状态的回调，在 `nzMode="checkable"` 时可用                                                                     | `EventEmitter<void>`                      | -           |
+| 参数                | 说明                                                                                                                                                             | 类型                                      | 默认值      |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------- | ----------- |
+| `[nzMode]`          | 设定标签工作的模式                                                                                                                                               | `'closeable' \| 'default' \| 'checkable'` | `'default'` |
+| `[nzChecked]`       | 设置标签的选中状态，可双向绑定，在 `nzMode="checkable"` 时可用                                                                                                   | `boolean`                                 | `false`     |
+| `[nzColor]`         | 标签色                                                                                                                                                           | `string`                                  | -           |
+| `[nzVariant]`       | 标签的变体；`'outlined'` 时自定义 `nzColor` 会像 Ant Design 一样生成浅色背景；对于 `'outlined'`、`'solid'`：需要 v6 样式表。                                     | `'filled' \| 'outlined' \| 'solid'`       | `'filled'`  |
+| `[nzIcon]`          | 显示在内容之前的图标，此时内容会像 Ant Design 一样包裹在 `<span>` 中                                                                                             | `string \| TemplateRef<void>`             | -           |
+| `[nzDisabled]`      | 是否禁用：可选择标签不再切换，可关闭标签不再关闭，且不应用自定义 `nzColor`；禁用的可选择标签还会退出 Tab 顺序（`tabindex="-1"`）；对于禁用外观：需要 v6 样式表。 | `boolean`                                 | `false`     |
+| `[nzValue]`         | `nz-tag-checkable-group` 中可选择标签的值；未设置时不参与组的取值                                                                                                | `string \| number`                        | -           |
+| ~~`[nzBordered]`~~  | 已废弃，请使用 [nzVariant]。是否有边框；`false` 保留默认样式表的无边框外观，并解析为 `'filled'`                                                                  | `boolean`                                 | `true`      |
+| `(nzOnClose)`       | 关闭时的回调，在 `nzMode="closable"` 时可用                                                                                                                      | `EventEmitter<MouseEvent>`                | -           |
+| `(nzCheckedChange)` | 设置标签的选中状态的回调，在 `nzMode="checkable"` 时可用                                                                                                         | `EventEmitter<void>`                      | -           |
 
 ### nz-tag-checkable-group
 

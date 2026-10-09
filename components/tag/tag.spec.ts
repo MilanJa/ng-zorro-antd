@@ -412,6 +412,35 @@ describe('tag v6 inputs', () => {
       expect(tag.getAttribute('tabindex')).toBe('3');
     });
 
+    it('keeps the tabindex of a disabled tag that is not checkable', () => {
+      const fixture = TestBed.createComponent(TestTagTabindexComponent);
+      fixture.detectChanges();
+      const tag = fixture.nativeElement.querySelector('#plain') as HTMLElement;
+      fixture.componentInstance.disabled.set(true);
+      fixture.detectChanges();
+      expect(tag.getAttribute('tabindex')).toBe('3');
+      expect(tag.getAttribute('aria-disabled')).toBe('true');
+      fixture.componentInstance.disabled.set(false);
+      fixture.detectChanges();
+      expect(tag.getAttribute('tabindex')).toBe('3');
+    });
+
+    it('keeps a tabindex the parent writes while the tag is disabled', () => {
+      const fixture = TestBed.createComponent(TestTagTabindexComponent);
+      fixture.detectChanges();
+      const tag = fixture.nativeElement.querySelector('#dynamic') as HTMLElement;
+      const host = fixture.componentInstance;
+      expect(tag.getAttribute('tabindex')).toBe('5');
+      host.disabled.set(true);
+      fixture.detectChanges();
+      expect(tag.getAttribute('tabindex')).toBe('-1');
+      host.ti.set(7);
+      fixture.detectChanges();
+      host.disabled.set(false);
+      fixture.detectChanges();
+      expect(tag.getAttribute('tabindex')).toBe('7');
+    });
+
     it('leaves a dynamically bound tabindex alone when never disabled', () => {
       const fixture = TestBed.createComponent(TestTagTabindexComponent);
       fixture.detectChanges();
@@ -449,9 +478,11 @@ class TestTagVariantDynamicComponent {
 @Component({
   imports: [NzTagModule],
   template: `
-    <nz-tag id="supplied" tabindex="3" [nzDisabled]="disabled()">x</nz-tag>
+    <nz-tag id="supplied" nzMode="checkable" tabindex="3" [nzDisabled]="disabled()">x</nz-tag>
+    <nz-tag id="plain" tabindex="3" [nzDisabled]="disabled()">x</nz-tag>
+    <nz-tag id="dynamic" nzMode="checkable" [attr.tabindex]="ti()" [nzDisabled]="disabled()">x</nz-tag>
     <nz-tag id="bound" [attr.tabindex]="ti()">x</nz-tag>
-    <nz-tag id="none" [nzDisabled]="disabled()">x</nz-tag>
+    <nz-tag id="none" nzMode="checkable" [nzDisabled]="disabled()">x</nz-tag>
   `
 })
 class TestTagTabindexComponent {
