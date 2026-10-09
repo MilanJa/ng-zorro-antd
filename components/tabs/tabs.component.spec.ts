@@ -1345,3 +1345,50 @@ describe('nz-tab nzIcon', () => {
     expect(buttons[2].textContent!.trim()).toBe('Plain');
   });
 });
+
+@Component({
+  imports: [NzTabsModule],
+  template: `
+    <nz-tabs>
+      <nz-tab nzTitle="Home" [nzIcon]="mode() === 'string' ? 'home' : mode() === 'template' ? heart : undefined"
+        >a</nz-tab
+      >
+    </nz-tabs>
+    <ng-template #heart><svg class="heart" viewBox="0 0 24 24" width="1em" height="1em"></svg></ng-template>
+  `
+})
+class TestTabsIconRuntimeComponent {
+  readonly mode = signal<'string' | 'none' | 'template'>('string');
+}
+
+describe('nz-tab nzIcon changing at runtime', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({ providers: [provideNzNoAnimation(), provideNzIconsTesting()] });
+  });
+
+  it('adds and removes the icon node and keeps the label text', () => {
+    const fixture = TestBed.createComponent(TestTabsIconRuntimeComponent);
+    fixture.detectChanges();
+    const button = (): HTMLElement => fixture.nativeElement.querySelector('.ant-tabs-tab-btn');
+
+    expect(button().querySelector('.ant-tabs-tab-icon nz-icon')!.classList).toContain('anticon-home');
+    expect(button().textContent!.trim()).toBe('Home');
+
+    fixture.componentInstance.mode.set('none');
+    fixture.detectChanges();
+    expect(button().querySelector('.ant-tabs-tab-icon')).toBeNull();
+    expect(button().textContent!.trim()).toBe('Home');
+
+    fixture.componentInstance.mode.set('template');
+    fixture.detectChanges();
+    expect(button().querySelector('.ant-tabs-tab-icon > svg.heart')).toBeTruthy();
+    expect(button().querySelector('.ant-tabs-tab-icon nz-icon')).toBeNull();
+    expect(button().textContent!.trim()).toBe('Home');
+
+    fixture.componentInstance.mode.set('string');
+    fixture.detectChanges();
+    expect(button().querySelector('.ant-tabs-tab-icon > svg.heart')).toBeNull();
+    expect(button().querySelector('.ant-tabs-tab-icon nz-icon')!.classList).toContain('anticon-home');
+    expect(button().textContent!.trim()).toBe('Home');
+  });
+});
