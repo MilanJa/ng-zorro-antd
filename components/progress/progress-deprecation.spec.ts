@@ -28,6 +28,7 @@ describe('progress deprecation and usage warnings', () => {
   const messages = (): string[] => warnSpy.mock.calls.map(args => args.map(String).join(' '));
   const WIDTH = '`nzWidth` on `nz-progress` is deprecated, use `nzSize` instead.';
   const OBJECT = 'Type "circle" and "dashboard" do not accept object as `nzSize`';
+  const NON_POSITIVE = 'Type "circle" and "dashboard" need a positive `nzSize`';
   const ARRAY = 'Type "circle" and "dashboard" do not accept array as `nzSize`';
 
   beforeEach(() => {
@@ -68,5 +69,17 @@ describe('progress deprecation and usage warnings', () => {
     fixture.detectChanges();
     expect(messages().filter(m => m.includes(ARRAY)).length).toBe(1);
     expect((fixture.nativeElement.querySelector('#a .ant-progress-body') as HTMLElement).style.width).toBe('100px');
+  });
+
+  it('treats a zero nzSize on a circle as the default size and warns once', () => {
+    const fixture = TestBed.createComponent(TestProgressWarnComponent);
+    fixture.componentInstance.size.set(0);
+    fixture.detectChanges();
+    expect(messages().filter(m => m.includes(NON_POSITIVE)).length).toBe(1);
+    const body = fixture.nativeElement.querySelector('#a .ant-progress-body') as HTMLElement;
+    expect(body.style.width).toBe('132px');
+    const strokeWidth = Number(body.querySelector('path')!.getAttribute('stroke-width'));
+    expect(Number.isFinite(strokeWidth)).toBe(true);
+    expect(body.querySelector('path')!.getAttribute('d')).not.toContain('NaN');
   });
 });

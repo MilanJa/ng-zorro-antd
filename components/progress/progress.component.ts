@@ -329,6 +329,12 @@ export class NzProgressComponent implements OnChanges {
 
   /** Canvas width of a circle or dashboard: a numeric `nzSize` (or an array's first number) wins over `nzWidth`. */
   get circleWidth(): number {
+    const width = this.requestedCircleWidth;
+    return width > 0 ? width : DEFAULT_CIRCLE_WIDTH;
+  }
+
+  /** The width asked for, before a non-positive value (which would divide by zero) falls back to the default. */
+  private get requestedCircleWidth(): number {
     const size = this.sizeOverride;
     if (typeof size === 'number') {
       return size;
@@ -436,7 +442,7 @@ export class NzProgressComponent implements OnChanges {
       this.setStrokeColor();
     }
 
-    if ((nzSize || nzType) && this.isCircleStyle) {
+    if ((nzSize || nzType || nzWidth) && this.isCircleStyle) {
       this.warnCircleSize();
     }
 
@@ -469,6 +475,9 @@ export class NzProgressComponent implements OnChanges {
       warn('Type "circle" and "dashboard" do not accept array as `nzSize`, please use number or preset size instead.');
     } else if (isPlainObject(size)) {
       warn('Type "circle" and "dashboard" do not accept object as `nzSize`, please use number or preset size instead.');
+    }
+    if (this.requestedCircleWidth <= 0) {
+      warn(`Type "circle" and "dashboard" need a positive \`nzSize\`, using the default size ${DEFAULT_CIRCLE_WIDTH}.`);
     }
   }
 
