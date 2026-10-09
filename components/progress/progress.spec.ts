@@ -7,6 +7,7 @@ import { Component, DebugElement, signal, TemplateRef, ViewChild } from '@angula
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 
+import { provideNzConfig } from 'ng-zorro-antd/core/config';
 import { testDirectionality } from 'ng-zorro-antd/core/testing';
 
 import { NzProgressComponent } from './progress.component';
@@ -664,5 +665,35 @@ describe('progress v6 inputs', () => {
     host.strokeWidth.set(undefined);
     fixture.detectChanges();
     expect(stroke()).toBe('7.5');
+  });
+
+  it('sizes a circle from nzSize with an explicit nzStrokeWidth, which beats the formula', () => {
+    host.type.set('circle');
+    host.size.set(80);
+    host.strokeWidth.set(4);
+    fixture.detectChanges();
+    expect(q('.ant-progress-body')!.style.width).toBe('80px');
+    expect(q('.ant-progress-circle-rail')!.getAttribute('stroke-width')).toBe('4');
+  });
+
+  it('sizes a line from an object nzSize with both width and height', () => {
+    host.size.set({ width: 300, height: 10 });
+    fixture.detectChanges();
+    expect(q('.ant-progress-body')!.style.width).toBe('300px');
+    expect(q('.ant-progress-rail')!.style.height).toBe('10px');
+  });
+});
+
+describe('progress global size config', () => {
+  it('applies the configured preset size and its stroke width', () => {
+    TestBed.configureTestingModule({ providers: [provideNzConfig({ progress: { nzSize: 'small' } })] });
+    const fixture = TestBed.createComponent(NzTestProgressV6InputsComponent);
+    fixture.detectChanges();
+    const q = (sel: string): HTMLElement | null => fixture.nativeElement.querySelector(`#p ${sel}`);
+    expect(q('.ant-progress')!.classList).toContain('ant-progress-small');
+    expect(q('.ant-progress-rail')!.style.height).toBe('6px');
+    fixture.componentInstance.type.set('circle');
+    fixture.detectChanges();
+    expect(q('.ant-progress-circle-rail')!.getAttribute('stroke-width')).toBe('6');
   });
 });
