@@ -791,7 +791,7 @@ describe('menu', () => {
       expect(dd.nativeElement.querySelector('#ddDivider').className).toBe('ant-dropdown-menu-item-divider');
     });
 
-    it('gives a submenu title icon the item-icon class of its host vocabulary', async () => {
+    it('keeps a dropdown submenu title icon free of the dropdown item-icon class', async () => {
       const plain = TestBed.createComponent(NzTestMenuSubmenuIconComponent);
       await stabilize(plain);
       const plainIcon = plain.nativeElement.querySelector('#plainSub .ant-menu-submenu-title > nz-icon') as HTMLElement;
@@ -801,7 +801,9 @@ describe('menu', () => {
       const dd = TestBed.createComponent(NzTestMenuDropdownSubmenuIconComponent);
       await stabilize(dd);
       const ddIcon = dd.nativeElement.querySelector('#ddSub .ant-dropdown-menu-submenu-title > nz-icon') as HTMLElement;
-      expect(ddIcon.classList).toContain('ant-dropdown-menu-item-icon');
+      // antd v4 styles `.ant-dropdown-menu-item-icon` on its own (12px icon, 8px gap), so the class stays
+      // off a pre-existing `nzIcon` under the default stylesheet; the v6 patch keys on the structure.
+      expect(ddIcon.classList).not.toContain('ant-dropdown-menu-item-icon');
       expect(ddIcon.classList).not.toContain('ant-menu-item-icon');
       expect(
         dd.nativeElement.querySelector(

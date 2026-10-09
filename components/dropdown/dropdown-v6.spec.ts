@@ -314,9 +314,10 @@ describe('dropdown under antd v6 css', () => {
     (iconFixture.nativeElement.querySelector('#iconTrg') as HTMLElement).click();
     await waitForOpen(iconFixture);
     const title = overlay.getContainerElement().querySelector('.ant-dropdown-menu-submenu-title') as HTMLElement;
-    const titleIcon = getComputedStyle(title.querySelector('.ant-dropdown-menu-item-icon')!);
+    const titleIcon = getComputedStyle(title.querySelector(':scope > .anticon')!);
     expect(titleIcon.marginInlineEnd).toBe('8px');
     expect(titleIcon.fontSize).toBe('12px');
+    expect(titleIcon.minWidth).toBe('14px');
 
     dispatchEvent(title, new MouseEvent('mouseenter'));
     await waitForOpen(iconFixture);

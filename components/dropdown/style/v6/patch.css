@@ -82,7 +82,7 @@
    Regenerate after an antd upgrade: take the template part of `publish/dropdown/style/v6/index.css`,
    keep the selectors that start with `.ant-dropdown-menu-submenu .ant-dropdown-menu` and name only
    emitted classes, replace that prefix with `.ant-menu-submenu-popup > .ant-dropdown-menu`, and
-   compare the rule count (25) here. */
+   compare the rule count (25) here; the submenu-title icon rules after them are not part of that count. */
 .ant-menu-submenu-popup > .ant-dropdown-menu {
   padding: var(--ant-padding-xxs);
   list-style-type: none;
@@ -120,6 +120,16 @@
   display: inline-flex;
   align-items: center;
   width: 100%;
+}
+/* A submenu title's own `nzIcon` carries no `-item-icon` class: antd v4 styles that class on its own
+   (12px icon, 8px gap), which would change every existing dropdown submenu icon under the default
+   stylesheet. v6's `-item-icon` declarations are keyed on the title's direct `.anticon` instead (the
+   expand arrow sits inside its own span, so it is not matched). */
+.ant-dropdown .ant-dropdown-menu .ant-dropdown-menu-submenu-title > .anticon,
+.ant-menu-submenu-popup > .ant-dropdown-menu .ant-dropdown-menu-submenu-title > .anticon {
+  min-width: var(--ant-font-size);
+  margin-inline-end: var(--ant-margin-xs);
+  font-size: var(--ant-font-size-sm);
 }
 .ant-menu-submenu-popup > .ant-dropdown-menu .ant-dropdown-menu-item,
 .ant-menu-submenu-popup > .ant-dropdown-menu .ant-dropdown-menu-submenu-title {

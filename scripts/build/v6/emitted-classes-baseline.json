@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-10-08T19:28:25.567Z",
-  "base": "fcc275b413d4c3dfb6db604727f228acc3d2944a",
+  "generatedAt": "2026-10-09T07:12:50.724Z",
+  "base": "14b9f96273eba4074ef072ea5890ea8453e9c01a",
   "classes": {
     "affix": [
       "ant-affix"
@@ -3293,7 +3293,6 @@
       ],
       "menu/submenu-non-inline-child.component.ts": [],
       "menu/submenu-title.component.ts": [
-        "ant-dropdown-menu-item-icon",
         "ant-dropdown-menu-submenu-arrow-icon",
         "ant-dropdown-menu-submenu-expand-icon",
         "ant-dropdown-menu-submenu-title",
