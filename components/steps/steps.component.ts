@@ -243,7 +243,7 @@ export class NzStepsComponent implements OnChanges, OnInit, AfterContentInit {
           // A hidden step's status feeds its ellipsis item (antd `getEllipsisStep`), so a later change re-plans.
           // Statuses bound in one change pass arrive together and are coalesced into a single re-plan.
           switchMap(() =>
-            merge(...this.steps.map(step => step.statusChange$)).pipe(
+            merge(...this.steps.map(step => step.ɵstatusChange$)).pipe(
               filter(() => this.canApplyMaxCount),
               debounce(() => Promise.resolve())
             )
