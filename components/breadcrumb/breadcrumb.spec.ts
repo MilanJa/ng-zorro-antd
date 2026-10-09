@@ -468,3 +468,48 @@ describe('breadcrumb item nzOverlayPlacement', () => {
     expect(placementOf(fixture, 'bound')).toBe('topLeft');
   });
 });
+
+@Component({
+  imports: [NzBreadCrumbModule, NzDropdownModule],
+  template: `
+    <nz-breadcrumb>
+      <nz-breadcrumb-item id="item" [nzOverlay]="menu" [nzOverlayPlacement]="$any(p())">A</nz-breadcrumb-item>
+    </nz-breadcrumb>
+    <nz-dropdown-menu #menu="nzDropdownMenu">
+      <ul nz-menu>
+        <li nz-menu-item>x</li>
+      </ul>
+    </nz-dropdown-menu>
+  `
+})
+class NzTestBreadcrumbUndefinedPlacementComponent {
+  readonly p = signal<NzPlacementType | undefined>('bottomRight');
+}
+
+describe('breadcrumb item nzOverlayPlacement undefined', () => {
+  const placementOf = (fixture: ComponentFixture<NzTestBreadcrumbUndefinedPlacementComponent>): NzPlacementType =>
+    fixture.debugElement.query(By.css('#item .ant-breadcrumb-overlay-link')).injector.get(NzDropdownDirective)
+      .nzPlacement;
+
+  it('falls back to the config placement when the bound value becomes undefined', () => {
+    TestBed.configureTestingModule({
+      providers: [provideNzIconsTesting(), provideNzConfig({ breadcrumb: { nzOverlayPlacement: 'topLeft' } })]
+    });
+    const fixture = TestBed.createComponent(NzTestBreadcrumbUndefinedPlacementComponent);
+    fixture.detectChanges();
+    expect(placementOf(fixture)).toBe('bottomRight');
+    fixture.componentInstance.p.set(undefined);
+    fixture.detectChanges();
+    expect(placementOf(fixture)).toBe('topLeft');
+  });
+
+  it('falls back to bottomLeft without a config', () => {
+    TestBed.configureTestingModule({ providers: [provideNzIconsTesting()] });
+    const fixture = TestBed.createComponent(NzTestBreadcrumbUndefinedPlacementComponent);
+    fixture.detectChanges();
+    expect(placementOf(fixture)).toBe('bottomRight');
+    fixture.componentInstance.p.set(undefined);
+    fixture.detectChanges();
+    expect(placementOf(fixture)).toBe('bottomLeft');
+  });
+});
