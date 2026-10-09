@@ -8,7 +8,6 @@ import { Platform } from '@angular/cdk/platform';
 import { NgTemplateOutlet } from '@angular/common';
 import {
   afterNextRender,
-  ChangeDetectorRef,
   Component,
   ElementRef,
   Input,
@@ -217,7 +216,6 @@ const defaultFormatter: NzProgressFormatter = (p: number): string => `${p}%`;
 export class NzProgressComponent implements OnChanges {
   readonly _nzModuleName: NzConfigKey = NZ_CONFIG_MODULE_NAME;
 
-  private readonly cdr = inject(ChangeDetectorRef);
   private readonly nzConfigService = inject(NzConfigService);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly platform = inject(Platform);
@@ -243,7 +241,6 @@ export class NzProgressComponent implements OnChanges {
    */
   @Input()
   set nzSize(value: NzProgressSize | undefined) {
-    this.nzSizeExplicit = value !== undefined;
     this.sizeValue = value;
   }
   get nzSize(): NzProgressSize {
@@ -301,7 +298,6 @@ export class NzProgressComponent implements OnChanges {
    */
   protected readonly v6Styles = signal(false);
 
-  private nzSizeExplicit = false;
   private sizeValue: NzProgressSize | undefined = undefined;
   private widthAlias: number | undefined = undefined;
   private readonly aliasWidth = aliasDeprecatedInput<number>('nz-progress', 'nzWidth', 'nzSize');
@@ -316,7 +312,7 @@ export class NzProgressComponent implements OnChanges {
 
   /** `nzSize` as a number, `[width, height]` or `{ width, height }`; a preset name keeps today's sizing. */
   get sizeOverride(): Exclude<NzProgressSize, string> | null {
-    const size = this.nzSizeExplicit ? this.sizeValue : undefined;
+    const size = this.sizeValue;
     return size === undefined || typeof size === 'string' ? null : size;
   }
 
