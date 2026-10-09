@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
+import { NzBreadCrumbModule, NzBreadcrumbItem } from 'ng-zorro-antd/breadcrumb';
 
 @Component({
   selector: 'nz-demo-breadcrumb-separator-independent',
@@ -17,6 +17,18 @@ import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
       <nz-breadcrumb-separator>/</nz-breadcrumb-separator>
       <nz-breadcrumb-item>An Application</nz-breadcrumb-item>
     </nz-breadcrumb>
+    <br />
+    <nz-breadcrumb [nzSeparator]="null" [nzItems]="items" />
   `
 })
-export class NzDemoBreadcrumbSeparatorIndependentComponent {}
+export class NzDemoBreadcrumbSeparatorIndependentComponent {
+  readonly items: NzBreadcrumbItem[] = [
+    { title: 'Location' },
+    { type: 'separator', separator: ':' },
+    { href: '', title: 'Application Center' },
+    { type: 'separator' },
+    { href: '', title: 'Application List' },
+    { type: 'separator' },
+    { title: 'An Application' }
+  ];
+}
