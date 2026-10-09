@@ -85,6 +85,19 @@ class TestProjectedDropdownIconComponent {
   readonly ownIcon = signal<string | undefined>('up');
 }
 
+@Component({
+  imports: [NzBreadCrumbModule],
+  template: `
+    <nz-breadcrumb id="sepProjected" [nzSeparator]="separator()">
+      <nz-breadcrumb-item id="sepA">A</nz-breadcrumb-item>
+      <nz-breadcrumb-item id="sepB">B</nz-breadcrumb-item>
+    </nz-breadcrumb>
+  `
+})
+class TestProjectedSeparatorComponent {
+  readonly separator = signal<string | null>('/');
+}
+
 @Component({ template: 'page' })
 class TestRoutedPageComponent {}
 
@@ -305,12 +318,61 @@ describe('breadcrumb nzItems', () => {
     expect(b.style.cssText).toBe('');
   });
 
+  it('renders a standalone separator entry as the bare glyph without surrounding whitespace', () => {
+    create();
+    setItems([{ title: 'A' }, { type: 'separator' }, { title: 'B' }, { type: 'separator', separator: ':' }]);
+    const texts = [...host.querySelectorAll(':scope > nz-breadcrumb-separator')].map(s => s.textContent);
+    expect(texts).toEqual(['/', ':']);
+  });
+
+  it('does not prevent or navigate on a modifier click with the router configured', () => {
+    TestBed.configureTestingModule({ providers: [provideRouter([])] });
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
+    create();
+    setItems([{ title: 'A', path: 'a' }]);
+    const anchor = crumbs(host)[0].querySelector('a')!;
+    let prevented: boolean | null = null;
+    const record = (event: Event): void => {
+      prevented = event.defaultPrevented;
+      event.preventDefault();
+    };
+    document.addEventListener('click', record);
+    try {
+      anchor.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, ctrlKey: true }));
+    } finally {
+      document.removeEventListener('click', record);
+    }
+    expect(prevented).toBe(false);
+    expect(navigate).not.toHaveBeenCalled();
+  });
+
+  it('does not emit nzItemClick for a click on the dropdown icon', () => {
+    create();
+    setItems([{ title: 'Menu', menu: fixture.componentInstance.menu() }]);
+    (crumbs(host)[0].querySelector('.ant-breadcrumb-overlay-link > nz-icon') as HTMLElement).click();
+    expect(fixture.componentInstance.clicked).not.toHaveBeenCalled();
+  });
+
   it('renders nothing extra while nzItems is null or empty', () => {
     create();
     expect(host.className).toBe('ant-breadcrumb');
     expect(host.children.length).toBe(0);
     setItems(null);
     expect(host.children.length).toBe(0);
+  });
+});
+
+describe('breadcrumb projected items nzSeparator', () => {
+  it('re-renders the separator of projected items when the parent nzSeparator changes', () => {
+    const fixture = TestBed.createComponent(TestProjectedSeparatorComponent);
+    fixture.detectChanges();
+    const sepText = (id: string): string | undefined =>
+      hostOf(fixture, id).querySelector('nz-breadcrumb-separator')?.textContent?.trim();
+    expect(sepText('sepA')).toBe('/');
+    fixture.componentInstance.separator.set('>');
+    fixture.detectChanges();
+    expect(sepText('sepA')).toBe('>');
+    expect(sepText('sepB')).toBe('>');
   });
 });
 

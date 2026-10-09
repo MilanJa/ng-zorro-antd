@@ -124,11 +124,11 @@ function resolveTitle(
             />
           </nz-breadcrumb-item>
         } @else {
-          <nz-breadcrumb-separator>
-            <ng-container *nzStringTemplateOutlet="crumb.separator ?? nzSeparator ?? '/'">
-              {{ crumb.separator ?? nzSeparator ?? '/' }}
-            </ng-container>
-          </nz-breadcrumb-separator>
+          <nz-breadcrumb-separator
+            ><ng-container *nzStringTemplateOutlet="crumb.separator ?? nzSeparator ?? '/'">{{
+              crumb.separator ?? nzSeparator ?? '/'
+            }}</ng-container></nz-breadcrumb-separator
+          >
         }
       }
     } @else if (nzAutoGenerate && breadcrumbs.length) {
@@ -207,7 +207,8 @@ export class NzBreadCrumbComponent implements OnInit, OnChanges, NzBreadcrumb {
     }
     crumb.option!.onClick?.(event);
     this.nzItemClick.emit({ item: crumb.item, event });
-    if (crumb.routerUrl !== null && !event.defaultPrevented) {
+    const modified = event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0;
+    if (crumb.routerUrl !== null && !event.defaultPrevented && !modified) {
       const router = this.configuredRouter();
       if (router) {
         event.preventDefault();

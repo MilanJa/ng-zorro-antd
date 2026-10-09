@@ -74,7 +74,7 @@ export class NzBreadCrumbItemComponent {
    */
   @Input() nzOverlayTrigger?: 'click' | 'hover';
 
-  /** Re-renders the item after a value it reads from the parent `nz-breadcrumb` changed. */
+  /** @internal Re-renders the item after a value it reads from the parent `nz-breadcrumb` changed. */
   markParentChanged(): void {
     this.cdr.markForCheck();
   }
