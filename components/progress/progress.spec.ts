@@ -645,4 +645,24 @@ describe('progress v6 inputs', () => {
     fixture.detectChanges();
     expect(root().classList).not.toContain('ant-progress-inline-circle');
   });
+
+  it('renders nzWidth like a numeric nzSize that also binds nzStrokeWidth=6', () => {
+    const stroke = (): string | null => q('.ant-progress-circle-rail')!.getAttribute('stroke-width');
+    host.type.set('circle');
+    host.width.set(40);
+    fixture.detectChanges();
+    const alias = stroke();
+    expect(alias).toBe('6');
+
+    host.width.set(undefined);
+    host.size.set(40);
+    host.strokeWidth.set(6);
+    fixture.detectChanges();
+    expect(stroke()).toBe(alias);
+
+    // A numeric `nzSize` alone follows antd's `max(3 / size * 100, 6)`: 7.5 at 40px.
+    host.strokeWidth.set(undefined);
+    fixture.detectChanges();
+    expect(stroke()).toBe('7.5');
+  });
 });
