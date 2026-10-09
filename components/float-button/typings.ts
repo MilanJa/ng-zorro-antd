@@ -5,7 +5,7 @@
 
 import { TemplateRef } from '@angular/core';
 
-import { NzSizeDSType } from 'ng-zorro-antd/core/types';
+import { NzSizeDMSType } from 'ng-zorro-antd/core/types';
 
 export type NzFloatButtonType = 'primary' | 'default';
 
@@ -17,7 +17,7 @@ export interface NzFloatButtonBadgeProps {
   nzColor: string;
   nzCount: number | TemplateRef<void>;
   nzOffset: [number, number];
-  nzSize: NzSizeDSType;
+  nzSize: NzSizeDMSType;
 }
 
 export type NzFloatButtonBadge = Partial<NzFloatButtonBadgeProps>;

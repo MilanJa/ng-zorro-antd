@@ -61,6 +61,6 @@ export interface NzFloatButtonBadge {
   nzOverflowCount?: number;
   nzColor?: string;
   nzOffset?: [number, number];
-  nzSize?: 'default' | 'small';
+  nzSize?: 'default' | 'medium' | 'small';
 }
 ```

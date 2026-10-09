@@ -90,6 +90,15 @@ describe('float-button', () => {
       });
       expect(resultEl.nativeElement.querySelector('.ant-badge')).toBeTruthy();
     });
+
+    it('nzBadge accepts the medium size and renders it as the default size', () => {
+      testComponent.nzBadge.set({ nzCount: 5, nzSize: 'medium' });
+      fixture.detectChanges();
+      const badge = resultEl.nativeElement.querySelector('.ant-badge') as HTMLElement;
+      expect(badge).toBeTruthy();
+      expect(badge.querySelector('.ant-badge-count')).toBeTruthy();
+      expect(badge.querySelector('.ant-badge-count-sm')).toBeNull();
+    });
   });
 
   testDirectionality(() => NzTestFloatButtonBasicComponent, By.directive(NzFloatButtonComponent), 'ant-float-btn');
