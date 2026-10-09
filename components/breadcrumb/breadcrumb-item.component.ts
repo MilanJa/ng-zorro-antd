@@ -14,6 +14,8 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzBreadcrumb } from './breadcrumb';
 import { NzBreadCrumbSeparatorComponent } from './breadcrumb-separator.component';
 
+const NZ_CONFIG_MODULE_NAME: NzConfigKey = 'breadcrumb';
+
 @Component({
   selector: 'nz-breadcrumb-item',
   exportAs: 'nzBreadcrumbItem',
@@ -53,7 +55,7 @@ import { NzBreadCrumbSeparatorComponent } from './breadcrumb-separator.component
   `
 })
 export class NzBreadCrumbItemComponent {
-  readonly _nzModuleName: NzConfigKey = 'breadcrumb';
+  readonly _nzModuleName: NzConfigKey = NZ_CONFIG_MODULE_NAME;
   nzBreadCrumbComponent = inject(NzBreadcrumb);
   /**
    * Dropdown content of a breadcrumb item.
