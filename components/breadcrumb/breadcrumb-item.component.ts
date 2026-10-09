@@ -30,7 +30,7 @@ const NZ_CONFIG_MODULE_NAME: NzConfigKey = 'breadcrumb';
         class="ant-breadcrumb-overlay-link"
         nz-dropdown
         [nzDropdownMenu]="nzOverlay"
-        [nzPlacement]="nzOverlayPlacement"
+        [nzPlacement]="nzOverlayPlacement ?? 'bottomLeft'"
       >
         <ng-template [ngTemplateOutlet]="noMenuTpl" />
         <nz-icon nzType="down" />
@@ -62,5 +62,5 @@ export class NzBreadCrumbItemComponent {
    */
   @Input() nzOverlay?: NzDropdownMenuComponent;
   /** Placement of the overlay; antd v6 centres it (`'bottomCenter'`). */
-  @Input() @WithConfig() nzOverlayPlacement: NzPlacementType = 'bottomLeft';
+  @Input() @WithConfig() nzOverlayPlacement: NzPlacementType | undefined = 'bottomLeft';
 }

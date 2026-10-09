@@ -473,7 +473,7 @@ describe('breadcrumb item nzOverlayPlacement', () => {
   imports: [NzBreadCrumbModule, NzDropdownModule],
   template: `
     <nz-breadcrumb>
-      <nz-breadcrumb-item id="item" [nzOverlay]="menu" [nzOverlayPlacement]="$any(p())">A</nz-breadcrumb-item>
+      <nz-breadcrumb-item id="item" [nzOverlay]="menu" [nzOverlayPlacement]="p()">A</nz-breadcrumb-item>
     </nz-breadcrumb>
     <nz-dropdown-menu #menu="nzDropdownMenu">
       <ul nz-menu>
