@@ -5,6 +5,14 @@
 
 import type { NgStyleInterface } from './ng-class';
 
+/**
+ * Render-slot convention (Rule 13). An input that replaces an antd render callback (`itemRender`, and the
+ * like) is a `TemplateRef<Ctx>`. `Ctx.$implicit` is the default rendering as a `TemplateRef<void>`, so
+ * `<ng-container [ngTemplateOutlet]="ctx.$implicit" />` inside the slot reproduces the default output; the
+ * remaining fields of `Ctx` mirror the arguments antd passes to its callback. The context interface lives in
+ * the component's own `typings.ts`, not here: it has no shared shape beyond `$implicit`.
+ */
+
 /** Ant Design v6 semantic `classNames` prop: one optional class string per named slot. */
 export type NzSemanticClassNames<K extends string> = Partial<Record<K, string>>;
 
