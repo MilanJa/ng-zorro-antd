@@ -27,7 +27,7 @@ description: 进行标记和分类的小标签。
 | `[nzValue]`         | `nz-tag-checkable-group` 中可选择标签的值；未设置时不参与组的取值                                                                                                | `string \| number`                        | -           |
 | ~~`[nzBordered]`~~  | 已废弃，请使用 [nzVariant]。是否有边框；`false` 保留默认样式表的无边框外观，并解析为 `'filled'`                                                                  | `boolean`                                 | `true`      |
 | `(nzOnClose)`       | 关闭时的回调，在 `nzMode="closable"` 时可用                                                                                                                      | `EventEmitter<MouseEvent>`                | -           |
-| `(nzCheckedChange)` | 设置标签的选中状态的回调，在 `nzMode="checkable"` 时可用                                                                                                         | `EventEmitter<void>`                      | -           |
+| `(nzCheckedChange)` | 设置标签的选中状态的回调，在 `nzMode="checkable"` 时可用                                                                                                         | `EventEmitter<boolean>`                   | -           |
 
 ### nz-tag-checkable-group
 
