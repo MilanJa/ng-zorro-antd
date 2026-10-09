@@ -169,6 +169,21 @@ export class NzFloatButtonTopComponent implements OnInit {
       untracked(() => this.handleScroll());
     });
 
+    // antd's useScroll also recomputes on window resize, which the progress ring depends on
+    effect(onCleanup => {
+      if (!this.nzShowProgress() || !this.platform.isBrowser) {
+        return;
+      }
+      const subscription = fromEventOutsideAngular(
+        this.document.defaultView!,
+        'resize',
+        passiveEventListenerOptions as AddEventListenerOptions
+      )
+        .pipe(debounceTime(50))
+        .subscribe(() => this.handleScroll());
+      onCleanup(() => subscription.unsubscribe());
+    });
+
     effect(() => {
       const legacy = this.nzDescription();
       if (legacy !== null && legacy !== undefined) this.aliasDescription(legacy);

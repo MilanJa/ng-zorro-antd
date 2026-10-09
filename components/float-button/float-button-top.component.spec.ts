@@ -263,6 +263,22 @@ describe('nz-float-button-top nzShowProgress', () => {
     expect(button().style.getPropertyValue('--ant-float-btn-progress')).toBe('1turn');
   });
 
+  it('recomputes the progress when the window resizes', async () => {
+    fixture.componentInstance.contentHeight.set(300);
+    fixture.detectChanges();
+    box().scrollTop = 100;
+    box().dispatchEvent(new Event('scroll'));
+    await settle();
+    expect(button().style.getPropertyValue('--ant-float-btn-progress')).toBe('0.5turn');
+    // the content grows without a scroll event: only a resize can pick it up
+    fixture.componentInstance.contentHeight.set(400);
+    fixture.detectChanges();
+    window.dispatchEvent(new Event('resize'));
+    await settle();
+    const expected = 100 / (box().scrollHeight - box().clientHeight);
+    expect(button().style.getPropertyValue('--ant-float-btn-progress')).toBe(`${expected}turn`);
+  });
+
   it('v4 safety: binds neither the class nor the property without nzShowProgress', async () => {
     fixture.componentInstance.showProgress.set(false);
     await settle();
