@@ -405,6 +405,40 @@ describe('pagination', () => {
     }
   });
 
+  it('should keep the large size in responsive mode above the smallest breakpoint', async () => {
+    vi.useFakeTimers();
+    try {
+      const { fixture, host } = renderPagination(`<nz-pagination nzResponsive nzSize="large" />`);
+
+      viewport.set(1200, 350);
+      fixture.detectChanges();
+      await vi.advanceTimersByTimeAsync(1000);
+      fixture.detectChanges();
+      expect(host.classList).toContain('ant-pagination-large');
+      expect(host.classList).not.toContain('ant-pagination-mini');
+
+      viewport.set(350, 350);
+      window.dispatchEvent(new Event('resize'));
+      fixture.detectChanges();
+      await vi.advanceTimersByTimeAsync(1000);
+      await vi.runOnlyPendingTimersAsync();
+      fixture.detectChanges();
+      expect(host.classList).toContain('ant-pagination-mini');
+      expect(host.classList).not.toContain('ant-pagination-large');
+
+      viewport.set(1200, 350);
+      window.dispatchEvent(new Event('resize'));
+      fixture.detectChanges();
+      await vi.advanceTimersByTimeAsync(1000);
+      await vi.runOnlyPendingTimersAsync();
+      fixture.detectChanges();
+      expect(host.classList).toContain('ant-pagination-large');
+    } finally {
+      viewport.reset();
+      vi.useRealTimers();
+    }
+  });
+
   it('#i18n', () => {
     const fixture = TestBed.createComponent(NzTestPaginationComponent);
     const dl = fixture.debugElement;
