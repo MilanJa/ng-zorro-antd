@@ -939,3 +939,36 @@ describe('steps nzMaxCount with a bound step status', () => {
     expect(item(2).classList).toContain('ant-steps-item-finish');
   });
 });
+
+@Component({
+  imports: [NzStepsModule],
+  template: `
+    <nz-steps id="burst" [nzCurrent]="6" [nzMaxCount]="5">
+      @for (i of steps; track i) {
+        <nz-step [nzTitle]="'S' + i" [nzStatus]="i === 3 || i === 4 ? hiddenStatus() : i < 6 ? 'finish' : 'process'" />
+      }
+    </nz-steps>
+  `
+})
+export class NzTestStepsStatusBurstComponent {
+  readonly steps = [0, 1, 2, 3, 4, 5, 6];
+  readonly hiddenStatus = signal<NzStatusType>('finish');
+}
+
+describe('steps status changes in one pass', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({ providers: [provideNzIconsTesting()] });
+  });
+
+  it('re-plans once when several hidden steps change status together', async () => {
+    const fixture = TestBed.createComponent(NzTestStepsStatusBurstComponent);
+    await stabilize(fixture);
+    const steps = fixture.debugElement.query(By.directive(NzStepsComponent)).componentInstance;
+    const replan = vi.spyOn(steps as unknown as { updateChildrenSteps(): void }, 'updateChildrenSteps');
+    fixture.componentInstance.hiddenStatus.set('error');
+    await stabilize(fixture);
+    expect(replan).toHaveBeenCalledTimes(1);
+    const ellipsis = fixture.nativeElement.querySelectorAll('#burst .ant-steps-item')[2] as HTMLElement;
+    expect(ellipsis.classList).toContain('ant-steps-item-error');
+  });
+});

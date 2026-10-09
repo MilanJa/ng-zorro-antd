@@ -25,7 +25,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Subscription, merge } from 'rxjs';
-import { filter, startWith, switchMap } from 'rxjs/operators';
+import { debounce, filter, startWith, switchMap, tap } from 'rxjs/operators';
 
 import { warn } from 'ng-zorro-antd/core/logger';
 import { gridResponsiveMap, NzBreakpointEnum, NzBreakpointService } from 'ng-zorro-antd/core/services';
@@ -233,16 +233,21 @@ export class NzStepsComponent implements OnChanges, OnInit, AfterContentInit {
 
   ngAfterContentInit(): void {
     if (this.steps) {
-      this.steps.changes.pipe(startWith(null), takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-        this.updateHostProgressClass();
-        this.updateChildrenSteps();
-      });
-      // A hidden step's status feeds its ellipsis item (antd `getEllipsisStep`), so a later change re-plans.
       this.steps.changes
         .pipe(
           startWith(null),
-          switchMap(() => merge(...this.steps.map(step => step.statusChange$))),
-          filter(() => this.canApplyMaxCount),
+          tap(() => {
+            this.updateHostProgressClass();
+            this.updateChildrenSteps();
+          }),
+          // A hidden step's status feeds its ellipsis item (antd `getEllipsisStep`), so a later change re-plans.
+          // Statuses bound in one change pass arrive together and are coalesced into a single re-plan.
+          switchMap(() =>
+            merge(...this.steps.map(step => step.statusChange$)).pipe(
+              filter(() => this.canApplyMaxCount),
+              debounce(() => Promise.resolve())
+            )
+          ),
           takeUntilDestroyed(this.destroyRef)
         )
         .subscribe(() => this.updateChildrenSteps());
