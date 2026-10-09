@@ -279,6 +279,21 @@ describe('grid', () => {
       expect(colElement.style.cssText).toBe('flex: 1 1 auto;');
     });
 
+    it('should keep nzFlex and the responsive flex together', () => {
+      component.flex.set(1);
+      component.xs.set({ flex: '100%' });
+      fixture.detectChanges();
+      expect(colElement.style.flex).toBe('1 1 auto');
+      expect(colElement.classList).toContain('ant-col-xs-flex');
+      expect(colElement.style.getPropertyValue('--ant-col-xs-flex')).toBe('0 0 100%');
+
+      component.flex.set(null);
+      fixture.detectChanges();
+      expect(colElement.style.flex).toBe('');
+      expect(colElement.classList).toContain('ant-col-xs-flex');
+      expect(colElement.style.getPropertyValue('--ant-col-xs-flex')).toBe('0 0 100%');
+    });
+
     it('should merge the responsive flex property with the gutter padding', () => {
       const gutterFixture = TestBed.createComponent(TestColGutterFlexComponent);
       gutterFixture.detectChanges();
