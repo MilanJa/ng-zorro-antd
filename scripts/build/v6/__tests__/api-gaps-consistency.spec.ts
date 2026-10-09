@@ -50,7 +50,7 @@ const DELIVERED: Record<string, string[]> = {
   Sider: ['classNames', 'styles'],
   'Dropdown menu items': ['icon', 'extra', 'label'],
   'Dropdown submenu title': [],
-  Breadcrumb: ['placement'],
+  Breadcrumb: ['placement', 'items', 'params', 'itemRender', 'dropdownIcon'],
   Card: []
 };
 

@@ -11,4 +11,5 @@ import { TemplateRef } from '@angular/core';
  */
 export abstract class NzBreadcrumb {
   abstract nzSeparator: string | TemplateRef<void> | null;
+  abstract nzDropdownIcon: string | TemplateRef<void> | undefined;
 }

@@ -5,7 +5,7 @@
 
 import { ESCAPE } from '@angular/cdk/keycodes';
 import { OverlayContainer } from '@angular/cdk/overlay';
-import { Component } from '@angular/core';
+import { Component, signal, viewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
@@ -13,10 +13,11 @@ import { By } from '@angular/platform-browser';
 import { createKeyboardEvent, dispatchEvent, expectMotionSettled } from 'ng-zorro-antd/core/testing';
 import { NzThemeDirective } from 'ng-zorro-antd/core/theme';
 import { V6_PATCH_CSS, V6_TEMPLATE_CSS, V6_TOKENS_DEFAULT_CSS } from 'ng-zorro-antd/core/theme/generated/test-css';
-import { NzDropdownModule } from 'ng-zorro-antd/dropdown';
+import { NzDropdownMenuComponent, NzDropdownModule } from 'ng-zorro-antd/dropdown';
 import { provideNzIconsTesting } from 'ng-zorro-antd/icon/testing';
 
 import { NzBreadCrumbModule } from './breadcrumb.module';
+import { NzBreadcrumbItem } from './typings';
 
 let style: HTMLStyleElement;
 function installV6Css(): void {
@@ -225,5 +226,76 @@ describe('breadcrumb overlay item under antd v6 css', () => {
     const pane = root.closest('.cdk-overlay-pane')!.getBoundingClientRect();
     const trigger = link.getBoundingClientRect();
     expect(Math.abs((pane.left + pane.right) / 2 - (trigger.left + trigger.right) / 2)).toBeLessThan(1);
+  });
+});
+
+@Component({
+  imports: [NzBreadCrumbModule, NzDropdownModule],
+  template: `
+    <nz-breadcrumb id="dataHost" [nzSeparator]="null" nzDropdownIcon="caret-down" [nzItems]="items()" />
+    <nz-dropdown-menu #menu="nzDropdownMenu">
+      <ul nz-menu>
+        <li nz-menu-item>General</li>
+      </ul>
+    </nz-dropdown-menu>
+  `
+})
+class TestBreadcrumbItemsV6Component {
+  readonly menu = viewChild.required<NzDropdownMenuComponent>('menu');
+  readonly items = signal<NzBreadcrumbItem[]>([]);
+}
+
+describe('breadcrumb data items under antd v6 css', () => {
+  let fixture: ComponentFixture<TestBreadcrumbItemsV6Component>;
+
+  beforeEach(() => {
+    installV6Css();
+    TestBed.configureTestingModule({ providers: [provideNzIconsTesting()], animationsEnabled: true });
+    fixture = TestBed.createComponent(TestBreadcrumbItemsV6Component);
+    fixture.detectChanges();
+    fixture.componentInstance.items.set([
+      { title: 'Location' },
+      { type: 'separator', separator: ':' },
+      { title: 'Application Center', href: '' },
+      { type: 'separator' },
+      { title: 'Components', menu: fixture.componentInstance.menu() },
+      { type: 'separator' },
+      { title: 'An Application' }
+    ]);
+    fixture.detectChanges();
+  });
+
+  afterEach(() => {
+    style.remove();
+    TestBed.inject(OverlayContainer).ngOnDestroy();
+  });
+
+  it('styles data crumbs, standalone separators and the dropdown icon at v6 token values', () => {
+    const host = document.getElementById('dataHost') as HTMLElement;
+    const items = [...host.querySelectorAll<HTMLElement>(':scope > nz-breadcrumb-item')];
+    const separators = [...host.querySelectorAll<HTMLElement>(':scope > nz-breadcrumb-separator')];
+    expect(items.length).toBe(4);
+    expect(separators.map(s => s.textContent!.trim())).toEqual([':', '/', '/']);
+    for (const separator of separators) {
+      const cs = getComputedStyle(separator);
+      expect(cs.marginInline).toBe('8px'); // separatorMargin = marginXS
+      expect(cs.color).toBe('rgba(0, 0, 0, 0.45)'); // separatorColor = colorTextDescription
+    }
+    // `[nzSeparator]="null"`: the crumbs carry no separator of their own, as antd's separator-component demo
+    for (const item of items) {
+      expect(item.querySelector('.ant-breadcrumb-separator')).toBeNull();
+    }
+
+    const link = getComputedStyle(items[1].querySelector('.ant-breadcrumb-link > a') as HTMLElement);
+    expect(link.color).toBe('rgba(0, 0, 0, 0.45)'); // linkColor
+    expect(link.paddingLeft).toBe('4px'); // paddingXXS
+    expect(link.display).toBe('inline-block');
+
+    expect(getComputedStyle(items[3]).color).toBe('rgba(0, 0, 0, 0.88)'); // lastItemColor
+
+    const icon = items[2].querySelector('.ant-breadcrumb-overlay-link > nz-icon') as HTMLElement;
+    expect(icon.classList).toContain('anticon-caret-down');
+    expect(getComputedStyle(icon).marginInlineStart).toBe('4px'); // marginXXS
+    expect(getComputedStyle(icon).fontSize).toBe('12px'); // fontSizeIcon
   });
 });

@@ -4,7 +4,7 @@
  */
 
 import { NgTemplateOutlet } from '@angular/common';
-import { Component, inject, Input, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, Input, TemplateRef, ViewEncapsulation } from '@angular/core';
 
 import { NzConfigKey, WithConfig } from 'ng-zorro-antd/core/config';
 import { NzOutletModule } from 'ng-zorro-antd/core/outlet';
@@ -31,9 +31,12 @@ const NZ_CONFIG_MODULE_NAME: NzConfigKey = 'breadcrumb';
         nz-dropdown
         [nzDropdownMenu]="nzOverlay"
         [nzPlacement]="nzOverlayPlacement ?? 'bottomLeft'"
+        [nzTrigger]="nzOverlayTrigger ?? 'hover'"
       >
         <ng-template [ngTemplateOutlet]="noMenuTpl" />
-        <nz-icon nzType="down" />
+        <ng-container *nzStringTemplateOutlet="dropdownIcon; let icon">
+          <nz-icon [nzType]="icon" />
+        </ng-container>
       </span>
     } @else {
       <ng-template [ngTemplateOutlet]="noMenuTpl" />
@@ -57,10 +60,26 @@ const NZ_CONFIG_MODULE_NAME: NzConfigKey = 'breadcrumb';
 export class NzBreadCrumbItemComponent {
   readonly _nzModuleName: NzConfigKey = NZ_CONFIG_MODULE_NAME;
   nzBreadCrumbComponent = inject(NzBreadcrumb);
+  private readonly cdr = inject(ChangeDetectorRef);
   /**
    * Dropdown content of a breadcrumb item.
    */
   @Input() nzOverlay?: NzDropdownMenuComponent;
   /** Placement of the overlay; antd v6 centres it (`'bottomCenter'`). */
   @Input() @WithConfig() nzOverlayPlacement: NzPlacementType | undefined = 'bottomLeft';
+  /** Icon after the crumb when `nzOverlay` is set; unset uses the parent `nz-breadcrumb`'s `nzDropdownIcon`. */
+  @Input() nzDropdownIcon?: string | TemplateRef<void>;
+  /**
+   * Trigger of the overlay. Set by `nz-breadcrumb` from an `nzItems` entry's `dropdownProps.nzTrigger`.
+   */
+  @Input() nzOverlayTrigger?: 'click' | 'hover';
+
+  /** Re-renders the item after a value it reads from the parent `nz-breadcrumb` changed. */
+  markParentChanged(): void {
+    this.cdr.markForCheck();
+  }
+
+  protected get dropdownIcon(): string | TemplateRef<void> {
+    return this.nzDropdownIcon ?? this.nzBreadCrumbComponent.nzDropdownIcon ?? 'down';
+  }
 }
