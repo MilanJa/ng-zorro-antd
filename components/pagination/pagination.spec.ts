@@ -11,6 +11,7 @@ import { By } from '@angular/platform-browser';
 import { vi } from 'vitest';
 
 import { provideNzNoAnimation } from 'ng-zorro-antd/core/animation';
+import { NzConfigService, provideNzConfig } from 'ng-zorro-antd/core/config';
 import { NZ_FORM_VARIANT } from 'ng-zorro-antd/core/form';
 import { createKeyboardEvent, dispatchKeyboardEvent, testDirectionality } from 'ng-zorro-antd/core/testing';
 import { NzSafeAny, NzVariant } from 'ng-zorro-antd/core/types';
@@ -557,6 +558,56 @@ describe('pagination v6 inputs under the default stylesheet', () => {
   ])('variant class for "$attrs"', ({ attrs, expected }) => {
     const { host } = renderPagination(`<nz-pagination [nzTotal]="50" ${attrs} />`);
     expect(present(host, VARIANT_CLASSES)).toEqual(expected);
+  });
+});
+
+describe('pagination global nzSize config', () => {
+  const configure = (nzSize: 'small' | 'medium' | 'large'): void => {
+    TestBed.configureTestingModule({
+      providers: [provideNzNoAnimation(), provideNzConfig({ pagination: { nzSize } })]
+    });
+  };
+
+  it('small reaches the host classes and the size changer', () => {
+    configure('small');
+    const { host } = renderPagination(`<nz-pagination [nzTotal]="50" nzShowSizeChanger />`);
+    expect(present(host, SIZE_CLASSES)).toEqual(['ant-pagination-mini', 'ant-pagination-small']);
+    expect((host.querySelector('nz-select') as HTMLElement).classList).toContain('ant-select-sm');
+  });
+
+  it('large adds the host class and keeps the size changer at the default size under the default stylesheet', async () => {
+    configure('large');
+    const { fixture, host } = renderPagination(`<nz-pagination [nzTotal]="50" nzShowSizeChanger />`);
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(present(host, SIZE_CLASSES)).toEqual(['ant-pagination-large']);
+    const select = host.querySelector('nz-select') as HTMLElement;
+    expect(select.classList).not.toContain('ant-select-lg');
+    expect(select.classList).not.toContain('ant-select-sm');
+  });
+
+  it('medium renders as default', () => {
+    configure('medium');
+    const { host } = renderPagination(`<nz-pagination [nzTotal]="50" nzShowSizeChanger />`);
+    expect(present(host, SIZE_CLASSES)).toEqual([]);
+  });
+
+  it('a bound nzSize beats the config', () => {
+    configure('small');
+    const { host } = renderPagination(`<nz-pagination [nzTotal]="50" nzSize="default" nzShowSizeChanger />`);
+    expect(present(host, SIZE_CLASSES)).toEqual([]);
+    expect((host.querySelector('nz-select') as HTMLElement).classList).not.toContain('ant-select-sm');
+  });
+
+  it('follows a config change at runtime', async () => {
+    TestBed.configureTestingModule({ providers: [provideNzNoAnimation()] });
+    const { fixture, host } = renderPagination(`<nz-pagination [nzTotal]="50" nzShowSizeChanger />`);
+    await fixture.whenStable();
+    expect(present(host, SIZE_CLASSES)).toEqual([]);
+    TestBed.inject(NzConfigService).set('pagination', { nzSize: 'small' });
+    fixture.detectChanges();
+    expect(present(host, SIZE_CLASSES)).toEqual(['ant-pagination-mini', 'ant-pagination-small']);
+    expect((host.querySelector('nz-select') as HTMLElement).classList).toContain('ant-select-sm');
   });
 });
 

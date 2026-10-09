@@ -135,7 +135,16 @@ export class NzPaginationComponent implements OnInit, OnChanges {
 
   showPagination = true;
   locale!: NzPaginationI18nInterface;
-  size: NzPaginationSize = 'default';
+  /**
+   * The resolved size: the (config-aware) `nzSize`, or in responsive mode 'small' at the smallest breakpoint
+   * and 'large' or 'default' above it.
+   */
+  get size(): NzPaginationSize {
+    if (this.nzResponsive && this.isExtraSmall !== null) {
+      return this.isExtraSmall ? 'small' : this.nzSize === 'large' ? 'large' : 'default';
+    }
+    return this.nzSize;
+  }
   /**
    * The size the size-changer `nz-select` gets. 'large' reaches it only under the v6 stylesheet: the
    * default stylesheet has no large pagination, so a large select would stand out next to default pagers.
@@ -144,6 +153,7 @@ export class NzPaginationComponent implements OnInit, OnChanges {
   protected readonly variant = computed<NzVariant>(() => this.nzVariant() || this.formVariant?.() || 'outlined');
 
   private total$ = new ReplaySubject<number>(1);
+  private isExtraSmall: boolean | null = null;
 
   constructor() {
     afterNextRender(() => {
@@ -207,12 +217,21 @@ export class NzPaginationComponent implements OnInit, OnChanges {
       this.onTotalChange(total);
     });
 
+    this.updateChangerSize();
+    this.nzConfigService
+      .getConfigChangeEventForComponent(NZ_CONFIG_MODULE_NAME)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.updateChangerSize();
+        this.cdr.markForCheck();
+      });
+
     this.breakpointService
       .subscribe(gridResponsiveMap)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(bp => {
+        this.isExtraSmall = bp === NzBreakpointEnum.xs;
         if (this.nzResponsive) {
-          this.size = bp === NzBreakpointEnum.xs ? 'small' : this.nzSize === 'large' ? 'large' : 'default';
           this.updateChangerSize();
           this.cdr.markForCheck();
         }
@@ -220,7 +239,7 @@ export class NzPaginationComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    const { nzHideOnSinglePage, nzTotal, nzPageSize, nzSize } = changes;
+    const { nzHideOnSinglePage, nzTotal, nzPageSize, nzSize, nzResponsive } = changes;
     if (nzTotal) {
       this.total$.next(this.nzTotal);
     }
@@ -229,8 +248,7 @@ export class NzPaginationComponent implements OnInit, OnChanges {
         (this.nzHideOnSinglePage && this.nzTotal > this.nzPageSize) || (this.nzTotal > 0 && !this.nzHideOnSinglePage);
     }
 
-    if (nzSize) {
-      this.size = nzSize.currentValue;
+    if (nzSize || nzResponsive) {
       this.updateChangerSize();
     }
   }
