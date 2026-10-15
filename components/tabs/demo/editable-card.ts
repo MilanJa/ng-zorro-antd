@@ -2,27 +2,43 @@ import { Component, signal } from '@angular/core';
 
 import { NzTabsModule } from 'ng-zorro-antd/tabs';
 
+interface EditableTab {
+  key: string;
+  title: string;
+}
+
 @Component({
   selector: 'nz-demo-tabs-editable-card',
   imports: [NzTabsModule],
   template: `
-    <nz-tabs [(nzSelectedIndex)]="selectedIndex" nzType="editable-card" (nzAdd)="newTab()" (nzClose)="closeTab($event)">
-      @for (tab of tabs(); track tab) {
-        <nz-tab nzClosable [nzTitle]="tab">Content of {{ tab }}</nz-tab>
+    <nz-tabs [(nzActiveKey)]="activeKey" nzType="editable-card" (nzAdd)="newTab()" (nzClose)="closeTab($event)">
+      @for (tab of tabs(); track tab.key) {
+        <nz-tab nzClosable [nzKey]="tab.key" [nzTitle]="tab.title">Content of {{ tab.title }}</nz-tab>
       }
     </nz-tabs>
   `
 })
 export class NzDemoTabsEditableCardComponent {
-  readonly tabs = signal(['Tab 1', 'Tab 2']);
-  readonly selectedIndex = signal(0);
+  readonly tabs = signal<EditableTab[]>([
+    { key: '1', title: 'Tab 1' },
+    { key: '2', title: 'Tab 2' }
+  ]);
+  readonly activeKey = signal('1');
+  private newTabIndex = 0;
 
-  closeTab({ index }: { index: number }): void {
-    this.tabs.update(tabs => tabs.filter((_, i) => i !== index));
+  closeTab({ key }: { index: number; key?: string }): void {
+    const tabs = this.tabs();
+    const index = tabs.findIndex(tab => tab.key === key);
+    const rest = tabs.filter(tab => tab.key !== key);
+    if (rest.length && this.activeKey() === key) {
+      this.activeKey.set(rest[Math.max(index - 1, 0)].key);
+    }
+    this.tabs.set(rest);
   }
 
   newTab(): void {
-    this.tabs.update(tabs => [...tabs, 'New Tab']);
-    this.selectedIndex.set(this.tabs().length);
+    const key = `newTab${this.newTabIndex++}`;
+    this.tabs.update(tabs => [...tabs, { key, title: 'New Tab' }]);
+    this.activeKey.set(key);
   }
 }

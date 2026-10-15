@@ -6,10 +6,10 @@ import { NzTabsModule } from 'ng-zorro-antd/tabs';
   selector: 'nz-demo-tabs-icon',
   imports: [NzTabsModule],
   template: `
-    <nz-tabs [nzSelectedIndex]="1">
-      <nz-tab nzTitle="Tab 1" nzIcon="apple">Tab 1</nz-tab>
-      <nz-tab nzTitle="Tab 2" nzIcon="android">Tab 2</nz-tab>
-      <nz-tab nzTitle="Tab 3" [nzIcon]="heart">Tab 3</nz-tab>
+    <nz-tabs nzDefaultActiveKey="2">
+      <nz-tab nzKey="1" nzTitle="Tab 1" nzIcon="apple">Tab 1</nz-tab>
+      <nz-tab nzKey="2" nzTitle="Tab 2" nzIcon="android">Tab 2</nz-tab>
+      <nz-tab nzKey="3" nzTitle="Tab 3" [nzIcon]="heart">Tab 3</nz-tab>
     </nz-tabs>
     <ng-template #heart>
       <svg viewBox="0 0 24 24" width="1em" height="1em" fill="currentColor" aria-hidden="true">
