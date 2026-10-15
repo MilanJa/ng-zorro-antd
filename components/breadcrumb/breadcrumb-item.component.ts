@@ -35,7 +35,7 @@ const NZ_CONFIG_MODULE_NAME: NzConfigKey = 'breadcrumb';
       >
         <ng-template [ngTemplateOutlet]="noMenuTpl" />
         <ng-container *nzStringTemplateOutlet="dropdownIcon; let icon">
-          <nz-icon [nzType]="icon" />
+          <nz-icon [nzType]="icon" [attr.nztype]="icon" />
         </ng-container>
       </span>
     } @else {

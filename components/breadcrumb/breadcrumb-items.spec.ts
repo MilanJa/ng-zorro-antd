@@ -423,6 +423,7 @@ describe('breadcrumb item nzDropdownIcon', () => {
       'span.ant-breadcrumb-link',
       'nz-icon.anticon anticon-down'
     ]);
+    expect(overlayLink.querySelector('nz-icon')!.getAttribute('nztype')).toBe('down');
     expect(
       fixture.debugElement.query(By.css('#inherit .ant-breadcrumb-overlay-link')).injector.get(NzDropdownDirective)
         .nzTrigger
