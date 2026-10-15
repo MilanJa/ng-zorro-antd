@@ -50,7 +50,7 @@ const DELIVERED: Record<string, string[]> = {
   Sider: ['classNames', 'styles'],
   'Dropdown menu items': ['icon', 'extra', 'label'],
   'Dropdown submenu title': [],
-  Breadcrumb: ['placement', 'items', 'params', 'itemRender', 'dropdownIcon'],
+  Breadcrumb: ['placement', 'items', 'params', 'itemRender', 'dropdownIcon', 'menu'],
   Card: ['tabList', 'activeTabKey', 'defaultActiveTabKey', 'onTabChange', 'tabBarExtraContent', 'tabProps'],
   Image: []
 };

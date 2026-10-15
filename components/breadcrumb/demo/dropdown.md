@@ -7,8 +7,8 @@ title:
 
 ## zh-CN
 
-面包屑支持下拉菜单。
+面包屑支持下拉菜单：可传入 `nz-dropdown-menu` 模板，也可在 `nzItems` 的项上用数据 `menu: { items }` 描述菜单。
 
 ## en-US
 
-Breadcrumbs support drop down menu.
+Breadcrumbs support drop down menu: pass an `nz-dropdown-menu` template, or describe the menu as data with `menu: { items }` on an `nzItems` entry.

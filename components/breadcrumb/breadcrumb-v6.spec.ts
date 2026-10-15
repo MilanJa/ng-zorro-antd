@@ -299,3 +299,64 @@ describe('breadcrumb data items under antd v6 css', () => {
     expect(getComputedStyle(icon).fontSize).toBe('12px'); // fontSizeIcon
   });
 });
+
+@Component({
+  imports: [NzBreadCrumbModule],
+  template: `<nz-breadcrumb id="menuHost" [nzItems]="items" />`
+})
+class TestBreadcrumbDataMenuV6Component {
+  readonly items: NzBreadcrumbItem[] = [
+    { title: 'Ant Design' },
+    {
+      title: 'Components',
+      path: 'components',
+      menu: {
+        items: [
+          { key: 'general', title: 'General', path: 'general' },
+          { key: 'layout', title: 'Layout' },
+          { key: 'off', title: 'Off', disabled: true }
+        ]
+      }
+    },
+    { title: 'Button' }
+  ];
+}
+
+describe('breadcrumb data menu under antd v6 css', () => {
+  let overlay: OverlayContainer;
+
+  beforeEach(() => {
+    installV6Css();
+    TestBed.configureTestingModule({ providers: [provideNzIconsTesting()], animationsEnabled: true });
+    overlay = TestBed.inject(OverlayContainer);
+  });
+
+  afterEach(() => {
+    style.remove();
+    overlay.ngOnDestroy();
+  });
+
+  it('opens the data menu as a v6 dropdown menu', async () => {
+    const fixture = TestBed.createComponent(TestBreadcrumbDataMenuV6Component);
+    fixture.detectChanges();
+    const link = document.querySelector('#menuHost .ant-breadcrumb-overlay-link') as HTMLElement;
+    dispatchEvent(link, new MouseEvent('mouseenter'));
+    await new Promise(resolve => setTimeout(resolve, 300));
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const root = overlay.getContainerElement().querySelector('.ant-dropdown') as HTMLElement;
+    expect(root).not.toBeNull();
+    await expectMotionSettled(root);
+    const menu = getComputedStyle(root.querySelector('.ant-dropdown-menu') as HTMLElement);
+    expect(menu.borderRadius).toBe('8px'); // borderRadiusLG
+    expect(menu.padding).toBe('4px'); // paddingXXS
+    const entries = [...root.querySelectorAll<HTMLElement>('.ant-dropdown-menu-item')];
+    expect(entries.map(e => e.textContent!.trim())).toEqual(['General', 'Layout', 'Off']);
+    expect(entries[0].querySelector('a')!.getAttribute('href')).toBe('#/components/general');
+    expect(getComputedStyle(entries[1]).color).toBe('rgba(0, 0, 0, 0.88)'); // colorText
+    expect(getComputedStyle(entries[1]).paddingInlineStart).toBe('12px'); // controlPaddingHorizontal
+    expect(getComputedStyle(entries[2]).color).toBe('rgba(0, 0, 0, 0.25)'); // colorTextDisabled
+  });
+});

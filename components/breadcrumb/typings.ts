@@ -8,6 +8,22 @@ import { TemplateRef } from '@angular/core';
 import { NgStyleInterface } from 'ng-zorro-antd/core/types';
 import { NzDropdownMenuComponent, NzPlacementType } from 'ng-zorro-antd/dropdown';
 
+/** An entry of a crumb's data `menu` (antd `menu.items[]`). */
+export interface NzBreadcrumbMenuItem {
+  key: string;
+  title: string | TemplateRef<void>;
+  /** Path segment, appended to the crumb's link with a `/` (`#/a` and `general` give `#/a/general`). */
+  path?: string;
+  /** Literal link of the entry; wins over `path`. */
+  href?: string;
+  disabled?: boolean;
+}
+
+/** A crumb's dropdown menu as data (antd `menu`), rendered by `nz-breadcrumb` as an `nz-dropdown-menu`. */
+export interface NzBreadcrumbItemMenu {
+  items: NzBreadcrumbMenuItem[];
+}
+
 /** A crumb of `nz-breadcrumb [nzItems]` (antd `BreadcrumbItemType`). */
 export interface NzBreadcrumbItemOption {
   type?: 'item';
@@ -17,8 +33,8 @@ export interface NzBreadcrumbItemOption {
   href?: string;
   /** Path segment, joined with the `path`s of the earlier items into `#/a/b` as antd does. */
   path?: string;
-  /** Dropdown menu that opens from the crumb (an `nz-dropdown-menu` template reference). */
-  menu?: NzDropdownMenuComponent | null;
+  /** Dropdown menu that opens from the crumb: an `nz-dropdown-menu` template reference, or data rendered as one. */
+  menu?: NzDropdownMenuComponent | NzBreadcrumbItemMenu | null;
   dropdownProps?: { nzPlacement?: NzPlacementType; nzTrigger?: 'click' | 'hover' };
   onClick?: (event: MouseEvent) => void;
   /** Class of the rendered `nz-breadcrumb-item`. */

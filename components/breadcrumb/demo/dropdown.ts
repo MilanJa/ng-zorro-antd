@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
+import { NzBreadCrumbModule, NzBreadcrumbItem } from 'ng-zorro-antd/breadcrumb';
 import { NzDropdownModule } from 'ng-zorro-antd/dropdown';
 
 @Component({
@@ -24,6 +24,26 @@ import { NzDropdownModule } from 'ng-zorro-antd/dropdown';
         <li nz-menu-item>Navigation</li>
       </ul>
     </nz-dropdown-menu>
+    <br />
+    <nz-breadcrumb [nzItems]="items" />
   `
 })
-export class NzDemoBreadcrumbDropdownComponent {}
+export class NzDemoBreadcrumbDropdownComponent {
+  readonly items: NzBreadcrumbItem[] = [
+    { title: 'Ant Design' },
+    { title: 'Component', href: '' },
+    {
+      title: 'General',
+      href: '',
+      dropdownProps: { nzPlacement: 'bottomCenter' },
+      menu: {
+        items: [
+          { key: '1', title: 'General', href: 'http://www.alipay.com/' },
+          { key: '2', title: 'Layout', href: 'http://www.taobao.com/' },
+          { key: '3', title: 'Navigation', href: 'http://www.tmall.com/' }
+        ]
+      }
+    },
+    { title: 'Button' }
+  ];
+}

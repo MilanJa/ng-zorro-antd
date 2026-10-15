@@ -30,16 +30,31 @@ import { filter, startWith } from 'rxjs/operators';
 
 import { PREFIX, warn } from 'ng-zorro-antd/core/logger';
 import { NzOutletModule } from 'ng-zorro-antd/core/outlet';
+import { NzDropdownMenuComponent } from 'ng-zorro-antd/dropdown';
+import { NzMenuModule } from 'ng-zorro-antd/menu';
 
 import { NzBreadcrumb } from './breadcrumb';
 import { NzBreadCrumbItemComponent } from './breadcrumb-item.component';
 import { NzBreadCrumbSeparatorComponent } from './breadcrumb-separator.component';
-import { NzBreadcrumbItem, NzBreadcrumbItemOption, NzBreadcrumbItemRenderContext } from './typings';
+import {
+  NzBreadcrumbItem,
+  NzBreadcrumbItemOption,
+  NzBreadcrumbItemRenderContext,
+  NzBreadcrumbMenuItem
+} from './typings';
 
 export interface BreadcrumbOption {
   label: string;
   params: Params;
   url: string;
+}
+
+/** An entry of a data `menu`, with its link resolved against the crumb's. */
+interface NzBreadcrumbMenuEntry {
+  readonly item: NzBreadcrumbMenuItem;
+  readonly href: string | null;
+  /** `'/a/b'` when the link joins a router path; used for `Router.navigateByUrl`. */
+  readonly routerUrl: string | null;
 }
 
 /** An `nzItems` entry resolved for rendering: `:param`s substituted, link derived as antd's `getPath` does. */
@@ -54,6 +69,10 @@ interface NzBreadcrumbCrumb {
   /** `'/a/b'` when the link comes from `path` rather than a literal `href`; used for `Router.navigateByUrl`. */
   readonly routerUrl: string | null;
   readonly paths: string[];
+  /** A template-reference `menu`, passed straight to `nzOverlay`. */
+  readonly overlay: NzDropdownMenuComponent | undefined;
+  /** The entries of a data `menu`, rendered as an internal `nz-dropdown-menu`. */
+  readonly menuEntries: NzBreadcrumbMenuEntry[] | null;
 }
 
 const ITEMS_WITH_AUTO_GENERATE =
@@ -85,6 +104,31 @@ function resolveTitle(
   );
 }
 
+/**
+ * A data-menu entry's link: its literal `href`, else its `path` joined to the crumb's link with a `/` (antd
+ * `BreadcrumbItem` appends the entry path to the crumb href). A crumb linked through `path`, or not linked
+ * at all, gives the entry a router URL; a crumb with a literal `href` gives a plain link.
+ */
+function resolveMenuEntry(
+  item: NzBreadcrumbMenuItem,
+  crumbHref: string | null,
+  crumbRouterUrl: string | null,
+  strategy: LocationStrategy | null
+): NzBreadcrumbMenuEntry {
+  if (item.href !== undefined) {
+    return { item, href: item.href, routerUrl: null };
+  }
+  if (item.path === undefined) {
+    return { item, href: null, routerUrl: null };
+  }
+  const segment = item.path.replace(/^\//, '');
+  if (crumbRouterUrl === null && crumbHref !== null) {
+    return { item, href: `${crumbHref}/${segment}`, routerUrl: null };
+  }
+  const routerUrl = `${crumbRouterUrl ?? ''}/${segment}`;
+  return { item, href: strategy ? strategy.prepareExternalUrl(routerUrl) : `#${routerUrl}`, routerUrl };
+}
+
 /** A click the browser should handle itself (new tab or window, download), like `routerLink`. */
 function isModifiedClick(event: MouseEvent): boolean {
   return event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0;
@@ -94,7 +138,14 @@ function isModifiedClick(event: MouseEvent): boolean {
   selector: 'nz-breadcrumb',
   exportAs: 'nzBreadcrumb',
   providers: [{ provide: NzBreadcrumb, useExisting: forwardRef(() => NzBreadCrumbComponent) }],
-  imports: [NgTemplateOutlet, NzBreadCrumbItemComponent, NzBreadCrumbSeparatorComponent, NzOutletModule],
+  imports: [
+    NgTemplateOutlet,
+    NzBreadCrumbItemComponent,
+    NzBreadCrumbSeparatorComponent,
+    NzDropdownMenuComponent,
+    NzMenuModule,
+    NzOutletModule
+  ],
   template: `
     <ng-content />
     @if (nzItems) {
@@ -109,25 +160,49 @@ function isModifiedClick(event: MouseEvent): boolean {
               <ng-container *nzStringTemplateOutlet="crumb.title">{{ crumb.title }}</ng-container>
             }
           </ng-template>
-          <nz-breadcrumb-item
-            [nzOverlay]="option.menu ?? undefined"
-            [nzOverlayPlacement]="option.dropdownProps?.nzPlacement"
-            [nzOverlayTrigger]="option.dropdownProps?.nzTrigger"
-            [class]="option.className ?? ''"
-            [style]="option.style ?? null"
-            (click)="onItemClick(crumb, $event)"
-          >
-            <ng-template
-              [ngTemplateOutlet]="nzItemRender ?? defaultContent"
-              [ngTemplateOutletContext]="{
-                $implicit: defaultContent,
-                item: option,
-                params: nzParams,
-                items: nzItems,
-                paths: crumb.paths
-              }"
-            />
-          </nz-breadcrumb-item>
+          <ng-template #crumbItem let-overlay>
+            <nz-breadcrumb-item
+              [nzOverlay]="overlay"
+              [nzOverlayPlacement]="option.dropdownProps?.nzPlacement"
+              [nzOverlayTrigger]="option.dropdownProps?.nzTrigger"
+              [class]="option.className ?? ''"
+              [style]="option.style ?? null"
+              (click)="onItemClick(crumb, $event)"
+            >
+              <ng-template
+                [ngTemplateOutlet]="nzItemRender ?? defaultContent"
+                [ngTemplateOutletContext]="{
+                  $implicit: defaultContent,
+                  item: option,
+                  params: nzParams,
+                  items: nzItems,
+                  paths: crumb.paths
+                }"
+              />
+            </nz-breadcrumb-item>
+          </ng-template>
+          @if (crumb.menuEntries; as entries) {
+            <nz-dropdown-menu #dataMenu="nzDropdownMenu">
+              <ul nz-menu>
+                @for (entry of entries; track entry.item.key) {
+                  <li nz-menu-item [nzDisabled]="!!entry.item.disabled" (click)="onMenuItemClick(crumb, entry, $event)">
+                    @if (entry.href !== null) {
+                      <a [attr.href]="entry.href"
+                        ><ng-container *nzStringTemplateOutlet="entry.item.title">{{
+                          entry.item.title
+                        }}</ng-container></a
+                      >
+                    } @else {
+                      <ng-container *nzStringTemplateOutlet="entry.item.title">{{ entry.item.title }}</ng-container>
+                    }
+                  </li>
+                }
+              </ul>
+            </nz-dropdown-menu>
+            <ng-template [ngTemplateOutlet]="crumbItem" [ngTemplateOutletContext]="{ $implicit: dataMenu }" />
+          } @else {
+            <ng-template [ngTemplateOutlet]="crumbItem" [ngTemplateOutletContext]="{ $implicit: crumb.overlay }" />
+          }
         } @else {
           <nz-breadcrumb-separator
             ><ng-container *nzStringTemplateOutlet="crumb.separator ?? nzSeparator ?? '/'">{{
@@ -170,6 +245,12 @@ export class NzBreadCrumbComponent implements OnInit, OnChanges, NzBreadcrumb {
   /** Icon after a crumb with a dropdown menu; `nz-breadcrumb-item`s that do not set their own use it. */
   @Input() nzDropdownIcon: string | TemplateRef<void> | undefined = 'down';
   @Output() readonly nzItemClick = new EventEmitter<{ item: NzBreadcrumbItem; event: MouseEvent }>();
+  /** Emits when an enabled entry of a data `menu` is clicked; `nzItemClick` does not fire for menu entries. */
+  @Output() readonly nzMenuItemClick = new EventEmitter<{
+    item: NzBreadcrumbItemOption;
+    menuItem: NzBreadcrumbMenuItem;
+    event: MouseEvent;
+  }>();
 
   breadcrumbs: BreadcrumbOption[] = [];
   protected crumbs: NzBreadcrumbCrumb[] = [];
@@ -224,6 +305,20 @@ export class NzBreadCrumbComponent implements OnInit, OnChanges, NzBreadcrumb {
     }
   }
 
+  protected onMenuItemClick(crumb: NzBreadcrumbCrumb, entry: NzBreadcrumbMenuEntry, event: MouseEvent): void {
+    if (entry.item.disabled) {
+      return;
+    }
+    this.nzMenuItemClick.emit({ item: crumb.option!, menuItem: entry.item, event });
+    if (entry.routerUrl !== null && !event.defaultPrevented && !isModifiedClick(event)) {
+      const router = this.configuredRouter();
+      if (router) {
+        event.preventDefault();
+        router.navigateByUrl(entry.routerUrl);
+      }
+    }
+  }
+
   /**
    * `Router` is root-provided even without `provideRouter`, but `ActivatedRoute` exists only once the
    * application configures the router; without it a path crumb keeps its plain `#/…` link, and with it
@@ -246,7 +341,9 @@ export class NzBreadCrumbComponent implements OnInit, OnChanges, NzBreadcrumb {
           title: null,
           href: null,
           routerUrl: null,
-          paths: [...paths]
+          paths: [...paths],
+          overlay: undefined,
+          menuEntries: null
         };
       }
       const path = item.path === undefined ? undefined : resolvePath(item.path, params);
@@ -254,15 +351,23 @@ export class NzBreadCrumbComponent implements OnInit, OnChanges, NzBreadcrumb {
         paths.push(path);
       }
       const fromPath = path === undefined ? null : `/${paths.join('/')}`;
+      const href =
+        item.href ?? (fromPath === null ? null : strategy ? strategy.prepareExternalUrl(fromPath) : `#${fromPath}`);
+      const routerUrl = item.href === undefined ? fromPath : null;
+      const menu = item.menu ?? null;
       return {
         item,
         option: item,
         separator: null,
         title: resolveTitle(item.title, params),
-        href:
-          item.href ?? (fromPath === null ? null : strategy ? strategy.prepareExternalUrl(fromPath) : `#${fromPath}`),
-        routerUrl: item.href === undefined ? fromPath : null,
-        paths: [...paths]
+        href,
+        routerUrl,
+        paths: [...paths],
+        overlay: menu instanceof NzDropdownMenuComponent ? menu : undefined,
+        menuEntries:
+          menu === null || menu instanceof NzDropdownMenuComponent
+            ? null
+            : menu.items.map(entry => resolveMenuEntry(entry, href, routerUrl, strategy))
       };
     });
   }
