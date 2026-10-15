@@ -177,3 +177,121 @@ describe('float-button content wrapping under antd v6 css', () => {
     expect(Math.round(short.getBoundingClientRect().width)).toBe(40);
   });
 });
+
+@Component({
+  imports: [NzFloatButtonModule],
+  template: `
+    <nz-float-button id="circle-count" [nzBadge]="{ nzCount: 5 }" />
+    <nz-float-button id="circle-dot" [nzBadge]="{ nzDot: true }" />
+    <nz-float-button id="square-count" nzShape="square" [nzBadge]="{ nzCount: 5 }" />
+    <nz-float-button id="square-dot" nzShape="square" [nzBadge]="{ nzDot: true }" />
+    <div #box style="height: 100px; overflow-y: auto"><div style="height: 300px"></div></div>
+    <nz-float-button-top
+      id="ring-count"
+      [nzTarget]="box"
+      [nzVisibilityHeight]="-1"
+      nzShowProgress
+      [nzBadge]="{ nzCount: 5 }"
+    />
+  `
+})
+class TestFloatButtonBadgeComponent {}
+
+// antd 6 positions the badge root inside the button's border (`--ant-line-width`, or the progress ring's
+// `--ant-line-width-bold`) and insets it by `controlHeight / 2 * (1 - 1 / sqrt(2))` on a circle and by
+// `borderRadius * (1 - 1 / sqrt(2))` for a square dot (publish/float-button/style/v6/index.css).
+const BADGE_INSET = 0.29289321881345254;
+const LINE_WIDTH = 1; // --ant-line-width
+const LINE_WIDTH_BOLD = 2; // --ant-line-width-bold
+const CIRCLE_INSET = (32 / 2) * BADGE_INSET; // --ant-control-height: 32px
+const SQUARE_DOT_INSET = 6 * BADGE_INSET; // --ant-border-radius: 6px
+
+async function renderBadges(): Promise<void> {
+  const fixture = TestBed.createComponent(TestFloatButtonBadgeComponent);
+  fixture.detectChanges();
+  await fixture.whenStable();
+  fixture.detectChanges();
+  const box = fixture.nativeElement.querySelector('div') as HTMLElement;
+  box.scrollTop = 100;
+  box.dispatchEvent(new Event('scroll'));
+  await new Promise(resolve => setTimeout(resolve, 60));
+  await fixture.whenStable();
+  fixture.detectChanges();
+}
+
+/** Distance of the badge indicator's centre from the inner button's top-end corner. */
+function indicatorInset(id: string): { end: number; top: number } {
+  const button = document.querySelector(`#${id} .ant-float-btn-inner`)!.getBoundingClientRect();
+  const indicator = document.querySelector(`#${id} nz-badge-sup`)!.getBoundingClientRect();
+  return {
+    end: button.right - (indicator.left + indicator.width / 2),
+    top: indicator.top + indicator.height / 2 - button.top
+  };
+}
+
+describe('float-button badge under antd v6 css', () => {
+  beforeEach(() => {
+    installV6Css();
+    TestBed.configureTestingModule({ providers: [provideNzIconsTesting()] });
+  });
+
+  afterEach(() => {
+    style.remove();
+  });
+
+  it('lets the badge wrapper fill the button', async () => {
+    await renderBadges();
+    const button = document.querySelector('#circle-count .ant-float-btn-inner')!.getBoundingClientRect();
+    const wrapper = document.querySelector('#circle-count nz-badge')!.getBoundingClientRect();
+    expect(wrapper.width).toBeCloseTo(button.width, 1);
+    expect(wrapper.height).toBeCloseTo(button.height, 1);
+    expect(wrapper.left).toBeCloseTo(button.left, 1);
+    expect(wrapper.top).toBeCloseTo(button.top, 1);
+  });
+
+  it('centres a circle count and a circle dot where antd 6 puts them', async () => {
+    await renderBadges();
+    for (const id of ['circle-count', 'circle-dot']) {
+      const inset = indicatorInset(id);
+      expect(inset.end).toBeCloseTo(LINE_WIDTH + CIRCLE_INSET, 1);
+      expect(inset.top).toBeCloseTo(LINE_WIDTH + CIRCLE_INSET, 1);
+    }
+  });
+
+  it('puts a square count on the border corner and insets a square dot', async () => {
+    await renderBadges();
+    const count = indicatorInset('square-count');
+    expect(count.end).toBeCloseTo(LINE_WIDTH, 1);
+    expect(count.top).toBeCloseTo(LINE_WIDTH, 1);
+    const dot = indicatorInset('square-dot');
+    expect(dot.end).toBeCloseTo(LINE_WIDTH + SQUARE_DOT_INSET, 1);
+    expect(dot.top).toBeCloseTo(LINE_WIDTH + SQUARE_DOT_INSET, 1);
+  });
+
+  it('measures the inset from inside the progress ring', async () => {
+    await renderBadges();
+    const inset = indicatorInset('ring-count');
+    expect(inset.end).toBeCloseTo(LINE_WIDTH_BOLD + CIRCLE_INSET, 1);
+    expect(inset.top).toBeCloseTo(LINE_WIDTH_BOLD + CIRCLE_INSET, 1);
+  });
+});
+
+describe('float-button badge without the v6 stylesheet', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({ providers: [provideNzIconsTesting()] });
+  });
+
+  it('keeps nz-badge wrapping the body and emits no float-button badge class', async () => {
+    await renderBadges();
+    const content = document.querySelector('#circle-count nz-float-button-content') as HTMLElement;
+    expect([...content.children].map(c => c.tagName.toLowerCase())).toEqual(['nz-badge']);
+    const badge = content.firstElementChild as HTMLElement;
+    expect(badge.className).toBe('ant-badge');
+    expect(badge.getAttribute('style')).toBeNull();
+    expect([...badge.children].map(c => [c.tagName.toLowerCase(), ...[...c.classList].sort()].join('.'))).toEqual([
+      'div.ant-float-btn-body',
+      'nz-badge-sup.ant-badge-count.ant-scroll-number'
+    ]);
+    expect(document.querySelector('.ant-float-btn-badge, .ant-float-btn-badge-dot')).toBeNull();
+  });
+});
