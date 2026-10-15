@@ -31,7 +31,7 @@ export interface NzAnimatedInterface {
 export class NzTabChangeEvent {
   index?: number;
   /** The `nzKey` of the selected tab, when it has one. */
-  key?: string;
+  declare key?: string;
   tab: NzSafeAny;
 }
 
