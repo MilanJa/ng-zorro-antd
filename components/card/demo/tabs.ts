@@ -1,39 +1,53 @@
 import { Component } from '@angular/core';
 
-import { NzCardModule } from 'ng-zorro-antd/card';
-import { NzTabsModule } from 'ng-zorro-antd/tabs';
+import { NzCardModule, NzCardTabItem } from 'ng-zorro-antd/card';
 
 @Component({
   selector: 'nz-demo-card-tabs',
-  imports: [NzCardModule, NzTabsModule],
+  imports: [NzCardModule],
   template: `
-    <nz-card style="width: 100%;" nzTitle="Card title" [nzExtra]="extraTemplate">
-      <nz-card-tab>
-        <nz-tabs nzSize="large" [(nzSelectedIndex)]="index1">
-          <nz-tab nzTitle="tab1" />
-          <nz-tab nzTitle="tab2" />
-        </nz-tabs>
-      </nz-card-tab>
-      content{{ index1 }}
+    <nz-card
+      style="width: 100%;"
+      nzTitle="Card title"
+      [nzExtra]="extraTemplate"
+      [nzTabList]="tabList"
+      [(nzActiveTabKey)]="activeTabKey1"
+    >
+      <p>{{ contentList[activeTabKey1] }}</p>
     </nz-card>
     <ng-template #extraTemplate>
       <a>More</a>
     </ng-template>
     <br />
     <br />
-    <nz-card style="width: 100%;">
-      <nz-card-tab>
-        <nz-tabs nzSize="large" [(nzSelectedIndex)]="index2">
-          <nz-tab nzTitle="article" />
-          <nz-tab nzTitle="app" />
-          <nz-tab nzTitle="project" />
-        </nz-tabs>
-      </nz-card-tab>
-      content{{ index2 }}
+    <nz-card
+      style="width: 100%;"
+      [nzTabList]="tabListNoTitle"
+      nzDefaultActiveTabKey="app"
+      [nzTabBarExtraContent]="extraTemplate"
+      [nzTabProps]="{ nzSize: 'default' }"
+      (nzTabChange)="activeTabKey2 = $event"
+    >
+      <p>{{ contentListNoTitle[activeTabKey2] }}</p>
     </nz-card>
   `
 })
 export class NzDemoCardTabsComponent {
-  index1 = 0;
-  index2 = 0;
+  readonly tabList: NzCardTabItem[] = [
+    { key: 'tab1', label: 'tab1' },
+    { key: 'tab2', label: 'tab2' }
+  ];
+  readonly contentList: Record<string, string> = { tab1: 'content1', tab2: 'content2' };
+  readonly tabListNoTitle: NzCardTabItem[] = [
+    { key: 'article', label: 'article' },
+    { key: 'app', label: 'app' },
+    { key: 'project', label: 'project' }
+  ];
+  readonly contentListNoTitle: Record<string, string> = {
+    article: 'article content',
+    app: 'app content',
+    project: 'project content'
+  };
+  activeTabKey1 = 'tab1';
+  activeTabKey2 = 'app';
 }

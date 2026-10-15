@@ -7,8 +7,8 @@ title:
 
 ## zh-CN
 
-可承载更多内容。
+可承载更多内容。页签来自 `nzTabList`，用 `[(nzActiveTabKey)]` 或 `nzDefaultActiveTabKey` 指定激活的页签。
 
 ## en-US
 
-More content can be hosted.
+More content can be hosted. The tabs come from `nzTabList`; `[(nzActiveTabKey)]` or `nzDefaultActiveTabKey` picks the active one.

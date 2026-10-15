@@ -79,3 +79,54 @@ describe('card under antd v6 css', () => {
     expect(getComputedStyle(detail).flex).toContain('1');
   });
 });
+
+@Component({
+  imports: [NzCardModule],
+  template: `
+    <nz-card id="tabs-card" nzTitle="Card title" [nzTabList]="items">content</nz-card>
+    <nz-card id="tabs-small" nzSize="small" [nzTabList]="items">content</nz-card>
+  `
+})
+class TestCardTabListV6Component {
+  readonly items = [
+    { key: 'tab1', label: 'tab1' },
+    { key: 'tab2', label: 'tab2' }
+  ];
+}
+
+describe('card head tabs under antd v6 css', () => {
+  let fixture: ComponentFixture<TestCardTabListV6Component>;
+
+  beforeEach(async () => {
+    installV6Css();
+    TestBed.configureTestingModule({ providers: [provideNzIconsTesting()], animationsEnabled: true });
+    fixture = TestBed.createComponent(TestCardTabListV6Component);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+  });
+
+  afterEach(() => {
+    style.remove();
+    TestBed.inject(OverlayContainer).ngOnDestroy();
+  });
+
+  it('stacks large head tabs under the title the way antd 6 does', () => {
+    const card = document.getElementById('tabs-card')!;
+    const head = card.querySelector(':scope > .ant-card-head') as HTMLElement;
+    expect(getComputedStyle(head).minHeight).toBe('0px');
+    expect(getComputedStyle(head.querySelector('.ant-card-head-title') as HTMLElement).paddingTop).toBe('16px');
+    const tabs = head.querySelector(':scope > nz-tabs.ant-card-head-tabs') as HTMLElement;
+    expect(getComputedStyle(tabs).marginBottom).toBe('-17px');
+    const tab = tabs.querySelector('.ant-tabs-tab') as HTMLElement;
+    expect(getComputedStyle(tab).fontSize).toBe('16px');
+    expect(getComputedStyle(tab).padding).toBe('16px 0px');
+  });
+
+  it('gives a small card small head tabs', () => {
+    const card = document.getElementById('tabs-small')!;
+    const tab = card.querySelector('.ant-card-head-tabs .ant-tabs-tab') as HTMLElement;
+    expect(getComputedStyle(tab).fontSize).toBe('14px');
+    expect(getComputedStyle(tab).padding).toBe('8px 0px');
+  });
+});

@@ -8,3 +8,4 @@ export * from './card-meta.component';
 export * from './card-tab.component';
 export * from './card.component';
 export * from './card.module';
+export * from './typings';
