@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-10-09T07:12:50.724Z",
-  "base": "14b9f96273eba4074ef072ea5890ea8453e9c01a",
+  "generatedAt": "2026-10-15T09:38:52.113Z",
+  "base": "651a9c9ba62918427d9df1b2c194ad7b8cdd5ee0",
   "classes": {
     "affix": [
       "ant-affix"
@@ -155,6 +155,7 @@
       "ant-card-extra",
       "ant-card-grid",
       "ant-card-head",
+      "ant-card-head-tabs",
       "ant-card-head-title",
       "ant-card-head-wrapper",
       "ant-card-hoverable",
@@ -2072,12 +2073,14 @@
       ],
       "breadcrumb/breadcrumb.component.ts": [
         "ant-breadcrumb",
+        "ant-breadcrumb-link",
         "ant-breadcrumb-rtl"
       ],
       "breadcrumb/breadcrumb.module.ts": [],
       "breadcrumb/breadcrumb.ts": [],
       "breadcrumb/index.ts": [],
-      "breadcrumb/public-api.ts": []
+      "breadcrumb/public-api.ts": [],
+      "breadcrumb/typings.ts": []
     },
     "button": {
       "button/button.component.ts": [
@@ -2157,6 +2160,7 @@
         "ant-card-cover",
         "ant-card-extra",
         "ant-card-head",
+        "ant-card-head-tabs",
         "ant-card-head-title",
         "ant-card-head-wrapper",
         "ant-card-hoverable",
@@ -2167,7 +2171,8 @@
       ],
       "card/card.module.ts": [],
       "card/index.ts": [],
-      "card/public-api.ts": []
+      "card/public-api.ts": [],
+      "card/typings.ts": []
     },
     "carousel": {
       "carousel/carousel-content.directive.ts": [],
