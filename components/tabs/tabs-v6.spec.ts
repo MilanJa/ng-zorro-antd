@@ -201,3 +201,56 @@ describe('tabs nzIcon under antd v6 css', () => {
     expect(Math.round(label.getBoundingClientRect().left - icon.getBoundingClientRect().right)).toBe(12);
   });
 });
+
+@Component({
+  imports: [NzTabsModule],
+  template: `
+    <nz-tabs id="key-host" [nzActiveKey]="key()">
+      <nz-tab nzKey="a" nzTitle="Tab 1"><p>one</p></nz-tab>
+      <nz-tab nzKey="b" nzTitle="Tab 2"><p>two</p></nz-tab>
+    </nz-tabs>
+  `
+})
+class TestTabsActiveKeyV6Component {
+  readonly key = signal<string | null>('zzz');
+}
+
+describe('tabs nzActiveKey under antd v6 css', () => {
+  let fixture: ComponentFixture<TestTabsActiveKeyV6Component>;
+
+  beforeEach(async () => {
+    installV6Css();
+    TestBed.configureTestingModule({ providers: [provideNzIconsTesting()], animationsEnabled: true });
+    fixture = TestBed.createComponent(TestTabsActiveKeyV6Component);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+  });
+
+  afterEach(() => {
+    style.remove();
+    TestBed.inject(OverlayContainer).ngOnDestroy();
+  });
+
+  it('shows no selected colour and no ink bar for a key no tab has, then follows a known key', async () => {
+    const host = document.getElementById('key-host')!;
+    const buttons = Array.from(host.querySelectorAll<HTMLElement>('.ant-tabs-tab-btn'));
+    const inkBar = host.querySelector('.ant-tabs-ink-bar') as HTMLElement;
+    expect(buttons.map(button => getComputedStyle(button).color)).toEqual([
+      'rgba(0, 0, 0, 0.88)',
+      'rgba(0, 0, 0, 0.88)'
+    ]);
+    expect(getComputedStyle(inkBar).display).toBe('none');
+
+    fixture.componentInstance.key.set('b');
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    // `.ant-tabs-tab-btn{transition:all var(--ant-motion-duration-slow)}`: wait past the colour transition
+    await new Promise(r => setTimeout(r, 350));
+    expect(getComputedStyle(buttons[1]).color).toBe('rgb(22, 119, 255)');
+    expect(getComputedStyle(buttons[0]).color).toBe('rgba(0, 0, 0, 0.88)');
+    expect(getComputedStyle(inkBar).display).toBe('block');
+    expect(getComputedStyle(inkBar).backgroundColor).toBe('rgb(22, 119, 255)');
+  });
+});

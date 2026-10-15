@@ -33,7 +33,7 @@ import { merge, Observable, of, Subscription } from 'rxjs';
 import { delay, filter, first, startWith } from 'rxjs/operators';
 
 import { NzConfigKey, WithConfig } from 'ng-zorro-antd/core/config';
-import { PREFIX } from 'ng-zorro-antd/core/logger';
+import { PREFIX, warn } from 'ng-zorro-antd/core/logger';
 import { NzOutletModule } from 'ng-zorro-antd/core/outlet';
 import { NzSafeAny, NzSizeLDSType } from 'ng-zorro-antd/core/types';
 import { wrapIntoObservable } from 'ng-zorro-antd/core/util';
@@ -45,6 +45,7 @@ import {
   NzTabPosition,
   NzTabPositionMode,
   NzTabsCanDeactivateFn,
+  NzTabsCanDeactivateKeys,
   NzTabScrollEvent,
   NzTabType,
   type NzIndicator
@@ -58,6 +59,10 @@ import { NzTabNavItemDirective } from './tab-nav-item.directive';
 import { NZ_TAB_SET, NzTabComponent } from './tab.component';
 
 let nextId = 0;
+
+const KEY_AND_INDEX_WARNING =
+  '`nz-tabs` selects by `nzActiveKey` and ignores `nzSelectedIndex` while both are bound; use one of them.';
+const KEY_AND_ROUTER_WARNING = '`nz-tabs` follows the router while `nzLinkRouter` is set and ignores `nzActiveKey`.';
 
 @Component({
   selector: 'nz-tabs',
@@ -77,7 +82,7 @@ let nextId = 0;
         [inkBarAnimated]="inkBarAnimated"
         [addable]="addable"
         [addIcon]="nzAddIcon"
-        [hideBar]="nzHideAll"
+        [hideBar]="nzHideAll || noActiveTab"
         [position]="position"
         [extraTemplate]="nzTabBarExtraContent"
         [extraContents]="extraContents()"
@@ -91,7 +96,7 @@ let nextId = 0;
             class="ant-tabs-tab"
             [style.margin-inline-end.px]="position === 'horizontal' ? nzTabBarGutter : null"
             [style.margin-bottom.px]="position === 'vertical' ? nzTabBarGutter : null"
-            [class.ant-tabs-tab-active]="nzSelectedIndex === $index"
+            [class.ant-tabs-tab-active]="!noActiveTab && nzSelectedIndex === $index"
             [class.ant-tabs-tab-disabled]="tab.nzDisabled"
             (click)="clickNavItem(tab, $index, $event)"
             (contextmenu)="contextmenuNavItem(tab, $event)"
@@ -101,11 +106,11 @@ let nextId = 0;
               [id]="getTabContentId($index)"
               [attr.tabIndex]="getTabIndex(tab, $index)"
               [attr.aria-disabled]="tab.nzDisabled"
-              [attr.aria-selected]="nzSelectedIndex === $index && !nzHideAll"
+              [attr.aria-selected]="!noActiveTab && nzSelectedIndex === $index && !nzHideAll"
               [attr.aria-controls]="getTabContentId($index)"
               [disabled]="tab.nzDisabled"
               [tab]="tab"
-              [active]="nzSelectedIndex === $index"
+              [active]="!noActiveTab && nzSelectedIndex === $index"
               class="ant-tabs-tab-btn"
               nzTabNavItem
               cdkMonitorElementFocus
@@ -158,11 +163,11 @@ let nextId = 0;
             @if (tab.nzForceRender) {
               <ng-template [ngTemplateOutlet]="tabpaneTmpl" />
             } @else if (nzDestroyInactiveTabPane) {
-              @if (nzSelectedIndex === $index) {
+              @if (!noActiveTab && nzSelectedIndex === $index) {
                 <ng-template [ngTemplateOutlet]="tabpaneTmpl" />
               }
             } @else {
-              @if (nzSelectedIndex === $index || tab.hasBeenActive) {
+              @if ((!noActiveTab && nzSelectedIndex === $index) || tab.hasBeenActive) {
                 <ng-template [ngTemplateOutlet]="tabpaneTmpl" />
               }
             }
@@ -173,7 +178,7 @@ let nextId = 0;
                 [id]="getTabContentId($index)"
                 [attr.aria-labelledby]="getTabContentId($index)"
                 nz-tab-body
-                [active]="nzSelectedIndex === $index"
+                [active]="!noActiveTab && nzSelectedIndex === $index"
                 [content]="tab.content"
                 [animated]="tabPaneAnimated"
               ></div>
@@ -224,7 +229,16 @@ export class NzTabsComponent implements AfterContentChecked, AfterContentInit {
   }
   set nzSelectedIndex(value: null | number) {
     this.indexToSelect = coerceNumberProperty(value, null);
+    this.selectedIndexBound = value != null;
   }
+  /**
+   * Key (`nz-tab[nzKey]`) of the active tab (antd `activeKey`). Controlled: a user pick only emits
+   * `nzActiveKeyChange`, and the tab changes once the key is written back. A key that matches no
+   * tab, or `null`, leaves no tab active; `undefined` leaves the selection to the index API.
+   */
+  @Input() nzActiveKey?: string | null;
+  /** Key of the tab selected first while `nzActiveKey` is not bound (antd `defaultActiveKey`). */
+  @Input() nzDefaultActiveKey: string | null | undefined = null;
   @Input() nzTabPosition: NzTabPosition = 'top';
   @Input() nzTabBarExtraContent?: TemplateRef<void>;
   @Input() nzCanDeactivate: NzTabsCanDeactivateFn | null = null;
@@ -244,8 +258,10 @@ export class NzTabsComponent implements AfterContentChecked, AfterContentInit {
   readonly nzIndicator = input<NzIndicator>();
   readonly nzSelectChange = output<NzTabChangeEvent>();
   readonly nzSelectedIndexChange = output<number>();
+  /** Emits the key of the tab the user picks (antd `onChange`); programmatic key changes never emit. */
+  readonly nzActiveKeyChange = output<string>();
   readonly nzTabListScroll = output<NzTabScrollEvent>();
-  readonly nzClose = output<{ index: number }>();
+  readonly nzClose = output<{ index: number; key?: string }>();
   readonly nzAdd = output();
 
   get position(): NzTabPositionMode {
@@ -281,9 +297,17 @@ export class NzTabsComponent implements AfterContentChecked, AfterContentInit {
 
   readonly extraContents = contentChildren(NzTabBarExtraContentDirective);
 
+  /** True while a bound `nzActiveKey` matches no tab: no tab, ink bar or pane shows as active. */
+  protected noActiveTab = false;
+
   private readonly tabSetId!: number;
   private indexToSelect: number | null = 0;
   private selectedIndex: number | null = null;
+  private appliedNoActiveTab = false;
+  private selectedIndexBound = false;
+  private defaultKeyPending = true;
+  private keyAndIndexWarned = false;
+  private keyAndRouterWarned = false;
   private tabLabelSubscription = Subscription.EMPTY;
   private canDeactivateSubscription = Subscription.EMPTY;
 
@@ -295,6 +319,11 @@ export class NzTabsComponent implements AfterContentChecked, AfterContentInit {
       this.tabLabelSubscription.unsubscribe();
       this.canDeactivateSubscription.unsubscribe();
     });
+  }
+
+  /** A bound `nzActiveKey` decides the active tab, except in router mode, where the router does. */
+  private get keyControlled(): boolean {
+    return this.nzActiveKey !== undefined && !this.nzLinkRouter;
   }
 
   ngAfterContentInit(): void {
@@ -330,6 +359,8 @@ export class NzTabsComponent implements AfterContentChecked, AfterContentInit {
   }
 
   ngAfterContentChecked(): void {
+    this.applyActiveKey();
+
     // Don't clamp the `indexToSelect` immediately in the setter because it can happen that
     // the amount of tabs changes before the actual change detection runs.
     const indexToSelect = (this.indexToSelect = this.clampTabIndex(this.indexToSelect));
@@ -346,13 +377,17 @@ export class NzTabsComponent implements AfterContentChecked, AfterContentInit {
       // Changing these values after change detection has run
       // since the checked content may contain references to them.
       Promise.resolve().then(() => {
-        this.tabs.forEach((tab, index) => tab.setActive(index === indexToSelect));
+        this.markActiveTab(indexToSelect);
 
         if (!isFirstRun) {
           this.nzSelectedIndexChange.emit(indexToSelect);
         }
       });
+    } else if (this.noActiveTab !== this.appliedNoActiveTab) {
+      // The bound key moved between "no tab" and the tab already at the selected index.
+      Promise.resolve().then(() => this.markActiveTab(indexToSelect));
     }
+    this.appliedNoActiveTab = this.noActiveTab;
 
     // Set up the position for each tab and optionally set up an origin on the next selected tab.
     this.tabs.forEach((tab, index) => {
@@ -374,7 +409,8 @@ export class NzTabsComponent implements AfterContentChecked, AfterContentInit {
   onClose(index: number, e: MouseEvent): void {
     e.preventDefault();
     e.stopPropagation();
-    this.nzClose.emit({ index });
+    const key = this.tabs.get(index)?.nzKey;
+    this.nzClose.emit(key === undefined ? { index } : { index, key });
   }
 
   onAdd(): void {
@@ -385,11 +421,65 @@ export class NzTabsComponent implements AfterContentChecked, AfterContentInit {
     return Math.min(this.tabs.length - 1, Math.max(index || 0, 0));
   }
 
+  /**
+   * Runs before every clamp: a bound `nzActiveKey` decides the index on each check (and sets
+   * `noActiveTab` when no tab has it); otherwise the first check that sees tabs applies
+   * `nzDefaultActiveKey` once.
+   */
+  private applyActiveKey(): void {
+    this.warnKeyConflicts();
+    if (this.nzLinkRouter) {
+      this.noActiveTab = false;
+      return;
+    }
+    if (this.keyControlled) {
+      this.defaultKeyPending = false;
+      const index = this.findTabIndex(this.nzActiveKey);
+      this.noActiveTab = index === -1;
+      if (index !== -1) {
+        this.indexToSelect = index;
+      }
+      return;
+    }
+    this.noActiveTab = false;
+    if (this.defaultKeyPending && this.tabs.length) {
+      this.defaultKeyPending = false;
+      const index = this.findTabIndex(this.nzDefaultActiveKey);
+      if (index !== -1) {
+        this.indexToSelect = index;
+      }
+    }
+  }
+
+  private warnKeyConflicts(): void {
+    if (this.nzActiveKey === undefined) {
+      return;
+    }
+    if (this.nzLinkRouter) {
+      if (!this.keyAndRouterWarned) {
+        this.keyAndRouterWarned = true;
+        warn(KEY_AND_ROUTER_WARNING);
+      }
+    } else if (this.selectedIndexBound && !this.keyAndIndexWarned) {
+      this.keyAndIndexWarned = true;
+      warn(KEY_AND_INDEX_WARNING);
+    }
+  }
+
+  private findTabIndex(key: string | null | undefined): number {
+    return key == null ? -1 : this.tabs.toArray().findIndex(tab => tab.nzKey === key);
+  }
+
+  private markActiveTab(index: number): void {
+    this.tabs.forEach((tab, i) => tab.setActive(i === index && !this.noActiveTab));
+  }
+
   private createChangeEvent(index: number): NzTabChangeEvent {
     const event = new NzTabChangeEvent();
     event.index = index;
     if (this.tabs && this.tabs.length) {
       event.tab = this.tabs.toArray()[index];
+      event.key = event.tab.nzKey;
       this.tabs.forEach((tab, i) => {
         if (i !== index) {
           tab.nzDeselect.emit();
@@ -416,7 +506,14 @@ export class NzTabsComponent implements AfterContentChecked, AfterContentInit {
 
   canDeactivateFun(pre: number, next: number): Observable<boolean> {
     if (typeof this.nzCanDeactivate === 'function') {
-      return wrapIntoObservable(this.nzCanDeactivate(pre, next)).pipe(first(), takeUntilDestroyed(this.destroyRef));
+      const keys: NzTabsCanDeactivateKeys = {
+        fromKey: this.noActiveTab ? undefined : this.tabs.get(pre)?.nzKey,
+        toKey: this.tabs.get(next)?.nzKey
+      };
+      return wrapIntoObservable(this.nzCanDeactivate(pre, next, keys)).pipe(
+        first(),
+        takeUntilDestroyed(this.destroyRef)
+      );
     } else {
       return of(true);
     }
@@ -452,11 +549,31 @@ export class NzTabsComponent implements AfterContentChecked, AfterContentInit {
     this.canDeactivateSubscription.unsubscribe();
     this.canDeactivateSubscription = this.canDeactivateFun(this.selectedIndex!, index).subscribe(can => {
       if (can) {
-        this.nzSelectedIndex = index;
-        this.tabNavBarRef.focusIndex = index;
-        this.cdr.markForCheck();
+        this.pick(index);
       }
     });
+  }
+
+  /**
+   * Applies a pick that passed `nzCanDeactivate`. With `nzActiveKey` bound the pick only reports the
+   * tab's key: the bound key keeps deciding the active tab until the parent writes the new one.
+   */
+  private pick(index: number): void {
+    const key = this.nzLinkRouter ? undefined : this.tabs.get(index)?.nzKey;
+    this.defaultKeyPending = false;
+    if (this.keyControlled) {
+      if (key !== undefined && key !== this.nzActiveKey) {
+        this.nzActiveKeyChange.emit(key);
+      }
+    } else {
+      const changed = index !== this.selectedIndex;
+      this.indexToSelect = index;
+      if (changed && key !== undefined) {
+        this.nzActiveKeyChange.emit(key);
+      }
+    }
+    this.tabNavBarRef.focusIndex = index;
+    this.cdr.markForCheck();
   }
 
   getTabIndex(tab: NzTabComponent, index: number): number | null {

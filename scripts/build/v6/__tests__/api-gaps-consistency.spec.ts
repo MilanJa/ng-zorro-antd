@@ -41,7 +41,7 @@ const DELIVERED: Record<string, string[]> = {
   Divider: ['titlePlacement', 'orientationMargin', 'orientation'],
   Tag: ['icon', 'variant', 'disabled', 'CheckableTagGroup', 'multiple'],
   Badge: ['size'],
-  Tabs: ['icon'],
+  Tabs: ['icon', 'activeKey', 'defaultActiveKey'],
   Pagination: ['size', 'variant'],
   Progress: ['percentPosition', 'size'],
   FloatButton: ['content', 'description', 'showProgress'],

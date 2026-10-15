@@ -50,6 +50,8 @@ export class NzTabComponent implements OnChanges, OnDestroy {
   readonly closestTabSet = inject(NZ_TAB_SET);
 
   @Input() nzTitle: string | TemplateRef<TabTemplateContext> = '';
+  /** Key of the tab (antd `items[].key`), matched by `nz-tabs` `nzActiveKey` and `nzDefaultActiveKey`. */
+  @Input() nzKey?: string;
   /** Icon rendered before the title in the tab button (antd `items[].icon`); the overflow menu shows the title only. */
   @Input() nzIcon?: string | TemplateRef<void>;
   @Input({ transform: booleanAttribute }) nzClosable = false;
@@ -95,8 +97,8 @@ export class NzTabComponent implements OnChanges, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    const { nzTitle, nzIcon, nzDisabled, nzForceRender } = changes;
-    if (nzTitle || nzIcon || nzDisabled || nzForceRender) {
+    const { nzTitle, nzKey, nzIcon, nzDisabled, nzForceRender } = changes;
+    if (nzTitle || nzKey || nzIcon || nzDisabled || nzForceRender) {
       this.stateChanges.next();
     }
   }
