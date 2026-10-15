@@ -47,7 +47,6 @@ describe('card tab warnings', () => {
   });
   afterEach(() => warnSpy.mockRestore());
 
-  // must stay the first test of the file: once printed, the message is never printed again
   it('does not warn for a projected nz-card-tab alone, which renders as before', async () => {
     const fixture = TestBed.createComponent(TestCardMixedTabsComponent);
     await settle(fixture);
@@ -57,6 +56,7 @@ describe('card tab warnings', () => {
     expect(messages().filter(m => m.includes(MIXED))).toEqual([]);
   });
 
+  // The only test that prints this message: the logger dedupes per app, so it must be the first in the file to print it.
   it('renders nzTabList once, ignores the projected nz-card-tab and warns exactly once', async () => {
     const fixture = TestBed.createComponent(TestCardMixedTabsComponent);
     fixture.componentInstance.items.set([

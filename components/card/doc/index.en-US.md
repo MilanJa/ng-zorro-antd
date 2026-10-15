@@ -57,7 +57,7 @@ Area for grid style card
 
 ### nz-card-tab
 
-Area for tab card. Still supported, but ignored when the same card sets `nzTabList` (the card warns once in dev mode); use one or the other.
+Area for tab card. Still supported, but ignored when the same card sets `nzTabList` (in dev mode the card warns once per app, through the logger's dedupe); use one or the other.
 
 ### NzCardTabItem
 
