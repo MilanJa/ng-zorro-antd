@@ -339,6 +339,23 @@ describe('nz-tabs string keys', () => {
     expect(keyless.index).toBe(4);
   });
 
+  it('leaves the key off the change event of a keyless tab', async () => {
+    const fixture = TestBed.createComponent(TestTabsKeysComponent);
+    const host = fixture.componentInstance;
+    await settle(fixture);
+    const els = tabEls(tabsHost(fixture));
+
+    els[1].click();
+    await settle(fixture);
+    expect(Object.prototype.hasOwnProperty.call(host.selectChange.mock.lastCall![0], 'key')).toBe(true);
+
+    els[els.length - 1].click();
+    await settle(fixture);
+    const keyless: NzTabChangeEvent = host.selectChange.mock.lastCall![0];
+    expect(keyless.index).toBe(4);
+    expect(Object.prototype.hasOwnProperty.call(keyless, 'key')).toBe(false);
+  });
+
   it('runs nzCanDeactivate before a controlled pick is reported', async () => {
     const fixture = TestBed.createComponent(TestTabsKeysComponent);
     const host = fixture.componentInstance;

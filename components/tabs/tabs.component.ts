@@ -479,7 +479,9 @@ export class NzTabsComponent implements AfterContentChecked, AfterContentInit {
     event.index = index;
     if (this.tabs && this.tabs.length) {
       event.tab = this.tabs.toArray()[index];
-      event.key = event.tab.nzKey;
+      if (event.tab.nzKey !== undefined) {
+        event.key = event.tab.nzKey;
+      }
       this.tabs.forEach((tab, i) => {
         if (i !== index) {
           tab.nzDeselect.emit();
