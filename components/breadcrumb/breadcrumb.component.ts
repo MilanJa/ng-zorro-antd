@@ -4,7 +4,7 @@
  */
 
 import { Directionality } from '@angular/cdk/bidi';
-import { NgTemplateOutlet } from '@angular/common';
+import { LocationStrategy, NgTemplateOutlet } from '@angular/common';
 import {
   ChangeDetectorRef,
   Component,
@@ -83,6 +83,11 @@ function resolveTitle(
   return title.replace(new RegExp(`:(${keys.join('|')})`, 'g'), (placeholder: string, key: string) =>
     params[key] ? String(params[key]) : placeholder
   );
+}
+
+/** A click the browser should handle itself (new tab or window, download), like `routerLink`. */
+function isModifiedClick(event: MouseEvent): boolean {
+  return event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0;
 }
 
 @Component({
@@ -196,6 +201,9 @@ export class NzBreadCrumbComponent implements OnInit, OnChanges, NzBreadcrumb {
   }
 
   navigate(url: string, e: MouseEvent): void {
+    if (isModifiedClick(e)) {
+      return;
+    }
     e.preventDefault();
     this.injector.get(Router).navigateByUrl(url);
   }
@@ -207,8 +215,7 @@ export class NzBreadCrumbComponent implements OnInit, OnChanges, NzBreadcrumb {
     }
     crumb.option!.onClick?.(event);
     this.nzItemClick.emit({ item: crumb.item, event });
-    const modified = event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0;
-    if (crumb.routerUrl !== null && !event.defaultPrevented && !modified) {
+    if (crumb.routerUrl !== null && !event.defaultPrevented && !isModifiedClick(event)) {
       const router = this.configuredRouter();
       if (router) {
         event.preventDefault();
@@ -219,7 +226,8 @@ export class NzBreadCrumbComponent implements OnInit, OnChanges, NzBreadcrumb {
 
   /**
    * `Router` is root-provided even without `provideRouter`, but `ActivatedRoute` exists only once the
-   * application configures the router; without it a path crumb keeps its plain `#/…` link.
+   * application configures the router; without it a path crumb keeps its plain `#/…` link, and with it
+   * the link is built by the app's `LocationStrategy`.
    */
   private configuredRouter(): Router | null {
     return this.injector.get(ActivatedRoute, null) ? this.injector.get(Router) : null;
@@ -227,6 +235,7 @@ export class NzBreadCrumbComponent implements OnInit, OnChanges, NzBreadcrumb {
 
   private resolveCrumbs(): NzBreadcrumbCrumb[] {
     const params = this.nzParams ?? {};
+    const strategy = this.configuredRouter() ? this.injector.get(LocationStrategy) : null;
     const paths: string[] = [];
     return (this.nzItems ?? []).map(item => {
       if (item.type === 'separator') {
@@ -250,7 +259,8 @@ export class NzBreadCrumbComponent implements OnInit, OnChanges, NzBreadcrumb {
         option: item,
         separator: null,
         title: resolveTitle(item.title, params),
-        href: item.href ?? (fromPath === null ? null : `#${fromPath}`),
+        href:
+          item.href ?? (fromPath === null ? null : strategy ? strategy.prepareExternalUrl(fromPath) : `#${fromPath}`),
         routerUrl: item.href === undefined ? fromPath : null,
         paths: [...paths]
       };

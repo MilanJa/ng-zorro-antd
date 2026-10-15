@@ -63,6 +63,9 @@ stated otherwise.
 - **Disabled tags and groups**: a disabled checkable `nz-tag` leaves the tab order (`tabindex="-1"`) while other
   disabled tags keep their own tabindex, and a disabled `nz-tag-checkable-group` refuses model changes without
   emitting `nzCheckedChange`.
+- **Breadcrumb router crumbs and modifier clicks**: a crumb that `nzAutoGenerate` renders no longer navigates in place
+  on a ctrl, meta, shift or alt click or a non-primary click. The browser handles it (new tab or window), as with
+  `routerLink`; a plain click still navigates through the router.
 - **Class-list changes with nothing new bound**, none styled under the default stylesheet:
   - every `nz-progress` line without `nzSteps` now carries `ant-progress-line-align-end` and
     `ant-progress-line-position-outer`;

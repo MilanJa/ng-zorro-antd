@@ -7,7 +7,7 @@ import { NgTemplateOutlet } from '@angular/common';
 import { Component, signal, TemplateRef, viewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { provideRouter, Router, RouterOutlet, Routes } from '@angular/router';
+import { provideRouter, Router, RouterOutlet, Routes, withHashLocation } from '@angular/router';
 
 import { MockInstance, vi } from 'vitest';
 
@@ -113,6 +113,12 @@ const ROUTES: Routes = [{ path: 'one', component: TestRoutedPageComponent, data:
 class TestItemsWithAutoGenerateComponent {
   readonly items = signal<NzBreadcrumbItem[] | null>([{ title: 'Data A' }, { title: 'Data B' }]);
 }
+
+@Component({
+  imports: [NzBreadCrumbModule],
+  template: `<nz-breadcrumb id="auto" nzAutoGenerate />`
+})
+class TestAutoGenerateOnlyComponent {}
 
 async function stabilize(fixture: ComponentFixture<NzSafeAny>): Promise<void> {
   fixture.detectChanges();
@@ -257,6 +263,52 @@ describe('breadcrumb nzItems', () => {
 
     expect(clickAndRecordPrevented(crumbs(host)[2].querySelector('a')!)).toBe(false);
     expect(navigate).toHaveBeenCalledTimes(1);
+  });
+
+  describe('path href with the router configured', () => {
+    const USER_ITEMS: NzBreadcrumbItem[] = [
+      { title: 'Users', path: 'users' },
+      { title: 'User', path: ':id' },
+      { title: 'Edit', path: 'edit' }
+    ];
+
+    it('builds the href through the location strategy (path URLs) and navigates with the router URL', () => {
+      TestBed.configureTestingModule({ providers: [provideRouter([])] });
+      const navigate = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
+      create();
+      fixture.componentInstance.params.set({ id: 7 });
+      setItems(USER_ITEMS);
+      const anchor = crumbs(host)[2].querySelector('a') as HTMLAnchorElement;
+      expect(anchor.getAttribute('href')).toBe('/users/7/edit');
+      expect(clickAndRecordPrevented(anchor)).toBe(true);
+      expect(navigate).toHaveBeenCalledWith('/users/7/edit');
+    });
+
+    it('builds a #/ href under the hash location strategy', () => {
+      TestBed.configureTestingModule({ providers: [provideRouter([], withHashLocation())] });
+      create();
+      fixture.componentInstance.params.set({ id: 7 });
+      setItems(USER_ITEMS);
+      expect(crumbs(host)[2].querySelector('a')!.getAttribute('href')).toBe('#/users/7/edit');
+    });
+
+    it('still lets a literal href win over path', () => {
+      TestBed.configureTestingModule({ providers: [provideRouter([])] });
+      create();
+      setItems([{ title: 'A', path: 'a', href: '/literal' }]);
+      expect(crumbs(host)[0].querySelector('a')!.getAttribute('href')).toBe('/literal');
+    });
+  });
+
+  it('without a router keeps the literal #/ href for params-resolved paths', () => {
+    create();
+    fixture.componentInstance.params.set({ id: 7 });
+    setItems([
+      { title: 'Users', path: 'users' },
+      { title: 'User', path: ':id' },
+      { title: 'Edit', path: 'edit' }
+    ]);
+    expect(crumbs(host)[2].querySelector('a')!.getAttribute('href')).toBe('#/users/7/edit');
   });
 
   it('calls the entry onClick, then emits nzItemClick; a click outside the crumb link does nothing', () => {
@@ -485,5 +537,37 @@ describe('breadcrumb nzItems with nzAutoGenerate', () => {
     await stabilize(fixture);
     expect(linkTexts(host)).toEqual(['Router One']);
     expect(warnings().length).toBe(1);
+  });
+
+  it('does not prevent or navigate on a modifier click of a router crumb, and navigates on a plain click', async () => {
+    TestBed.configureTestingModule({ providers: [provideRouter(ROUTES)] });
+    const router = TestBed.inject(Router);
+    router.initialNavigation();
+    await router.navigateByUrl('/one');
+    const fixture = TestBed.createComponent(TestAutoGenerateOnlyComponent);
+    await stabilize(fixture);
+    const navigate = vi.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
+    const anchor = hostOf(fixture, 'auto').querySelector('a') as HTMLAnchorElement;
+    expect(anchor.getAttribute('href')).toBe('/one');
+
+    const click = (init: MouseEventInit): boolean => {
+      let prevented: boolean | null = null;
+      const record = (event: Event): void => {
+        prevented = event.defaultPrevented;
+        event.preventDefault();
+      };
+      document.addEventListener('click', record);
+      try {
+        anchor.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, ...init }));
+      } finally {
+        document.removeEventListener('click', record);
+      }
+      return prevented!;
+    };
+    expect(click({ ctrlKey: true })).toBe(false);
+    expect(click({ button: 1 })).toBe(false);
+    expect(navigate).not.toHaveBeenCalled();
+    expect(click({})).toBe(true);
+    expect(navigate).toHaveBeenCalledWith('/one');
   });
 });
