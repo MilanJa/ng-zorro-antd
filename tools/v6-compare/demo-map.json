@@ -321,6 +321,11 @@
   },
   "image": {
     "_antdDir": "image",
+    "toolbar-render": "toolbarRender",
+    "image-render": "imageRender",
+    "cover": "mask",
+    "preview-cover": "preview-mask",
+    "cover-placement": "coverPlacement",
     "service": null
   },
   "table": {

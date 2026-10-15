@@ -26,7 +26,8 @@ type Dir =
   | 'layout'
   | 'dropdown'
   | 'breadcrumb'
-  | 'card';
+  | 'card'
+  | 'image';
 type Lang = 'en-US' | 'zh-CN';
 
 /** Files whose `nz*` inputs/outputs are public API and must be documented. */
@@ -53,7 +54,8 @@ const PUBLIC_FILES: Record<Dir, readonly string[]> = {
   layout: ['sider.component.ts'],
   dropdown: ['dropdown.directive.ts'],
   breadcrumb: ['breadcrumb.component.ts', 'breadcrumb-item.component.ts'],
-  card: ['card.component.ts', 'card-tab.component.ts', 'card-grid.directive.ts', 'card-meta.component.ts']
+  card: ['card.component.ts', 'card-tab.component.ts', 'card-grid.directive.ts', 'card-meta.component.ts'],
+  image: ['image.directive.ts', 'image-group.component.ts']
 };
 /** Internal components that forward `nz*` inputs from their public parent; not documented. */
 const INTERNAL_FILES: Partial<Record<Dir, readonly string[]>> = {
@@ -81,13 +83,14 @@ const V6_ONLY: Record<Dir, readonly string[]> = {
   layout: [],
   dropdown: [],
   breadcrumb: [],
-  card: []
+  card: [],
+  image: []
 };
 const V6_PHRASE: Record<Lang, string> = { 'en-US': 'Requires the v6 stylesheet.', 'zh-CN': '需要 v6 样式表。' };
 const DEPRECATED_PREFIX: Record<Lang, string> = { 'en-US': 'Deprecated, use ', 'zh-CN': '已废弃，请使用 ' };
 
 const DECLARATION =
-  /@(?:Input|Output)\(([^)]*)\)\s*(?:(?:public|protected|readonly|override|set|get)\s+)*(\w+)|(?:readonly\s+)?(\w+)\s*=\s*(?:input|model|output)(?:\.required)?\s*[<(]/g;
+  /@(?:Input|Output)\(([^)]*)\)\s*(?:@\w+\([^)]*\)\s*)*(?:(?:public|protected|readonly|override|set|get)\s+)*(\w+)|(?:readonly\s+)?(\w+)\s*=\s*(?:input|model|output)(?:\.required)?\s*[<(]/g;
 /** A JSDoc block containing `@deprecated`, optionally followed by line comments (the `v6-alias` marker). */
 const DEPRECATED_ABOVE = /\/\*\*(?:(?!\*\/)[\s\S])*@deprecated(?:(?!\*\/)[\s\S])*\*\/(?:\s*\/\/[^\n]*)*$/;
 
@@ -125,6 +128,7 @@ describe('declaration parser', () => {
       'readonly nzF = input<string>();',
       'readonly nzG = output<void>();',
       '@Output() readonly nzH = new EventEmitter<void>();',
+      '@Input({ transform: booleanAttribute }) @WithConfig() nzI = false;',
       'readonly open = input(false);'
     ].join('\n');
     expect(declarations(src)).toEqual([
@@ -134,7 +138,8 @@ describe('declaration parser', () => {
       { name: 'nzD', deprecated: true },
       { name: 'nzF', deprecated: false },
       { name: 'nzG', deprecated: false },
-      { name: 'nzH', deprecated: false }
+      { name: 'nzH', deprecated: false },
+      { name: 'nzI', deprecated: false }
     ]);
   });
 });
