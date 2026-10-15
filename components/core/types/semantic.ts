@@ -13,6 +13,17 @@ import type { NgStyleInterface } from './ng-class';
  * the component's own `typings.ts`, not here: it has no shared shape beyond `$implicit`.
  */
 
+/**
+ * Key beside index. Where a component gains a string key next to an existing index API (`nzActiveKey` beside
+ * `nzSelectedIndex`), a bound key wins; binding both warns once per instance in dev mode, and the index API
+ * keeps its current semantics untouched.
+ *
+ * Controlled key. A bound `nz<Name>Key` input is strictly controlled: a user pick emits the change output,
+ * and the component shows the picked key only after the parent writes it back. When the key input is not
+ * bound the pick shows at once, and the `nzDefault<Name>Key` input seeds the internal value. Programmatic key
+ * changes never emit.
+ */
+
 /** Ant Design v6 semantic `classNames` prop: one optional class string per named slot. */
 export type NzSemanticClassNames<K extends string> = Partial<Record<K, string>>;
 
