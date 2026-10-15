@@ -12,14 +12,11 @@ import {
   ContentChild,
   ContentChildren,
   EventEmitter,
-  Injector,
   Input,
   Output,
   QueryList,
   TemplateRef,
-  ViewChild,
   ViewEncapsulation,
-  afterNextRender,
   booleanAttribute,
   inject
 } from '@angular/core';
@@ -60,22 +57,17 @@ const MIXED_TABS_WARNING = '`nz-card` renders `nzTabList` and ignores the projec
         @if (nzTabList) {
           <nz-tabs
             class="ant-card-head-tabs"
-            [nzSelectedIndex]="tabIndex"
-            [nzHideAll]="tabIndex === -1"
+            [nzActiveKey]="activeKey"
+            [nzDefaultActiveKey]="nzDefaultActiveTabKey"
             [nzSize]="tabSize"
             [nzType]="nzTabProps?.nzType ?? 'line'"
             [nzCentered]="nzTabProps?.nzCentered ?? false"
             [nzAnimated]="nzTabProps?.nzAnimated ?? true"
             [nzTabBarExtraContent]="nzTabBarExtraContent ? cardTabBarExtra : undefined"
-            (nzSelectedIndexChange)="onTabsIndexChange($event)"
+            (nzActiveKeyChange)="onActiveKeyChange($event)"
           >
             @for (item of nzTabList; track item.key) {
-              <nz-tab
-                [nzTitle]="tabTitle(item)"
-                [nzIcon]="item.icon"
-                [nzDisabled]="item.disabled"
-                (nzClick)="onTabClick($index)"
-              />
+              <nz-tab [nzKey]="item.key" [nzTitle]="tabTitle(item)" [nzIcon]="item.icon" [nzDisabled]="item.disabled" />
             }
           </nz-tabs>
           <ng-template #cardTabBarExtra>
@@ -125,7 +117,6 @@ const MIXED_TABS_WARNING = '`nz-card` renders `nzTabList` and ignores the projec
 })
 export class NzCardComponent implements AfterContentChecked {
   private readonly cdr = inject(ChangeDetectorRef);
-  private readonly injector = inject(Injector);
   protected readonly dir = inject(Directionality).valueSignal;
 
   readonly _nzModuleName: NzConfigKey = NZ_CONFIG_MODULE_NAME;
@@ -153,7 +144,6 @@ export class NzCardComponent implements AfterContentChecked {
   @Output() readonly nzTabChange = new EventEmitter<string>();
   @ContentChild(NzCardTabComponent, { static: false }) listOfNzCardTabComponent?: NzCardTabComponent;
   @ContentChildren(NzCardGridDirective) listOfNzCardGridDirective!: QueryList<NzCardGridDirective>;
-  @ViewChild(NzTabsComponent) private headTabs?: NzTabsComponent;
 
   private uncontrolledKey: string | null = null;
   private mixedTabsWarned = false;
@@ -162,7 +152,10 @@ export class NzCardComponent implements AfterContentChecked {
     onConfigChangeEventForComponent(NZ_CONFIG_MODULE_NAME, () => this.cdr.markForCheck());
   }
 
-  /** The bound key, else the user's last pick, else `nzDefaultActiveTabKey`, else the first item's key. */
+  /**
+   * The key the head tabs show: the bound key, else the user's last pick, else `nzDefaultActiveTabKey`,
+   * else the first item's key. A bound key that matches no item shows no active tab.
+   */
   protected get activeKey(): string | null {
     if (this.nzActiveTabKey != null) {
       return this.nzActiveTabKey;
@@ -170,12 +163,6 @@ export class NzCardComponent implements AfterContentChecked {
     const items = this.nzTabList ?? [];
     const wanted = this.uncontrolledKey ?? this.nzDefaultActiveTabKey;
     return (items.find(item => item.key === wanted) ?? items[0])?.key ?? null;
-  }
-
-  /** Index of the active key in `nzTabList`; `-1` when a bound key matches no item. */
-  protected get tabIndex(): number {
-    const key = this.activeKey;
-    return (this.nzTabList ?? []).findIndex(item => item.key === key);
   }
 
   /** antd's tab size: `small` for a small card, otherwise `large`, unless `nzTabProps.nzSize` is set. */
@@ -195,48 +182,15 @@ export class NzCardComponent implements AfterContentChecked {
     return item.label;
   }
 
-  /** nz-tabs reports the index it now shows; any index other than the one the card asks for is the user's pick. */
-  protected onTabsIndexChange(index: number): void {
-    if (index !== this.clampTabIndex(this.tabIndex)) {
-      this.pick(index);
-    }
-  }
-
   /**
-   * nz-tabs reports no index change for a click on the tab it already shows. With a bound key that
-   * matches no item, that tab is shown without being active, so the click is a pick.
+   * The head tabs report user picks only and keep showing the bound key, so a bound `nzActiveTabKey`
+   * moves only when the parent writes the pick back; without one the card follows the pick itself.
    */
-  protected onTabClick(index: number): void {
-    if (this.tabIndex === -1 && index === this.headTabs?.nzSelectedIndex) {
-      this.pick(index);
-    }
-  }
-
-  private pick(index: number): void {
-    const key = this.nzTabList?.[index]?.key;
-    if (key === undefined || key === this.activeKey) {
-      return;
-    }
+  protected onActiveKeyChange(key: string): void {
     if (this.nzActiveTabKey == null) {
       this.uncontrolledKey = key;
-    } else {
-      afterNextRender(() => this.followBoundKey(), { injector: this.injector });
     }
     this.nzActiveTabKeyChange.emit(key);
     this.nzTabChange.emit(key);
-  }
-
-  /** A bound key that the parent did not update takes the head tabs back after the next render. */
-  private followBoundKey(): void {
-    const index = this.clampTabIndex(this.tabIndex);
-    if (this.headTabs && this.headTabs.nzSelectedIndex !== index) {
-      this.headTabs.nzSelectedIndex = index;
-      this.cdr.markForCheck();
-    }
-  }
-
-  /** The index nz-tabs shows for `index`: it clamps into range, so `-1` shows the first tab. */
-  private clampTabIndex(index: number): number {
-    return Math.min((this.nzTabList?.length ?? 0) - 1, Math.max(index, 0));
   }
 }

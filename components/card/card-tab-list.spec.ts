@@ -242,12 +242,13 @@ describe('nz-card nzTabList', () => {
     host.activeKey.set('zzz');
     await expect(settle(fixture)).resolves.toBeUndefined();
     const headTabs = headTabsOf(fixture)!;
+    expect(cardOf(fixture).querySelector('.ant-tabs-tab-active')).toBeNull();
     expect(headTabs.querySelector('[aria-selected="true"]')).toBeNull();
     expect((headTabs.querySelector('[nz-tabs-ink-bar]') as HTMLElement).hidden).toBe(true);
     expect(host.keyChange).not.toHaveBeenCalled();
     expect(host.tabChange).not.toHaveBeenCalled();
 
-    // the first tab is the one nz-tabs shows; clicking it is still a pick
+    // with no tab active, clicking the first tab is a pick
     tabsOf(fixture)[0].click();
     await settle(fixture);
     expect(host.tabChange.mock.calls).toEqual([['a']]);
@@ -258,6 +259,7 @@ describe('nz-card nzTabList', () => {
     expect(host.tabChange.mock.calls).toEqual([['a'], ['c']]);
     expect(host.keyChange.mock.calls).toEqual([['a'], ['c']]);
     expect(headTabs.querySelector('[aria-selected="true"]')).toBeNull();
+    expect(cardOf(fixture).querySelector('.ant-tabs-tab-active')).toBeNull();
   });
 
   it('derives the head tab size from nzSize, and nzTabProps.nzSize overrides it', async () => {

@@ -30,6 +30,17 @@ class TestCardMixedTabsComponent {
   readonly items = signal<NzCardTabItem[] | null>(null);
 }
 
+@Component({
+  imports: [NzCardModule],
+  template: `<nz-card [nzTabList]="items" nzActiveTabKey="b">body</nz-card>`
+})
+class TestCardKeyedTabsComponent {
+  readonly items: NzCardTabItem[] = [
+    { key: 'a', label: 'A' },
+    { key: 'b', label: 'B' }
+  ];
+}
+
 async function settle(fixture: ComponentFixture<unknown>): Promise<void> {
   fixture.detectChanges();
   await fixture.whenStable();
@@ -82,5 +93,15 @@ describe('card tab warnings', () => {
     expect(root.querySelector('#projected')).toBeNull();
     expect(root.textContent).not.toContain('Projected');
     expect(messages().filter(m => m.includes(MIXED)).length).toBe(1);
+  });
+
+  // nz-tabs warns once when a key and an index are bound together; no other card spec prints that message.
+  it('binds the head tabs by key alone, so nz-tabs logs no key-and-index warning', async () => {
+    const fixture = TestBed.createComponent(TestCardKeyedTabsComponent);
+    await settle(fixture);
+    await settle(fixture);
+    const active = (fixture.nativeElement as HTMLElement).querySelector('.ant-card-head-tabs .ant-tabs-tab-active');
+    expect(active!.textContent!.trim()).toBe('B');
+    expect(messages().filter(m => m.includes('nzActiveKey') || m.includes('nzSelectedIndex'))).toEqual([]);
   });
 });

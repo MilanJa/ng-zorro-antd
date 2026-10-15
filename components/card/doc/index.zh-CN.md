@@ -20,25 +20,25 @@ description: 通用卡片容器。
 
 ### nz-card
 
-| 参数                      | 说明                                                                                                                                                                 | 类型                                  | 默认值      | 支持全局配置 |
-| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- | ----------- | ------------ |
-| `[nzActions]`             | 卡片操作组，位置在卡片底部                                                                                                                                           | `Array<TemplateRef<void>>`            | -           |
-| `[nzBodyStyle]`           | 内容区域自定义样式                                                                                                                                                   | `{ [key: string]: string }`           | -           |
-| `[nzBordered]`            | 是否有边框                                                                                                                                                           | `boolean`                             | `true`      | ✅           |
-| `[nzCover]`               | 卡片封面                                                                                                                                                             | `TemplateRef<void>`                   | -           |
-| `[nzExtra]`               | 卡片右上角的操作区域                                                                                                                                                 | `string \| TemplateRef<void>`         | -           |
-| `[nzHoverable]`           | 鼠标移过时可浮起                                                                                                                                                     | `boolean`                             | `false`     | ✅           |
-| `[nzLoading]`             | 当卡片内容还在加载中时，可以用 loading 展示一个占位                                                                                                                  | `boolean`                             | `false`     |
-| `[nzTitle]`               | 卡片标题                                                                                                                                                             | `string \| TemplateRef<void>`         | -           |
-| `[nzType]`                | 卡片类型，可设置为 `inner` 或 不设置                                                                                                                                 | `'inner'`                             | -           |
-| `[nzSize]`                | 卡片的尺寸                                                                                                                                                           | `'default' \| 'small'`                | `'default'` | ✅           |
-| `[nzTabList]`             | 页头页签列表，渲染为标题行下方的 `nz-tabs`；设置后忽略投影的 `nz-card-tab`                                                                                           | `NzCardTabItem[] \| null`             | `null`      |
-| `[(nzActiveTabKey)]`      | 当前激活页签的 key（受控）。与任何项都不匹配时不选中页签：没有指示条，也没有 `aria-selected` 的页签，但第一个页签仍保留激活文字颜色，因为 `nz-tabs` 总是持有一个序号 | `string \| null`                      | `null`      |
-| `[nzDefaultActiveTabKey]` | 未绑定 `nzActiveTabKey` 时初始激活页签的 key；未设置或不匹配时为第一项                                                                                               | `string \| null`                      | `null`      |
-| `[nzTabBarExtraContent]`  | 页签栏末尾的附加内容                                                                                                                                                 | `string \| TemplateRef<void> \| null` | `null`      |
-| `[nzTabProps]`            | 页头 `nz-tabs` 的选项。`nzSize` 覆盖由 `nzSize` 推导的尺寸（小卡片为 `small`，否则为 `large`）；未设置的字段为 `line`、不居中、有动画                                | `NzCardTabProps \| null`              | `null`      |
-| `(nzActiveTabKeyChange)`  | 用户切换页签时发出新的 key，配合 `[(nzActiveTabKey)]` 使用                                                                                                           | `EventEmitter<string>`                | -           |
-| `(nzTabChange)`           | 用户切换页签后的回调；通过程序修改 key 时不触发                                                                                                                      | `EventEmitter<string>`                | -           |
+| 参数                      | 说明                                                                                                                                  | 类型                                  | 默认值      | 支持全局配置 |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- | ----------- | ------------ |
+| `[nzActions]`             | 卡片操作组，位置在卡片底部                                                                                                            | `Array<TemplateRef<void>>`            | -           |
+| `[nzBodyStyle]`           | 内容区域自定义样式                                                                                                                    | `{ [key: string]: string }`           | -           |
+| `[nzBordered]`            | 是否有边框                                                                                                                            | `boolean`                             | `true`      | ✅           |
+| `[nzCover]`               | 卡片封面                                                                                                                              | `TemplateRef<void>`                   | -           |
+| `[nzExtra]`               | 卡片右上角的操作区域                                                                                                                  | `string \| TemplateRef<void>`         | -           |
+| `[nzHoverable]`           | 鼠标移过时可浮起                                                                                                                      | `boolean`                             | `false`     | ✅           |
+| `[nzLoading]`             | 当卡片内容还在加载中时，可以用 loading 展示一个占位                                                                                   | `boolean`                             | `false`     |
+| `[nzTitle]`               | 卡片标题                                                                                                                              | `string \| TemplateRef<void>`         | -           |
+| `[nzType]`                | 卡片类型，可设置为 `inner` 或 不设置                                                                                                  | `'inner'`                             | -           |
+| `[nzSize]`                | 卡片的尺寸                                                                                                                            | `'default' \| 'small'`                | `'default'` | ✅           |
+| `[nzTabList]`             | 页头页签列表，渲染为标题行下方的 `nz-tabs`；设置后忽略投影的 `nz-card-tab`                                                            | `NzCardTabItem[] \| null`             | `null`      |
+| `[(nzActiveTabKey)]`      | 当前激活页签的 key（受控）。与任何项都不匹配时不选中页签：没有激活的页签、没有指示条，也没有 `aria-selected` 的页签                   | `string                               | null`       | `null`       |
+| `[nzDefaultActiveTabKey]` | 未绑定 `nzActiveTabKey` 时初始激活页签的 key；未设置或不匹配时为第一项                                                                | `string \| null`                      | `null`      |
+| `[nzTabBarExtraContent]`  | 页签栏末尾的附加内容                                                                                                                  | `string \| TemplateRef<void> \| null` | `null`      |
+| `[nzTabProps]`            | 页头 `nz-tabs` 的选项。`nzSize` 覆盖由 `nzSize` 推导的尺寸（小卡片为 `small`，否则为 `large`）；未设置的字段为 `line`、不居中、有动画 | `NzCardTabProps \| null`              | `null`      |
+| `(nzActiveTabKeyChange)`  | 用户切换页签时发出新的 key，配合 `[(nzActiveTabKey)]` 使用                                                                            | `EventEmitter<string>`                | -           |
+| `(nzTabChange)`           | 用户切换页签后的回调；通过程序修改 key 时不触发                                                                                       | `EventEmitter<string>`                | -           |
 
 ### nz-card-meta
 
