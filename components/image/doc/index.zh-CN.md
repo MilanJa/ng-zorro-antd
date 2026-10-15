@@ -16,15 +16,16 @@ description: 可预览的图片。
 
 ### [nz-image]
 
-| 参数                  | 说明                                                                                                     | 类型        | 默认值  | 支持全局配置 |
-| --------------------- | -------------------------------------------------------------------------------------------------------- | ----------- | ------- | ------------ |
-| `nzSrc`               | 图片地址                                                                                                 | `string`    | -       | -            |
-| `nzFallback`          | 加载失败容错地址                                                                                         | `string`    | -       | ✅           |
-| `nzPlaceholder`       | 加载占位地址                                                                                             | `string`    | -       | ✅           |
-| `nzDisablePreview`    | 是否禁止预览                                                                                             | `boolean`   | `false` | ✅           |
-| `nzCloseOnNavigation` | 当用户在历史中前进/后退时是否关闭预览。注意，这通常不包括点击链接（除非用户使用 HashLocationStrategy）。 | `boolean`   | `false` | ✅           |
-| `nzDirection`         | 文字方向                                                                                                 | `Direction` | `'ltr'` | ✅           |
-| `nzScaleStep`         | `1 + nzScaleStep` 为缩放放大的每步倍数                                                                   | `number`    | `0.5`   | ✅           |
+| 参数                    | 说明                                                                                                     | 类型        | 默认值  | 支持全局配置 |
+| ----------------------- | -------------------------------------------------------------------------------------------------------- | ----------- | ------- | ------------ |
+| `[nzSrc]`               | 图片地址                                                                                                 | `string`    | -       | -            |
+| `[nzSrcset]`            | 图片 `srcset`，设置在 `img` 上并传给预览                                                                 | `string`    | -       | -            |
+| `[nzFallback]`          | 加载失败容错地址                                                                                         | `string`    | -       | ✅           |
+| `[nzPlaceholder]`       | 加载占位地址                                                                                             | `string`    | -       | ✅           |
+| `[nzDisablePreview]`    | 是否禁止预览                                                                                             | `boolean`   | `false` | ✅           |
+| `[nzCloseOnNavigation]` | 当用户在历史中前进/后退时是否关闭预览。注意，这通常不包括点击链接（除非用户使用 HashLocationStrategy）。 | `boolean`   | `false` | ✅           |
+| `[nzDirection]`         | 文字方向                                                                                                 | `Direction` | `'ltr'` | ✅           |
+| `[nzScaleStep]`         | `1 + nzScaleStep` 为缩放放大的每步倍数                                                                   | `number`    | `0.5`   | ✅           |
 
 其他属性见 [<img\>](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#Attributes)
 
@@ -71,6 +72,6 @@ description: 可预览的图片。
 
 ### NzImageGroupComponent
 
-| 名称          | 描述                                   | 类型     | 默认值 |
-| ------------- | -------------------------------------- | -------- | ------ |
-| `nzScaleStep` | `1 + nzScaleStep` 为缩放放大的每步倍数 | `number` | -      |
+| 名称            | 描述                                   | 类型     | 默认值 |
+| --------------- | -------------------------------------- | -------- | ------ |
+| `[nzScaleStep]` | `1 + nzScaleStep` 为缩放放大的每步倍数 | `number` | -      |
