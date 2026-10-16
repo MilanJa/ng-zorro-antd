@@ -7,10 +7,11 @@ import { ApplicationInitStatus, ApplicationRef, Component } from '@angular/core'
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom } from 'rxjs';
 
-import { nzDarkAlgorithm, NZ_THEME_STYLE_ID, NzThemeDirective, NzThemeService } from 'ng-zorro-antd/core/theme';
+import { nzDarkAlgorithm, NzThemeDirective, NzThemeService } from 'ng-zorro-antd/core/theme';
 
 import { hasV6ThemeKeys, Theme } from './config';
 import { NzConfigService, provideNzConfig } from './config.service';
+import { NZ_THEME_STYLE_ID } from '../theme/theme.service';
 
 describe('NzConfig.theme', () => {
   afterEach(() => {

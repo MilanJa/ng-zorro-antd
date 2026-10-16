@@ -3,10 +3,10 @@
  * found in the LICENSE file at https://github.com/NG-ZORRO/ng-zorro-antd/blob/master/LICENSE
  */
 
-export * from './algorithms';
-export * from './theme.types';
-export * from './theme.service';
-export * from './theme.directive';
-export * from './theme-scope';
+export { nzCompactAlgorithm, nzDarkAlgorithm, nzDefaultAlgorithm } from './algorithms';
+export type { NzComponentsConfig, NzMappingAlgorithm, NzThemeConfig } from './theme.types';
+export { NzThemeService } from './theme.service';
+export { NzThemeDirective } from './theme.directive';
+export { NZ_THEME_SCOPE, nzThemeScopeClasses } from './theme-scope';
 export type { NzAliasToken, NzComponentTokenMap, NzSeedToken } from './generated/tokens';
-export * from './theme.api';
+export { getNzDesignToken, renderNzThemeCss } from './theme.api';
