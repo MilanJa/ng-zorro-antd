@@ -188,7 +188,8 @@ export async function renderThemeCss(
  * Selector for a component's unprefixed (alias-level) overrides: every element whose class list contains a
  * class starting with the component's root class (`ant-btn`, `ant-btn-icon`, ...), except elements that
  * belong to a component with a longer root of the same family (`ant-input` must not claim
- * `ant-input-number*`, `ant-tree` must not claim `ant-tree-select*`). Those longer roots are derived from
+ * `ant-input-number*`, `ant-tree` must not claim `ant-tree-select*`), nor anything inside such an element (`ant-picker` must not claim the cells of
+ * `ant-picker-calendar`). Those longer roots are derived from
  * `COMPONENT_ROOT_CLS`: every other root that starts with `<root>-`. Falls back to `selector` for a
  * registry entry without a root class (a Node test keeps `COMPONENT_ROOT_CLS` in sync with the
  * registry, so this is defensive only).
@@ -203,7 +204,7 @@ function componentScope(selector: string, component: string): string {
     return selector;
   }
   const longerRoots = new Set(Object.values(COMPONENT_ROOT_CLS).filter(other => other.startsWith(`${root}-`)));
-  const exclusions = [...longerRoots].map(longer => `:not([class*="${longer}"])`).join('');
+  const exclusions = [...longerRoots].map(longer => `:not([class*="${longer}"]):not([class*="${longer}"] *)`).join('');
   const elements = `:is([class^="${root}"],[class*=" ${root}"])${exclusions}`;
   return selector === ':root' ? elements : `${selector} ${elements}, ${selector}${elements}`;
 }

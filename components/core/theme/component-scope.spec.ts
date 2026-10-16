@@ -27,7 +27,10 @@ describe('component-scoped alias overrides in the document', () => {
       <span id="tree" class="ant-tree"></span>
       <span id="tree-select" class="ant-tree-select"></span>
       <span id="picker" class="ant-picker ant-picker-range"></span>
-      <span id="calendar" class="ant-picker-calendar ant-picker-calendar-full"></span>
+      <span id="calendar" class="ant-picker-calendar ant-picker-calendar-full">
+        <span id="cell-inner" class="ant-picker-cell-inner"></span>
+        <span id="picker-in-calendar" class="ant-picker"></span>
+      </span>
     `;
     document.body.appendChild(host);
   });
@@ -64,6 +67,14 @@ describe('component-scoped alias overrides in the document', () => {
     await apply({ DatePicker: { colorPrimary: '#123456' } });
     expect(tinted('picker')).toBe(true);
     expect(tinted('calendar')).toBe(false);
+  });
+
+  it('keeps a DatePicker override out of the calendar subtree, which a Calendar override still reaches', async () => {
+    await apply({ DatePicker: { colorPrimary: '#123456' } });
+    expect(tinted('cell-inner')).toBe(false);
+    expect(tinted('picker-in-calendar')).toBe(false);
+    await apply({ Calendar: { colorPrimary: '#123456' } });
+    expect(tinted('cell-inner')).toBe(true);
   });
 
   it('applies the same exclusions inside a theme scope', async () => {

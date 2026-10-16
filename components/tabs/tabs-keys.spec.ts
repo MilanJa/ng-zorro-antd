@@ -163,6 +163,27 @@ class TestTabsKeysDuplicateComponent {
   readonly keyChange = vi.fn();
 }
 
+@Component({
+  imports: [NzTabsModule],
+  template: `
+    <nz-tabs
+      [(nzSelectedIndex)]="idx"
+      nzDefaultActiveKey="c"
+      (nzSelectedIndexChange)="indexChange($event)"
+      (nzSelectChange)="selectChange($event)"
+    >
+      <nz-tab nzKey="a" nzTitle="Alpha">Pane Alpha</nz-tab>
+      <nz-tab nzKey="b" nzTitle="Beta">Pane Beta</nz-tab>
+      <nz-tab nzKey="c" nzTitle="Gamma">Pane Gamma</nz-tab>
+    </nz-tabs>
+  `
+})
+class TestTabsKeysDefaultAndIndexComponent {
+  idx = 0;
+  readonly indexChange = vi.fn();
+  readonly selectChange = vi.fn();
+}
+
 const tabsHost = (fixture: ComponentFixture<unknown>, id?: string): HTMLElement =>
   (fixture.nativeElement as HTMLElement).querySelector(id ? `nz-tabs#${id}` : 'nz-tabs')!;
 const tabEls = (host: HTMLElement): HTMLElement[] => Array.from(host.querySelectorAll<HTMLElement>('.ant-tabs-tab'));
@@ -341,6 +362,22 @@ describe('nz-tabs string keys', () => {
     tabEls(el)[4].click();
     await settle(fixture);
     expect(host.keyChange).not.toHaveBeenCalled();
+    expect(activeLabel(el)).toBe('Alpha');
+  });
+
+  it('uncontrolled: a default key that overrides a bound nzSelectedIndex updates the two-way model once', async () => {
+    const fixture = TestBed.createComponent(TestTabsKeysDefaultAndIndexComponent);
+    const host = fixture.componentInstance;
+    await settle(fixture);
+    const el = tabsHost(fixture);
+    expect(activeLabel(el)).toBe('Gamma');
+    expect(host.idx).toBe(2);
+    expect(host.indexChange.mock.calls).toEqual([[2]]);
+    expect(host.selectChange).not.toHaveBeenCalled();
+
+    tabEls(el)[0].click();
+    await settle(fixture);
+    expect(host.idx).toBe(0);
     expect(activeLabel(el)).toBe('Alpha');
   });
 

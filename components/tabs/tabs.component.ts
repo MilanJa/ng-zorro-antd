@@ -312,6 +312,8 @@ export class NzTabsComponent implements AfterContentChecked, AfterContentInit {
   private selectedIndexBound = false;
   private defaultKeyPending = true;
   private keyAndIndexWarned = false;
+  /** The default key moved the first selection away from a bound `nzSelectedIndex`. */
+  private defaultKeyMovedBoundIndex = false;
   private keyAndRouterWarned = false;
   private tabLabelSubscription = Subscription.EMPTY;
   private canDeactivateSubscription = Subscription.EMPTY;
@@ -390,7 +392,8 @@ export class NzTabsComponent implements AfterContentChecked, AfterContentInit {
       Promise.resolve().then(() => {
         this.markActiveTab(indexToSelect);
 
-        if (!isFirstRun) {
+        if (!isFirstRun || this.defaultKeyMovedBoundIndex) {
+          this.defaultKeyMovedBoundIndex = false;
           this.nzSelectedIndexChange.emit(indexToSelect);
         }
       });
@@ -457,6 +460,7 @@ export class NzTabsComponent implements AfterContentChecked, AfterContentInit {
       this.defaultKeyPending = false;
       const index = this.findTabIndex(this.nzDefaultActiveKey);
       if (index !== -1) {
+        this.defaultKeyMovedBoundIndex = this.selectedIndexBound && this.clampTabIndex(this.indexToSelect) !== index;
         this.indexToSelect = index;
       }
     }

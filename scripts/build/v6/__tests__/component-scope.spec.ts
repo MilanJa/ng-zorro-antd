@@ -62,6 +62,9 @@ describe('component-scoped alias overrides', () => {
       expect(await scopeOf(shorter), `${shorter} must not reach ${longer}`).toContain(
         `:not([class*="${roots[longer]}"])`
       );
+      expect(await scopeOf(shorter), `${shorter} must not reach inside ${longer}`).toContain(
+        `:not([class*="${roots[longer]}"] *)`
+      );
     }
   });
 
