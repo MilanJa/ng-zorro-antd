@@ -86,15 +86,28 @@ NG-ZORRO 提供了一份基于 Ant Design v6 生成的可选样式表。它将 v
 "styles": ["node_modules/ng-zorro-antd/ng-zorro-antd.v6.min.css"]
 ```
 
-或者自行组合（模板 + 一份令牌文件 + CDK 浮层规则）：
+或者按以下顺序自行组合（模板 + 各组件补丁 + 一份令牌文件 + CDK 浮层规则），结果与上面的完整样式表逐字节一致：
 
 ```css
 @import 'ng-zorro-antd/style/v6/template.css';
+@import 'ng-zorro-antd/style/v6/component-patches.css';
 @import 'ng-zorro-antd/style/v6/tokens.default.css'; /* 或 tokens.dark.css / tokens.compact.css */
 @import 'ng-zorro-antd/style/v6/patch.css';
 ```
 
+`component-patches.css` 负责让 Ant Design 的 CSS 适配 NG-ZORRO 的 DOM；缺少它时，例如所有下拉菜单都会停留在 antd 用于测量的屏幕外位置。
+
 或者按组件单独引入：`ng-zorro-antd/button/style/v6/index.css` 加一份令牌文件；每个组件的文件也包含它所渲染的其他组件的 ng-zorro 补丁（例如 `time-picker` 包含 date-picker 的补丁，`cascader` 包含 select 的补丁）。
+
+### 全局重置
+
+v4 样式表会对整个页面做归一化（全局 `box-sizing: border-box`、`body` 的 `margin: 0`、`button` 与 `input` 继承字体和行高、`ul` 与 `ol` 没有上外边距……）。与 Ant Design v5、v6 一样，v6 样式表只重置自己的 `.ant-*` 元素，因此应用从未设置过样式的元素在切换时可能发生位移：裸露的 `<ul>` 会恢复浏览器默认的上外边距，裸露的 `<button>` 会回退到浏览器默认字体。如果应用依赖旧的归一化，请引入 antd 的重置样式：
+
+```css
+@import 'ng-zorro-antd/style/v6/reset.css';
+```
+
+它就是 antd 发布的 `reset.css`，不包含在 `ng-zorro-antd.v6.min.css` 中。
 
 ## 配置主题
 
@@ -124,6 +137,33 @@ inject(NzConfigService).set('theme', { algorithm: nzDarkAlgorithm });
 仅为某个组件覆盖的全局令牌（例如 `components: { Button: { algorithm: true, colorPrimary: '#ff4d4f' } }`）只作用于该组件的元素，不会影响页面的其他部分。
 
 计算变量的引擎会在首次使用某个 v6 字段时才被惰性加载；只加载 CSS 的应用在运行时不会为此付出任何代价。旧版字段（`primaryColor` 等）仍然驱动着 v4 的变量样式表。
+
+## 从 v4 Less 主题迁移
+
+v4 主题设置的是 Less 变量；v6 主题设置的是种子令牌和组件令牌，其余由算法推导。应用最常设置的变量对应关系如下：
+
+| Less 变量（v4）                                                   | v6 令牌                                                                                                                                   |
+| ----------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `@primary-color`                                                  | `token.colorPrimary`                                                                                                                      |
+| `@primary-1` … `@primary-5`、`@primary-7`                         | `token.colorPrimaryBg`、`colorPrimaryBgHover`、`colorPrimaryBorder`、`colorPrimaryBorderHover`、`colorPrimaryHover`、`colorPrimaryActive` |
+| `@link-color`、`@link-hover-color`、`@link-active-color`          | `token.colorLink`、`colorLinkHover`、`colorLinkActive`                                                                                    |
+| `@info-color`、`@success-color`、`@warning-color`、`@error-color` | `token.colorInfo`、`colorSuccess`、`colorWarning`、`colorError`                                                                           |
+| `@processing-color`                                               | 没有独立的种子；Progress 和处理中状态的 Badge 读取 `colorInfo`                                                                            |
+| `@font-family`、`@font-size-base`                                 | `token.fontFamily`、`fontSize`                                                                                                            |
+| `@border-radius-base`、`@border-radius-sm`、`@border-radius-lg`   | `token.borderRadius`、`borderRadiusSM`、`borderRadiusLG`                                                                                  |
+| `@text-color`、`@text-color-secondary`                            | `token.colorText`、`colorTextSecondary`                                                                                                   |
+| `@border-color-base`、`@border-color-split`                       | `token.colorBorder`、`colorBorderSecondary`                                                                                               |
+| `@layout-body-background`                                         | `token.colorBgLayout`                                                                                                                     |
+| `@component-background`                                           | `token.colorBgContainer`（浮层另有 `colorBgElevated`）                                                                                    |
+| `@layout-sider-background`、`@layout-header-background`           | `components.Layout.siderBg`、`headerBg`                                                                                                   |
+| `@menu-dark-bg`、`@menu-dark-inline-submenu-bg`                   | `components.Menu.darkItemBg`、`darkSubMenuItemBg`（以及 `darkPopupBg`）                                                                   |
+| `@segmented-bg`                                                   | `components.Segmented.trackBg`                                                                                                            |
+
+推导过程有三点与 Less 主题不同：
+
+- **主色梯度由种子推导，偏暗或低饱和的种子会得到偏灰的浅色。** `colorPrimary: '#5c2a98'` 推导出 `colorPrimaryBg: '#d4ccd9'`，因为 antd 的调色板生成器在变亮的同时降低饱和度。v4 中手动设置了 `@primary-1` … `@primary-7` 的主题，在 v6 下同样需要手动设置对应的 `colorPrimary*` 令牌。
+- **在 `nzDarkAlgorithm` 下，`colorPrimary` 是种子而不是最终渲染的颜色。** 算法会基于 `colorBgContainer` 重新推导调色板，因此 `colorPrimary: '#9254de'` 渲染为 `--ant-color-primary: #7f4ac0`。可用 `getNzDesignToken` 读取渲染后的值，或者把 `colorPrimary` 设为能推导出目标颜色的值。
+- **分段控制器的轨道颜色就是布局背景色。** `Segmented.trackBg` 默认为 `colorBgLayout`，因此直接放在布局背景上的 `nz-segmented` 看不到轨道；v4 的 `@segmented-bg` 是一个填充色。当控件不在容器内时，请设置 `components.Segmented.trackBg`。
 
 ## 在 TypeScript 中读取令牌
 
@@ -159,3 +199,4 @@ chart.color = token.colorPrimary;
 - 生成的 CSS 引用的是 `--ant-*` 变量，因此不支持 `ant` 以外的 `cssVar.prefix` 取值。
 - 令牌名称与 antd 完全一致（例如 `--ant-color-primary`、`--ant-button-default-bg`）；直接在 CSS 中覆盖它们对静态值有效，但不会被重新推导，建议优先使用 `NzConfig.theme`。
 - 在 v6 下，带文字的 Divider 的分隔线绘制在 `.ant-divider-rail` 元素上，而不是 v4 使用的宿主 `::before`/`::after` 伪元素上；如果样式表给 `nz-divider::before`/`::after` 上色，需要补充一条匹配 `.ant-divider-rail` 的规则，才能在 v6 下保持颜色一致。
+- 在 v6 下，下拉菜单的菜单项和子菜单标题（`.ant-dropdown-menu-item`、`.ant-dropdown-menu-submenu-title`）是 flex 容器，而 v4 中它们的子元素按行内布局。投影的图标与文字之间的空白不再呈现为间距；请通过 `nzIcon` 投影图标，或者为菜单项或标题设置 `gap`。
