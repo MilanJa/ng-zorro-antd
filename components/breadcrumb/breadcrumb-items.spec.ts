@@ -377,24 +377,33 @@ describe('breadcrumb nzItems', () => {
     expect(texts).toEqual(['/', ':']);
   });
 
-  it('does not prevent or navigate on a modifier click with the router configured', () => {
+  it('does not prevent or navigate on a modifier or non-primary click with the router configured', () => {
     TestBed.configureTestingModule({ providers: [provideRouter([])] });
     const navigate = vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
     create();
     setItems([{ title: 'A', path: 'a' }]);
     const anchor = crumbs(host)[0].querySelector('a')!;
-    let prevented: boolean | null = null;
-    const record = (event: Event): void => {
-      prevented = event.defaultPrevented;
-      event.preventDefault();
-    };
-    document.addEventListener('click', record);
-    try {
-      anchor.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, ctrlKey: true }));
-    } finally {
-      document.removeEventListener('click', record);
+    const cases: MouseEventInit[] = [
+      { ctrlKey: true },
+      { metaKey: true },
+      { shiftKey: true },
+      { altKey: true },
+      { button: 1 }
+    ];
+    for (const init of cases) {
+      let prevented: boolean | null = null;
+      const record = (event: Event): void => {
+        prevented = event.defaultPrevented;
+        event.preventDefault();
+      };
+      document.addEventListener('click', record);
+      try {
+        anchor.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, ...init }));
+      } finally {
+        document.removeEventListener('click', record);
+      }
+      expect(prevented, JSON.stringify(init)).toBe(false);
     }
-    expect(prevented).toBe(false);
     expect(navigate).not.toHaveBeenCalled();
   });
 
