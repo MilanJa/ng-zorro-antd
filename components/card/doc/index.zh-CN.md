@@ -34,7 +34,7 @@ description: 通用卡片容器。
 | `[nzSize]`                | 卡片的尺寸                                                                                                                            | `'default' \| 'small'`                | `'default'` | ✅           |
 | `[nzTabList]`             | 页头页签列表，渲染为标题行下方的 `nz-tabs`；设置后忽略投影的 `nz-card-tab`                                                            | `NzCardTabItem[] \| null`             | `null`      |
 | `[(nzActiveTabKey)]`      | 当前激活页签的 key（受控）。与任何项都不匹配时不选中页签：没有激活的页签、没有指示条，也没有 `aria-selected` 的页签                   | `string \| null`                      | `null`      |
-| `[nzDefaultActiveTabKey]` | 未绑定 `nzActiveTabKey` 时初始激活页签的 key；未设置或不匹配时为第一项                                                                | `string \| null`                      | `null`      |
+| `[nzDefaultActiveTabKey]` | 未绑定 `nzActiveTabKey` 时初始激活页签的 key；未设置或不匹配时为第一项；仅在 `nzTabList` 首次出现时读取一次，之后的变更会被忽略       | `string \| null`                      | `null`      |
 | `[nzTabBarExtraContent]`  | 页签栏末尾的附加内容                                                                                                                  | `string \| TemplateRef<void> \| null` | `null`      |
 | `[nzTabProps]`            | 页头 `nz-tabs` 的选项。`nzSize` 覆盖由 `nzSize` 推导的尺寸（小卡片为 `small`，否则为 `large`）；未设置的字段为 `line`、不居中、有动画 | `NzCardTabProps \| null`              | `null`      |
 | `(nzActiveTabKeyChange)`  | 用户切换页签时发出新的 key，配合 `[(nzActiveTabKey)]` 使用                                                                            | `EventEmitter<string>`                | -           |

@@ -180,6 +180,41 @@ describe('nz-card nzTabList', () => {
     expect(host.keyChange).toHaveBeenCalledTimes(1);
   });
 
+  it('uncontrolled: reads nzDefaultActiveTabKey only once, so a later change moves nothing', async () => {
+    const fixture = TestBed.createComponent(TestCardTabListComponent);
+    const host = fixture.componentInstance;
+    host.defaultKey.set('c');
+    await settle(fixture);
+    expect(activeLabelOf(fixture)).toBe('Gamma');
+
+    host.defaultKey.set('b');
+    await settle(fixture);
+    expect(activeLabelOf(fixture)).toBe('Gamma');
+
+    const unset = TestBed.createComponent(TestCardTabListComponent);
+    await settle(unset);
+    expect(activeLabelOf(unset)).toBe('Alpha');
+    unset.componentInstance.defaultKey.set('c');
+    await settle(unset);
+    expect(activeLabelOf(unset)).toBe('Alpha');
+    expect(host.keyChange).not.toHaveBeenCalled();
+  });
+
+  it('uncontrolled: latches nzDefaultActiveTabKey when the tab list arrives', async () => {
+    const fixture = TestBed.createComponent(TestCardTabListComponent);
+    const host = fixture.componentInstance;
+    host.tabList.set(null);
+    host.defaultKey.set('b');
+    await settle(fixture);
+
+    host.tabList.set(ITEMS);
+    await settle(fixture);
+    expect(activeLabelOf(fixture)).toBe('Beta');
+    host.defaultKey.set('c');
+    await settle(fixture);
+    expect(activeLabelOf(fixture)).toBe('Beta');
+  });
+
   it('uncontrolled: an nzDefaultActiveTabKey that matches no item falls back to the first item', async () => {
     const fixture = TestBed.createComponent(TestCardTabListComponent);
     fixture.componentInstance.defaultKey.set('zzz');

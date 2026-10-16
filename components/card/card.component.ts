@@ -58,7 +58,6 @@ const MIXED_TABS_WARNING = '`nz-card` renders `nzTabList` and ignores the projec
           <nz-tabs
             class="ant-card-head-tabs"
             [nzActiveKey]="activeKey"
-            [nzDefaultActiveKey]="nzDefaultActiveTabKey"
             [nzSize]="tabSize"
             [nzType]="nzTabProps?.nzType ?? 'line'"
             [nzCentered]="nzTabProps?.nzCentered ?? false"
@@ -135,7 +134,7 @@ export class NzCardComponent implements AfterContentChecked {
   @Input() nzTabList: NzCardTabItem[] | null | undefined = null;
   /** Controlled key of the active head tab (antd `activeTabKey`). */
   @Input() nzActiveTabKey: string | null | undefined = null;
-  /** Initial key while `nzActiveTabKey` is not bound (antd `defaultActiveTabKey`). */
+  /** Initial key while `nzActiveTabKey` is not bound (antd `defaultActiveTabKey`); read once, when `nzTabList` first appears. */
   @Input() nzDefaultActiveTabKey: string | null | undefined = null;
   @Input() nzTabBarExtraContent: string | TemplateRef<void> | null | undefined = null;
   @Input() nzTabProps: NzCardTabProps | null | undefined = null;
@@ -146,6 +145,8 @@ export class NzCardComponent implements AfterContentChecked {
   @ContentChildren(NzCardGridDirective) listOfNzCardGridDirective!: QueryList<NzCardGridDirective>;
 
   private uncontrolledKey: string | null = null;
+  private defaultKeyLatched = false;
+  private latchedDefaultKey: string | null | undefined = null;
   private mixedTabsWarned = false;
 
   constructor() {
@@ -153,15 +154,15 @@ export class NzCardComponent implements AfterContentChecked {
   }
 
   /**
-   * The key the head tabs show: the bound key, else the user's last pick, else `nzDefaultActiveTabKey`,
-   * else the first item's key. A bound key that matches no item shows no active tab.
+   * The key the head tabs show: the bound key, else the user's last pick, else `nzDefaultActiveTabKey`
+   * as it was when the tab list first appeared, else the first item's key. A bound key that matches no item shows no active tab.
    */
   protected get activeKey(): string | null {
     if (this.nzActiveTabKey != null) {
       return this.nzActiveTabKey;
     }
     const items = this.nzTabList ?? [];
-    const wanted = this.uncontrolledKey ?? this.nzDefaultActiveTabKey;
+    const wanted = this.uncontrolledKey ?? this.latchedDefaultKey;
     return (items.find(item => item.key === wanted) ?? items[0])?.key ?? null;
   }
 
@@ -171,6 +172,10 @@ export class NzCardComponent implements AfterContentChecked {
   }
 
   ngAfterContentChecked(): void {
+    if (!this.defaultKeyLatched && this.nzTabList) {
+      this.defaultKeyLatched = true;
+      this.latchedDefaultKey = this.nzDefaultActiveTabKey;
+    }
     if (!this.mixedTabsWarned && this.nzTabList && this.listOfNzCardTabComponent) {
       this.mixedTabsWarned = true;
       warn(MIXED_TABS_WARNING);
