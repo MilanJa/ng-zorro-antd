@@ -614,10 +614,13 @@ describe('tabs', () => {
         expect(tab.nativeElement.textContent.trim()).toBe('Title in tabs');
       });
 
-      dispatchFakeEvent(element.querySelector('nz-tab-nav-operation')!, 'mouseenter');
-      await stabilize(fixture, 32);
+      // `nz-dropdown` opens on a hover debounced by its own `auditTime(150)`.
+      dispatchFakeEvent(element.querySelector('nz-tab-nav-operation button')!, 'mouseenter');
+      await stabilize(fixture, 200);
 
       const inMenu = overlayContainerElement.querySelectorAll<HTMLLIElement>('.ant-tabs-dropdown-menu-item');
+      expect(inMenu.length).toBeGreaterThan(0);
+      expect(inMenu.length).toBe(fixture.componentInstance.tabSet.tabNavBarRef.hiddenItems.length);
       inMenu.forEach(tab => {
         expect(tab.textContent!.trim()).toBe('Title in menu');
       });
