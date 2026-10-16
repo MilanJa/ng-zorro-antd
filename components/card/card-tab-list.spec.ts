@@ -41,9 +41,11 @@ const ITEMS: NzCardTabItem[] = [
     </nz-card>
     <ng-template #labelTpl><b class="tpl-label">Templated</b></ng-template>
     <ng-template #extraTpl><a class="tpl-extra">More</a></ng-template>
+    <ng-template #iconTpl><i class="tpl-icon">*</i></ng-template>
   `
 })
 class TestCardTabListComponent {
+  readonly iconTpl = viewChild.required<TemplateRef<void>>('iconTpl');
   readonly labelTpl = viewChild.required<TemplateRef<void>>('labelTpl');
   readonly extraTpl = viewChild.required<TemplateRef<void>>('extraTpl');
   readonly title = signal<string | undefined>('Card title');
@@ -295,6 +297,42 @@ describe('nz-card nzTabList', () => {
     expect(host.keyChange.mock.calls).toEqual([['a'], ['c']]);
     expect(headTabs.querySelector('[aria-selected="true"]')).toBeNull();
     expect(cardOf(fixture).querySelector('.ant-tabs-tab-active')).toBeNull();
+  });
+
+  it('a bound nzActiveTabKey may name a disabled item, which then shows as active', async () => {
+    const fixture = TestBed.createComponent(TestCardTabListComponent);
+    const host = fixture.componentInstance;
+    host.activeKey.set('d');
+    await settle(fixture);
+    expect(activeLabelOf(fixture)).toBe('Delta');
+    expect(tabsOf(fixture)[3].classList).toContain('ant-tabs-tab-disabled');
+    expect(host.keyChange).not.toHaveBeenCalled();
+
+    tabsOf(fixture)[3].click();
+    await settle(fixture);
+    expect(host.keyChange).not.toHaveBeenCalled();
+  });
+
+  it('forwards nzTabProps.nzAnimated to the head tabs', async () => {
+    const fixture = TestBed.createComponent(TestCardTabListComponent);
+    const host = fixture.componentInstance;
+    await settle(fixture);
+    expect(cardOf(fixture).querySelector('.ant-card-head-tabs .ant-tabs-content-animated')).not.toBeNull();
+
+    host.tabProps.set({ nzAnimated: false });
+    await settle(fixture);
+    expect(cardOf(fixture).querySelector('.ant-card-head-tabs .ant-tabs-content-animated')).toBeNull();
+    expect(cardOf(fixture).querySelector('.ant-card-head-tabs .ant-tabs-content')).not.toBeNull();
+  });
+
+  it('renders a TemplateRef icon inside its tab', async () => {
+    const fixture = TestBed.createComponent(TestCardTabListComponent);
+    const host = fixture.componentInstance;
+    host.tabList.set([{ key: 'a', label: 'Alpha', icon: host.iconTpl() }, ...ITEMS.slice(1)]);
+    await settle(fixture);
+    const icon = tabsOf(fixture)[0].querySelector('.ant-tabs-tab-icon .tpl-icon');
+    expect(icon).not.toBeNull();
+    expect(tabsOf(fixture)[0].textContent).toContain('Alpha');
   });
 
   it('derives the head tab size from nzSize, and nzTabProps.nzSize overrides it', async () => {
