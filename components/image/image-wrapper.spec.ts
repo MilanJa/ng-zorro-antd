@@ -120,6 +120,17 @@ class TestImageWrapperCoverAttrComponent {
   readonly src = nextSrc();
 }
 
+@Component({
+  imports: [NzImageModule],
+  template: `
+    <nz-image-wrapper [nzSrc]="src" [nzPreviewCover]="cover" />
+    <ng-template #cover><button class="cover-button" type="button">Edit</button></ng-template>
+  `
+})
+class TestImageWrapperInteractiveCoverComponent {
+  readonly src = nextSrc();
+}
+
 const hostOf = (fixture: ComponentFixture<unknown>, selector = 'nz-image-wrapper'): HTMLElement =>
   (fixture.nativeElement as HTMLElement).querySelector(selector)!;
 const innerOf = (fixture: ComponentFixture<unknown>, selector = 'nz-image-wrapper'): NzImageDirective =>
@@ -444,5 +455,20 @@ describe('nz-image-wrapper', () => {
     const text = hostOf(fixture, '#text').querySelector(':scope > .ant-image-cover')!;
     expect(text.textContent!.trim()).toBe('Zoom');
     expect(text.querySelector('.ant-image-mask-info')).toBeNull();
+  });
+
+  it('ignores key presses from interactive cover content', async () => {
+    const fixture = TestBed.createComponent(TestImageWrapperInteractiveCoverComponent);
+    await settle(fixture);
+    const button = hostOf(fixture).querySelector('.cover-button') as HTMLElement;
+    expect(button).not.toBeNull();
+    const onButton = keydown(button, 'Enter');
+    await settle(fixture);
+    expect(onButton.defaultPrevented).toBe(false);
+    expect(previewRoots().length).toBe(0);
+
+    keydown(hostOf(fixture), 'Enter');
+    await settle(fixture);
+    expect(previewRoots().length).toBe(1);
   });
 });

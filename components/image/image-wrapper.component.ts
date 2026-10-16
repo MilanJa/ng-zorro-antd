@@ -10,6 +10,7 @@ import {
   ChangeDetectorRef,
   Component,
   computed,
+  ElementRef,
   HostAttributeToken,
   inject,
   Input,
@@ -27,6 +28,8 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NZ_CONFIG_MODULE_NAME } from './image-config';
 import { ImageStatusType, NzImageDirective } from './image.directive';
 import { NzImagePreviewActionsContext, NzImagePreviewImageContext } from './typings';
+
+const INTERACTIVE_SELECTOR = 'button, a[href], input, select, textarea, [role="button"], [tabindex]';
 
 export type NzImageCoverPlacement = 'center' | 'top' | 'bottom';
 
@@ -114,6 +117,7 @@ function coerceCover(
 export class NzImageWrapperComponent {
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly i18n = inject(NzI18nService);
+  private readonly hostElement: HTMLElement = inject(ElementRef).nativeElement;
   readonly _nzModuleName: NzConfigKey = NZ_CONFIG_MODULE_NAME;
   /** An `aria-label` the app writes on the element wins over `nzAlt`, as antd's `aria-label ?? alt`. */
   private readonly hostAriaLabel = inject(new HostAttributeToken('aria-label'), { optional: true });
@@ -193,10 +197,21 @@ export class NzImageWrapperComponent {
   }
 
   protected onHostKeydown(event: KeyboardEvent): void {
-    if (!this.previewable || (event.key !== 'Enter' && event.key !== ' ')) {
+    if (!this.previewable || (event.key !== 'Enter' && event.key !== ' ') || this.isFromInteractiveContent(event)) {
       return;
     }
     event.preventDefault();
     this.image()?.onPreview();
+  }
+
+  /** A key press on a control inside the cover (a button, a link) belongs to that control. */
+  private isFromInteractiveContent(event: KeyboardEvent): boolean {
+    const host = this.hostElement;
+    const target = event.target;
+    if (!(target instanceof Element) || target === host) {
+      return false;
+    }
+    const interactive = target.closest(INTERACTIVE_SELECTOR);
+    return interactive !== null && interactive !== host && host.contains(interactive);
   }
 }
