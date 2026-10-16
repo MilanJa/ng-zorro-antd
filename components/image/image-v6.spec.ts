@@ -152,3 +152,86 @@ describe('image preview under antd v6 css', () => {
     expect(pane.className).not.toMatch(/\bnz-theme-\d+\b/);
   });
 });
+
+@Component({
+  imports: [NzImageModule],
+  template: `
+    <nz-image-group>
+      <img id="g1" nz-image [nzSrc]="src" width="40" height="40" />
+      <img nz-image [nzSrc]="src" width="40" height="40" />
+    </nz-image-group>
+  `
+})
+class TestImageGroupOrderComponent {
+  src = DATA_URI;
+}
+
+function readToolbarOrder(overlay: OverlayContainer): string[] {
+  return Array.from(overlay.getContainerElement().querySelectorAll<HTMLElement>('.ant-image-preview-actions > li'))
+    .sort((a, b) => a.getBoundingClientRect().left - b.getBoundingClientRect().left)
+    .map(
+      li =>
+        /ant-image-preview-actions-action-(\w+)/.exec(li.className)?.[1] ??
+        (li.classList.contains('ant-image-preview-close')
+          ? 'close'
+          : li.classList.contains('ant-image-preview-operations-progress')
+            ? 'progress'
+            : 'other')
+    );
+}
+
+describe('image preview toolbar order under antd v6 css', () => {
+  let overlay: OverlayContainer;
+
+  beforeEach(() => {
+    installV6Css();
+    TestBed.configureTestingModule({ providers: [provideNzIconsTesting()] });
+    overlay = TestBed.inject(OverlayContainer);
+  });
+
+  afterEach(() => {
+    style.remove();
+    overlay.ngOnDestroy();
+    document.querySelectorAll('style[id^="nz-theme-"]').forEach(s => s.remove());
+  });
+
+  it('reads the actions left to right in antd order, close at the trailing end', async () => {
+    const fixture = TestBed.createComponent(TestImageComponent);
+    fixture.detectChanges();
+    (fixture.debugElement.query(By.css('#img')).nativeElement as HTMLImageElement).click();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(readToolbarOrder(overlay)).toEqual([
+      'flipY',
+      'flipX',
+      'rotateLeft',
+      'rotateRight',
+      'zoomOut',
+      'zoomIn',
+      'close'
+    ]);
+  });
+
+  it('keeps the group progress counter at the leading end', async () => {
+    const fixture: ComponentFixture<TestImageGroupOrderComponent> =
+      TestBed.createComponent(TestImageGroupOrderComponent);
+    fixture.detectChanges();
+    (fixture.debugElement.query(By.css('#g1')).nativeElement as HTMLImageElement).click();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(readToolbarOrder(overlay)).toEqual([
+      'progress',
+      'flipY',
+      'flipX',
+      'rotateLeft',
+      'rotateRight',
+      'zoomOut',
+      'zoomIn',
+      'close'
+    ]);
+  });
+});

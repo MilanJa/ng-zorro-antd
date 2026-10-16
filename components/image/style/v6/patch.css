@@ -37,13 +37,19 @@
 }
 
 /*
- * v4 lays the action list out with `flex-direction: row-reverse` (closest-to-hand action
- * first); v6's `.ant-image-preview-actions` assumes source order and spaces items with
- * `gap` instead, so the reversal is cleared for the v6 action order (flipY, flipX,
- * rotateLeft, rotateRight, zoomOut, zoomIn) to read left-to-right.
+ * The action list's DOM order is v4's: close, zoomIn, zoomOut, rotateRight, rotateLeft, flipX,
+ * flipY. v4 lays it out with `flex-direction: row-reverse`, so the actions read flipY, flipX,
+ * rotateLeft, rotateRight, zoomOut, zoomIn left-to-right with close at the trailing end. That is
+ * antd v6's own action order (`Preview/Footer.js` renders flipY first and zoomIn last), so the
+ * reversal is kept, and set here for when only the v6 bundle is loaded, instead of reading the
+ * list in source order. The progress counter is the list's first item; `order` keeps it at the
+ * leading end of the pill, where it sits in source order.
  */
 .ant-image-preview-actions {
-  flex-direction: row;
+  flex-direction: row-reverse;
+}
+.ant-image-preview-actions > .ant-image-preview-operations-progress {
+  order: 1;
 }
 
 /*
