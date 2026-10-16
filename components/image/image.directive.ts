@@ -14,6 +14,8 @@ import {
   Input,
   OnChanges,
   OnInit,
+  signal,
+  Signal,
   SimpleChanges,
   TemplateRef
 } from '@angular/core';
@@ -76,7 +78,19 @@ export class NzImageDirective implements OnInit, OnChanges {
   @Input() nzImageRender: TemplateRef<NzImagePreviewImageContext> | undefined = undefined;
 
   backLoadImage!: HTMLImageElement;
-  status: ImageStatusType = 'normal';
+  private readonly statusState = signal<ImageStatusType>('normal');
+  /** Load status as a signal, for components that render from it (`nz-image-wrapper`). */
+  readonly imageStatus: Signal<ImageStatusType> = this.statusState.asReadonly();
+
+  /** Load status of the image; reads and writes `imageStatus`. */
+  get status(): ImageStatusType {
+    return this.statusState();
+  }
+
+  set status(value: ImageStatusType) {
+    this.statusState.set(value);
+  }
+
   private backLoadDestroy$ = new Subject<void>();
 
   private parentGroup = inject(NzImageGroupComponent, { optional: true });
