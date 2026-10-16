@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-10-15T09:38:52.113Z",
-  "base": "651a9c9ba62918427d9df1b2c194ad7b8cdd5ee0",
+  "generatedAt": "2026-10-16T11:27:23.770Z",
+  "base": "f202bf8848efbe42c1de517f421ec2aaf8285cef",
   "classes": {
     "affix": [
       "ant-affix"
@@ -673,6 +673,17 @@
       "ant-upload-text"
     ],
     "image": [
+      "ant-image",
+      "ant-image-cover",
+      "ant-image-cover-bottom",
+      "ant-image-cover-center",
+      "ant-image-cover-top",
+      "ant-image-error",
+      "ant-image-img",
+      "ant-image-img-placeholder",
+      "ant-image-mask",
+      "ant-image-mask-info",
+      "ant-image-placeholder",
       "ant-image-preview",
       "ant-image-preview-actions",
       "ant-image-preview-actions-action",
@@ -3009,11 +3020,25 @@
         "ant-image-preview-switch-right-disabled",
         "ant-image-preview-wrap"
       ],
+      "image/image-wrapper.component.ts": [
+        "ant-image",
+        "ant-image-cover",
+        "ant-image-cover-bottom",
+        "ant-image-cover-center",
+        "ant-image-cover-top",
+        "ant-image-error",
+        "ant-image-img",
+        "ant-image-img-placeholder",
+        "ant-image-mask",
+        "ant-image-mask-info",
+        "ant-image-placeholder"
+      ],
       "image/image.directive.ts": [],
       "image/image.module.ts": [],
       "image/image.service.ts": [],
       "image/index.ts": [],
       "image/public-api.ts": [],
+      "image/typings.ts": [],
       "image/utils.ts": []
     },
     "input": {

@@ -333,3 +333,83 @@ describe('image preview render slots under antd v6 css', () => {
     expect(close.getBoundingClientRect().height).toBeGreaterThan(0);
   });
 });
+
+@Component({
+  imports: [NzImageModule],
+  template: `
+    <nz-image-wrapper id="center" [nzSrc]="src" [nzWidth]="100" [nzHeight]="100" />
+    <nz-image-wrapper
+      id="top"
+      [nzSrc]="src"
+      [nzWidth]="100"
+      [nzHeight]="100"
+      nzPreviewCover="top"
+      nzPreviewCoverPlacement="top"
+    />
+    <nz-image-wrapper
+      id="bottom"
+      [nzSrc]="src"
+      [nzWidth]="100"
+      [nzHeight]="100"
+      nzPreviewCover="bottom"
+      nzPreviewCoverPlacement="bottom"
+    />
+    <nz-image-wrapper id="ph" [nzSrc]="src" [nzWidth]="100" [nzHeight]="100" [nzPlaceholder]="true" />
+  `
+})
+class TestImageWrapperV6Component {
+  src = DATA_URI;
+}
+
+describe('nz-image-wrapper under antd v6 css', () => {
+  beforeEach(() => {
+    installV6Css();
+    TestBed.configureTestingModule({ providers: [provideNzIconsTesting()] });
+  });
+
+  afterEach(() => style.remove());
+
+  it("lays out the wrapper, the image and the cover with antd's rules", async () => {
+    const fixture = TestBed.createComponent(TestImageWrapperV6Component);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const byId = (id: string): HTMLElement => (fixture.nativeElement as HTMLElement).querySelector(`#${id}`)!;
+    const coverIn = (host: HTMLElement): HTMLElement => host.querySelector(':scope > .ant-image-cover')!;
+
+    const center = byId('center');
+    expect(getComputedStyle(center).position).toBe('relative');
+    expect(getComputedStyle(center).display).toBe('inline-block');
+    const box = center.getBoundingClientRect();
+    expect(box.width).toBe(100);
+    expect(box.height).toBe(100);
+    expect(center.querySelector('img')!.getBoundingClientRect().width).toBe(100);
+
+    const cover = coverIn(center);
+    const coverStyle = getComputedStyle(cover);
+    expect(coverStyle.position).toBe('absolute');
+    expect(coverStyle.opacity).toBe('0');
+    expect(coverStyle.backgroundColor).toBe('rgba(0, 0, 0, 0.3)');
+    expect(coverStyle.color).toBe('rgb(255, 255, 255)');
+    const coverBox = cover.getBoundingClientRect();
+    expect([coverBox.left, coverBox.top, coverBox.width, coverBox.height]).toEqual([
+      box.left,
+      box.top,
+      box.width,
+      box.height
+    ]);
+
+    const top = byId('top');
+    const topCover = coverIn(top).getBoundingClientRect();
+    expect(topCover.top).toBe(top.getBoundingClientRect().top);
+    expect(topCover.height).toBeLessThan(100);
+
+    const bottom = byId('bottom');
+    const bottomCover = coverIn(bottom).getBoundingClientRect();
+    expect(bottomCover.bottom).toBe(bottom.getBoundingClientRect().bottom);
+    expect(bottomCover.height).toBeLessThan(100);
+
+    const placeholderImg = byId('ph').querySelector('img')!;
+    expect(getComputedStyle(placeholderImg).backgroundImage).toContain('data:image/svg+xml');
+  });
+});

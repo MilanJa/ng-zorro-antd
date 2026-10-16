@@ -52,7 +52,7 @@ const DELIVERED: Record<string, string[]> = {
   'Dropdown submenu title': [],
   Breadcrumb: ['placement', 'items', 'params', 'itemRender', 'dropdownIcon', 'menu'],
   Card: ['tabList', 'activeTabKey', 'defaultActiveTabKey', 'onTabChange', 'tabBarExtraContent', 'tabProps'],
-  Image: ['actionsRender', 'imageRender']
+  Image: ['actionsRender', 'imageRender', 'cover', 'coverPlacement', 'placeholder']
 };
 
 function gapRows(md: string): Array<{ components: string[]; names: string[]; line: string }> {

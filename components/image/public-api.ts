@@ -7,6 +7,7 @@ export * from './image.directive';
 export * from './image.service';
 export * from './image-config';
 export * from './image-group.component';
+export * from './image-wrapper.component';
 export * from './image-preview.component';
 export * from './image-preview-options';
 export * from './image-preview-ref';

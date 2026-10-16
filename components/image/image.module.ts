@@ -7,12 +7,13 @@ import { NgModule } from '@angular/core';
 
 import { NzImageGroupComponent } from './image-group.component';
 import { NzImagePreviewComponent } from './image-preview.component';
+import { NzImageWrapperComponent } from './image-wrapper.component';
 import { NzImageDirective } from './image.directive';
 import { NzImageService } from './image.service';
 
 @NgModule({
-  imports: [NzImageDirective, NzImagePreviewComponent, NzImageGroupComponent],
-  exports: [NzImageDirective, NzImagePreviewComponent, NzImageGroupComponent],
+  imports: [NzImageDirective, NzImagePreviewComponent, NzImageGroupComponent, NzImageWrapperComponent],
+  exports: [NzImageDirective, NzImagePreviewComponent, NzImageGroupComponent, NzImageWrapperComponent],
   providers: [NzImageService]
 })
 export class NzImageModule {}
