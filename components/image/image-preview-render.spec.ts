@@ -207,6 +207,9 @@ describe('image preview render slots', () => {
     const slot = items[1] as HTMLElement;
     expect(slot.className).toBe('');
     expect(getComputedStyle(slot).display).toBe('flex');
+    expect(getComputedStyle(slot).alignItems).toBe('center');
+    expect(getComputedStyle(slot).columnGap).toBe(getComputedStyle(ul).columnGap);
+    expect(slot.style.cssText).toBe('display: flex; align-items: center; gap: inherit;');
     expect(ul.querySelector('.ant-image-preview-actions-action')).toBeNull();
     expect(slot.querySelector('.custom-scale')!.textContent).toBe('1');
     expect(slot.querySelector('.custom-count')!.textContent).toBe('0/1');

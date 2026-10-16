@@ -161,7 +161,7 @@ const NZ_DEFAULT_ROTATE = 0;
                   One unclassed item after close: the list itself is laid out reversed, so the
                   template's own nodes flow in source order inside this flex row instead.
                 -->
-                <li style="display: flex; align-items: center; gap: inherit">
+                <li [style.display]="'flex'" [style.alignItems]="'center'" [style.gap]="'inherit'">
                   <ng-container *ngTemplateOutlet="actionsRender; context: actionsContext()" />
                 </li>
               }
