@@ -20,6 +20,7 @@ import {
   untracked
 } from '@angular/core';
 
+import { warnUnsupportedCssVarPrefix } from './css-var-prefix';
 import { renderThemeCss } from './render-theme-css';
 import { NZ_THEME_SCOPE } from './theme-scope';
 import { NzThemeScopeIdService } from './theme-scope-id.service';
@@ -108,6 +109,7 @@ export class NzThemeDirective {
     let destroyed = false;
     effect(onCleanup => {
       const config = this.effectiveConfig();
+      warnUnsupportedCssVarPrefix(config);
       let stale = false;
       onCleanup(() => {
         stale = true;

@@ -6,6 +6,7 @@
 import { DOCUMENT } from '@angular/common';
 import { CSP_NONCE, inject, Injectable, PendingTasks, Signal, signal } from '@angular/core';
 
+import { warnUnsupportedCssVarPrefix } from './css-var-prefix';
 import type { NzAliasToken } from './generated/tokens';
 import { renderThemeCss } from './render-theme-css';
 import { getNzDesignToken } from './theme.api';
@@ -44,6 +45,7 @@ export class NzThemeService {
   // Server rendering waits for the pending task registered below; tools/v6-compare/ssr-check asserts the
   // serialised `<style id="nz-theme">`.
   set(config: NzThemeConfig): Promise<void> {
+    warnUnsupportedCssVarPrefix(config);
     this.configState.set(config);
     const applied = this.apply(config);
     // Errors reach the caller through the returned promise; the task only tracks completion.
