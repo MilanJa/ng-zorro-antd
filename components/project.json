@@ -165,6 +165,9 @@
     },
     "lint": {
       "command": "eslint \"components/**/*.ts\" \"components/**/*.html\" --cache",
+      "dependsOn": [
+        "generate-v6-engine"
+      ],
       "inputs": [
         "{projectRoot}/**/*.ts",
         "{projectRoot}/**/*.html",
