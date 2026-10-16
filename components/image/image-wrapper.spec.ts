@@ -131,6 +131,18 @@ class TestImageWrapperInteractiveCoverComponent {
   readonly src = nextSrc();
 }
 
+@Component({
+  imports: [NzImageModule],
+  template: `
+    <nz-image-wrapper id="linked" role="link" tabindex="-1" [nzSrc]="src" [nzDisablePreview]="disabled()" />
+    <nz-image-wrapper id="plain" [nzSrc]="src" />
+  `
+})
+class TestImageWrapperRoleComponent {
+  readonly src = nextSrc();
+  readonly disabled = signal(false);
+}
+
 const hostOf = (fixture: ComponentFixture<unknown>, selector = 'nz-image-wrapper'): HTMLElement =>
   (fixture.nativeElement as HTMLElement).querySelector(selector)!;
 const innerOf = (fixture: ComponentFixture<unknown>, selector = 'nz-image-wrapper'): NzImageDirective =>
@@ -470,5 +482,19 @@ describe('nz-image-wrapper', () => {
     keydown(hostOf(fixture), 'Enter');
     await settle(fixture);
     expect(previewRoots().length).toBe(1);
+  });
+
+  it('keeps an app-written role and tabindex, with button and 0 as the defaults', async () => {
+    const fixture = TestBed.createComponent(TestImageWrapperRoleComponent);
+    await settle(fixture);
+    expect(hostOf(fixture, '#linked').getAttribute('role')).toBe('link');
+    expect(hostOf(fixture, '#linked').getAttribute('tabindex')).toBe('-1');
+    expect(hostOf(fixture, '#plain').getAttribute('role')).toBe('button');
+    expect(hostOf(fixture, '#plain').getAttribute('tabindex')).toBe('0');
+
+    fixture.componentInstance.disabled.set(true);
+    await settle(fixture);
+    expect(hostOf(fixture, '#linked').getAttribute('role')).toBe('link');
+    expect(hostOf(fixture, '#linked').getAttribute('tabindex')).toBe('-1');
   });
 });

@@ -102,8 +102,8 @@ function coerceCover(
   host: {
     class: 'ant-image',
     '[class.ant-image-error]': `status() === 'error'`,
-    '[attr.role]': `previewable ? 'button' : null`,
-    '[attr.tabindex]': 'previewable ? 0 : null',
+    '[attr.role]': 'role',
+    '[attr.tabindex]': 'tabindex',
     '[attr.aria-label]': 'ariaLabel',
     '[style.width]': 'cssWidth',
     '[style.height]': 'cssHeight',
@@ -121,6 +121,10 @@ export class NzImageWrapperComponent {
   readonly _nzModuleName: NzConfigKey = NZ_CONFIG_MODULE_NAME;
   /** An `aria-label` the app writes on the element wins over `nzAlt`, as antd's `aria-label ?? alt`. */
   private readonly hostAriaLabel = inject(new HostAttributeToken('aria-label'), { optional: true });
+
+  /** A `role` or `tabindex` the app writes on the element wins over the previewable defaults. */
+  private readonly hostRole = inject(new HostAttributeToken('role'), { optional: true });
+  private readonly hostTabindex = inject(new HostAttributeToken('tabindex'), { optional: true });
 
   @Input() nzSrc: string = '';
   @Input() nzSrcset: string = '';
@@ -149,6 +153,14 @@ export class NzImageWrapperComponent {
 
   get previewable(): boolean {
     return !this.nzDisablePreview && this.status() !== 'error';
+  }
+
+  protected get role(): string | null {
+    return this.previewable ? (this.hostRole ?? 'button') : this.hostRole;
+  }
+
+  protected get tabindex(): string | null {
+    return this.previewable ? (this.hostTabindex ?? '0') : this.hostTabindex;
   }
 
   protected get ariaLabel(): string | null {
