@@ -240,7 +240,7 @@ describe('nz-tag-checkable-group', () => {
     expect(debug.injector.get(NZ_TAG_CHECKABLE_GROUP, null)).toBeNull();
     expect(debug.injector.get(NG_VALUE_ACCESSOR, null)).toBeNull();
     expect([...tag.classList].sort()).toEqual(['ant-tag', 'ant-tag-checkable']);
-    expect(tag.hasAttribute('tabindex')).toBe(false);
+    expect(tag.getAttribute('tabindex')).toBe('0');
     expect(tag.hasAttribute('aria-disabled')).toBe(false);
 
     tag.click();
@@ -264,6 +264,25 @@ describe('nz-tag-checkable-group', () => {
 
     fixture.componentInstance.groupDisabled.set(false);
     fixture.detectChanges();
-    expect(tag.hasAttribute('tabindex')).toBe(false);
+    expect(tag.getAttribute('tabindex')).toBe('0');
+  });
+
+  it('toggles through the group model on Space and not while the group is disabled', () => {
+    const fixture = TestBed.createComponent(TestGroupTabindexComponent);
+    fixture.componentInstance.groupDisabled.set(false);
+    fixture.detectChanges();
+    const tag = tagsOf(fixture)[0];
+    expect(tag.getAttribute('role')).toBe('checkbox');
+    expect(tag.getAttribute('aria-checked')).toBe('false');
+    tag.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true, cancelable: true }));
+    fixture.detectChanges();
+    expect(tag.getAttribute('aria-checked')).toBe('true');
+    expect(tag.classList).toContain('ant-tag-checkable-checked');
+
+    fixture.componentInstance.groupDisabled.set(true);
+    fixture.detectChanges();
+    tag.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true, cancelable: true }));
+    fixture.detectChanges();
+    expect(tag.getAttribute('aria-checked')).toBe('true');
   });
 });

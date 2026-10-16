@@ -63,6 +63,9 @@ stated otherwise.
 - **Disabled tags and groups**: a disabled checkable `nz-tag` leaves the tab order (`tabindex="-1"`) while other
   disabled tags keep their own tabindex, and a disabled `nz-tag-checkable-group` refuses model changes without
   emitting `nzCheckedChange`.
+- **Checkable tag accessibility**: a checkable `nz-tag` now renders `role="checkbox"` and `aria-checked`, toggles on
+  Space (not while disabled), and gets `tabindex="0"` unless the host already has a `tabindex`, which is never
+  overwritten. Default and closeable tags are unchanged.
 - **Breadcrumb router crumbs and modifier clicks**: a crumb that `nzAutoGenerate` renders no longer navigates in place
   on a ctrl, meta, shift or alt click or a non-primary click. The browser handles it (new tab or window), as with
   `routerLink`; a plain click still navigates through the router.

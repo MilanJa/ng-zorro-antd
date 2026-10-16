@@ -74,8 +74,11 @@ interface NzTagCustomStyle {
     '[class.ant-tag-checkable-disabled]': `disabled && nzMode === 'checkable'`,
     '[class.ant-tag-rtl]': `dir() === 'rtl'`,
     '[class.ant-tag-borderless]': `!bordered && variant === 'filled'`,
+    '[attr.role]': `nzMode === 'checkable' ? 'checkbox' : null`,
+    '[attr.aria-checked]': `nzMode === 'checkable' ? checked : null`,
     '[attr.aria-disabled]': `disabled || null`,
-    '(click)': 'updateCheckedStatus()'
+    '(click)': 'updateCheckedStatus()',
+    '(keydown.space)': 'onSpace($event)'
   },
   imports: [NgTemplateOutlet, NzIconModule]
 })
@@ -86,6 +89,8 @@ export class NzTagComponent implements OnChanges {
   /** The host's own `tabindex`, kept while the tag is disabled so it can be put back (null: none). */
   private savedTabindex: string | null = null;
   private tabindexSaved = false;
+  /** True while the `tabindex="0"` on the host is the one this component wrote (the app supplied none). */
+  private tabindexWritten = false;
   private readonly group = inject(NZ_TAG_CHECKABLE_GROUP, { optional: true });
 
   @Input() nzMode: 'default' | 'closeable' | 'checkable' = 'default';
@@ -215,6 +220,16 @@ export class NzTagComponent implements OnChanges {
     this.nzCheckedChange.emit(this.nzChecked);
   }
 
+  protected onSpace(event: Event): void {
+    if (this.nzMode !== 'checkable') {
+      return;
+    }
+    event.preventDefault();
+    if (!(event as KeyboardEvent).repeat) {
+      this.updateCheckedStatus();
+    }
+  }
+
   closeTag(e: MouseEvent): void {
     if (this.disabled) {
       return;
@@ -226,14 +241,19 @@ export class NzTagComponent implements OnChanges {
   }
 
   /**
-   * A disabled checkable tag leaves the tab order, as antd's `CheckableTag` does (other tags keep theirs).
-   * The host's own `tabindex` is written only across the disabled transition: when the tag is enabled again
-   * and the attribute is no longer `-1`, the parent wrote it meanwhile and it is left alone.
+   * A checkable tag is a tab stop, as antd's `CheckableTag` is (`tabIndex` 0 enabled, -1 disabled; other tags
+   * keep theirs). The host's own `tabindex` is never overwritten: `0` is written only when the host has none,
+   * and removed again only while it is still ours. A disabled tag writes `-1` across the transition and puts
+   * the host's own value back when enabled again, unless the attribute is no longer `-1` (the parent wrote it
+   * meanwhile and it is left alone).
    */
   private syncTabindex(): void {
-    const off = this.disabled && this.nzMode === 'checkable';
+    const checkable = this.nzMode === 'checkable';
+    const off = this.disabled && checkable;
     if (off && !this.tabindexSaved) {
-      this.savedTabindex = this.el.getAttribute('tabindex');
+      const current = this.el.getAttribute('tabindex');
+      this.savedTabindex = this.tabindexWritten && current === '0' ? null : current;
+      this.tabindexWritten = false;
       this.tabindexSaved = true;
       this.renderer.setAttribute(this.el, 'tabindex', '-1');
     } else if (!off && this.tabindexSaved) {
@@ -246,6 +266,17 @@ export class NzTagComponent implements OnChanges {
       }
       this.savedTabindex = null;
       this.tabindexSaved = false;
+    }
+    if (!off) {
+      if (checkable && !this.el.hasAttribute('tabindex')) {
+        this.renderer.setAttribute(this.el, 'tabindex', '0');
+        this.tabindexWritten = true;
+      } else if (!checkable && this.tabindexWritten) {
+        if (this.el.getAttribute('tabindex') === '0') {
+          this.renderer.removeAttribute(this.el, 'tabindex');
+        }
+        this.tabindexWritten = false;
+      }
     }
   }
 

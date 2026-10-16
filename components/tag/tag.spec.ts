@@ -194,6 +194,7 @@ export class NzTestTagPreventComponent {
 class TestTagInputsComponent {
   readonly onClose = vi.fn();
   readonly checkedChange = vi.fn();
+  readonly checked = signal(false);
 }
 
 function renderTag(template: string): { fixture: ComponentFixture<TestTagInputsComponent>; tag: HTMLElement } {
@@ -487,13 +488,101 @@ describe('tag v6 inputs', () => {
       const fixture = TestBed.createComponent(TestTagTabindexComponent);
       fixture.detectChanges();
       const tag = fixture.nativeElement.querySelector('#none') as HTMLElement;
-      expect(tag.hasAttribute('tabindex')).toBe(false);
+      expect(tag.getAttribute('tabindex')).toBe('0');
       fixture.componentInstance.disabled.set(true);
       fixture.detectChanges();
       expect(tag.getAttribute('tabindex')).toBe('-1');
       fixture.componentInstance.disabled.set(false);
       fixture.detectChanges();
+      expect(tag.getAttribute('tabindex')).toBe('0');
+    });
+  });
+
+  describe('checkable accessibility', () => {
+    const space = (tag: HTMLElement, init: KeyboardEventInit = {}): KeyboardEvent => {
+      const event = new KeyboardEvent('keydown', { key: ' ', bubbles: true, cancelable: true, ...init });
+      tag.dispatchEvent(event);
+      return event;
+    };
+
+    it('is a checkbox whose aria-checked follows nzChecked, in the tab order', () => {
+      const { fixture, tag } = renderTag(
+        `<nz-tag nzMode="checkable" [nzChecked]="checked()" (nzCheckedChange)="checkedChange($event)">c</nz-tag>`
+      );
+      expect(tag.getAttribute('role')).toBe('checkbox');
+      expect(tag.getAttribute('aria-checked')).toBe('false');
+      expect(tag.getAttribute('tabindex')).toBe('0');
+      fixture.componentInstance.checked.set(true);
+      fixture.detectChanges();
+      expect(tag.getAttribute('aria-checked')).toBe('true');
+    });
+
+    it('keeps the app tabindex', () => {
+      const fixture = TestBed.createComponent(TestTagTabindexComponent);
+      fixture.detectChanges();
+      for (const id of ['supplied', 'dynamic']) {
+        const tag = fixture.nativeElement.querySelector(`#${id}`) as HTMLElement;
+        expect(tag.getAttribute('role')).toBe('checkbox');
+        expect(tag.getAttribute('tabindex')).toBe(id === 'supplied' ? '3' : '5');
+      }
+    });
+
+    it('drops the tab stop it wrote when the tag stops being checkable', () => {
+      const fixture = TestBed.createComponent(TestTagTabindexComponent);
+      fixture.detectChanges();
+      const tag = fixture.nativeElement.querySelector('#mode') as HTMLElement;
+      expect(tag.getAttribute('tabindex')).toBe('0');
+      fixture.componentInstance.mode.set('default');
+      fixture.detectChanges();
       expect(tag.hasAttribute('tabindex')).toBe(false);
+      expect(tag.hasAttribute('role')).toBe(false);
+    });
+
+    it('toggles on Space and prevents the page scroll', () => {
+      const { fixture, tag } = renderTag(
+        `<nz-tag nzMode="checkable" [(nzChecked)]="checked" (nzCheckedChange)="checkedChange($event)">c</nz-tag>`
+      );
+      const event = space(tag);
+      fixture.detectChanges();
+      expect(event.defaultPrevented).toBe(true);
+      expect(fixture.componentInstance.checkedChange).toHaveBeenCalledWith(true);
+      expect(tag.getAttribute('aria-checked')).toBe('true');
+      space(tag);
+      fixture.detectChanges();
+      expect(fixture.componentInstance.checkedChange).toHaveBeenLastCalledWith(false);
+    });
+
+    it('ignores a held Space', () => {
+      const { fixture, tag } = renderTag(
+        `<nz-tag nzMode="checkable" (nzCheckedChange)="checkedChange($event)">c</nz-tag>`
+      );
+      space(tag, { repeat: true });
+      fixture.detectChanges();
+      expect(fixture.componentInstance.checkedChange).not.toHaveBeenCalled();
+    });
+
+    it('does not toggle on Space when disabled', () => {
+      const { fixture, tag } = renderTag(
+        `<nz-tag nzMode="checkable" nzDisabled (nzCheckedChange)="checkedChange($event)">c</nz-tag>`
+      );
+      space(tag);
+      fixture.detectChanges();
+      expect(fixture.componentInstance.checkedChange).not.toHaveBeenCalled();
+      expect(tag.getAttribute('tabindex')).toBe('-1');
+      expect(tag.getAttribute('aria-checked')).toBe('false');
+    });
+
+    it.each(['default', 'closeable'])('carries no role, aria-checked or Space handling in %s mode', mode => {
+      const { fixture, tag } = renderTag(
+        `<nz-tag nzMode="${mode}" (nzCheckedChange)="checkedChange($event)">c</nz-tag>`
+      );
+      const event = space(tag);
+      fixture.detectChanges();
+      expect(tag.hasAttribute('role')).toBe(false);
+      expect(tag.hasAttribute('aria-checked')).toBe(false);
+      expect(tag.hasAttribute('tabindex')).toBe(false);
+      expect(fixture.componentInstance.checkedChange).not.toHaveBeenCalled();
+      expect(event.defaultPrevented).toBe(false);
     });
   });
 });
@@ -515,9 +604,11 @@ class TestTagVariantDynamicComponent {
     <nz-tag id="dynamic" nzMode="checkable" [attr.tabindex]="ti()" [nzDisabled]="disabled()">x</nz-tag>
     <nz-tag id="bound" [attr.tabindex]="ti()">x</nz-tag>
     <nz-tag id="none" nzMode="checkable" [nzDisabled]="disabled()">x</nz-tag>
+    <nz-tag id="mode" [nzMode]="mode()">x</nz-tag>
   `
 })
 class TestTagTabindexComponent {
+  readonly mode = signal<'default' | 'closeable' | 'checkable'>('checkable');
   readonly disabled = signal(false);
   readonly ti = signal(5);
 }
