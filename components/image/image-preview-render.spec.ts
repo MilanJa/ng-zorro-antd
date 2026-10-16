@@ -96,6 +96,23 @@ const actionType = (el: Element): string =>
   /ant-image-preview-actions-action-(\w+)/.exec(el.className)?.[1] ??
   (el.classList.contains('ant-image-preview-close') ? 'close' : el.tagName.toLowerCase());
 
+/** Presses on the target and moves; the caller releases, as a drop snaps the preview back into view. */
+const dragFrom = (target: HTMLElement, dx: number): (() => void) => {
+  const init = (x: number): MouseEventInit => ({
+    clientX: x,
+    clientY: 20,
+    button: 0,
+    buttons: 1,
+    detail: 1,
+    bubbles: true,
+    cancelable: true
+  });
+  target.dispatchEvent(new MouseEvent('mousedown', init(10)));
+  document.dispatchEvent(new MouseEvent('mousemove', init(10 + dx / 2)));
+  document.dispatchEvent(new MouseEvent('mousemove', init(10 + dx)));
+  return () => document.dispatchEvent(new MouseEvent('mouseup', init(10 + dx)));
+};
+
 async function settle(fixture: ComponentFixture<unknown>): Promise<void> {
   for (let i = 0; i < 3; i++) {
     fixture.detectChanges();
@@ -313,6 +330,20 @@ describe('image preview render slots', () => {
     expect(Array.from(wrapper().children).map(c => [c.tagName, ...sorted(c)])).toEqual([
       ['IMG', 'ant-image-preview-img', 'cdk-drag-handle']
     ]);
+  });
+
+  it('the default image is the drag handle: dragging it moves the wrapper, dragging the wrapper does not', async () => {
+    await open(fixture, '#single');
+    const before = wrapper().style.transform;
+    const releaseWrapperDrag = dragFrom(wrapper(), 60);
+    expect(wrapper().style.transform).toBe(before);
+    releaseWrapperDrag();
+    await settle(fixture);
+
+    const releaseImageDrag = dragFrom(wrapper().querySelector('img')!, 60);
+    expect(wrapper().style.transform).toContain('translate3d(60px, 0px, 0px)');
+    releaseImageDrag();
+    await settle(fixture);
   });
 
   it('takes both slots from NzImageService options; drag end without an img keeps the drop position', async () => {
