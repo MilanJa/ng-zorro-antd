@@ -25,9 +25,9 @@ import { NzSpaceModule } from 'ng-zorro-antd/space';
       <nz-image-wrapper
         *nzSpaceItem
         [nzWidth]="100"
-        nzAlt="no cover"
+        nzAlt="default cover"
         nzSrc="https://gw.alipayobjects.com/zos/antfincdn/aPkFc8Sj7n/method-draw-image.svg"
-        [nzPreviewCover]="false"
+        [nzPreviewCover]="true"
       />
     </nz-space>
     <ng-template #templateCover>
