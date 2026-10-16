@@ -78,11 +78,22 @@ interface NzBreadcrumbCrumb {
 const ITEMS_WITH_AUTO_GENERATE =
   '`nzItems` and `nzAutoGenerate` are both set on `nz-breadcrumb`; `nzItems` wins and the router crumbs are not rendered.';
 
-/** antd `getPath`: drop one leading `/`, then replace the first `:key` of each param. */
+function escapeRegExp(text: string): string {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/** A `:key` placeholder is a whole one: it is not followed by another identifier character. */
+const PLACEHOLDER_END = '(?![A-Za-z0-9_])';
+
+/**
+ * antd `getPath`: drop one leading `/`, then replace the first `:key` of each param. Keys match literally and
+ * as whole placeholders, and a value is inserted verbatim.
+ */
 function resolvePath(path: string, params: Record<string, string | number>): string {
   let merged = path.replace(/^\//, '');
   for (const key of Object.keys(params)) {
-    merged = merged.replace(`:${key}`, String(params[key]));
+    const value = String(params[key]);
+    merged = merged.replace(new RegExp(`:${escapeRegExp(key)}${PLACEHOLDER_END}`), () => value);
   }
   return merged;
 }
@@ -95,11 +106,12 @@ function resolveTitle(
   if (typeof title !== 'string') {
     return title ?? null;
   }
-  const keys = Object.keys(params);
+  const keys = Object.keys(params).sort((a, b) => b.length - a.length);
   if (!keys.length) {
     return title;
   }
-  return title.replace(new RegExp(`:(${keys.join('|')})`, 'g'), (placeholder: string, key: string) =>
+  const pattern = new RegExp(`:(${keys.map(escapeRegExp).join('|')})${PLACEHOLDER_END}`, 'g');
+  return title.replace(pattern, (placeholder: string, key: string) =>
     params[key] ? String(params[key]) : placeholder
   );
 }

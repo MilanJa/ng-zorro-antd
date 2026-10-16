@@ -202,6 +202,36 @@ describe('breadcrumb nzItems', () => {
     expect(linkTexts(host)).toEqual(['Users', '8', 'Edit 8 of :org']);
   });
 
+  it('substitutes keys that contain regular-expression metacharacters literally', () => {
+    create();
+    fixture.componentInstance.params.set({ 'a(': 1, 'b+': 2, 'c.d': 3 });
+    setItems([
+      { title: ':a( :b+ :c.d :cXd', path: ':a(' },
+      { title: 'x', path: ':b+/:c.d' }
+    ]);
+    expect(linkTexts(host)[0]).toBe('1 2 3 :cXd');
+    expect(hrefs(host)).toEqual(['#/1', '#/1/2/3']);
+  });
+
+  it('inserts a value that contains $ patterns verbatim', () => {
+    create();
+    fixture.componentInstance.params.set({ id: 'x$&y$1$$' });
+    setItems([{ title: 'T :id', path: ':id' }]);
+    expect(linkTexts(host)).toEqual(['T x$&y$1$$']);
+    expect(hrefs(host)).toEqual(['#/x$&y$1$$']);
+  });
+
+  it('matches whole placeholders so one key does not eat the start of a longer one', () => {
+    create();
+    fixture.componentInstance.params.set({ id: 1, identifier: 2 });
+    setItems([{ title: ':id :identifier :ids', path: ':identifier/:id' }]);
+    expect(linkTexts(host)).toEqual(['1 2 :ids']);
+    expect(hrefs(host)).toEqual(['#/2/1']);
+    fixture.componentInstance.params.set({ identifier: 2, id: 1 });
+    fixture.detectChanges();
+    expect(linkTexts(host)).toEqual(['1 2 :ids']);
+  });
+
   it('lets a literal href win over path, and renders separator entries as direct nz-breadcrumb-separator children', () => {
     create();
     setItems([
