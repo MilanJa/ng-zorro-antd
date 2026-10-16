@@ -15,7 +15,7 @@ import type { NgStyleInterface } from './ng-class';
 
 /**
  * Key beside index. Where a component gains a string key next to an existing index API (`nzActiveKey` beside
- * `nzSelectedIndex`), a bound key wins; binding both warns once per instance in dev mode, and the index API
+ * `nzSelectedIndex`), a bound key wins; binding both warns once per app in dev mode (the logger dedupes by message), and the index API
  * keeps its current semantics untouched.
  *
  * Controlled key. A bound `nz<Name>Key` input is strictly controlled: a user pick emits the change output,
