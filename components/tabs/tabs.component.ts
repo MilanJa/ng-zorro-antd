@@ -312,6 +312,7 @@ export class NzTabsComponent implements AfterContentChecked, AfterContentInit {
   private selectedIndexBound = false;
   private defaultKeyPending = true;
   private keyAndIndexWarned = false;
+  private keylessPickWarned = false;
   /** The default key moved the first selection away from a bound `nzSelectedIndex`. */
   private defaultKeyMovedBoundIndex = false;
   private keyAndRouterWarned = false;
@@ -587,6 +588,11 @@ export class NzTabsComponent implements AfterContentChecked, AfterContentInit {
     if (this.keyControlled) {
       if (fromUser && key !== undefined && key !== this.nzActiveKey) {
         this.nzActiveKeyChange.emit(key);
+      } else if (fromUser && key === undefined && !this.keylessPickWarned) {
+        this.keylessPickWarned = true;
+        warn(
+          `The \`nz-tab\` at index ${index} without \`nzKey\` cannot be selected while \`nzActiveKey\` is bound on \`nz-tabs\`; give it an \`nzKey\`.`
+        );
       }
     } else {
       const changed = index !== this.selectedIndex;

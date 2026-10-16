@@ -46,6 +46,18 @@ class TestTabsKeyAndIndexComponent {
 })
 class TestTabsKeyAndRouterComponent {}
 
+@Component({
+  imports: [NzTabsModule],
+  template: `
+    <nz-tabs id="keyless" nzActiveKey="a">
+      <nz-tab nzKey="a" nzTitle="Alpha">Pane Alpha</nz-tab>
+      <nz-tab nzTitle="Beta">Pane Beta</nz-tab>
+      <nz-tab nzKey="c" nzTitle="Gamma">Pane Gamma</nz-tab>
+    </nz-tabs>
+  `
+})
+class TestTabsKeylessUnderKeyComponent {}
+
 const hostOf = (fixture: ComponentFixture<unknown>, id: string): HTMLElement =>
   (fixture.nativeElement as HTMLElement).querySelector(`nz-tabs#${id}`)!;
 const activeLabel = (host: Element): string | null =>
@@ -65,6 +77,7 @@ describe('tabs key warnings', () => {
   const messages = (): string[] => warnSpy.mock.calls.map(args => args.map(String).join(' '));
   const KEY_AND_INDEX = 'ignores `nzSelectedIndex` while both are bound';
   const KEY_AND_ROUTER = 'ignores `nzActiveKey`';
+  const KEYLESS = 'without `nzKey` cannot be selected';
 
   beforeEach(() => {
     TestBed.configureTestingModule({ providers: [provideNzNoAnimation(), provideNzIconsTesting()] });
@@ -118,5 +131,21 @@ describe('tabs key warnings', () => {
     expect(activeLabel(fixture.nativeElement as HTMLElement)).toBe('Alpha');
     await settle(fixture);
     expect(messages().filter(m => m.includes(KEY_AND_ROUTER)).length).toBe(1);
+  });
+
+  it('warns once per instance when a keyless tab is picked while nzActiveKey is bound', async () => {
+    const fixture = TestBed.createComponent(TestTabsKeylessUnderKeyComponent);
+    await settle(fixture);
+    const tabs = Array.from(hostOf(fixture, 'keyless').querySelectorAll<HTMLElement>('.ant-tabs-tab'));
+    expect(messages().filter(m => m.includes(KEYLESS))).toEqual([]);
+
+    tabs[1].click();
+    await settle(fixture);
+    tabs[1].click();
+    await settle(fixture);
+    const keyless = messages().filter(m => m.includes(KEYLESS));
+    expect(keyless.length).toBe(1);
+    expect(keyless[0]).toContain('index 1');
+    expect(activeLabel(hostOf(fixture, 'keyless'))).toBe('Alpha');
   });
 });
