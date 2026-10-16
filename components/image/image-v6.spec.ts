@@ -233,5 +233,9 @@ describe('image preview toolbar order under antd v6 css', () => {
       'zoomIn',
       'close'
     ]);
+    const progress = overlay
+      .getContainerElement()
+      .querySelector<HTMLElement>('.ant-image-preview-operations-progress')!;
+    expect(getComputedStyle(progress).whiteSpace).toBe('nowrap');
   });
 });

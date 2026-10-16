@@ -43,13 +43,15 @@
  * antd v6's own action order (`Preview/Footer.js` renders flipY first and zoomIn last), so the
  * reversal is kept, and set here for when only the v6 bundle is loaded, instead of reading the
  * list in source order. The progress counter is the list's first item; `order` keeps it at the
- * leading end of the pill, where it sits in source order.
+ * leading end of the pill, where it sits in source order, and stays on one line when a wide
+ * custom actions template squeezes the pill.
  */
 .ant-image-preview-actions {
   flex-direction: row-reverse;
 }
 .ant-image-preview-actions > .ant-image-preview-operations-progress {
   order: 1;
+  white-space: nowrap;
 }
 
 /*
