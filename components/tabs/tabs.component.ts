@@ -78,7 +78,7 @@ const KEY_AND_ROUTER_WARNING = '`nz-tabs` follows the router while `nzLinkRouter
     @if (tabs.length || addable) {
       <nz-tabs-nav
         [style]="nzTabBarStyle"
-        [selectedIndex]="nzSelectedIndex || 0"
+        [selectedIndex]="heldIndex || 0"
         [inkBarAnimated]="inkBarAnimated"
         [addable]="addable"
         [addIcon]="nzAddIcon"
@@ -225,7 +225,7 @@ export class NzTabsComponent implements AfterContentChecked, AfterContentInit {
 
   @Input()
   get nzSelectedIndex(): number | null {
-    return this.selectedIndex;
+    return this.noActiveTab ? -1 : this.selectedIndex;
   }
   set nzSelectedIndex(value: null | number) {
     this.indexToSelect = coerceNumberProperty(value, null);
@@ -297,6 +297,11 @@ export class NzTabsComponent implements AfterContentChecked, AfterContentInit {
 
   readonly extraContents = contentChildren(NzTabBarExtraContentDirective);
 
+  /** The index the tab set holds, which stays put while no tab is active. */
+  protected get heldIndex(): number | null {
+    return this.selectedIndex;
+  }
+
   /** True while a bound `nzActiveKey` matches no tab: no tab, ink bar or pane shows as active. */
   protected noActiveTab = false;
 
@@ -360,6 +365,12 @@ export class NzTabsComponent implements AfterContentChecked, AfterContentInit {
 
   ngAfterContentChecked(): void {
     this.applyActiveKey();
+
+    if (this.noActiveTab && this.selectedIndex != null) {
+      // The key decides while nothing is active: index changes and clamps neither move the held
+      // index nor emit.
+      this.indexToSelect = this.selectedIndex = this.clampTabIndex(this.selectedIndex);
+    }
 
     // Don't clamp the `indexToSelect` immediately in the setter because it can happen that
     // the amount of tabs changes before the actual change detection runs.

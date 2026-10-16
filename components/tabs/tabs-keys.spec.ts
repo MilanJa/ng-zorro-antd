@@ -96,6 +96,35 @@ class TestTabsKeysTwoWayComponent {
 })
 class TestTabsKeysUnboundComponent {}
 
+@Component({
+  imports: [NzTabsModule],
+  template: `
+    <nz-tabs
+      [nzActiveKey]="key()"
+      [nzSelectedIndex]="index()"
+      (nzActiveKeyChange)="keyChange($event)"
+      (nzSelectChange)="selectChange($event)"
+      (nzSelectedIndexChange)="indexChange($event)"
+    >
+      @for (tab of tabs(); track tab) {
+        <nz-tab [nzKey]="tab" [nzTitle]="tab" (nzSelect)="select(tab)" (nzDeselect)="deselect(tab)"
+          >Pane {{ tab }}</nz-tab
+        >
+      }
+    </nz-tabs>
+  `
+})
+class TestTabsKeyAndIndexComponent {
+  readonly tabs = signal<string[]>(['a', 'b', 'c']);
+  readonly key = signal<string | null | undefined>(undefined);
+  readonly index = signal<number | null>(null);
+  readonly keyChange = vi.fn();
+  readonly selectChange = vi.fn();
+  readonly indexChange = vi.fn();
+  readonly select = vi.fn();
+  readonly deselect = vi.fn();
+}
+
 const tabsHost = (fixture: ComponentFixture<unknown>, id?: string): HTMLElement =>
   (fixture.nativeElement as HTMLElement).querySelector(id ? `nz-tabs#${id}` : 'nz-tabs')!;
 const tabEls = (host: HTMLElement): HTMLElement[] => Array.from(host.querySelectorAll<HTMLElement>('.ant-tabs-tab'));
@@ -397,6 +426,50 @@ describe('nz-tabs string keys', () => {
     await settle(fixture);
     expect(activeLabel(el)).toBe('Gamma');
     expect(host.keyChange.mock.calls).toEqual([['c']]);
+  });
+
+  it('reports no selected index while nothing is active and ignores bound index changes', async () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    try {
+      const fixture = TestBed.createComponent(TestTabsKeyAndIndexComponent);
+      const host = fixture.componentInstance;
+      const tabs: NzTabsComponent = fixture.debugElement.query(By.directive(NzTabsComponent)).componentInstance;
+      host.key.set('c');
+      await settle(fixture);
+      expect(tabs.nzSelectedIndex).toBe(2);
+
+      host.key.set('zzz');
+      await settle(fixture);
+      expect(tabs.nzSelectedIndex).toBe(-1);
+      const el = tabsHost(fixture);
+      expect(activeLabel(el)).toBeNull();
+      host.selectChange.mockClear();
+      host.indexChange.mockClear();
+      host.select.mockClear();
+      host.deselect.mockClear();
+
+      host.index.set(0);
+      await settle(fixture);
+      expect(tabs.nzSelectedIndex).toBe(-1);
+      expect(activeLabel(el)).toBeNull();
+
+      // a clamp after removing the held tab moves nothing visible and emits nothing
+      host.tabs.set(['a', 'b']);
+      await settle(fixture);
+      expect(tabs.nzSelectedIndex).toBe(-1);
+      expect(host.selectChange).not.toHaveBeenCalled();
+      expect(host.indexChange).not.toHaveBeenCalled();
+      expect(host.select).not.toHaveBeenCalled();
+      expect(host.deselect).not.toHaveBeenCalled();
+
+      host.key.set('b');
+      await settle(fixture);
+      expect(tabs.nzSelectedIndex).toBe(1);
+      expect(activeLabel(el)).toBe('b');
+      expect(host.keyChange).not.toHaveBeenCalled();
+    } finally {
+      warnSpy.mockRestore();
+    }
   });
 
   it('renders keyed tabs exactly like index-only tabs while no key input is bound', async () => {
