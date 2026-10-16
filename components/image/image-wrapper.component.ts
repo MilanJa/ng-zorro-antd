@@ -10,6 +10,7 @@ import {
   ChangeDetectorRef,
   Component,
   computed,
+  HostAttributeToken,
   inject,
   Input,
   TemplateRef,
@@ -90,7 +91,7 @@ function toCssLength(value: string | number | null | undefined): string | null {
     '[class.ant-image-error]': `status() === 'error'`,
     '[attr.role]': `previewable ? 'button' : null`,
     '[attr.tabindex]': 'previewable ? 0 : null',
-    '[attr.aria-label]': 'previewable ? nzAlt || null : null',
+    '[attr.aria-label]': 'ariaLabel',
     '[style.width]': 'cssWidth',
     '[style.height]': 'cssHeight',
     '(click)': 'onHostClick($event)',
@@ -104,6 +105,8 @@ export class NzImageWrapperComponent {
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly i18n = inject(NzI18nService);
   readonly _nzModuleName: NzConfigKey = NZ_CONFIG_MODULE_NAME;
+  /** An `aria-label` the app writes on the element wins over `nzAlt`, as antd's `aria-label ?? alt`. */
+  private readonly hostAriaLabel = inject(new HostAttributeToken('aria-label'), { optional: true });
 
   @Input() nzSrc: string = '';
   @Input() nzSrcset: string = '';
@@ -132,6 +135,10 @@ export class NzImageWrapperComponent {
 
   get previewable(): boolean {
     return !this.nzDisablePreview && this.status() !== 'error';
+  }
+
+  protected get ariaLabel(): string | null {
+    return this.previewable ? (this.hostAriaLabel ?? this.nzAlt) || null : (this.hostAriaLabel ?? null);
   }
 
   protected get cssWidth(): string | null {

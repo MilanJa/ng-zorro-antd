@@ -79,6 +79,35 @@ class TestImageWrapperGroupComponent {
   readonly second = nextSrc();
 }
 
+@Component({
+  imports: [NzImageModule],
+  template: `
+    <nz-image-wrapper id="labelled" aria-label="Hero" [nzSrc]="src" nzAlt="Alt" [nzDisablePreview]="disabled()" />
+    <nz-image-wrapper id="alt-only" [nzSrc]="src" nzAlt="Alt" />
+    <nz-image-wrapper id="none" [nzSrc]="src" />
+  `
+})
+class TestImageWrapperLabelComponent {
+  readonly src = nextSrc();
+  readonly disabled = signal(false);
+}
+
+@Component({
+  imports: [NzImageModule],
+  template: `
+    <nz-image-group [nzActionsRender]="groupActions" [nzImageRender]="groupImage">
+      <nz-image-wrapper [nzSrc]="src" [nzActionsRender]="wrapperActions" [nzImageRender]="wrapperImage" />
+    </nz-image-group>
+    <ng-template #groupActions><i class="tpl-g-actions"></i></ng-template>
+    <ng-template #groupImage><i class="tpl-g-image"></i></ng-template>
+    <ng-template #wrapperActions><i class="tpl-w-actions"></i></ng-template>
+    <ng-template #wrapperImage><i class="tpl-w-image"></i></ng-template>
+  `
+})
+class TestImageWrapperGroupSlotsComponent {
+  readonly src = nextSrc();
+}
+
 const hostOf = (fixture: ComponentFixture<unknown>, selector = 'nz-image-wrapper'): HTMLElement =>
   (fixture.nativeElement as HTMLElement).querySelector(selector)!;
 const innerOf = (fixture: ComponentFixture<unknown>, selector = 'nz-image-wrapper'): NzImageDirective =>
@@ -349,5 +378,47 @@ describe('nz-image-wrapper', () => {
     expect(previewRoots().length).toBe(1);
     const previewImg = overlay.getContainerElement().querySelector('.ant-image-preview-img') as HTMLImageElement;
     expect(previewImg.getAttribute('src')).toBe(fixture.componentInstance.second);
+  });
+
+  it('keeps an app-written aria-label and falls back to nzAlt', async () => {
+    const fixture = TestBed.createComponent(TestImageWrapperLabelComponent);
+    await settle(fixture);
+    expect(hostOf(fixture, '#labelled').getAttribute('aria-label')).toBe('Hero');
+    expect(hostOf(fixture, '#alt-only').getAttribute('aria-label')).toBe('Alt');
+    expect(hostOf(fixture, '#none').getAttribute('aria-label')).toBeNull();
+
+    fixture.componentInstance.disabled.set(true);
+    await settle(fixture);
+    expect(hostOf(fixture, '#labelled').getAttribute('aria-label')).toBe('Hero');
+  });
+
+  it('a group template wins over the wrapper template for both slots', async () => {
+    const fixture = TestBed.createComponent(TestImageWrapperGroupSlotsComponent);
+    await settle(fixture);
+    keydown(hostOf(fixture), 'Enter');
+    await settle(fixture);
+    const root = overlay.getContainerElement();
+    expect(root.querySelector('.tpl-g-actions')).not.toBeNull();
+    expect(root.querySelector('.tpl-g-image')).not.toBeNull();
+    expect(root.querySelector('.tpl-w-actions')).toBeNull();
+    expect(root.querySelector('.tpl-w-image')).toBeNull();
+  });
+
+  it('toggling nzDisablePreview at runtime adds and removes role, tab stop and cover', async () => {
+    const fixture = TestBed.createComponent(TestImageWrapperComponent);
+    await settle(fixture);
+    const host = hostOf(fixture);
+    const state = (): string[] => [
+      host.getAttribute('role') ?? '-',
+      host.getAttribute('tabindex') ?? '-',
+      coverOf(fixture) ? 'cover' : '-'
+    ];
+    expect(state()).toEqual(['button', '0', 'cover']);
+    fixture.componentInstance.disablePreview.set(true);
+    await settle(fixture);
+    expect(state()).toEqual(['-', '-', '-']);
+    fixture.componentInstance.disablePreview.set(false);
+    await settle(fixture);
+    expect(state()).toEqual(['button', '0', 'cover']);
   });
 });
