@@ -91,7 +91,7 @@ const PLACEHOLDER_END = '(?![A-Za-z0-9_])';
  */
 function resolvePath(path: string, params: Record<string, string | number>): string {
   let merged = path.replace(/^\//, '');
-  for (const key of Object.keys(params)) {
+  for (const key of Object.keys(params).sort((a, b) => b.length - a.length)) {
     const value = String(params[key]);
     merged = merged.replace(new RegExp(`:${escapeRegExp(key)}${PLACEHOLDER_END}`), () => value);
   }
