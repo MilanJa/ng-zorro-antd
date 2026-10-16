@@ -108,6 +108,18 @@ class TestImageWrapperGroupSlotsComponent {
   readonly src = nextSrc();
 }
 
+@Component({
+  imports: [NzImageModule],
+  template: `
+    <nz-image-wrapper id="bare" [nzSrc]="src" nzPreviewCover />
+    <nz-image-wrapper id="false-string" [nzSrc]="src" nzPreviewCover="false" />
+    <nz-image-wrapper id="text" [nzSrc]="src" nzPreviewCover="Zoom" />
+  `
+})
+class TestImageWrapperCoverAttrComponent {
+  readonly src = nextSrc();
+}
+
 const hostOf = (fixture: ComponentFixture<unknown>, selector = 'nz-image-wrapper'): HTMLElement =>
   (fixture.nativeElement as HTMLElement).querySelector(selector)!;
 const innerOf = (fixture: ComponentFixture<unknown>, selector = 'nz-image-wrapper'): NzImageDirective =>
@@ -420,5 +432,17 @@ describe('nz-image-wrapper', () => {
     fixture.componentInstance.disablePreview.set(false);
     await settle(fixture);
     expect(state()).toEqual(['button', '0', 'cover']);
+  });
+
+  it('treats a bare nzPreviewCover attribute as the default cover and "false" as no cover', async () => {
+    const fixture = TestBed.createComponent(TestImageWrapperCoverAttrComponent);
+    await settle(fixture);
+    const bare = hostOf(fixture, '#bare').querySelector(':scope > .ant-image-cover')!;
+    expect(bare.querySelector('.ant-image-mask-info nz-icon')!.getAttribute('nzType')).toBe('eye');
+    expect(bare.textContent!.trim()).toBe('Preview');
+    expect(hostOf(fixture, '#false-string').querySelector(':scope > .ant-image-cover')).toBeNull();
+    const text = hostOf(fixture, '#text').querySelector(':scope > .ant-image-cover')!;
+    expect(text.textContent!.trim()).toBe('Zoom');
+    expect(text.querySelector('.ant-image-mask-info')).toBeNull();
   });
 });

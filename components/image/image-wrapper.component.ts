@@ -38,6 +38,16 @@ function toCssLength(value: string | number | null | undefined): string | null {
   return typeof value === 'number' || /^\d+(\.\d+)?$/.test(value) ? `${value}px` : value;
 }
 
+/** A bare `nzPreviewCover` attribute (`''`) is the default cover and the string `'false'` is no cover. */
+function coerceCover(
+  value: string | TemplateRef<void> | boolean | undefined
+): string | TemplateRef<void> | boolean | undefined {
+  if (value === '') {
+    return true;
+  }
+  return value === 'false' ? false : value;
+}
+
 /**
  * antd's inline image: a wrapper element around an `img[nz-image]`, with a loading placeholder and a
  * hover cover over a previewable image (`@rc-component/image` `Image.js`). The bare `img[nz-image]`
@@ -117,7 +127,7 @@ export class NzImageWrapperComponent {
   @Input() @WithConfig() nzPlaceholder: string | TemplateRef<void> | boolean | null = false;
   @Input({ transform: booleanAttribute }) @WithConfig() nzDisablePreview: boolean = false;
   @Input() @WithConfig() nzScaleStep: number | null = null;
-  @Input() nzPreviewCover: string | TemplateRef<void> | boolean | undefined = true;
+  @Input({ transform: coerceCover }) nzPreviewCover: string | TemplateRef<void> | boolean | undefined = true;
   @Input() nzPreviewCoverPlacement: NzImageCoverPlacement | undefined = 'center';
   @Input() nzActionsRender: TemplateRef<NzImagePreviewActionsContext> | null | undefined;
   @Input() nzImageRender: TemplateRef<NzImagePreviewImageContext> | undefined;
