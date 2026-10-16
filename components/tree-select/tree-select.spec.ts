@@ -262,6 +262,15 @@ describe('tree-select', () => {
       expect(targetElement.classList).toContain('class2');
     });
 
+    it('should keep the dropdown classname off the overlay pane', () => {
+      treeSelect.nativeElement.click();
+      fixture.detectChanges();
+      const targetElement = overlayContainerElement.querySelector('.ant-select-dropdown') as HTMLElement;
+      const pane = targetElement.closest('.cdk-overlay-pane') as HTMLElement;
+      expect(pane.classList).not.toContain('class1');
+      expect(pane.classList).not.toContain('class2');
+    });
+
     it('should click option close dropdown', async () => {
       treeSelect.nativeElement.click();
       fixture.detectChanges();

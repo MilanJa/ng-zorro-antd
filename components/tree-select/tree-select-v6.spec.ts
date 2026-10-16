@@ -26,7 +26,13 @@ function installV6Css(): void {
   imports: [NzTreeSelectModule, FormsModule, NzThemeDirective],
   template: `
     <div [nzTheme]="{ token: { colorPrimary: '#00b96b' } }" style="margin: 80px 0 0 200px; width: 200px">
-      <nz-tree-select id="trigger" [nzNodes]="nodes" [nzOpen]="open()" style="width: 100%" />
+      <nz-tree-select
+        id="trigger"
+        [nzNodes]="nodes"
+        [nzOpen]="open()"
+        nzDropdownClassName="user-extra"
+        style="width: 100%"
+      />
     </div>
   `
 })
@@ -73,6 +79,9 @@ describe('tree-select under antd v6 css', () => {
     // popup root inherits the theme's CSS custom properties from it.
     const pane = root.closest('.cdk-overlay-pane') as HTMLElement;
     expect(pane.className).toMatch(/\bnz-theme-\d+\b/);
+    // The user's `nzDropdownClassName` stays on the dropdown root only.
+    expect(pane.classList).not.toContain('user-extra');
+    expect(root.classList).toContain('user-extra');
     expect(getComputedStyle(root).getPropertyValue('--ant-color-primary').trim()).toBe('#00b96b');
     // Positioned below the trigger (default `bottomLeft` placement).
     const trigger = document.getElementById('trigger')!.getBoundingClientRect();

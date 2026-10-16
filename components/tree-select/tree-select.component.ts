@@ -385,7 +385,7 @@ export class NzTreeSelectComponent extends NzTreeBase implements ControlValueAcc
 
   dropdownClassName = TREE_SELECT_DEFAULT_CLASS;
   /**
-   * @internal The CDK overlay pane classes: `dropdownClassName` plus the enclosing `[nzTheme]` scope.
+   * @internal The CDK overlay pane classes: the enclosing `[nzTheme]` scope classes only.
    * Stored rather than derived in a getter, matching select's `updateDropdownPanelClasses` (`CdkConnectedOverlay.ngOnChanges`
    * rebuilds its position strategy on any input change, so the binding must keep its reference between checks).
    */
@@ -437,21 +437,11 @@ export class NzTreeSelectComponent extends NzTreeBase implements ControlValueAcc
   }
 
   private updateDropdownPanelClasses(): void {
-    // The scope is constant per instance (resolved from the injector at construction). Only
-    // `nzDropdownClassName` (the user's own extra class, if any) plus the scope go on the CDK pane,
-    // exactly as select's `updateDropdownPanelClasses` does: `TREE_SELECT_DEFAULT_CLASS` is never
-    // included here, since it is already applied to the dropdown root itself via `[class]`, and
-    // `OverlayRef` renders `.cdk-overlay-pane` as an ANCESTOR of that root — adding the same
-    // `ant-select-dropdown`/`ant-select-tree-dropdown` classes to the pane would make a bare
-    // `.ant-select-dropdown` lookup match the outer pane (which carries none of the placement/RTL
-    // classes) before the real dropdown root.
+    // Only the theme scope classes go on the CDK pane. `nzDropdownClassName` and
+    // `TREE_SELECT_DEFAULT_CLASS` belong to the dropdown root, which `OverlayRef` renders inside
+    // `.cdk-overlay-pane`; putting them on the pane too would make styles keyed on them apply twice.
     const scope = this.themeScopeClasses();
-    const user = (this.nzDropdownClassName ?? '').trim().split(/\s+/).filter(Boolean);
-    if (!scope.length) {
-      this.dropdownPanelClasses = user.length ? user : null;
-      return;
-    }
-    this.dropdownPanelClasses = [...user, ...scope];
+    this.dropdownPanelClasses = scope.length ? scope : null;
   }
 
   constructor() {
@@ -544,7 +534,6 @@ export class NzTreeSelectComponent extends NzTreeBase implements ControlValueAcc
     if (nzDropdownClassName) {
       const className = this.nzDropdownClassName && this.nzDropdownClassName.trim();
       this.dropdownClassName = className ? `${TREE_SELECT_DEFAULT_CLASS} ${className}` : TREE_SELECT_DEFAULT_CLASS;
-      this.updateDropdownPanelClasses();
     }
     if (nzStatus) {
       this.setStatusStyles(this.nzStatus, this.hasFeedback);
