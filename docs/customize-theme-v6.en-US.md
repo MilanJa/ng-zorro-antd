@@ -86,7 +86,7 @@ Replace the default stylesheet in `angular.json`:
 "styles": ["node_modules/ng-zorro-antd/ng-zorro-antd.v6.min.css"]
 ```
 
-Or compose it yourself, in this order (template + the per-component patches + one token file + CDK overlay rules); the result is byte-for-byte the bundle above:
+Or compose it yourself, in this order (template + the per-component patches + one token file + CDK overlay rules); the result is the same rules in the same order as the bundle above:
 
 ```css
 @import 'ng-zorro-antd/style/v6/template.css';
@@ -107,7 +107,17 @@ The v4 stylesheet normalized the whole page (`box-sizing: border-box` everywhere
 @import 'ng-zorro-antd/style/v6/reset.css';
 ```
 
-It is antd's `reset.css` as published, and it is not part of `ng-zorro-antd.v6.min.css`.
+It is antd's `reset.css` as published, and it is not part of `ng-zorro-antd.v6.min.css`. It does not restore everything v4 did: v4 also gave `body` the theme's font, size, line height, text colour and background, while antd's reset only sets `margin: 0` on `body` and a plain `sans-serif` on `html`. Text outside components keeps the browser's font unless the application sets it:
+
+```css
+body {
+  font-family: var(--ant-font-family);
+  font-size: var(--ant-font-size);
+  line-height: var(--ant-line-height);
+  color: var(--ant-color-text);
+  background: var(--ant-color-bg-layout);
+}
+```
 
 ## Configure the theme
 
@@ -142,27 +152,27 @@ The engine that computes the variables is loaded lazily the first time a v6 fiel
 
 A v4 theme set Less variables; a v6 theme sets seed and component tokens, and the algorithm derives the rest. The variables applications most often set map as follows:
 
-| Less variable (v4)                                                | v6 token                                                                                                                                  |
-| ----------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| `@primary-color`                                                  | `token.colorPrimary`                                                                                                                      |
-| `@primary-1` … `@primary-5`, `@primary-7`                         | `token.colorPrimaryBg`, `colorPrimaryBgHover`, `colorPrimaryBorder`, `colorPrimaryBorderHover`, `colorPrimaryHover`, `colorPrimaryActive` |
-| `@link-color`, `@link-hover-color`, `@link-active-color`          | `token.colorLink`, `colorLinkHover`, `colorLinkActive`                                                                                    |
-| `@info-color`, `@success-color`, `@warning-color`, `@error-color` | `token.colorInfo`, `colorSuccess`, `colorWarning`, `colorError`                                                                           |
-| `@processing-color`                                               | no seed of its own; Progress and the processing Badge read `colorInfo`                                                                    |
-| `@font-family`, `@font-size-base`                                 | `token.fontFamily`, `fontSize`                                                                                                            |
-| `@border-radius-base`, `@border-radius-sm`, `@border-radius-lg`   | `token.borderRadius`, `borderRadiusSM`, `borderRadiusLG`                                                                                  |
-| `@text-color`, `@text-color-secondary`                            | `token.colorText`, `colorTextSecondary`                                                                                                   |
-| `@border-color-base`, `@border-color-split`                       | `token.colorBorder`, `colorBorderSecondary`                                                                                               |
-| `@layout-body-background`                                         | `token.colorBgLayout`                                                                                                                     |
-| `@component-background`                                           | `token.colorBgContainer` (and `colorBgElevated` for popups)                                                                               |
-| `@layout-sider-background`, `@layout-header-background`           | `components.Layout.siderBg`, `headerBg`                                                                                                   |
-| `@menu-dark-bg`, `@menu-dark-inline-submenu-bg`                   | `components.Menu.darkItemBg`, `darkSubMenuItemBg` (and `darkPopupBg`)                                                                     |
-| `@segmented-bg`                                                   | `components.Segmented.trackBg`                                                                                                            |
+| Less variable (v4)                                                | v6 token                                                                                                                                                                                                                                                    |
+| ----------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@primary-color`                                                  | `token.colorPrimary`                                                                                                                                                                                                                                        |
+| `@primary-1` … `@primary-5`, `@primary-7`                         | `token.colorPrimaryBg`, `colorPrimaryBgHover`, `colorPrimaryBorder`, `colorPrimaryBorderHover`, `colorPrimaryHover`, `colorPrimaryActive`                                                                                                                   |
+| `@link-color`, `@link-hover-color`, `@link-active-color`          | `token.colorLink`, `colorLinkHover`, `colorLinkActive`                                                                                                                                                                                                      |
+| `@info-color`, `@success-color`, `@warning-color`, `@error-color` | `token.colorInfo`, `colorSuccess`, `colorWarning`, `colorError`; v4's `@info-color` defaulted to `@primary-color`, v6's `colorInfo` is its own seed (`#1677ff`), so a theme that set only the primary must set `colorInfo` too to keep info states on-brand |
+| `@processing-color`                                               | no seed of its own; Progress and the processing Badge read `colorInfo`                                                                                                                                                                                      |
+| `@font-family`, `@font-size-base`                                 | `token.fontFamily`, `fontSize`                                                                                                                                                                                                                              |
+| `@border-radius-base`, `@border-radius-sm`, `@border-radius-lg`   | `token.borderRadius`, `borderRadiusSM`, `borderRadiusLG`                                                                                                                                                                                                    |
+| `@text-color`, `@text-color-secondary`                            | `token.colorText`, `colorTextSecondary`                                                                                                                                                                                                                     |
+| `@border-color-base`, `@border-color-split`                       | `token.colorBorder`, `colorBorderSecondary`                                                                                                                                                                                                                 |
+| `@layout-body-background`                                         | `token.colorBgLayout`                                                                                                                                                                                                                                       |
+| `@component-background`                                           | `token.colorBgContainer` (and `colorBgElevated` for popups)                                                                                                                                                                                                 |
+| `@layout-sider-background`, `@layout-header-background`           | `components.Layout.siderBg`, `headerBg`                                                                                                                                                                                                                     |
+| `@menu-dark-bg`, `@menu-dark-inline-submenu-bg`                   | `components.Menu.darkItemBg`, `darkSubMenuItemBg` (and `darkPopupBg`)                                                                                                                                                                                       |
+| `@segmented-bg`                                                   | `components.Segmented.trackBg`                                                                                                                                                                                                                              |
 
 Three things the derivation does that a Less theme did not:
 
 - **The primary ramp is derived from the seed, and a dark or desaturated seed gets grey tints.** `colorPrimary: '#5c2a98'` yields `colorPrimaryBg: '#d4ccd9'`, because antd's palette generator lowers saturation as it lightens. A v4 theme that set `@primary-1` … `@primary-7` by hand has to set the matching `colorPrimary*` tokens by hand under v6 too.
-- **Under `nzDarkAlgorithm`, `colorPrimary` is a seed, not the rendered colour.** The algorithm re-derives the palette against `colorBgContainer`, so `colorPrimary: '#9254de'` renders as `--ant-color-primary: #7f4ac0`. Read the rendered value with `getNzDesignToken`, or set `colorPrimary` to the value that derives to the colour you want.
+- **Under `nzDarkAlgorithm`, `colorPrimary` is a seed, not the rendered colour.** The algorithm re-derives the palette with antd's dark palette generator, which mixes against a fixed `#141414` regardless of `colorBgContainer`, so `colorPrimary: '#9254de'` renders as `--ant-color-primary: #7f4ac0`. Read the rendered value with `getNzDesignToken`, or set `colorPrimary` to the value that derives to the colour you want.
 - **A segmented control's track is the layout background.** `Segmented.trackBg` defaults to `colorBgLayout`, so a `nz-segmented` placed directly on the layout background shows no track; v4's `@segmented-bg` was a fill colour. Set `components.Segmented.trackBg` when the control does not sit on a container.
 
 ## Read tokens in TypeScript

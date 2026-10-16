@@ -277,7 +277,7 @@ describe('generateStyles', () => {
 
   it("reset.css is antd's global reset with the attribution header and stays out of the bundle", () => {
     const reset = readFileSync(path.join(publishDir, 'style/v6/reset.css'), 'utf8');
-    expect(reset).toMatch(/^\/\*! Generated from Ant Design 6\.6\.5/);
+    expect(reset).toMatch(/^\/\*! Generated from Ant Design \d+\.\d+\.\d+ \(MIT\)/);
     expect(reset).toMatch(/\*::before,\s*\*::after\s*\{\s*box-sizing:\s*border-box/);
     expect(reset).toMatch(/^body\s*\{\s*margin:\s*0/m);
     expect(reset).not.toMatch(/\.ant-/);

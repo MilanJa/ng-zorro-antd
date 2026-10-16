@@ -86,7 +86,7 @@ NG-ZORRO 提供了一份基于 Ant Design v6 生成的可选样式表。它将 v
 "styles": ["node_modules/ng-zorro-antd/ng-zorro-antd.v6.min.css"]
 ```
 
-或者按以下顺序自行组合（模板 + 各组件补丁 + 一份令牌文件 + CDK 浮层规则），结果与上面的完整样式表逐字节一致：
+或者按以下顺序自行组合（模板 + 各组件补丁 + 一份令牌文件 + CDK 浮层规则），结果与上面的完整样式表规则相同、顺序相同：
 
 ```css
 @import 'ng-zorro-antd/style/v6/template.css';
@@ -107,7 +107,17 @@ v4 样式表会对整个页面做归一化（全局 `box-sizing: border-box`、`
 @import 'ng-zorro-antd/style/v6/reset.css';
 ```
 
-它就是 antd 发布的 `reset.css`，不包含在 `ng-zorro-antd.v6.min.css` 中。
+它就是 antd 发布的 `reset.css`，不包含在 `ng-zorro-antd.v6.min.css` 中。它并不能恢复 v4 的全部行为：v4 还会给 `body` 设置主题的字体、字号、行高、文字颜色和背景，而 antd 的重置样式只给 `body` 设置 `margin: 0`、给 `html` 设置普通的 `sans-serif`。组件之外的文字会保留浏览器默认字体，除非应用自行设置：
+
+```css
+body {
+  font-family: var(--ant-font-family);
+  font-size: var(--ant-font-size);
+  line-height: var(--ant-line-height);
+  color: var(--ant-color-text);
+  background: var(--ant-color-bg-layout);
+}
+```
 
 ## 配置主题
 
@@ -142,27 +152,27 @@ inject(NzConfigService).set('theme', { algorithm: nzDarkAlgorithm });
 
 v4 主题设置的是 Less 变量；v6 主题设置的是种子令牌和组件令牌，其余由算法推导。应用最常设置的变量对应关系如下：
 
-| Less 变量（v4）                                                   | v6 令牌                                                                                                                                   |
-| ----------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| `@primary-color`                                                  | `token.colorPrimary`                                                                                                                      |
-| `@primary-1` … `@primary-5`、`@primary-7`                         | `token.colorPrimaryBg`、`colorPrimaryBgHover`、`colorPrimaryBorder`、`colorPrimaryBorderHover`、`colorPrimaryHover`、`colorPrimaryActive` |
-| `@link-color`、`@link-hover-color`、`@link-active-color`          | `token.colorLink`、`colorLinkHover`、`colorLinkActive`                                                                                    |
-| `@info-color`、`@success-color`、`@warning-color`、`@error-color` | `token.colorInfo`、`colorSuccess`、`colorWarning`、`colorError`                                                                           |
-| `@processing-color`                                               | 没有独立的种子；Progress 和处理中状态的 Badge 读取 `colorInfo`                                                                            |
-| `@font-family`、`@font-size-base`                                 | `token.fontFamily`、`fontSize`                                                                                                            |
-| `@border-radius-base`、`@border-radius-sm`、`@border-radius-lg`   | `token.borderRadius`、`borderRadiusSM`、`borderRadiusLG`                                                                                  |
-| `@text-color`、`@text-color-secondary`                            | `token.colorText`、`colorTextSecondary`                                                                                                   |
-| `@border-color-base`、`@border-color-split`                       | `token.colorBorder`、`colorBorderSecondary`                                                                                               |
-| `@layout-body-background`                                         | `token.colorBgLayout`                                                                                                                     |
-| `@component-background`                                           | `token.colorBgContainer`（浮层另有 `colorBgElevated`）                                                                                    |
-| `@layout-sider-background`、`@layout-header-background`           | `components.Layout.siderBg`、`headerBg`                                                                                                   |
-| `@menu-dark-bg`、`@menu-dark-inline-submenu-bg`                   | `components.Menu.darkItemBg`、`darkSubMenuItemBg`（以及 `darkPopupBg`）                                                                   |
-| `@segmented-bg`                                                   | `components.Segmented.trackBg`                                                                                                            |
+| Less 变量（v4）                                                   | v6 令牌                                                                                                                                                                                                                                |
+| ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@primary-color`                                                  | `token.colorPrimary`                                                                                                                                                                                                                   |
+| `@primary-1` … `@primary-5`、`@primary-7`                         | `token.colorPrimaryBg`、`colorPrimaryBgHover`、`colorPrimaryBorder`、`colorPrimaryBorderHover`、`colorPrimaryHover`、`colorPrimaryActive`                                                                                              |
+| `@link-color`、`@link-hover-color`、`@link-active-color`          | `token.colorLink`、`colorLinkHover`、`colorLinkActive`                                                                                                                                                                                 |
+| `@info-color`、`@success-color`、`@warning-color`、`@error-color` | `token.colorInfo`、`colorSuccess`、`colorWarning`、`colorError`；v4 的 `@info-color` 默认等于 `@primary-color`，而 v6 的 `colorInfo` 是独立的种子（`#1677ff`），因此只设置了主色的主题还需要设置 `colorInfo`，信息类状态才能保持品牌色 |
+| `@processing-color`                                               | 没有独立的种子；Progress 和处理中状态的 Badge 读取 `colorInfo`                                                                                                                                                                         |
+| `@font-family`、`@font-size-base`                                 | `token.fontFamily`、`fontSize`                                                                                                                                                                                                         |
+| `@border-radius-base`、`@border-radius-sm`、`@border-radius-lg`   | `token.borderRadius`、`borderRadiusSM`、`borderRadiusLG`                                                                                                                                                                               |
+| `@text-color`、`@text-color-secondary`                            | `token.colorText`、`colorTextSecondary`                                                                                                                                                                                                |
+| `@border-color-base`、`@border-color-split`                       | `token.colorBorder`、`colorBorderSecondary`                                                                                                                                                                                            |
+| `@layout-body-background`                                         | `token.colorBgLayout`                                                                                                                                                                                                                  |
+| `@component-background`                                           | `token.colorBgContainer`（浮层另有 `colorBgElevated`）                                                                                                                                                                                 |
+| `@layout-sider-background`、`@layout-header-background`           | `components.Layout.siderBg`、`headerBg`                                                                                                                                                                                                |
+| `@menu-dark-bg`、`@menu-dark-inline-submenu-bg`                   | `components.Menu.darkItemBg`、`darkSubMenuItemBg`（以及 `darkPopupBg`）                                                                                                                                                                |
+| `@segmented-bg`                                                   | `components.Segmented.trackBg`                                                                                                                                                                                                         |
 
 推导过程有三点与 Less 主题不同：
 
 - **主色梯度由种子推导，偏暗或低饱和的种子会得到偏灰的浅色。** `colorPrimary: '#5c2a98'` 推导出 `colorPrimaryBg: '#d4ccd9'`，因为 antd 的调色板生成器在变亮的同时降低饱和度。v4 中手动设置了 `@primary-1` … `@primary-7` 的主题，在 v6 下同样需要手动设置对应的 `colorPrimary*` 令牌。
-- **在 `nzDarkAlgorithm` 下，`colorPrimary` 是种子而不是最终渲染的颜色。** 算法会基于 `colorBgContainer` 重新推导调色板，因此 `colorPrimary: '#9254de'` 渲染为 `--ant-color-primary: #7f4ac0`。可用 `getNzDesignToken` 读取渲染后的值，或者把 `colorPrimary` 设为能推导出目标颜色的值。
+- **在 `nzDarkAlgorithm` 下，`colorPrimary` 是种子而不是最终渲染的颜色。** 算法使用 antd 的暗色调色板生成器重新推导，该生成器始终以固定的 `#141414` 为底色混合，与 `colorBgContainer` 无关，因此 `colorPrimary: '#9254de'` 渲染为 `--ant-color-primary: #7f4ac0`。可用 `getNzDesignToken` 读取渲染后的值，或者把 `colorPrimary` 设为能推导出目标颜色的值。
 - **分段控制器的轨道颜色就是布局背景色。** `Segmented.trackBg` 默认为 `colorBgLayout`，因此直接放在布局背景上的 `nz-segmented` 看不到轨道；v4 的 `@segmented-bg` 是一个填充色。当控件不在容器内时，请设置 `components.Segmented.trackBg`。
 
 ## 在 TypeScript 中读取令牌
