@@ -8,6 +8,7 @@ import { Component, signal, TemplateRef, viewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 
+import { provideNzConfig } from 'ng-zorro-antd/core/config';
 import { en_US, NzI18nService, provideNzI18n, zh_CN } from 'ng-zorro-antd/i18n';
 import { provideNzIconsTesting } from 'ng-zorro-antd/icon/testing';
 
@@ -141,6 +142,14 @@ class TestImageWrapperInteractiveCoverComponent {
 class TestImageWrapperRoleComponent {
   readonly src = nextSrc();
   readonly disabled = signal(false);
+}
+
+@Component({
+  imports: [NzImageModule],
+  template: `<nz-image-wrapper [nzSrc]="src" />`
+})
+class TestImageWrapperConfigComponent {
+  readonly src = nextSrc();
 }
 
 const hostOf = (fixture: ComponentFixture<unknown>, selector = 'nz-image-wrapper'): HTMLElement =>
@@ -496,5 +505,32 @@ describe('nz-image-wrapper', () => {
     await settle(fixture);
     expect(hostOf(fixture, '#linked').getAttribute('role')).toBe('link');
     expect(hostOf(fixture, '#linked').getAttribute('tabindex')).toBe('-1');
+  });
+});
+
+describe('nz-image-wrapper with a string nzDisablePreview config', () => {
+  const agree = async (value: string): Promise<[boolean, boolean]> => {
+    TestBed.configureTestingModule({
+      providers: [
+        provideNzIconsTesting(),
+        provideNzI18n(en_US),
+        provideNzConfig({ image: { nzDisablePreview: value } })
+      ]
+    });
+    const fixture = TestBed.createComponent(TestImageWrapperConfigComponent);
+    await settle(fixture);
+    const wrapperPreviewable = hostOf(fixture).getAttribute('role') === 'button';
+    const innerPreviewable = !innerOf(fixture).nzDisablePreview;
+    return [wrapperPreviewable, innerPreviewable];
+  };
+
+  afterEach(() => TestBed.inject(OverlayContainer).ngOnDestroy());
+
+  it('"false" leaves the wrapper and its inner image both previewable', async () => {
+    expect(await agree('false')).toEqual([true, true]);
+  });
+
+  it('"true" disables both', async () => {
+    expect(await agree('true')).toEqual([false, false]);
   });
 });

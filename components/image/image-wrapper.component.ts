@@ -152,7 +152,8 @@ export class NzImageWrapperComponent {
   }
 
   get previewable(): boolean {
-    return !this.nzDisablePreview && this.status() !== 'error';
+    // The config value is typed `string`, so coerce it as the inner directive's input does.
+    return !booleanAttribute(this.nzDisablePreview) && this.status() !== 'error';
   }
 
   protected get role(): string | null {
