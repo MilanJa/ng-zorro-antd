@@ -4,14 +4,15 @@
  */
 
 import { ENTER, RIGHT_ARROW } from '@angular/cdk/keycodes';
-import { Component, signal } from '@angular/core';
+import { OverlayContainer } from '@angular/cdk/overlay';
+import { Component, signal, ViewEncapsulation } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 
 import { vi } from 'vitest';
 
 import { provideNzNoAnimation } from 'ng-zorro-antd/core/animation';
-import { dispatchKeyboardEvent, sleep } from 'ng-zorro-antd/core/testing';
+import { dispatchFakeEvent, dispatchKeyboardEvent, sleep } from 'ng-zorro-antd/core/testing';
 import { provideNzIconsTesting } from 'ng-zorro-antd/icon/testing';
 
 import { NzTabChangeEvent, NzTabsCanDeactivateFn, NzTabType } from './interfaces';
@@ -123,6 +124,43 @@ class TestTabsKeyAndIndexComponent {
   readonly indexChange = vi.fn();
   readonly select = vi.fn();
   readonly deselect = vi.fn();
+}
+
+@Component({
+  imports: [NzTabsModule],
+  template: `
+    <div style="width: 200px; height: 200px">
+      <nz-tabs style="width: 200px; height: 200px" [nzActiveKey]="key()" (nzActiveKeyChange)="keyChange($event)">
+        @for (tab of tabs; track tab) {
+          <nz-tab [nzKey]="tab" [nzTitle]="'Title ' + tab">Pane {{ tab }}</nz-tab>
+        }
+      </nz-tabs>
+    </div>
+  `,
+  encapsulation: ViewEncapsulation.None,
+  styles: `
+    @import './style/testing.less';
+  `
+})
+class TestTabsKeysOverflowComponent {
+  readonly tabs = Array.from({ length: 30 }, (_, i) => `k${i}`);
+  readonly key = signal<string | null>('k0');
+  readonly keyChange = vi.fn();
+}
+
+@Component({
+  imports: [NzTabsModule],
+  template: `
+    <nz-tabs [nzActiveKey]="key()" (nzActiveKeyChange)="keyChange($event)">
+      <nz-tab nzKey="a" nzTitle="First">Pane First</nz-tab>
+      <nz-tab nzKey="b" nzTitle="Second">Pane Second</nz-tab>
+      <nz-tab nzKey="a" nzTitle="Duplicate">Pane Duplicate</nz-tab>
+    </nz-tabs>
+  `
+})
+class TestTabsKeysDuplicateComponent {
+  readonly key = signal<string | null>('a');
+  readonly keyChange = vi.fn();
 }
 
 const tabsHost = (fixture: ComponentFixture<unknown>, id?: string): HTMLElement =>
@@ -470,6 +508,95 @@ describe('nz-tabs string keys', () => {
     } finally {
       warnSpy.mockRestore();
     }
+  });
+
+  it('restores the held tab when a known key returns after an unknown one', async () => {
+    const fixture = TestBed.createComponent(TestTabsKeyAndIndexComponent);
+    const host = fixture.componentInstance;
+    host.key.set('b');
+    await settle(fixture);
+    const el = tabsHost(fixture);
+    expect(activeLabel(el)).toBe('b');
+
+    host.key.set('zzz');
+    await settle(fixture);
+    expect(activeLabel(el)).toBeNull();
+    expect(selectedLabels(el)).toEqual([]);
+    expect(inkBar(el).hidden).toBe(true);
+
+    host.key.set('b');
+    await settle(fixture);
+    expect(activeLabel(el)).toBe('b');
+    expect(selectedLabels(el)).toEqual(['b']);
+    expect(inkBar(el).hidden).toBe(false);
+    expect(activePane(el)).toBe('Pane b');
+    expect(host.keyChange).not.toHaveBeenCalled();
+  });
+
+  it('keeps the bound key active when a keyed tab is added before it, and clears when it is removed', async () => {
+    const fixture = TestBed.createComponent(TestTabsKeyAndIndexComponent);
+    const host = fixture.componentInstance;
+    host.key.set('b');
+    await settle(fixture);
+    const el = tabsHost(fixture);
+    host.selectChange.mockClear();
+
+    host.tabs.set(['z', 'a', 'b', 'c']);
+    await settle(fixture);
+    expect(activeLabel(el)).toBe('b');
+    expect(selectedLabels(el)).toEqual(['b']);
+    expect(activePane(el)).toBe('Pane b');
+
+    host.tabs.set(['z', 'a', 'c']);
+    await settle(fixture);
+    expect(activeLabel(el)).toBeNull();
+    expect(selectedLabels(el)).toEqual([]);
+    expect(activePane(el)).toBeNull();
+    expect(inkBar(el).hidden).toBe(true);
+    expect(host.keyChange).not.toHaveBeenCalled();
+    expect(host.select).not.toHaveBeenCalled();
+  });
+
+  it('lets the first of duplicate keys win and does not report a click on a duplicate of the active key', async () => {
+    const fixture = TestBed.createComponent(TestTabsKeysDuplicateComponent);
+    const host = fixture.componentInstance;
+    await settle(fixture);
+    const el = tabsHost(fixture);
+    expect(activeLabel(el)).toBe('First');
+    expect(selectedLabels(el)).toEqual(['First']);
+
+    tabEls(el)[2].click();
+    await settle(fixture);
+    expect(host.keyChange).not.toHaveBeenCalled();
+    expect(activeLabel(el)).toBe('First');
+
+    tabEls(el)[1].click();
+    await settle(fixture);
+    expect(host.keyChange.mock.calls).toEqual([['b']]);
+  });
+
+  it('reports an overflow-menu pick once through nzActiveKeyChange', async () => {
+    const fixture = TestBed.createComponent(TestTabsKeysOverflowComponent);
+    const host = fixture.componentInstance;
+    const overlay = TestBed.inject(OverlayContainer).getContainerElement();
+    await settle(fixture);
+    await sleep(32);
+    await settle(fixture);
+    const el = tabsHost(fixture);
+
+    dispatchFakeEvent(el.querySelector('nz-tab-nav-operation button')!, 'mouseenter');
+    await sleep(200);
+    await settle(fixture);
+    const items = Array.from(overlay.querySelectorAll<HTMLElement>('.ant-tabs-dropdown-menu-item'));
+    expect(items.length).toBeGreaterThan(0);
+    const last = items[items.length - 1];
+    expect(last.textContent!.trim()).toBe('Title k29');
+
+    last.click();
+    await sleep(32);
+    await settle(fixture);
+    expect(host.keyChange.mock.calls).toEqual([['k29']]);
+    expect(activeLabel(el)).toBe('Title k0');
   });
 
   it('renders keyed tabs exactly like index-only tabs while no key input is bound', async () => {
