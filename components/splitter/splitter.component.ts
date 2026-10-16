@@ -154,12 +154,15 @@ export class NzSplitterComponent {
   readonly nzCollapse = output<NzSplitterCollapseEvent>();
 
   protected readonly orientation = computed(() => this.nzOrientation() ?? this.nzLayout() ?? 'horizontal');
-  private readonly aliasLayout = aliasDeprecatedInput<NzSplitterLayout>('nz-splitter', 'nzLayout', 'nzOrientation');
+  private readonly aliasLayout = aliasDeprecatedInput<NzSplitterLayout | undefined>(
+    'nz-splitter',
+    'nzLayout',
+    'nzOrientation'
+  );
 
   constructor() {
     effect(() => {
-      const legacy = this.nzLayout();
-      if (legacy !== undefined) this.aliasLayout(legacy);
+      this.aliasLayout(this.nzLayout());
     });
   }
 

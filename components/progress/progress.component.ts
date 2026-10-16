@@ -227,7 +227,7 @@ export class NzProgressComponent implements OnChanges {
   // v6-alias: nzWidth -> nzSize
   @Input()
   set nzWidth(value: number | undefined) {
-    this.widthAlias = value === undefined ? undefined : this.aliasWidth(value);
+    this.widthAlias = this.aliasWidth(value);
   }
   get nzWidth(): number {
     return this.circleWidth;
@@ -300,7 +300,7 @@ export class NzProgressComponent implements OnChanges {
 
   private sizeValue: NzProgressSize | undefined = undefined;
   private widthAlias: number | undefined = undefined;
-  private readonly aliasWidth = aliasDeprecatedInput<number>('nz-progress', 'nzWidth', 'nzSize');
+  private readonly aliasWidth = aliasDeprecatedInput<number | undefined>('nz-progress', 'nzWidth', 'nzSize');
 
   get formatter(): NzProgressFormatter {
     return this.nzFormat || defaultFormatter;

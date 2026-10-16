@@ -44,6 +44,23 @@ describe('aliasDeprecatedInput', () => {
     expect(warningsFor('nz-alias-once')).toHaveLength(1);
   });
 
+  it('maps undefined without warning, and the first defined value still warns once', () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const map = aliasDeprecatedInput<string | undefined, string>(
+      'nz-alias-undefined',
+      'nzOld',
+      'nzNew',
+      v => v ?? 'dflt'
+    );
+    expect(map(undefined)).toBe('dflt');
+    expect(map(undefined)).toBe('dflt');
+    expect(warningsFor('nz-alias-undefined')).toHaveLength(0);
+    map('a');
+    map(undefined);
+    map('b');
+    expect(warningsFor('nz-alias-undefined')).toHaveLength(1);
+  });
+
   it('warns once page-wide for the same component and input, even from two instances', () => {
     vi.spyOn(console, 'warn').mockImplementation(() => {});
     aliasDeprecatedInput<string>('nz-alias-shared', 'nzOld', 'nzNew')('a');
