@@ -4,7 +4,7 @@
  */
 
 import { OverlayContainer } from '@angular/cdk/overlay';
-import { Component } from '@angular/core';
+import { Component, signal, TemplateRef, viewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
@@ -15,6 +15,7 @@ import { V6_PATCH_CSS, V6_TEMPLATE_CSS, V6_TOKENS_DEFAULT_CSS } from 'ng-zorro-a
 import { provideNzIconsTesting } from 'ng-zorro-antd/icon/testing';
 
 import { NzImageModule } from './image.module';
+import { NzImagePreviewActionsContext } from './typings';
 
 let style: HTMLStyleElement;
 function installV6Css(): void {
@@ -233,9 +234,81 @@ describe('image preview toolbar order under antd v6 css', () => {
       'zoomIn',
       'close'
     ]);
+
     const progress = overlay
       .getContainerElement()
       .querySelector<HTMLElement>('.ant-image-preview-operations-progress')!;
     expect(getComputedStyle(progress).whiteSpace).toBe('nowrap');
+  });
+});
+
+const VALID_GIF = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+
+@Component({
+  imports: [NzImageModule],
+  template: `
+    <img id="slot" nz-image [nzSrc]="src" width="40" height="40" [nzActionsRender]="actionsRender()" />
+    <ng-template #tpl let-actions="actions">
+      <button type="button" class="custom-zoom-in" (click)="actions.onZoomIn()">in</button>
+    </ng-template>
+  `
+})
+class TestImageActionsRenderV6Component {
+  src = VALID_GIF;
+  readonly tpl = viewChild.required<TemplateRef<NzImagePreviewActionsContext>>('tpl');
+  readonly actionsRender = signal<TemplateRef<NzImagePreviewActionsContext> | null | undefined>(undefined);
+}
+
+describe('image preview render slots under antd v6 css', () => {
+  let fixture: ComponentFixture<TestImageActionsRenderV6Component>;
+  let overlay: OverlayContainer;
+
+  beforeEach(async () => {
+    installV6Css();
+    TestBed.configureTestingModule({ providers: [provideNzIconsTesting()] });
+    fixture = TestBed.createComponent(TestImageActionsRenderV6Component);
+    overlay = TestBed.inject(OverlayContainer);
+    fixture.detectChanges();
+    await fixture.whenStable();
+  });
+
+  afterEach(() => {
+    style.remove();
+    overlay.ngOnDestroy();
+    document.querySelectorAll('style[id^="nz-theme-"]').forEach(s => s.remove());
+  });
+
+  async function openPreview(): Promise<HTMLElement> {
+    fixture.detectChanges();
+    await fixture.whenStable();
+    (fixture.debugElement.query(By.css('#slot')).nativeElement as HTMLImageElement).click();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    return overlay.getContainerElement().querySelector('.ant-image-preview-footer') as HTMLElement;
+  }
+
+  it('lays a custom actions template out inside the pill, before the trailing close control', async () => {
+    fixture.componentInstance.actionsRender.set(fixture.componentInstance.tpl());
+    const footer = await openPreview();
+    const pill = footer.querySelector('.ant-image-preview-actions') as HTMLElement;
+    expect(getComputedStyle(pill).backgroundColor).toBe('rgba(0, 0, 0, 0.1)');
+    const button = pill.querySelector('.custom-zoom-in') as HTMLElement;
+    const p = pill.getBoundingClientRect();
+    const b = button.getBoundingClientRect();
+    expect(b.left >= p.left && b.right <= p.right && b.top >= p.top && b.bottom <= p.bottom).toBe(true);
+    const close = pill.querySelector('.ant-image-preview-close') as HTMLElement;
+    expect(close.getBoundingClientRect().left).toBeGreaterThan(b.left);
+  });
+
+  it('draws no pill for nzActionsRender null and keeps the close control visible', async () => {
+    fixture.componentInstance.actionsRender.set(null);
+    const footer = await openPreview();
+    const list = footer.querySelector(':scope > ul') as HTMLElement;
+    expect(footer.querySelector('.ant-image-preview-actions')).toBeNull();
+    expect(getComputedStyle(list).backgroundColor).toBe('rgba(0, 0, 0, 0)');
+    const close = list.querySelector('.ant-image-preview-close') as HTMLElement;
+    expect(close.getBoundingClientRect().width).toBeGreaterThan(0);
+    expect(close.getBoundingClientRect().height).toBeGreaterThan(0);
   });
 });

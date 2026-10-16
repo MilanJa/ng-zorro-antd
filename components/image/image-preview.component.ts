@@ -5,6 +5,7 @@
 
 import { CdkDrag, CdkDragEnd, CdkDragHandle } from '@angular/cdk/drag-drop';
 import { ESCAPE } from '@angular/cdk/keycodes';
+import { NgTemplateOutlet } from '@angular/common';
 import {
   ChangeDetectorRef,
   Component,
@@ -16,6 +17,7 @@ import {
   NgZone,
   OnInit,
   signal,
+  TemplateRef,
   ViewChild,
   ViewEncapsulation
 } from '@angular/core';
@@ -33,6 +35,14 @@ import { NZ_CONFIG_MODULE_NAME } from './image-config';
 import { NzImage, NzImagePreviewOptions } from './image-preview-options';
 import { NzImagePreviewRef } from './image-preview-ref';
 import { NzImageScaleStep, NzImageUrl } from './image.directive';
+import {
+  NzImagePreviewActions,
+  NzImagePreviewActionsContext,
+  NzImagePreviewActionsIcons,
+  NzImagePreviewImageContext,
+  NzImagePreviewImageInfo,
+  NzImagePreviewTransform
+} from './typings';
 import { getClientSize, getFitContentPosition, getOffset } from './utils';
 
 export interface NzImageContainerOperation {
@@ -76,20 +86,31 @@ const NZ_DEFAULT_ROTATE = 0;
               [cdkDragFreeDragPosition]="position"
               (cdkDragEnded)="onDragEnd($event)"
             >
-              @for (image of images; track image) {
-                @if ($index === index) {
-                  <img
-                    cdkDragHandle
-                    class="ant-image-preview-img"
-                    #imgRef
-                    [attr.src]="sanitizerResourceUrl(image.src)"
-                    [attr.srcset]="image.srcset"
-                    [attr.alt]="image.alt"
-                    [style.width]="image.width"
-                    [style.height]="image.height"
-                    [style.transform]="previewImageTransform()"
-                  />
+              <!--
+                Declared inside the drag wrapper: the img's cdkDragHandle finds this cdkDrag through
+                the template's declaration injector, also when a custom nzImageRender stamps it.
+              -->
+              <ng-template #defaultImage>
+                @for (image of images; track image) {
+                  @if ($index === index) {
+                    <img
+                      cdkDragHandle
+                      class="ant-image-preview-img"
+                      #imgRef
+                      [attr.src]="sanitizerResourceUrl(image.src)"
+                      [attr.srcset]="image.srcset"
+                      [attr.alt]="image.alt"
+                      [style.width]="image.width"
+                      [style.height]="image.height"
+                      [style.transform]="previewImageTransform()"
+                    />
+                  }
                 }
+              </ng-template>
+              @if (config.nzImageRender; as imageRender) {
+                <ng-container *ngTemplateOutlet="imageRender; context: imageContext()" />
+              } @else {
+                <ng-container *ngTemplateOutlet="defaultImage" />
               }
             </div>
           </div>
@@ -122,36 +143,64 @@ const NZ_DEFAULT_ROTATE = 0;
             </div>
           }
 
-          <ul class="ant-image-preview-operations ant-image-preview-actions">
+          <ul class="ant-image-preview-operations" [class.ant-image-preview-actions]="config.nzActionsRender !== null">
             @if (images.length > 1) {
               <li class="ant-image-preview-operations-progress">{{ index + 1 }} / {{ images.length }}</li>
             }
 
-            @for (option of operations; track option) {
-              <li
-                class="ant-image-preview-operations-operation"
-                [class.ant-image-preview-close]="option.type === 'close'"
-                [class]="
-                  option.v6Type
-                    ? 'ant-image-preview-actions-action ant-image-preview-actions-action-' + option.v6Type
-                    : ''
-                "
-                [class.ant-image-preview-operations-operation-disabled]="zoomOutDisabled && option.type === 'zoomOut'"
-                [class.ant-image-preview-actions-action-disabled]="zoomOutDisabled && option.type === 'zoomOut'"
-                (click)="option.onClick()"
-              >
-                <nz-icon
-                  class="ant-image-preview-operations-icon"
-                  [nzType]="option.icon"
-                  [nzRotate]="option.rotate ?? 0"
-                  nzTheme="outline"
-                />
-              </li>
+            @if (config.nzActionsRender === undefined) {
+              @for (option of operations; track option) {
+                <ng-container *ngTemplateOutlet="operationItem; context: { $implicit: option }" />
+              }
+            } @else {
+              @for (option of closeOperations; track option) {
+                <ng-container *ngTemplateOutlet="operationItem; context: { $implicit: option }" />
+              }
+              @if (config.nzActionsRender; as actionsRender) {
+                <!--
+                  One unclassed item after close: the list itself is laid out reversed, so the
+                  template's own nodes flow in source order inside this flex row instead.
+                -->
+                <li style="display: flex; align-items: center; gap: inherit">
+                  <ng-container *ngTemplateOutlet="actionsRender; context: actionsContext()" />
+                </li>
+              }
             }
           </ul>
         </div>
       </div>
     </div>
+
+    <ng-template #operationItem let-option>
+      <li
+        class="ant-image-preview-operations-operation"
+        [class.ant-image-preview-close]="option.type === 'close'"
+        [class]="
+          option.v6Type ? 'ant-image-preview-actions-action ant-image-preview-actions-action-' + option.v6Type : ''
+        "
+        [class.ant-image-preview-operations-operation-disabled]="zoomOutDisabled && option.type === 'zoomOut'"
+        [class.ant-image-preview-actions-action-disabled]="zoomOutDisabled && option.type === 'zoomOut'"
+        (click)="option.onClick()"
+      >
+        <nz-icon
+          class="ant-image-preview-operations-icon"
+          [nzType]="option.icon"
+          [nzRotate]="option.rotate ?? 0"
+          nzTheme="outline"
+        />
+      </li>
+    </ng-template>
+    <ng-template #defaultActions>
+      @for (option of defaultActionOperations; track option) {
+        <ng-container *ngTemplateOutlet="operationItem; context: { $implicit: option }" />
+      }
+    </ng-template>
+    <ng-template #flipYIcon><nz-icon nzType="swap" [nzRotate]="90" nzTheme="outline" /></ng-template>
+    <ng-template #flipXIcon><nz-icon nzType="swap" nzTheme="outline" /></ng-template>
+    <ng-template #rotateLeftIcon><nz-icon nzType="rotate-left" nzTheme="outline" /></ng-template>
+    <ng-template #rotateRightIcon><nz-icon nzType="rotate-right" nzTheme="outline" /></ng-template>
+    <ng-template #zoomOutIcon><nz-icon nzType="zoom-out" nzTheme="outline" /></ng-template>
+    <ng-template #zoomInIcon><nz-icon nzType="zoom-in" nzTheme="outline" /></ng-template>
   `,
   encapsulation: ViewEncapsulation.None,
   host: {
@@ -159,7 +208,7 @@ const NZ_DEFAULT_ROTATE = 0;
     '[class.ant-image-preview-moving]': 'isDragging()',
     '[style.zIndex]': 'config.nzZIndex'
   },
-  imports: [NzIconModule, CdkDragHandle, CdkDrag]
+  imports: [NgTemplateOutlet, NzIconModule, CdkDragHandle, CdkDrag]
 })
 export class NzImagePreviewComponent implements OnInit {
   private readonly document = inject(DOCUMENT);
@@ -241,6 +290,21 @@ export class NzImagePreviewComponent implements OnInit {
     }
   ];
 
+  /** The close control, kept in the toolbar when a custom actions template (or `null`) is bound. */
+  protected readonly closeOperations = this.operations.filter(option => option.type === 'close');
+  /** The six default actions in antd's reading order (flipY … zoomIn), for the actions template's `$implicit`. */
+  protected readonly defaultActionOperations = this.operations.filter(option => option.type !== 'close').reverse();
+  protected readonly previewActions: NzImagePreviewActions = {
+    onFlipY: () => this.runAction(() => this.onVerticalFlip()),
+    onFlipX: () => this.runAction(() => this.onHorizontalFlip()),
+    onRotateLeft: () => this.runAction(() => this.onRotateLeft()),
+    onRotateRight: () => this.runAction(() => this.onRotateRight()),
+    onZoomOut: () => this.runAction(() => this.onZoomOut()),
+    onZoomIn: () => this.runAction(() => this.onZoomIn()),
+    onClose: () => this.onClose(),
+    onActive: (offset: number) => this.activate(offset)
+  };
+
   zoomOutDisabled = false;
   position = { ...initialPosition };
   previewRef!: NzImagePreviewRef;
@@ -248,12 +312,28 @@ export class NzImagePreviewComponent implements OnInit {
 
   @ViewChild('imgRef') imageRef!: ElementRef<HTMLImageElement>;
   @ViewChild('imagePreviewWrapper', { static: true }) imagePreviewWrapper!: ElementRef<HTMLElement>;
+  @ViewChild('defaultImage', { static: true }) private defaultImage!: TemplateRef<void>;
+  @ViewChild('defaultActions', { static: true }) private defaultActions!: TemplateRef<void>;
+  @ViewChild('flipYIcon', { static: true }) private flipYIcon!: TemplateRef<void>;
+  @ViewChild('flipXIcon', { static: true }) private flipXIcon!: TemplateRef<void>;
+  @ViewChild('rotateLeftIcon', { static: true }) private rotateLeftIcon!: TemplateRef<void>;
+  @ViewChild('rotateRightIcon', { static: true }) private rotateRightIcon!: TemplateRef<void>;
+  @ViewChild('zoomOutIcon', { static: true }) private zoomOutIcon!: TemplateRef<void>;
+  @ViewChild('zoomInIcon', { static: true }) private zoomInIcon!: TemplateRef<void>;
 
   private zoom = this.config.nzZoom ?? this._defaultNzZoom;
   private rotate = this.config.nzRotate ?? this._defaultNzRotate;
   private scaleStep = this.config.nzScaleStep ?? this._defaultNzScaleStep;
   private flipHorizontally = this.config.nzFlipHorizontally ?? false;
   private flipVertically = this.config.nzFlipVertically ?? false;
+
+  // Render-slot contexts are rebuilt only when one of their fields changes, so a template outlet
+  // sees the same object across change-detection passes.
+  private actionIcons: NzImagePreviewActionsIcons | null = null;
+  private transformCache: NzImagePreviewTransform | null = null;
+  private imageInfoCache: { source: NzImage | undefined; info: NzImagePreviewImageInfo } | null = null;
+  private actionsContextCache: NzImagePreviewActionsContext | null = null;
+  private imageContextCache: NzImagePreviewImageContext | null = null;
 
   get maskClosable(): boolean {
     const defaultConfig: NzSafeAny = this.nzConfigService.getConfigForComponent(NZ_CONFIG_MODULE_NAME) || {};
@@ -404,9 +484,15 @@ export class NzImagePreviewComponent implements OnInit {
 
   onDragEnd(event: CdkDragEnd): void {
     this.isDragging.set(false);
-    const width = this.imageRef.nativeElement.offsetWidth * this.zoom;
-    const height = this.imageRef.nativeElement.offsetHeight * this.zoom;
-    const { left, top } = getOffset(this.imageRef.nativeElement);
+    const image = this.imageRef as ElementRef<HTMLImageElement> | undefined;
+    if (!image) {
+      // A custom nzImageRender without the default image: no image box to fit, keep the drop position.
+      this.position = { ...event.source.getFreeDragPosition() };
+      return;
+    }
+    const width = image.nativeElement.offsetWidth * this.zoom;
+    const height = image.nativeElement.offsetHeight * this.zoom;
+    const { left, top } = getOffset(image.nativeElement);
     const { width: clientWidth, height: clientHeight } = getClientSize();
     const isRotate = this.rotate % 180 !== 0;
     const fitContentParams = {
@@ -432,6 +518,109 @@ export class NzImagePreviewComponent implements OnInit {
     return this.sanitizer.bypassSecurityTrustResourceUrl(url);
   }
 
+  protected actionsContext(): NzImagePreviewActionsContext {
+    const transform = this.transformInfo();
+    const image = this.imageInfo();
+    const cached = this.actionsContextCache;
+    if (
+      cached &&
+      cached.transform === transform &&
+      cached.image === image &&
+      cached.current === this.index &&
+      cached.total === this.images.length
+    ) {
+      return cached;
+    }
+    this.actionIcons ??= {
+      flipY: this.flipYIcon,
+      flipX: this.flipXIcon,
+      rotateLeft: this.rotateLeftIcon,
+      rotateRight: this.rotateRightIcon,
+      zoomOut: this.zoomOutIcon,
+      zoomIn: this.zoomInIcon
+    };
+    this.actionsContextCache = {
+      $implicit: this.defaultActions,
+      icons: this.actionIcons,
+      actions: this.previewActions,
+      transform,
+      current: this.index,
+      total: this.images.length,
+      image
+    };
+    return this.actionsContextCache;
+  }
+
+  protected imageContext(): NzImagePreviewImageContext {
+    const transform = this.transformInfo();
+    const image = this.imageInfo();
+    const cached = this.imageContextCache;
+    if (cached && cached.transform === transform && cached.image === image && cached.current === this.index) {
+      return cached;
+    }
+    this.imageContextCache = { $implicit: this.defaultImage, transform, current: this.index, image };
+    return this.imageContextCache;
+  }
+
+  private transformInfo(): NzImagePreviewTransform {
+    const next: NzImagePreviewTransform = {
+      x: this.position.x,
+      y: this.position.y,
+      rotate: this.rotate,
+      scale: this.zoom,
+      flipX: this.flipHorizontally,
+      flipY: this.flipVertically
+    };
+    const cached = this.transformCache;
+    if (
+      cached &&
+      cached.x === next.x &&
+      cached.y === next.y &&
+      cached.rotate === next.rotate &&
+      cached.scale === next.scale &&
+      cached.flipX === next.flipX &&
+      cached.flipY === next.flipY
+    ) {
+      return cached;
+    }
+    this.transformCache = next;
+    return next;
+  }
+
+  private imageInfo(): NzImagePreviewImageInfo {
+    const source: NzImage | undefined = this.images[this.index];
+    const cached = this.imageInfoCache;
+    if (cached && cached.source === source) {
+      return cached.info;
+    }
+    const info: NzImagePreviewImageInfo = {
+      url: source?.src ?? '',
+      alt: source?.alt,
+      width: source?.width,
+      height: source?.height
+    };
+    this.imageInfoCache = { source, info };
+    return info;
+  }
+
+  private runAction(action: () => void): void {
+    action();
+    this.markForCheck();
+  }
+
+  private activate(offset: number): void {
+    const target = this.index + offset;
+    if (!Number.isInteger(target) || target < 0 || target > this.images.length - 1) {
+      return;
+    }
+    this.reset();
+    this.index = target;
+    this.updatePreviewImageTransform();
+    this.updatePreviewImageWrapperTransform();
+    this.updateZoomOutDisabled();
+    this.markForCheck();
+  }
+
   private updatePreviewImageTransform(): void {
     this.previewImageTransform.set(
       `scale3d(${this.zoom * (this.flipHorizontally ? -1 : 1)}, ${
@@ -449,8 +638,13 @@ export class NzImagePreviewComponent implements OnInit {
   }
 
   private handlerImageTransformationWhileZoomingWithMouse(event: WheelEvent, deltaY: number): void {
+    const image = this.imageRef as ElementRef<HTMLImageElement> | undefined;
+    if (!image) {
+      // A custom nzImageRender without the default image: zoom without anchoring on the cursor.
+      return;
+    }
     let scaleValue: number;
-    const imageElement = this.imageRef.nativeElement;
+    const imageElement = image.nativeElement;
 
     const elementTransform = getComputedStyle(imageElement).transform;
     const matrixValue = elementTransform.match(/matrix.*\((.+)\)/);
