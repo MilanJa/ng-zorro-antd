@@ -19,6 +19,7 @@ import { startWith } from 'rxjs/operators';
 import { NzConfigService } from 'ng-zorro-antd/core/config';
 import { warn } from 'ng-zorro-antd/core/logger';
 import { overlayZIndexSetter } from 'ng-zorro-antd/core/overlay';
+import { NZ_THEME_SCOPE } from 'ng-zorro-antd/core/theme';
 import { IndexableObject, NzSafeAny } from 'ng-zorro-antd/core/types';
 import { isNotNil, isTemplateRef } from 'ng-zorro-antd/core/util';
 
@@ -134,10 +135,15 @@ export class NzModalService implements OnDestroy {
   private createOverlay(config: ModalOptions): OverlayRef {
     const globalConfig = this.nzConfigService.getConfigForComponent(NZ_CONFIG_MODULE_NAME) || {};
 
+    // The CDK backdrop is a sibling of the pane, outside the modal container that carries the scope
+    // classes, so a scoped theme reaches the mask only through its own class list.
+    const scope = config.nzViewContainerRef?.injector.get(NZ_THEME_SCOPE, null)?.();
+    const hasMask = getValueWithConfig(config.nzMask, globalConfig.nzMask, true);
+
     return createOverlayRef(this.injector, {
       hasBackdrop: true,
       scrollStrategy: createBlockScrollStrategy(this.injector),
-      backdropClass: getValueWithConfig(config.nzMask, globalConfig.nzMask, true) ? MODAL_MASK_CLASS_NAME : '',
+      backdropClass: hasMask ? (scope ? [MODAL_MASK_CLASS_NAME, scope] : MODAL_MASK_CLASS_NAME) : '',
       positionStrategy: createGlobalPositionStrategy(this.injector),
       disposeOnNavigation: getValueWithConfig(config.nzCloseOnNavigation, globalConfig.nzCloseOnNavigation, true),
       direction: getValueWithConfig(config.nzDirection, globalConfig.nzDirection, this.directionality.valueSignal())

@@ -4,7 +4,7 @@
  */
 
 import { OverlayContainer } from '@angular/cdk/overlay';
-import { Component, signal } from '@angular/core';
+import { Component, ViewContainerRef, inject, signal, viewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { expectMotionSettled } from 'ng-zorro-antd/core/testing';
@@ -38,6 +38,15 @@ class DeclarativeModalHostComponent {
   centered = signal(false);
 }
 
+@Component({
+  imports: [NzThemeDirective],
+  template: `<div [nzTheme]="{ token: { colorBgMask: 'rgb(1, 2, 3)' } }"><ng-container #anchor /></div>`
+})
+class ScopedConfirmHostComponent {
+  readonly viewContainerRef = viewChild.required('anchor', { read: ViewContainerRef });
+  readonly modal = inject(NzModalService);
+}
+
 describe('modal under antd v6 css', () => {
   let overlay: OverlayContainer;
 
@@ -68,6 +77,10 @@ describe('modal under antd v6 css', () => {
     expect(getComputedStyle(container).borderRadius).toBe('8px');
     expect(getComputedStyle(container).padding).toBe('20px 24px');
     expect(wrap.className).toMatch(/\bnz-theme-\d+\b/);
+    const scopeClass = /\bnz-theme-\d+\b/.exec(wrap.className)![0];
+    const mask = overlay.getContainerElement().querySelector('.cdk-overlay-backdrop') as HTMLElement;
+    expect(mask.classList).toContain('ant-modal-mask');
+    expect(mask.classList).toContain(scopeClass);
     // `.ant-modal-wrap` must be the fixed, full-viewport positioning context (v6's own rule for it is
     // scoped under `.ant-modal-root`, which ng-zorro never renders, and mirrored in `style/v6/patch.css`);
     // without it the modal renders pinned to the left edge instead of centred.
@@ -164,5 +177,28 @@ describe('modal under antd v6 css', () => {
     await fixture.whenStable();
     await new Promise(r => setTimeout(r, 400));
     expect(overlay.getContainerElement().querySelector('.ant-modal-confirm')).toBeNull();
+  });
+  it('puts the scope class on the confirm mask only inside a theme scope', async () => {
+    overlay = TestBed.inject(OverlayContainer);
+    const modal = TestBed.inject(NzModalService);
+    const outside = modal.confirm({ nzTitle: 'outside' });
+    const outsideMask = outside.getBackdropElement()!;
+    expect(outsideMask.classList).toContain('ant-modal-mask');
+    expect(outsideMask.className).not.toMatch(/nz-theme-/);
+    outside.close();
+
+    const fixture = TestBed.createComponent(ScopedConfirmHostComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const inside = fixture.componentInstance.modal.confirm({
+      nzTitle: 'inside',
+      nzViewContainerRef: fixture.componentInstance.viewContainerRef()
+    });
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const insideMask = inside.getBackdropElement()!;
+    expect(insideMask.classList).toContain('ant-modal-mask');
+    expect(insideMask.className).toMatch(/\bnz-theme-\d+\b/);
+    inside.close();
   });
 });
