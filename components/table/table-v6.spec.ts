@@ -94,6 +94,33 @@ class TestFixedColumnsRtlComponent {
 @Component({
   imports: [NzTableModule],
   template: `
+    <nz-table id="host" #t [nzData]="rows()" [nzScroll]="{ x: '900px' }" [nzFrontPagination]="false">
+      <thead>
+        <tr>
+          <th nzLeft nzWidth="120px">Name</th>
+          <th nzWidth="500px">A</th>
+          <th nzWidth="500px">B</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (r of t.data; track r.id) {
+          <tr>
+            <td nzLeft>{{ r.name }}</td>
+            <td>{{ r.a }}</td>
+            <td>{{ r.b }}</td>
+          </tr>
+        }
+      </tbody>
+    </nz-table>
+  `
+})
+class TestLeftFixedOnlyComponent {
+  rows = signal<Row[]>(Array.from({ length: 3 }, (_, i) => ({ id: i, name: `Row ${i}`, a: `a${i}`, b: `b${i}` })));
+}
+
+@Component({
+  imports: [NzTableModule],
+  template: `
     <nz-table id="host" #t [nzData]="rows()" [nzSize]="size()" [nzBordered]="bordered()" [nzFrontPagination]="false">
       <thead>
         <tr>
@@ -249,6 +276,25 @@ describe('table under antd v6 css', () => {
       // The physical v4 boundary classes stay where they are.
       expect(lastLeft.classList.contains('ant-table-cell-fix-left-last')).toBe(true);
       expect(firstRight.classList.contains('ant-table-cell-fix-right-first')).toBe(true);
+    });
+
+    it('swaps the has-fix-start and has-fix-end classes under rtl', async () => {
+      const dir = TestBed.inject(Directionality);
+      const leftOnly = TestBed.createComponent(TestLeftFixedOnlyComponent);
+      leftOnly.detectChanges();
+      await leftOnly.whenStable();
+      const main = (leftOnly.nativeElement as HTMLElement).querySelector('.ant-table') as HTMLElement;
+      expect(main.classList.contains('ant-table-has-fix-left')).toBe(true);
+      expect(main.classList.contains('ant-table-has-fix-start')).toBe(true);
+      expect(main.classList.contains('ant-table-has-fix-end')).toBe(false);
+
+      dir.valueSignal.set('rtl');
+      leftOnly.detectChanges();
+      await leftOnly.whenStable();
+      leftOnly.detectChanges();
+      expect(main.classList.contains('ant-table-has-fix-left')).toBe(true);
+      expect(main.classList.contains('ant-table-has-fix-start')).toBe(false);
+      expect(main.classList.contains('ant-table-has-fix-end')).toBe(true);
     });
 
     it('places the v6 fixed-column shadow on the logical start side under rtl', async () => {

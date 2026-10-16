@@ -58,7 +58,8 @@ const NZ_CONFIG_MODULE_NAME: NzConfigKey = 'table';
 // antd v6 (`@rc-component/table` `Table.js`) renamed several of the root `.ant-table` modifier
 // classes to logical-direction names (`-has-fix-left/-right` -> `-has-fix-start/-end`) and to a
 // new name entirely (`-middle` -> `-medium`). The v4 classes stay for the default stylesheet; the
-// v6 ones are added next to them on the same condition. The "scroll-horizontal" modifier class
+// v6 ones are added next to them on the same condition, swapped under rtl like the cell classes
+// (the fixed columns stay physically left/right). The "scroll-horizontal" modifier class
 // (antd's `horizonScroll` flag, prefixed the same way as the others above) is NOT added here even
 // though v6 also uses it: the compiled v4 CSS already has a rule keyed on it (`style/v6/patch.css`'s
 // own comment explains the hook used instead).
@@ -80,8 +81,8 @@ const NZ_CONFIG_MODULE_NAME: NzConfigKey = 'table';
         [class.ant-table-fixed-column]="scrollX"
         [class.ant-table-has-fix-left]="hasFixLeft"
         [class.ant-table-has-fix-right]="hasFixRight"
-        [class.ant-table-has-fix-start]="hasFixLeft"
-        [class.ant-table-has-fix-end]="hasFixRight"
+        [class.ant-table-has-fix-start]="dir() === 'rtl' ? hasFixRight : hasFixLeft"
+        [class.ant-table-has-fix-end]="dir() === 'rtl' ? hasFixLeft : hasFixRight"
         [class.ant-table-bordered]="nzBordered"
         [class.nz-table-out-bordered]="nzOuterBordered && !nzBordered"
         [class.ant-table-middle]="nzSize === 'middle'"
