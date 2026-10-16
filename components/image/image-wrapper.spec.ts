@@ -115,6 +115,7 @@ class TestImageWrapperGroupSlotsComponent {
     <nz-image-wrapper id="bare" [nzSrc]="src" nzPreviewCover />
     <nz-image-wrapper id="false-string" [nzSrc]="src" nzPreviewCover="false" />
     <nz-image-wrapper id="text" [nzSrc]="src" nzPreviewCover="Zoom" />
+    <nz-image-wrapper id="true-string" [nzSrc]="src" nzPreviewCover="true" />
   `
 })
 class TestImageWrapperCoverAttrComponent {
@@ -476,6 +477,9 @@ describe('nz-image-wrapper', () => {
     const text = hostOf(fixture, '#text').querySelector(':scope > .ant-image-cover')!;
     expect(text.textContent!.trim()).toBe('Zoom');
     expect(text.querySelector('.ant-image-mask-info')).toBeNull();
+    const trueString = hostOf(fixture, '#true-string').querySelector(':scope > .ant-image-cover')!;
+    expect(trueString.textContent!.trim()).toBe('Preview');
+    expect(trueString.querySelector('.ant-image-mask-info nz-icon')).not.toBeNull();
   });
 
   it('ignores key presses from interactive cover content', async () => {

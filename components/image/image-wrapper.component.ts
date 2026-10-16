@@ -41,11 +41,11 @@ function toCssLength(value: string | number | null | undefined): string | null {
   return typeof value === 'number' || /^\d+(\.\d+)?$/.test(value) ? `${value}px` : value;
 }
 
-/** A bare `nzPreviewCover` attribute (`''`) is the default cover and the string `'false'` is no cover. */
+/** A bare `nzPreviewCover` attribute (`''`) or `"true"` is the default cover and the string `'false'` is no cover. */
 function coerceCover(
   value: string | TemplateRef<void> | boolean | undefined
 ): string | TemplateRef<void> | boolean | undefined {
-  if (value === '') {
+  if (value === '' || value === 'true') {
     return true;
   }
   return value === 'false' ? false : value;
