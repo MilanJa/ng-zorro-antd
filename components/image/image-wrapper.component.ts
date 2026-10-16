@@ -203,7 +203,7 @@ export class NzImageWrapperComponent {
   /** The inner image previews on its own click; a click on the cover or the placeholder previews here. */
   protected onHostClick(event: MouseEvent): void {
     const image = this.image();
-    if (!image || event.target === image.getElement().nativeElement) {
+    if (!image || event.target === image.getElement().nativeElement || this.isFromInteractiveContent(event)) {
       return;
     }
     image.onPreview();
@@ -217,8 +217,8 @@ export class NzImageWrapperComponent {
     this.image()?.onPreview();
   }
 
-  /** A key press on a control inside the cover (a button, a link) belongs to that control. */
-  private isFromInteractiveContent(event: KeyboardEvent): boolean {
+  /** A key press or click on a control inside the cover (a button, a link) belongs to that control. */
+  private isFromInteractiveContent(event: Event): boolean {
     const host = this.hostElement;
     const target = event.target;
     if (!(target instanceof Element) || target === host) {

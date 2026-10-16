@@ -482,6 +482,22 @@ describe('nz-image-wrapper', () => {
     expect(trueString.querySelector('.ant-image-mask-info nz-icon')).not.toBeNull();
   });
 
+  it('runs only the control for a click on interactive cover content', async () => {
+    const fixture = TestBed.createComponent(TestImageWrapperInteractiveCoverComponent);
+    await settle(fixture);
+    const button = hostOf(fixture).querySelector('.cover-button') as HTMLElement;
+    let clicks = 0;
+    button.addEventListener('click', () => clicks++);
+    button.click();
+    await settle(fixture);
+    expect(clicks).toBe(1);
+    expect(previewRoots().length).toBe(0);
+
+    hostOf(fixture).click();
+    await settle(fixture);
+    expect(previewRoots().length).toBe(1);
+  });
+
   it('ignores key presses from interactive cover content', async () => {
     const fixture = TestBed.createComponent(TestImageWrapperInteractiveCoverComponent);
     await settle(fixture);
