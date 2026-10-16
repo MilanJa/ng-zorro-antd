@@ -37,6 +37,25 @@
 }
 
 /*
+ * ng-zorro keeps the prev/next switches inside the footer, while v6 renders them as siblings
+ * of it, positioned against `.ant-image-preview` (`top: 50%; transform: translateY(-50%)`,
+ * `inset-inline-start/-end: var(--ant-margin-sm)`). The footer's `left: 50%` plus
+ * `translateX(-50%)` centering made it the containing block of its switches, which then sat
+ * over the toolbar's ends. The footer is centered with auto margins instead (no transform),
+ * so the switches can be fixed to the viewport sides like v6's own.
+ */
+.ant-image-preview .ant-image-preview-footer {
+  left: 0;
+  right: 0;
+  width: fit-content;
+  margin-inline: auto;
+  transform: none;
+}
+.ant-image-preview .ant-image-preview-footer .ant-image-preview-switch {
+  position: fixed;
+}
+
+/*
  * The action list's DOM order is v4's: close, zoomIn, zoomOut, rotateRight, rotateLeft, flipX,
  * flipY. v4 lays it out with `flex-direction: row-reverse`, so the actions read flipY, flipX,
  * rotateLeft, rotateRight, zoomOut, zoomIn left-to-right with close at the trailing end. That is

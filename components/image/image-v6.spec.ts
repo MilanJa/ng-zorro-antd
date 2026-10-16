@@ -240,6 +240,27 @@ describe('image preview toolbar order under antd v6 css', () => {
       .querySelector<HTMLElement>('.ant-image-preview-operations-progress')!;
     expect(getComputedStyle(progress).whiteSpace).toBe('nowrap');
   });
+
+  it('places the switches at the viewport sides, clear of the toolbar', async () => {
+    const fixture = TestBed.createComponent(TestImageGroupOrderComponent);
+    fixture.detectChanges();
+    (fixture.debugElement.query(By.css('#g1')).nativeElement as HTMLImageElement).click();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const root = overlay.getContainerElement();
+    const next = root.querySelector<HTMLElement>('.ant-image-preview-switch-next')!.getBoundingClientRect();
+    const closeBox = root.querySelector<HTMLElement>('.ant-image-preview-close')!.getBoundingClientRect();
+    const intersects =
+      next.left < closeBox.right &&
+      next.right > closeBox.left &&
+      next.top < closeBox.bottom &&
+      next.bottom > closeBox.top;
+    expect(intersects).toBe(false);
+    expect(Math.abs((next.top + next.bottom) / 2 - window.innerHeight / 2)).toBeLessThanOrEqual(2);
+    expect(window.innerWidth - next.right).toBeLessThan(window.innerWidth / 4);
+  });
 });
 
 const VALID_GIF = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
