@@ -10,7 +10,13 @@ import os from 'node:os';
 import path from 'node:path';
 
 import { bundleEngine } from '../bundle-engine';
-import { allAntdComponentNames, antdRegistryName, v6ComponentDirs, v6Components } from '../components';
+import {
+  allAntdComponentNames,
+  antdRegistryName,
+  type V6ComponentEntry,
+  v6ComponentDirs,
+  v6Components
+} from '../components';
 import { componentTokenEntries, generateTypes, renderComponentRoots } from '../generate-types';
 
 describe('generateTypes', () => {
@@ -100,7 +106,8 @@ describe('committed component-roots.ts', () => {
         // recorder still registers their style hooks under the PascalCase name), and the next test
         // ("has a root class for every component in the engine registry") needs this map keyed the
         // same way the registry itself is keyed. See components.ts's `antdRegistryName` comment.
-        expected[antdRegistryName(name)] = v6Components[dir].prefixCls;
+        const entry: V6ComponentEntry = v6Components[dir];
+        expected[antdRegistryName(name)] = entry.cssVarRootCls ?? entry.prefixCls;
       }
     }
     expect(COMPONENT_ROOT_CLS).toEqual(expected);

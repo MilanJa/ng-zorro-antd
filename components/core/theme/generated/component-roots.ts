@@ -15,7 +15,7 @@ export const COMPONENT_ROOT_CLS: Record<string, string> = {
   Badge: 'ant-badge',
   Breadcrumb: 'ant-breadcrumb',
   Button: 'ant-btn',
-  Calendar: 'ant-picker',
+  Calendar: 'ant-picker-calendar',
   Card: 'ant-card',
   Carousel: 'ant-carousel',
   Cascader: 'ant-cascader',

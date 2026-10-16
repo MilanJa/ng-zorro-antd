@@ -7,6 +7,13 @@ export interface V6ComponentEntry {
   antd: readonly string[];
   prefixCls: string;
   /**
+   * Root class of the component's css-var scope when antd's differs from `prefixCls` (Calendar: antd's
+   * `useStyle(prefixCls, calendarPrefixCls)` scopes it to `ant-picker-calendar` while it renders `ant-picker`
+   * classes). Only `COMPONENT_ROOT_CLS` reads it; `prefixCls` keeps driving class coverage and patch
+   * dependencies.
+   */
+  cssVarRootCls?: string;
+  /**
    * Extra class prefixes this component renders outside its own `prefixCls` (for example popconfirm's
    * `ant-popover-*`, or auto-complete's `ant-select-dropdown*`), attributed to it by the rendered-class
    * coverage check (`attributeRenderedClasses` in `rendered-coverage.ts`).
@@ -66,6 +73,7 @@ export const v6Components = {
   calendar: {
     antd: ['Calendar'],
     prefixCls: 'ant-picker',
+    cssVarRootCls: 'ant-picker-calendar',
     renderedPrefixes: ['ant-select', 'ant-radio', 'ant-badge', 'ant-typography']
   },
   card: { antd: ['Card'], prefixCls: 'ant-card' },
@@ -408,7 +416,8 @@ export function componentRootClasses(): Record<string, string> {
   const roots: Record<string, string> = {};
   for (const dir of v6ComponentDirs) {
     for (const name of v6Components[dir].antd) {
-      roots[antdRegistryName(name)] = v6Components[dir].prefixCls;
+      const entry: V6ComponentEntry = v6Components[dir];
+      roots[antdRegistryName(name)] = entry.cssVarRootCls ?? entry.prefixCls;
     }
   }
   return roots;
