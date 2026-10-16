@@ -88,7 +88,7 @@ const KEY_AND_ROUTER_WARNING = '`nz-tabs` follows the router while `nzLinkRouter
         [extraContents]="extraContents()"
         [indicator]="nzIndicator()"
         (tabScroll)="nzTabListScroll.emit($event)"
-        (selectFocusedIndex)="setSelectedIndex($event)"
+        (selectFocusedIndex)="selectIndex($event, true)"
         (addClicked)="onAdd()"
       >
         @for (tab of tabs; track tab) {
@@ -526,7 +526,7 @@ export class NzTabsComponent implements AfterContentChecked, AfterContentInit {
       // ignore nzCanDeactivate
       tab.nzClick.emit();
       if (!this.isRouterLinkClickEvent(index, e)) {
-        this.setSelectedIndex(index);
+        this.selectIndex(index, true);
       }
     }
   }
@@ -547,11 +547,17 @@ export class NzTabsComponent implements AfterContentChecked, AfterContentInit {
     }
   }
 
+  /** Selects a tab from code. Like every programmatic change, it never emits `nzActiveKeyChange`. */
   setSelectedIndex(index: number): void {
+    this.selectIndex(index, false);
+  }
+
+  /** `fromUser` is true for the nav bar's click, keyboard and overflow-menu picks. */
+  protected selectIndex(index: number, fromUser: boolean): void {
     this.canDeactivateSubscription.unsubscribe();
     this.canDeactivateSubscription = this.canDeactivateFun(this.selectedIndex!, index).subscribe(can => {
       if (can) {
-        this.pick(index);
+        this.pick(index, fromUser);
       }
     });
   }
@@ -560,17 +566,17 @@ export class NzTabsComponent implements AfterContentChecked, AfterContentInit {
    * Applies a pick that passed `nzCanDeactivate`. With `nzActiveKey` bound the pick only reports the
    * tab's key: the bound key keeps deciding the active tab until the parent writes the new one.
    */
-  private pick(index: number): void {
+  private pick(index: number, fromUser: boolean): void {
     const key = this.nzLinkRouter ? undefined : this.tabs.get(index)?.nzKey;
     this.defaultKeyPending = false;
     if (this.keyControlled) {
-      if (key !== undefined && key !== this.nzActiveKey) {
+      if (fromUser && key !== undefined && key !== this.nzActiveKey) {
         this.nzActiveKeyChange.emit(key);
       }
     } else {
       const changed = index !== this.selectedIndex;
       this.indexToSelect = index;
-      if (changed && key !== undefined) {
+      if (fromUser && changed && key !== undefined) {
         this.nzActiveKeyChange.emit(key);
       }
     }

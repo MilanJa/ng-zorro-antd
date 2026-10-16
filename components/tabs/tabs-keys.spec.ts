@@ -6,6 +6,7 @@
 import { ENTER, RIGHT_ARROW } from '@angular/cdk/keycodes';
 import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 
 import { vi } from 'vitest';
 
@@ -14,6 +15,7 @@ import { dispatchKeyboardEvent, sleep } from 'ng-zorro-antd/core/testing';
 import { provideNzIconsTesting } from 'ng-zorro-antd/icon/testing';
 
 import { NzTabChangeEvent, NzTabsCanDeactivateFn, NzTabType } from './interfaces';
+import { NzTabsComponent } from './tabs.component';
 import { NzTabsModule } from './tabs.module';
 
 interface KeyedTab {
@@ -376,6 +378,25 @@ describe('nz-tabs string keys', () => {
     await settle(fixture);
     expect(guard).toHaveBeenLastCalledWith(0, 1, { fromKey: undefined, toKey: 'b' });
     expect(host.keyChange).not.toHaveBeenCalled();
+  });
+
+  it('keeps programmatic setSelectedIndex silent on nzActiveKeyChange, while a click still emits', async () => {
+    const fixture = TestBed.createComponent(TestTabsKeysComponent);
+    const host = fixture.componentInstance;
+    await settle(fixture);
+    const el = tabsHost(fixture);
+    const tabs: NzTabsComponent = fixture.debugElement.query(By.directive(NzTabsComponent)).componentInstance;
+
+    tabs.setSelectedIndex(1);
+    await settle(fixture);
+    expect(activeLabel(el)).toBe('Beta');
+    expect(host.indexChange.mock.lastCall).toEqual([1]);
+    expect(host.keyChange).not.toHaveBeenCalled();
+
+    tabEls(el)[2].click();
+    await settle(fixture);
+    expect(activeLabel(el)).toBe('Gamma');
+    expect(host.keyChange.mock.calls).toEqual([['c']]);
   });
 
   it('renders keyed tabs exactly like index-only tabs while no key input is bound', async () => {
