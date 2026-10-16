@@ -239,13 +239,49 @@ describe('generateStyles', () => {
       'style/v6/tokens.default.css',
       'style/v6/tokens.dark.css',
       'style/v6/tokens.compact.css',
-      'style/v6/patch.css'
+      'style/v6/patch.css',
+      'style/v6/component-patches.css',
+      'style/v6/reset.css'
     ]) {
       expect(existsSync(path.join(publishDir, f)), f).toBe(true);
     }
     expect(readFileSync(path.join(publishDir, 'style/v6/template.css'), 'utf8')).toMatch(
       /^\/\*! Generated from Ant Design 6\.6\.5/
     );
+  });
+
+  it('component-patches.css carries every component patch, so the composed recipe equals the bundle', () => {
+    const aggregate = readFileSync(path.join(publishDir, 'style/v6/component-patches.css'), 'utf8');
+    for (const dir of v6ComponentDirs) {
+      const file = path.join(componentsDir, dir, 'style/v6/patch.css');
+      if (!existsSync(file)) {
+        continue;
+      }
+      const patch = readFileSync(file, 'utf8').trim();
+      if (patch) {
+        expect(aggregate, dir).toContain(patch);
+      }
+    }
+    // dropdown's CDK-overlay repositioning is the rule the composed recipe lost without this file
+    expect(aggregate).toMatch(/\.ant-dropdown\s*\{[^}]*position:\s*relative/);
+    const composed = [
+      readFileSync(path.join(publishDir, 'style/v6/template.css'), 'utf8'),
+      aggregate,
+      readFileSync(path.join(publishDir, 'style/v6/tokens.default.css'), 'utf8'),
+      readFileSync(path.join(publishDir, 'style/v6/patch.css'), 'utf8')
+    ]
+      .map(css => css.replace(/^\/\*!.*\*\/\n/, ''))
+      .join('\n');
+    expect(composed).toBe(result.bundle);
+  });
+
+  it("reset.css is antd's global reset with the attribution header and stays out of the bundle", () => {
+    const reset = readFileSync(path.join(publishDir, 'style/v6/reset.css'), 'utf8');
+    expect(reset).toMatch(/^\/\*! Generated from Ant Design 6\.6\.5/);
+    expect(reset).toMatch(/\*::before,\s*\*::after\s*\{\s*box-sizing:\s*border-box/);
+    expect(reset).toMatch(/^body\s*\{\s*margin:\s*0/m);
+    expect(reset).not.toMatch(/\.ant-/);
+    expect(result.bundle).not.toMatch(/^body\s*\{\s*margin:\s*0/m);
   });
 
   it('declares every variable block on :root and no antd scoping survives', () => {

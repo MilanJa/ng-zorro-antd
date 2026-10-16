@@ -23,6 +23,8 @@ describe.skipIf(skip)('publish layout after build-lib', () => {
       'style/v6/tokens.dark.css',
       'style/v6/tokens.compact.css',
       'style/v6/patch.css',
+      'style/v6/component-patches.css',
+      'style/v6/reset.css',
       ...v6ComponentDirs.flatMap(d => [`${d}/style/v6/index.css`, `${d}/style/v6/index.min.css`])
     ]) {
       expect(existsSync(path.join(publish, f)), f).toBe(true);

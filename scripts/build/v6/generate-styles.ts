@@ -405,6 +405,18 @@ export async function generateStyles(options: GenerateStylesOptions): Promise<Ge
     write(path.join(publishDir, `style/v6/tokens.${name}.css`), withHeader(tokens[name], antdVersion));
   }
   copyFileSync(path.join(componentsDir, 'style/v6/patch.css'), path.join(publishDir, 'style/v6/patch.css'));
+  // The per-component patches as one file, so an application composing the sheet itself
+  // (template + patches + tokens + global patch) gets the same CSS the bundle below carries.
+  write(
+    path.join(publishDir, 'style/v6/component-patches.css'),
+    withHeader(defaultBundle.componentPatches.join('\n'), antdVersion)
+  );
+  // antd's opt-in global reset (antd/dist/reset.css), for applications that relied on the
+  // normalize the v4 stylesheet carried. Deliberately not part of the bundle, as in antd.
+  write(
+    path.join(publishDir, 'style/v6/reset.css'),
+    withHeader(readFileSync(require.resolve('antd/dist/reset.css'), 'utf8'), antdVersion)
+  );
   write(path.join(publishDir, 'ng-zorro-antd.v6.css'), withHeader(bundle, antdVersion));
   write(path.join(publishDir, 'ng-zorro-antd.v6.min.css'), withHeader(await minify(bundle), antdVersion));
 
