@@ -221,7 +221,7 @@ export class NzTagComponent implements OnChanges {
   }
 
   protected onSpace(event: Event): void {
-    if (this.nzMode !== 'checkable') {
+    if (this.nzMode !== 'checkable' || this.disabled || event.defaultPrevented) {
       return;
     }
     event.preventDefault();
