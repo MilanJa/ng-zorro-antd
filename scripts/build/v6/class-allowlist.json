@@ -2,7 +2,10 @@
   "_comment": "Classes used in ng-zorro templates that antd v6 CSS does not style. `space` entries are temporary: remove each one once the component's template is aligned with antd v6. Categories: antd-emits (antd's own component emits it, v6 CSS never styles it); patch-motion (ng-zorro motion class styled by the component's style/v6/patch.css); nz-only (ng-zorro-only class with no antd counterpart: styled by the component's style/v6/patch.css, or an unstyled runtime state hook that no stylesheet targets — the component's own comment says which); v4-compat (v4 class kept next to its v6 replacement while v4 is the default; removable then); v4-compat (patch hook) (v4 class that style/v6/patch.css selects, so removing it needs a patch rewrite); v4-compat (relocated: <file>) (v4 class that moved to another file of the same directory, which the per-file guard in v4-rule-guard.spec.ts would otherwise report as removed); scan-artefact (a literal the static scan picks up but that is never rendered as a class); pending-map (<dir>) (a class of another component, rendered here, whose directory <dir> has no map entry yet; the entry goes once <dir> is mapped and its classes are credited through renderedPrefixes).",
   "_affix_comment": "no entries: the only class is styled by both sheets.",
   "_anchor_comment": "v4-compat (patch hook): ant-anchor-ink-ball (style/v6/patch.css mirrors v6's ink geometry -- position, display toggle, width, colour -- onto this element, since ng-zorro moves the ball rather than the rail; no single-name v6 replacement), ant-anchor-ink-ball-visible (replacement: ant-anchor-ink-visible, added alongside on the same element by anchor.component.ts's setVisible; style/v6/patch.css selects both classes for the same display toggle). ant-affix is credited through renderedPrefixes (affix owns the class and its token) and stays out of anchor's own array: rendering Anchor with the default affix=true also extracts Affix's own `.ant-affix{position:fixed;...}` rule under Anchor's style module (publish/anchor/style/v6/index.css), and affix's own manifest entry and `_affix_comment` are the single place that class is explained.",
-  "anchor": ["ant-anchor-ink-ball", "ant-anchor-ink-ball-visible"],
+  "anchor": [
+    "ant-anchor-ink-ball",
+    "ant-anchor-ink-ball-visible"
+  ],
   "_steps_comment": "antd-emits: ant-steps-item-disabled (rc-steps `Step.js` adds `${itemCls}-disabled` for `disabled === true`; v6 CSS has no rule for it, a disabled step is simply not clickable). v4-compat: ant-steps-item-container (replacement: ant-steps-item-wrapper, on the same element), ant-steps-item-tail (replacement: ant-steps-item-rail plus ant-steps-item-rail-<next step's status>, on the same element), ant-steps-label-horizontal / ant-steps-label-vertical (replacement: ant-steps-title-horizontal / ant-steps-title-vertical on the root, resolved as antd's mergedTitlePlacement), ant-steps-next-error (no v6 counterpart: the rail before an error step takes ant-steps-item-rail-error instead). v4-compat (patch hook): ant-steps-item-description (antd's body slot is ant-steps-item-content, a name ng-zorro's section already carries for v4, so style/v6/patch.css mirrors the body rules onto the description), ant-steps-progress-icon (style/v6/patch.css gives it the box of antd's ant-steps-item-progress-icon-svg; ng-zorro composes nz-progress there instead of antd's own SVG), ant-steps-icon / ant-steps-icon-dot (inner spans ng-zorro keeps inside ant-steps-item-icon; style/v6/patch.css gives them the dot's hit area so a custom nzProgressDot template stays hoverable). Not emitted, so not listed: ant-steps-item-header (v4 pairs ant-steps-item-content > ant-steps-item-title, so no header element is inserted; style/v6/patch.css mirrors the header rules onto the title), ant-steps-item-icon-dot / -item-icon-dot-custom (antd 6.6.5 never emits them), ant-steps-item-progress-icon-* (antd's own SVG ring), and ant-steps-horizontal-alternate (no ng-zorro input).",
   "steps": [
     "ant-steps-icon",
@@ -52,7 +55,10 @@
   "_calendar_comment": "calendar's header renders genuine nz-select (year/month) and nz-radio-button (month/year mode switch) components; every ant-select-*/ant-radio-button-* class their demos render is explained by select's and radio's own `_select_comment`/`_radio_comment`, and `allowlistFor` credits calendar with each owner's entries for its `renderedPrefixes` (`ant-select`, `ant-radio`), so calendar's own allowlist is empty.",
   "calendar": [],
   "_card_comment": "antd-emits: ant-card-head-tabs (antd's Card.js passes `className: ${prefixCls}-head-tabs` to the head Tabs it renders for `tabList`; v6 CSS has no rule for it, the head's tab rules select `.ant-card-head .ant-tabs-top`; ng-zorro's `nzTabList` puts the same class on its internal `nz-tabs`). v4-compat: ant-card-meta-detail (replacement: ant-card-meta-section, added alongside on the same div — antd v6's CardMeta.js renders the title+description wrapper as `${metaPrefixCls}-section`, not `-detail`; compiled v4 CSS still styles .ant-card-meta-detail and no `.ant-card-meta-section` rule exists in v4).",
-  "card": ["ant-card-head-tabs", "ant-card-meta-detail"],
+  "card": [
+    "ant-card-head-tabs",
+    "ant-card-meta-detail"
+  ],
   "_cascader_comment": "antd-emits: -rtl (@rc-component/cascader OptionList/List.js's own `${mergedPrefixCls}-rtl` on the menus wrapper; v6 CSS styles only -dropdown-rtl on the dropdown root, verified against node_modules/@rc-component/cascader/lib/OptionList/List.js). v4-compat: -menu-item-expanded (v4-only always-on class the option component's host binds; @rc-component/cascader's own Column.js only ever emits -menu-item-expand, never -expanded; no v6 counterpart), -menus-hidden (ng-zorro's own collapse-animation hook on .ant-cascader-menus while closed; List.js never emits it, no v6 counterpart), -picker-arrow-expand (ng-zorro's own rotate hook on the suffix icon; antd v6 has no per-cascader arrow class at all, no v6 counterpart). v4-compat (patch hook): -checkbox-inner (@rc-component/cascader's own OptionList/Checkbox.js draws the box directly on the bare `<span class=\"ant-cascader-checkbox\">` it renders, with no inner span, same shape as checkbox/radio/tree; style/v6/patch.css mirrors those rules onto -inner with cascader's own prefix, scoped under .ant-cascader-dropdown to match v6's own specificity). The ant-select-* classes cascader's demos render (its root carries the bare `ant-select` class and reuses select's nz-select-search/nz-select-clear/nz-select-placeholder subcomponents) are not repeated here: select's own `_select_comment` already explains every one of them, and `allowlistFor` credits cascader with select's entries for the `ant-select` prefix.",
   "cascader": [
     "ant-cascader-checkbox-inner",
@@ -140,15 +146,36 @@
     "ant-select-selector"
   ],
   "_space_comment": "antd-emits: -horizontal (antd's own Space still renders `${prefixCls}-${orientation}` for the horizontal default, verified against a live antd render; v6 CSS has no rule for it since horizontal needs no styling), -item-separator (Space.Item's own hook class; v6 CSS defines no rule for it either, since the separator's appearance comes from the ReactNode passed in, not from CSS). v4-compat: -split (superseded by -item-separator, the antd v6 name for the separator element, kept next to it for v4 rendering).",
-  "space": ["ant-space-horizontal", "ant-space-item-separator", "ant-space-split"],
+  "space": [
+    "ant-space-horizontal",
+    "ant-space-item-separator",
+    "ant-space-split"
+  ],
   "_skeleton_comment": "antd-emits: -avatar-square, -button-square (shape classes v6 CSS never styles). v4-compat: -content (next to -section).",
-  "skeleton": ["ant-skeleton-avatar-square", "ant-skeleton-button-square", "ant-skeleton-content"],
+  "skeleton": [
+    "ant-skeleton-avatar-square",
+    "ant-skeleton-button-square",
+    "ant-skeleton-content"
+  ],
   "_spin_comment": "v4-compat: -show-text (root flag when nzTip is set), -text (next to -description). v4-compat (patch hook): -nested-loading, -blur (the patch mirrors v6's -section and -spinning rules onto them).",
-  "spin": ["ant-spin-blur", "ant-spin-nested-loading", "ant-spin-show-text", "ant-spin-text"],
+  "spin": [
+    "ant-spin-blur",
+    "ant-spin-nested-loading",
+    "ant-spin-show-text",
+    "ant-spin-text"
+  ],
   "_splitter_comment": "antd-emits: -bar-collapse-start, -bar-collapse-end (SplitBar.js puts them on the collapse icon span next to -bar-collapse-icon; v6 CSS styles only -bar-collapse-icon and the -bar-collapse-bar-start/-end buttons), -rtl (Splitter.js sets `${prefixCls}-rtl` from direction === 'rtl'; v6 CSS has no rule for it, the compiled v4 CSS sets direction: rtl, which the dir attribute Directionality reads from already provides).",
-  "splitter": ["ant-splitter-bar-collapse-end", "ant-splitter-bar-collapse-start", "ant-splitter-rtl"],
+  "splitter": [
+    "ant-splitter-bar-collapse-end",
+    "ant-splitter-bar-collapse-start",
+    "ant-splitter-rtl"
+  ],
   "_statistic_comment": "antd-emits: -content-value-int, -content-value-decimal (`Number.js`'s `StatisticNumber` emits these exact class names on the digit/decimal spans; v6 CSS styles only their ancestor `.ant-statistic-content-value`, so the split spans inherit colour/size with no rule of their own), -rtl (`Statistic.js` sets `${prefixCls}-rtl` from `direction === 'rtl'`; v6 CSS has no dedicated rtl rule for statistic, the class is a plain state hook). The ant-skeleton-content class statistic's loading-state nz-skeleton renders is not repeated here: skeleton's own `_skeleton_comment` already explains it, and `allowlistFor` credits statistic with skeleton's entries for the `ant-skeleton` prefix.",
-  "statistic": ["ant-statistic-content-value-decimal", "ant-statistic-content-value-int", "ant-statistic-rtl"],
+  "statistic": [
+    "ant-statistic-content-value-decimal",
+    "ant-statistic-content-value-int",
+    "ant-statistic-rtl"
+  ],
   "_collapse_comment": "antd-emits: -extra (@rc-component/collapse Panel.js's ifExtraExist && createElement('div', {className: prefixCls + '-extra'}); v6 CSS has no rule for it), -icon-placement-start (Collapse.js's prefixCls + '-icon-placement-' + mergedPlacement, with mergedPlacement defaulting to 'start'; v6 CSS only has a rule for the -end variant since start needs no repositioning -- the class name itself is unchanged from v4, contrary to a name guess of -icon-position-*), -item-active (Panel.js's collapsePanelClassNames clsx(prefixCls + '-item', {item-active: isActive}); v6 CSS has no dedicated rule, the active look comes from the inner .ant-collapse-panel/.ant-collapse-body rules), -no-arrow (CollapsePanel.js's no-arrow class when !showArrow; no v6 rule), -panel-active (PanelContent.js's clsx(prefixCls + '-panel', {panel-active: isActive}) -- still emitted by antd 6.6.5 exactly as v4, not dropped in favour of -item-active; v6 CSS styles only the bare .ant-collapse-panel selector, so -active itself carries no rule).",
   "collapse": [
     "ant-collapse-extra",
@@ -158,9 +185,16 @@
     "ant-collapse-panel-active"
   ],
   "_rate_comment": "nz-only: -star-active, -star-focused, -star-zero (runtime state hooks on the hovered/focused/unfilled star from `updateStarStyle`; no stylesheet, v4 or v6, styles them — kept because removing them from the rendered DOM is a consumer-visible change, and `rate-v6.spec.ts` asserts `-star-zero`). v4-compat: ant-rate-text (the label span next to the stars in the clear and text demos; v4 gives it `margin: 0 8px`, no v6 counterpart, antd's demos use a plain span).",
-  "rate": ["ant-rate-star-active", "ant-rate-star-focused", "ant-rate-star-zero", "ant-rate-text"],
+  "rate": [
+    "ant-rate-star-active",
+    "ant-rate-star-focused",
+    "ant-rate-star-zero",
+    "ant-rate-text"
+  ],
   "_switch_comment": "nz-only: -click-animating-node (the wave-effect node `nz-wave` renders on click; a v4-only ripple, no v6 stylesheet targets it since v6 Switch has no click ripple).",
-  "switch": ["ant-click-animating-node"],
+  "switch": [
+    "ant-click-animating-node"
+  ],
   "_table_comment": "antd-emits: ant-table-fixed-column, ant-table-fixed-header (`@rc-component/table/es/Table.js`'s root `clsx` sets both from `fixColumn`/`fixHeader`, matching `table.component.ts`'s existing `[class.ant-table-fixed-column]`/`[class.ant-table-fixed-header]`; grepping `node_modules/antd/es/table/style/*.js` for either name finds no selector - v6 draws the same thing off `ant-table-scroll-horizontal` and the `ant-table-header`/`ant-table-sticky-holder` structure instead), ant-table-rtl (same `Table.js` root `clsx`, `direction === 'rtl'`; v6's `rtl.js` only styles `.ant-table-wrapper-rtl`, which `table.component.ts` already emits separately on the wrapper), ant-table-row-expand-icon-expanded (`antd/es/table/ExpandIcon.js`'s `renderExpandIcon` always emits one of `-expanded`/`-collapsed`/`-spaced`; `node_modules/antd/es/table/style/expand.js` has specific rotate rules for `-collapsed` and `-spaced` but none for `-expanded` - the expanded look is the base rule's default rotation, so the class carries no CSS either way), ant-table-column-sorter-full (`node_modules/antd/es/table/hooks/useSorter.js:100-101` adds it to the sorter wrapper whenever both the up and down nodes exist, matching `sorters.component.ts`'s existing binding; no selector for it in `style/sorter.js`). v4-compat (patch hook): ant-table-cell-fix-left-last (replacement: the real v6 shadow is ALSO driven by `ant-table-cell-fix-start-shadow`/`-start-shadow-show`, added to the same element; this v4 name is no longer emitted by current antd at all, but stays a patch hook because `table-inner-scroll.component.ts`'s `setScrollPositionClassName` queries it by this exact selector to find the cell to toggle `-start-shadow-show` on, and `style/v6/patch.css`'s `.ant-table-custom-column .ant-table-fixed tr .ant-table-cell-fix-left-last` rule also selects it). v4-compat: ant-table-has-fix-left, ant-table-has-fix-right (replacement: ant-table-has-fix-start/-end, added alongside on `table.component.ts`'s root - current antd only ever emits the `-start`/`-end` pair), ant-table-middle (replacement: ant-table-medium, added alongside - antd's own `InternalTable.js:475` only ever emits `-medium`, never `-middle`), ant-table-ping-left, ant-table-ping-right (no 1:1 replacement name; v4's own shadow mechanism, now also driving the real v6 classes `ant-table-fix-start/-end-shadow-show` and `ant-table-cell-fix-start/-end-shadow-show` from the same scroll-position check in `table-inner-scroll.component.ts` - current antd computes the same scroll-edge state internally without exposing a `-ping-*` class at all), ant-table-pagination-right (replacement: ant-table-pagination-end, added alongside - this name is ng-zorro's own, never built from antd source; `style/pagination.js` only defines `-start`/`-center`/`-end`). nz-only: ant-table-custom-column, ant-table-filter-open, ant-table-measure-now (ng-zorro-only hooks with no antd source at all - `nzCustomColumn`'s column manager, the filter-trigger's own open-state marker, and the measure row, which antd itself names `ant-table-measure-row` and does not style either; `ant-table-custom-column`'s layout is instead styled by `style/v6/patch.css`), ant-table-selection-down, ant-table-selection-menu, ant-table-selection-select-all-custom (ng-zorro's own hook classes around the row-selection \"select all\" dropdown; `node_modules/antd/es/table/hooks/useSelection.js` renders the same dropdown+icon without any of the three - its only own class there is `-selection-extra`, which ng-zorro already emits and v6 styles). ant-table-cell-with-append (`@rc-component/table/es/Cell/index.js:152` emits it whenever the cell has an appended expand icon/indent, matching `td-addon.component.ts`'s existing binding; no selector for it anywhere in `node_modules/antd/es/table/style/*.js`). v4-compat (patch hook): ant-table-fixed (`table-content.component.ts`'s own `[class.ant-table-fixed]` on the inner `<table>`, a v4-only width hook; current antd sets table-layout:fixed via inline `tableLayout` on the table style and a DIFFERENT class, `-layout-fixed`, on the root `.ant-table` div, not the inner table - no v6 rule targets `.ant-table-fixed` on a `<table>` element, and the inline `table-layout` style ng-zorro already sets achieves the same layout under either theme. Stays a patch hook because `style/v6/patch.css`'s `.ant-table-custom-column .ant-table-fixed tr ...`/`.ant-table-custom-column .ant-table-fixed .ant-table-row` rules select it to lay out `nzCustomColumn`'s flex rows under v6). The classes table's `renderedPrefixes` dependencies render (checkbox/radio/dropdown/pagination/spin's own structural and v4-compat classes) are not repeated here: each owner's own `_<dir>_comment` already explains them, and `allowlistFor` credits table with each owner's entries for its prefix.",
   "table": [
     "ant-table-cell-fix-left-last",
@@ -221,7 +255,12 @@
     "ant-radio-wrapper-in-form-item"
   ],
   "_result_comment": "v4-compat: -content (next to -body). antd-emits: -403, -404, -500 (exception-status root classes; v6 renders the SVG illustration without styling them).",
-  "result": ["ant-result-content", "ant-result-403", "ant-result-404", "ant-result-500"],
+  "result": [
+    "ant-result-content",
+    "ant-result-403",
+    "ant-result-404",
+    "ant-result-500"
+  ],
   "_alert_comment": "v4-compat: -action (next to -actions), -content (next to -section), -message (next to -title), -closable (no v6 rule or replacement). nz-only: -marquee, -marquee-pause-on-hover, -marquee-track (ng-zorro's looping banner, styled by the patch). antd-emits: -no-icon.",
   "alert": [
     "ant-alert-action",
@@ -234,7 +273,10 @@
     "ant-alert-no-icon"
   ],
   "_tooltip_comment": "antd-emits: -open (the trigger's visibility class). scan-artefact: ant-zoom-big-fast (the `_animationPrefix` literal; only the -enter/-leave variants built from it are rendered, and v6's motion CSS styles those).",
-  "tooltip": ["ant-tooltip-open", "ant-zoom-big-fast"],
+  "tooltip": [
+    "ant-tooltip-open",
+    "ant-zoom-big-fast"
+  ],
   "_transfer_comment": "v4-compat: -list (replacement: ant-transfer-section, added alongside on the same element), -operation (replacement: ant-transfer-actions, added alongside on the same element), -list-body-customize-wrapper (antd v6's own Section.js still renders this div at the same class name, but v6 CSS has no rule for it, so no v6 counterpart), -list-body-with-search (ng-zorro-only modifier on -list-body; v6 never emits it and no stylesheet styles it, no v6 counterpart), -list-header-selected (v6's own Section.js renders an equivalent div at the same class name with no CSS rule either, no v6 counterpart), -list-with-footer (v6's own equivalent flag is -section-with-footer, which also carries no CSS rule, so no rename needed, no v6 counterpart). Not emitted: -content-item-checked and -content-show-remove, which v4 styles too; style/v6/patch.css keys antd's rules for them onto the checked checkbox and onto rows without a checkbox. The ant-checkbox-inner, ant-checkbox-wrapper-checked and ant-input-affix-wrapper-outlined classes the header checkbox and search box render (verbatim checkbox/input DOM under the transfer prefix) are not repeated here: checkbox's and input's own `_checkbox_comment`/`_input_comment` already explain them, and `allowlistFor` credits transfer with each owner's entries for its `renderedPrefixes`.",
   "transfer": [
     "ant-transfer-list",
@@ -274,7 +316,11 @@
     "ant-tree-select"
   ],
   "_popover_comment": "v4-compat: -inner-content (next to -content). antd-emits: -open (the trigger's visibility class). scan-artefact: ant-zoom-big (the `_animationPrefix` literal; only the -enter/-leave variants built from it are rendered, and v6's motion CSS styles those).",
-  "popover": ["ant-popover-inner-content", "ant-popover-open", "ant-zoom-big"],
+  "popover": [
+    "ant-popover-inner-content",
+    "ant-popover-open",
+    "ant-zoom-big"
+  ],
   "_popconfirm_comment": "v4-compat: ant-popover-buttons, ant-popover-message, ant-popover-message-icon, ant-popover-message-title (next to their ant-popconfirm-* replacements). antd-emits: ant-popconfirm-inner-content, ant-popconfirm-message-text (antd emits both; v6 styles only their children). scan-artefact: ant-zoom-big (the `_animationPrefix` literal, as for popover). ant-popover-inner-content and ant-popover-open are not repeated here: popover's own `_popover_comment` already explains both, and `allowlistFor` credits popconfirm with popover's entries for the `ant-popover` prefix.",
   "popconfirm": [
     "ant-popover-buttons",
@@ -286,13 +332,27 @@
     "ant-popconfirm-message-text"
   ],
   "_descriptions_comment": "v4-compat: ant-descriptions-middle (replacement: ant-descriptions-medium, added alongside on the same nzSize === 'middle' condition — antd v6's Descriptions/index.js clsx map keys `${prefixCls}-medium` off `mergedSize === 'medium' || mergedSize === 'middle'`, so v6 CSS never has a rule for the literal `-middle` class; compiled v4 CSS still styles .ant-descriptions-middle).",
-  "descriptions": ["ant-descriptions-middle"],
+  "descriptions": [
+    "ant-descriptions-middle"
+  ],
   "_divider_comment": "v4-compat: ant-divider-with-text-left, ant-divider-with-text-right (compiled v4 CSS sizes its ::before/::after lines with them; replacement: ant-divider-with-text-start / ant-divider-with-text-end on the same host, resolved from nzTitlePlacement (or the deprecated left/right nzOrientation values) and the direction as divider/index.js's mergedTitlePlacement does). antd-emits: ant-divider-with-text-center (divider/index.js emits `${prefixCls}-with-text-${mergedTitlePlacement}` for 'center' too; neither the v4 nor the v6 sheet has a rule for it, the 50% rails are the default).",
-  "divider": ["ant-divider-with-text-center", "ant-divider-with-text-left", "ant-divider-with-text-right"],
+  "divider": [
+    "ant-divider-with-text-center",
+    "ant-divider-with-text-left",
+    "ant-divider-with-text-right"
+  ],
   "_drawer_comment": "v4-compat (patch hook): -wrapper-body (kept as the flex container; the patch mirrors v6's -section layout onto it). antd-emits: -header-close-only, -open (the patch uses -open only in `:not(.ant-drawer-open)` for the closed-panel shadow).",
-  "drawer": ["ant-drawer-header-close-only", "ant-drawer-open", "ant-drawer-wrapper-body"],
+  "drawer": [
+    "ant-drawer-header-close-only",
+    "ant-drawer-open",
+    "ant-drawer-wrapper-body"
+  ],
   "_modal_comment": "antd-emits: -close-icon (the anticon inside -close; v6 styles only -close and -close-x), -confirm-content (ConfirmDialog.js; v6 styles it only under the -confirm-paragraph wrapper ng-zorro does not render, and the patch places it in the confirm grid). v4-compat: -content (next to -container). No -confirm-paragraph wrapper is added: v4's confirm.less adjacent-sibling rule needs the title and content to stay siblings of the icon.",
-  "modal": ["ant-modal-close-icon", "ant-modal-confirm-content", "ant-modal-content"],
+  "modal": [
+    "ant-modal-close-icon",
+    "ant-modal-confirm-content",
+    "ant-modal-content"
+  ],
   "_progress_comment": "v4-compat: -bg (next to -track), -success-bg (next to -track-success), -outer (next to -body), -steps-outer (next to -steps-body), -text (next to -indicator), -default (no v6 rule or replacement). antd-emits: -circle-trail (v6 styles the renamed -circle-rail), -show-info (root flag), -status-normal (runtime status class; v6 styles only the other statuses). antd-emits: -indicator-center (progress.tsx's `-indicator-${align}`; v6 styles only -start/-end, centre is the flex default), -line-align-start/-center/-end and -line-position-inner/-outer (progress.tsx:323-324 on the root of a line without steps; no v6 rule). scan-artefact: ant-progress-remaining-color (not a class; the scanner reads it out of the `--ant-progress-remaining-color` token name that progress.component.ts probes to tell the v6 stylesheet from the v4 one).",
   "progress": [
     "ant-progress-bg",
@@ -335,9 +395,14 @@
     "ant-upload-text-icon"
   ],
   "_mention_comment": "antd-emits: -focused (Mentions.js's own `classNames.mentions` builder sets `${prefixCls}-focused` on the root from React state; v6 CSS never styles it, keying focus visuals off `:focus-within` instead).",
-  "mention": ["ant-mentions-focused"],
+  "mention": [
+    "ant-mentions-focused"
+  ],
   "_slider_comment": "antd-emits: -rtl (Slider's own root className builder in `antd/es/slider/index.js` sets `${prefixCls}-rtl`; v6 CSS has no rule for it). v4-compat (patch hook): -mark-active (v6's -mark-text-active is not emitted because v4 styles it too; style/v6/patch.css gives this class v6's active-mark colour).",
-  "slider": ["ant-slider-mark-active", "ant-slider-rtl"],
+  "slider": [
+    "ant-slider-mark-active",
+    "ant-slider-rtl"
+  ],
   "float-button": [
     "ant-float-btn-body",
     "ant-float-btn-default",
@@ -375,12 +440,22 @@
     "ant-form-vertical"
   ],
   "_grid_comment": "antd-emits: ant-row-rtl (grid/row.js `[`${prefixCls}-rtl`]: direction === 'rtl'` on the row div, matching row.directive.ts's `[class.ant-row-rtl]`), ant-col-rtl (grid/col.js `[`${prefixCls}-rtl`]: direction === 'rtl'` on the col div, matching col.directive.ts's `[class.ant-col-rtl]`); v6 CSS has no rule for either (grid/style uses logical properties: margin-inline-start offsets, inset-inline-start/end push and pull); also v4-styled, kept for the default stylesheet. Every span, offset, order, push, pull and breakpoint class (ant-col-<n>, ant-col-<size>-*) is built at runtime by generateClassName (col.directive.ts) under the same name and meaning in v4 and v6, so the static scan sees only ant-row, ant-row-rtl, ant-row-no-wrap, ant-col and ant-col-rtl; collect-classes.ts's rendered DOM is the evidence for the rest. ant-col-<size>-flex (antd's responsive Col flex, grid/col.js:71-74) is built at runtime from ColSize.flex together with its inline --ant-col-<size>-flex, styled by the v6 sheet and by no v4 rule; the bare ant-col-flex is the unsuffixed iteration of grid/style's column loop and antd never emits it either. The non-responsive nzFlex keeps its inline flex, as antd's col.js:91-92 does. Line refs: grid/row.js:58, grid/col.js:69.",
-  "grid": ["ant-col-rtl", "ant-row-rtl"],
+  "grid": [
+    "ant-col-rtl",
+    "ant-row-rtl"
+  ],
   "_layout_comment": "antd-emits: ant-layout-sider-collapsed (layout/Sider.js:156-157 `[`${prefixCls}-collapsed`]: !!collapsed` on the aside, matching sider.component.ts's `[class.ant-layout-sider-collapsed]`), ant-layout-sider-dark (layout/Sider.js:156 `${prefixCls}-${theme}` on the aside, theme defaulting to dark, matching `[class.ant-layout-sider-dark]`), ant-layout-sider-zero-width-trigger-left (layout/Sider.js:130 `${prefixCls}-zero-width-trigger-${reverseArrow ? 'right' : 'left'}` on the zero-width trigger span, matching sider-trigger.component.ts's `[class.ant-layout-sider-zero-width-trigger-left]`); layout/style/sider.js has no rule for any of the three: the collapsed width is the inline width, dark is the base .ant-layout-sider look and -left is the base .ant-layout-sider-zero-width-trigger placement. None is styled by the compiled v4 CSS either.",
-  "layout": ["ant-layout-sider-collapsed", "ant-layout-sider-dark", "ant-layout-sider-zero-width-trigger-left"],
+  "layout": [
+    "ant-layout-sider-collapsed",
+    "ant-layout-sider-dark",
+    "ant-layout-sider-zero-width-trigger-left"
+  ],
   "_select_comment": "antd-emits: -selection-item-disabled (@rc-component/select MultipleContent.js emits `${selectionItemPrefixCls}-disabled` on a disabled tag; v6 CSS never styles this exact class, only the bare .ant-select-selection-item it decorates). nz-only: -arrow-loading (ng-zorro's own hook on nz-select-arrow; antd's loading swap is a bare LoadingOutlined icon with no such class, and no v6 CSS rule targets it), -close-icon (ng-zorro's own hook on the default clear icon; antd's default clearIcon is a bare CloseCircleFilled with no wrapper class), -selected-icon (ng-zorro's own hook on the option check icon; antd's default menuItemSelectedIcon is a bare CheckOutlined inside .ant-select-item-option-state, no such class, and no v6 CSS rule targets it). v4-compat (patch hook): -selection-search (v6 has no wrapper for the search input at all in single mode, and in multiple mode the role is played by .ant-select-content-item-suffix, added alongside; style/v6/patch.css selects this class to size the multi-mode input/mirror with v6 tokens, so removing it needs a patch rewrite), -selection-search-mirror (v6 sizes its search input via a CSS custom property written by its own JS; ng-zorro has no code path that writes it and keeps the old mirror-measurement technique instead, so style/v6/patch.css selects this class), -selection-wrap (v6 has no wrapper at all around .ant-select-content/-prefix/-suffix — they are flat children of the select root; style/v6/patch.css selects this class to give it the position/layout v4's own mixin gave it, so .ant-select-selection-placeholder still has a sized, positioned ancestor), -selector (v6 draws the whole select box on the bare `.ant-select` root itself, so no v6 CSS rule ever targets `.ant-select-selector`; style/v6/patch.css mirrors the box onto it and neutralises the root's paint), -arrow (no v6 CSS rule targets `.ant-select-arrow` at all, confirmed by `components/select/style/v6/patch.css`'s own comment; the patch ports v4's absolute-positioning mixin onto it with v6 tokens). Neither class is styled by any other mapped component's manifest either (color-picker's own v6 CSS mentions `.ant-select-selector` only in a rule scoped to its own format-select row, which the per-directory audit does not consult for select). v4-compat: -selection-overflow (replacement: ant-select-content, added alongside on the same element), -selection-overflow-item (replacement: ant-select-content-item, added alongside), -selection-overflow-item-suffix (replacement: ant-select-content-item-suffix, added alongside), -selection-placeholder (replacement: ant-select-placeholder, added alongside on nz-select-placeholder's host), -selection-search-input (replacement: ant-select-input, added alongside on the input element).",
   "_auto-complete_comment": "v4-compat (patch hook): -dropdown-content, -dropdown-content-wrapper (v4-only dropdown internals; v6's dropdown renders `.ant-select-item*` rows directly under the dropdown root with no such wrapping elements, confirmed absent from @rc-component/select's OptionList/List sources; components/auto-complete/style/v6/patch.css ports the v4 `patch.less` rules for these two classes verbatim, so removing them needs a patch rewrite).",
-  "auto-complete": ["ant-select-dropdown-content", "ant-select-dropdown-content-wrapper"],
+  "auto-complete": [
+    "ant-select-dropdown-content",
+    "ant-select-dropdown-content-wrapper"
+  ],
   "_date-picker_comment": "pending-map (tag): -tag (the preset-ranges footer's `<span class=\"ant-tag ant-tag-blue\">`; -tag-blue itself is already styled, since date-picker's own v6 CSS styles `.ant-picker-ranges .ant-picker-preset > .ant-tag-blue`, but the bare .ant-tag class waits on Tag's own mapping). antd-emits: -header-month-btn, -header-next-btn, -header-prev-btn, -header-super-next-btn, -header-super-prev-btn, -header-year-btn (@rc-component/picker's PanelHeader.js renders all six on real `<button>` elements; v6 CSS styles them generically via `.ant-picker-header button`/`.ant-picker-header > button`, node_modules/antd/es/date-picker/style/panel.js:213,229,244, never by these specific classes). v4-compat: -active-left, -active-right (v6's rc-picker RangeSelector.js draws the active indicator with a single `${prefixCls}-active-bar` element positioned by inline style, already rendered alongside; it never emits a left/right pair, no v6 counterpart), -cell-range-end-near-hover, -cell-range-end-single, -cell-range-hover, -cell-range-hover-edge-end, -cell-range-hover-edge-start, -cell-range-hover-end, -cell-range-hover-start, -cell-range-start-near-hover, -cell-range-start-single (v6's rc-picker PanelBody.js computes only `-hover`, `-in-range`, `-range-start`, `-range-end` for date cells; none of these hover-edge/near-hover/single variants are emitted by rc-picker any more, no v6 counterpart), -inline (antd v6's inline mode renders a bare PickerPanel with no picker-input wrapper at all, so there is no root to carry an `-inline` class; no v6 counterpart), -today-btn (calendar-footer.component.ts's own legacy footer for the plain date picker without time; v6's Footer.js unifies \"Today\"/\"Now\" into the same `-now`/`-now-btn` link regardless of mode, confirmed absent from both @rc-component/picker and antd's v6 style sources, so this separate class has no v6 counterpart), -week-number (date-range-popup.component.ts's panel-container modifier for `nzShowWeekNumber`; grepped absent from @rc-component/picker and antd's v6 style sources, no v6 counterpart). v4-compat: ant-input-disabled (a foreign-prefix class from Input's own style module, not a standalone v6 rule: it is only ever paired with a variant class, e.g. `.ant-input-outlined.ant-input-disabled` (node_modules/antd/es/input/style/variants.js:60), and the disabled look otherwise lives on the root; the picker's inner `<input>` is not a real Input instance and never carries an `-outlined`/`-filled`/`-borderless` class, so that compound selector never matches it -- v6 marks the picker itself disabled on `.ant-picker-disabled` instead).",
   "date-picker": [
     "ant-input-disabled",
@@ -430,7 +505,12 @@
     "ant-dropdown-menu-light"
   ],
   "_dropdown_comment": "v4-compat: ant-dropdown-link (NzDropdownADirective host class on a[nz-dropdown]; kept because the compiled v4 CSS styles .ant-dropdown-link via style/index.less, no v6 counterpart — v6 CSS never has a rule for this class, confirmed against components/core/theme/generated/test-css.ts), ant-dropdown-rtl (compiled v4 CSS styles &-rtl { direction: rtl } in style/index.less; v6 handles direction without a class, no v6 counterpart). antd-emits: ant-dropdown-show-arrow (@rc-component/dropdown/es/Dropdown.js:112 sets prefixCls-show-arrow on the root exactly when the arrow prop is truthy, matching dropdown-menu.component.ts's [class.ant-dropdown-show-arrow]=\"nzArrow\"; no v6 CSS rule keys off it — the arrow's visibility is driven by conditionally rendering div.ant-dropdown-arrow itself, not this class), ant-dropdown-menu-root (@rc-component/menu/es/Menu.js:351 always adds prefixCls-root to the menu root regardless of theme, matching menu.directive.ts's [class.ant-dropdown-menu-root]=\"isMenuInsideDropdown\"; no v6 CSS rule keys off it, confirmed by grepping the extracted dropdown CSS for -menu-root), ant-dropdown-menu-light (antd/es/dropdown/dropdown.js defaults the OverrideProvider's menu to the light theme (Dropdown has no dark-menu prop of its own), matching menu.directive.ts's default nzTheme=\"light\"; no v6 CSS rule keys off it either — confirmed by the same grep). scan-artefact (selector-only, styled): ant-dropdown-menu-submenu-title-selected (and -selected-active), ant-dropdown-menu-submenu-title-divider: manifest names derived from dropdown/style's shared item/submenu-title rule; no antd DOM emits them (a selected submenu is -submenu-selected, emitted by submenu.component.ts), so ng-zorro emits them neither.",
-  "tag": ["ant-tag-borderless", "ant-tag-checkable-group-disabled", "ant-tag-checkable-group-rtl", "ant-tag-has-color"],
+  "tag": [
+    "ant-tag-borderless",
+    "ant-tag-checkable-group-disabled",
+    "ant-tag-checkable-group-rtl",
+    "ant-tag-has-color"
+  ],
   "tabs": [
     "ant-tabs-body-animated",
     "ant-tabs-body-bottom",
@@ -453,7 +533,9 @@
   ],
   "_tabs_comment": "antd-emits: ant-tabs-body-animated/-top/-bottom/-left/-right (`@rc-component/tabs/es/TabPanelList/index.js`'s `clsx(bodyPrefixCls, \\`${bodyPrefixCls}-${tabPosition}\\`, { [\\`${bodyPrefixCls}-animated\\`]: tabPaneAnimated })` on the middle wrapper, matching `tabs.component.ts`'s existing conditions exactly; no v6 CSS rule keys off any of the five, confirmed against `2026-09-30-plan-d-css-tabs.css`), ant-tabs-content-active (`TabPanelList/TabPane.js`: `clsx(prefixCls, active && \\`${prefixCls}-active\\`, className)` on the per-pane element when active; v6 CSS has no rule for it either — the active pane's only real effect is the ABSENCE of `-hidden`), ant-tabs-editable (`@rc-component/tabs/es/Tabs.js`'s root `clsx` adds `${prefixCls}-editable` whenever the `editable` prop is truthy, i.e. `nzType === 'editable-card'`, matching `tabs.component.ts`'s existing `[class.ant-tabs-editable]`; no v6 CSS rule keys off it), ant-tabs-editable-card (`antd/es/tabs/index.js`'s root `clsx` adds `${prefixCls}-editable-card` when `type === 'editable-card'`, matching the existing host binding; no v6 CSS rule either). scan-artefact: ant-tabs-switch (`tab-body.component.ts`'s `ANIMATION_PREFIX` constant, only ever used as a `generateClassName` prefix for the suffixed `-appear`/`-enter`/`-leave` motion classes, which ARE emitted and styled by v6 CSS; the bare prefix itself is never rendered). nz-only: ant-tabs-default (`tabs.component.ts`'s `[class.ant-tabs-default]` mirrors the `-small`/`-large` size markers structurally; antd's own size `clsx` (`antd/es/tabs/index.js`) never emits a class for the default size at all — confirmed no `.ant-tabs-default` selector anywhere in the extraction — so this is ng-zorro's own unstyled runtime-state hook, kept for symmetry with the other two size classes). v4-compat: ant-tabs-content-holder (replacement: ant-tabs-body-holder, added alongside on the same element — the compiled v4 CSS already has a bare `.ant-tabs-content-holder {...}` rule, and v6's `@rc-component/tabs` renamed the same wrapper to `ant-tabs-body-holder`, which IS styled by v6 CSS). ant-tabs-content, -content-animated, -content-top/-bottom/-left/-right (replacement: ant-tabs-body, -body-animated, -body-top/-bottom/-left/-right respectively, added alongside on the same middle-wrapper element — compiled v4 CSS has a bare `.ant-tabs-content {...}` rule for this element, matching v6's renamed `ant-tabs-body`). ant-tabs-tabpane, -tabpane-active (replacement: ant-tabs-content, -content-active respectively — NOT added alongside, because compiled v4 CSS's `.ant-tabs-content {...}` rule styles a DIFFERENT element (the middle wrapper above); adding the literal class `ant-tabs-content` to the per-pane element as well would make that middle-wrapper rule also apply to every pane under the default v4 stylesheet. `ant-tabs-content-active` is itself unstyled by v6 (see above) and has no v4 rule, so it IS added directly to the pane (`tab-body.component.ts`'s new `[class.ant-tabs-content-active]`); the two v6 rules that key off the per-pane `.ant-tabs-content` class (`:focus-visible` outline, left/right padding) are mirrored in `style/v6/patch.css` onto the kept `.ant-tabs-tabpane` hook instead, with the v4-collision rationale in that file's header comment).",
   "_typography_comment": "v4-compat: ant-typography-single-line (no v6 counterpart: v6's Base/index.js signals single-line ellipsis entirely through `ant-typography-ellipsis-single-line` plus the `-webkit-line-clamp`/`text-overflow` inline styles it already emits; grepping node_modules/antd/es/typography/*.js and .../style/*.js for \"single-line\" finds no such class, and v6 CSS never styles the literal `.ant-typography-single-line` selector; compiled v4 CSS still styles it).",
-  "typography": ["ant-typography-single-line"],
+  "typography": [
+    "ant-typography-single-line"
+  ],
   "_tag_comment": "v4-compat: -borderless (replacement: ant-tag-filled, kept while the deprecated nzBordered is false and the resolved nzVariant is filled, on the same host that carries ant-tag-filled; compiled v4 CSS still styles .ant-tag-borderless, no v6 CSS rule for that literal class name — v6 only styles the variant classes). -has-color (no v6 counterpart: v6's custom-colour path (useColor.js) never emits a class at all, only the inline tagStyle; compiled v4 CSS still styles .ant-tag-has-color). antd-emits: ant-tag-checkable-group-rtl (CheckableTagGroup.js sets ${groupPrefixCls}-rtl from direction === 'rtl' on its root; v6 CSS has no rule for it, and nz-tag-checkable-group sets it on its host the same way), ant-tag-checkable-group-disabled (CheckableTagGroup.js:90 sets ${groupPrefixCls}-disabled from its disabled prop on the root; v6 CSS has no rule for it, and nz-tag-checkable-group sets it on its host from its resolved disabled state).",
   "badge": [
     "ant-ribbon-text",
@@ -472,7 +554,10 @@
     "ant-badge-status-lime"
   ],
   "_badge_comment": "v4-compat: ant-ribbon-text (replacement: ant-ribbon-content, added alongside on the same span — antd v6's Ribbon.js renders the text span as `${prefixCls}-content`, not `-text`; compiled v4 CSS still styles .ant-ribbon-text). ant-badge-status-<preset colour> (the 13 names in preset-colors.ts; runtime template literal, badge.component.ts/badge-sup.component.ts): replacement ant-badge-color-<colour>, added alongside on the same element -- the compiled v4 CSS styles `.ant-badge-status-<colour>` directly and there is no `.ant-badge-color-*` rule in v4, and the inline background-color that would otherwise carry a preset colour is intentionally omitted for it (mergedStyle), so dropping the v4 class would leave a preset-coloured badge with no background at all under the default stylesheet.",
-  "qr-code": ["ant-qrcode-border", "ant-qrcode-mask"],
+  "qr-code": [
+    "ant-qrcode-border",
+    "ant-qrcode-mask"
+  ],
   "_qr-code_comment": "v4-compat: ant-qrcode-border (replacement: ant-qrcode-borderless, added alongside on the inverted !nzBordered() condition; node_modules/antd/es/qr-code/index.js flips the default to bordered and opts OUT with -borderless, while v4's -border opts IN to the same border; compiled v4 CSS still styles .ant-qrcode-border). ant-qrcode-mask (replacement: ant-qrcode-cover, added alongside on the same element; antd v6's QrcodeStatus.js/index.js wrap the status content in `${prefixCls}-cover`, not `-mask`; compiled v4 CSS still styles .ant-qrcode-mask). ant-qrcode-icon is left alone, unmapped to any category: grepping node_modules/antd/es/qr-code/*.js and @rc-component/qrcode shows antd's real QRCode component never emits this class itself (the v6 CSS rule for it is an unrelated leak from the extraction), so it is neither emitted nor added.",
   "empty": [
     "ant-empty-img-default",
@@ -502,9 +587,14 @@
     "ant-padding-lg",
     "ant-padding-xs"
   ],
-  "list": ["ant-list-rtl"],
+  "list": [
+    "ant-list-rtl"
+  ],
   "_list_comment": "antd-emits: ant-list-rtl (index.js clsx condition direction === rtl on the root div, matching the pre-existing [class.ant-list-rtl] host binding in list.component.ts exactly); v6 CSS has no dedicated rule for it (the list stylesheet uses only logical properties, e.g. margin-inline-start, so no explicit rtl override is needed). The ant-spin-* class list's own nz-spin loading wrapper renders is not repeated here: spin's own `_spin_comment` already explains it, and `allowlistFor` credits list with spin's entries for the `ant-spin` prefix.",
-  "avatar": ["ant-avatar-circle", "ant-avatar-string"],
+  "avatar": [
+    "ant-avatar-circle",
+    "ant-avatar-string"
+  ],
   "_avatar_comment": "v4-compat (no v6 counterpart): ant-avatar-circle (avatar.component.ts's `[class.ant-avatar-circle]` host binding on the default `nzShape === 'circle'`; antd 6's Avatar.js clsx still adds `${prefixCls}-${mergedShape}`, i.e. the literal class is genuinely emitted by real antd 6 too, but v6 CSS draws the circle as `.ant-avatar`'s own `border-radius: 50%` base rule and has no `.ant-avatar-circle` selector at all -- confirmed against the raw v6 CSS extraction and manifest.json's avatar.classes), ant-avatar-string (avatar.component.ts's `<span class=\"ant-avatar-string\">`; Avatar.js renders the same class on its text span, but v6 positions/scales it entirely via the inline styles its ResizeObserver callback sets -- the same technique avatar.component.ts's own calcStringSize already uses -- and v6 CSS has no `.ant-avatar-string` rule).",
   "image": [
     "ant-image-preview-root",
