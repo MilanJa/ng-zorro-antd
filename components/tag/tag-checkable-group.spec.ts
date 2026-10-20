@@ -231,6 +231,29 @@ describe('nz-tag-checkable-group', () => {
     );
   });
 
+  it('emits -disabled on the host while the group is disabled, as antd CheckableTagGroup does', async () => {
+    const fixture = TestBed.createComponent(TestGroupComponent);
+    fixture.detectChanges();
+    const host = fixture.nativeElement.querySelector('nz-tag-checkable-group') as HTMLElement;
+    expect(host.classList).not.toContain('ant-tag-checkable-group-disabled');
+
+    fixture.componentInstance.disabled.set(true);
+    fixture.detectChanges();
+    expect(host.classList).toContain('ant-tag-checkable-group-disabled');
+
+    fixture.componentInstance.disabled.set(false);
+    fixture.detectChanges();
+    expect(host.classList).not.toContain('ant-tag-checkable-group-disabled');
+
+    const reactive = TestBed.createComponent(TestGroupFormComponent);
+    reactive.detectChanges();
+    await reactive.whenStable();
+    reactive.detectChanges();
+    expect((reactive.nativeElement.querySelector('nz-tag-checkable-group') as HTMLElement).classList).toContain(
+      'ant-tag-checkable-group-disabled'
+    );
+  });
+
   // Outside a group nothing changes, even with nzValue bound.
   it('leaves a checkable tag outside any group exactly as before', () => {
     const fixture = TestBed.createComponent(TestSoloCheckableComponent);

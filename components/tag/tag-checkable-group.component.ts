@@ -43,6 +43,7 @@ import { NzTagCheckableValue } from './typings';
   ],
   host: {
     class: 'ant-tag-checkable-group',
+    '[class.ant-tag-checkable-group-disabled]': `disabled()`,
     '[class.ant-tag-checkable-group-rtl]': `dir() === 'rtl'`
   },
   encapsulation: ViewEncapsulation.None
